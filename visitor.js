@@ -12,12 +12,7 @@ class Visitor extends RitaScriptVisitor {
     this.context = context || {};
   }
 
-  /**
-   * Entry point of tree visiting
-   *
-   * @param {object} ctx
-   * @returns {string}
-   */
+  // Entry point for tree visiting
   start(ctx) {
     return this.visitScript(ctx);
   }
@@ -33,45 +28,55 @@ class Visitor extends RitaScriptVisitor {
 
   // Visits a leaf node and returns a string
   visitTerminal(ctx) {
-    //console.log('visitTerminal -> "' + ctx.getText() + '"');
-    return ctx.getText();
+    let txt = ctx.getText();
+    return  txt !== '<EOF>' ? txt: ''; // ignore EOFs
   }
 
   visitScript(ctx) {
     //console.log('visitScript -> "' + ctx.getText() + '"');
     return this.visitChildren(ctx);
-  };
+  }
 
-  visitExpr(ctx) {
+  visitEmptyExpr(ctx) {
+    return this.visit(ctx.expr());
+  }
+
+  visitFullExpr(ctx) {
     //console.log('visitExpr -> "' + ctx.getText() + '"');
     return this.visitChildren(ctx);
-  };
-
-  visitChoice(ctx) {
-
-    let dbug = 0;
-    let children = [];
-    dbug && console.log('visitChoice -> "' + ctx.getText() + '"');
-    for (let i = 0; i < ctx.getChildCount(); i++) {
-      let child = ctx.getChild(i);
-      if (child.children) {
-        // let visited = this.visitChildren(child);
-        dbug && console.log('  ',children.length, child.getText());// child.getChildCount());//, this.visitTerminal(child));
-        children.push(child);
-      }
-    }
-    let idx  = Math.floor((Math.random()*children.length));
-    dbug && console.log('  picked-idx', idx);
-    let result = this.visit(children[idx]);
-    dbug && console.log('  result', result);
-    return result;
-  };
+  }
 
   visitSymbol(ctx) {
     //console.log('visitSymbol -> "' + ctx.getText() + '" -> '+this.context[ctx.getText()]);
     let text = ctx.getText();
     return this.context[text] || text;
-  };
+  }
+
+  visitFullChoice(ctx) {
+    let children = this._nonterminalChildren(ctx);
+    let picked = this._randomElement(children);
+    return this.visit(picked);
+  }
+
+  visitEmptyChoice(ctx) {
+    let children = this._nonterminalChildren(ctx);
+    children.push("");
+    let picked = this._randomElement(children);
+    return typeof picked === 'string' ? picked : this.visit(picked);
+  }
+
+  _nonterminalChildren(ctx) { // TODO: use filter
+    let children = [];
+    for (let i = 0; i < ctx.getChildCount(); i++) {
+      let child = ctx.getChild(i);
+      if (child.children) children.push(child);
+    }
+    return children;
+  }
+
+  _randomElement(arr) {
+    return arr[Math.floor((Math.random() * arr.length))];
+  }
 }
 
 module.exports = Visitor;

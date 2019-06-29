@@ -6,12 +6,16 @@
   "scripts": {
     "start": "node index.js",
     "compile": "npm run antlr4-js",
-    "antlr4-js": "java -Xmx500M -cp '/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH' org.antlr.v4.Tool -Dlanguage=JavaScript -lib grammars -o lib -visitor -Xexact-output-dir grammars/RitaScript.g4",
-    "test": "echo \"Error: no tests\" && exit 1"
+    "test": "NODE_ENV=test mocha ./test --recursive",
+    "antlr4-js": "java -Xmx500M -cp '/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH' org.antlr.v4.Tool -Dlanguage=JavaScript -lib grammar -o lib -visitor -Xexact-output-dir grammar/RitaScript.g4"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "antlr4": "^4.7.2"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4"
   }
 }

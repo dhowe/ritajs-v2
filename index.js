@@ -4,33 +4,35 @@ const RitaScriptLexer = require('./lib/RitaScriptLexer.js');
 const RitaScriptParser = require('./lib/RitaScriptParser.js');
 
 const Visitor = require('./visitor.js');
-//const ErrorListener = require('./error-listener.js');
 
-const input = 'The (mouse | (cat | $dog|)) ate.'; // the (bone | mouse).';
+let input = 'a | b';
 
-const chars = new antlr4.InputStream(input);
-const lexer = new RitaScriptLexer.RitaScriptLexer(chars);
+let stream = new antlr4.InputStream(input);
+let lexer = new RitaScriptLexer.RitaScriptLexer(stream);
+lexer.strictMode = false;
 
-lexer.strictMode = false; // do not use js strictMode
+let tokens = new antlr4.CommonTokenStream(lexer);
+let parser = new RitaScriptParser.RitaScriptParser(tokens);
+parser._errHandler = new antlr4.error.BailErrorStrategy();
 
-const tokens = new antlr4.CommonTokenStream(lexer);
-const parser = new RitaScriptParser.RitaScriptParser(tokens);
-
+let tree, results = {};
 try {
-  const tree = parser.script();
-  //console.log(tree.toStringTree(parser.ruleNames));
-
-  const visitor = new Visitor({ $dog: 'terrier' });
-
-  let results = {};
   console.log('Input: ', input);
-  for (var i = 0; i < 100; i++) {
-    const output = visitor.start(tree);
-     //console.log('#' + i + ':', output);
-    results[output] = results[output] ? results[output]+1 : 1;
+  tree = parser.script();
+  console.log(tree.toStringTree(parser.ruleNames));
+} catch (err) {
+  console.error(err);
+}
+if (tree) {
+  try {
+    const visitor = new Visitor({ $dog: 'terrier' });
+    for (var i = 0; i < 1; i++) {
+      const output = visitor.start(tree);
+      results[output] = results[output] ? results[output] + 1 : 1;
+    }
+    let keys = Object.keys(results).sort((a, b) => results[b] - results[a]);
+    keys.forEach(k => console.log('"'+k+'"', '[' + results[k] + '%]'));
+  } catch (err) {
+    console.error(err);
   }
-  Object.keys(results).forEach(r => console.log(r, '['+results[r]+'%]'));
-
-} catch (error) {
-  console.error('Error: ', error);
 }
