@@ -14,7 +14,7 @@ symbol: '$' ID;
 LP: '(';
 RP: ')';
 OR: WS* '|' WS*;
-NL: ('\r'? '\n' | '\r') -> skip; // ??
+NL: '\r'? '\n' -> skip; // ??
 ID: [A-Za-z_][A-Za-z_0-9-]*;
 WORD: [0-9A-Za-z,.;"'?]+;
 WS: [ \t]+;
