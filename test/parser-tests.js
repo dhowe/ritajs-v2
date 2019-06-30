@@ -1,36 +1,17 @@
 const expect = require('chai').expect;
-const antlr4 = require('antlr4');
-const Errors = require('../errors');
-const Visitor = require('../visitor');
-const Lexer = require('../lib/RitaScriptLexer');
-const Parser = require('../lib/RitaScriptParser');
-
-
-let parse = function (input, context, showParse) {
-
-  let stream = new antlr4.InputStream(input);
-  let lexer = new Lexer.RitaScriptLexer(stream);
-  lexer.strictMode = false;
-
-  let tokens = new antlr4.CommonTokenStream(lexer);
-  let parser = new Parser.RitaScriptParser(tokens);
-  parser.removeErrorListeners();
-  parser.addErrorListener(new Errors());
-
-  let tree = parser.script();
-  if (showParse) console.log(tree.toStringTree(parser.ruleNames));
-  return new Visitor(context).start(tree);
-};
+const parser = require('../parser');
+const process = parser.lexParseVisit;
+const processQ = parser.lexParseVisitQuiet;
 
 describe('Parser Tests', function () {
 
   describe('Parse Transforms', function () {
     it('Should throw on bad transforms', function () {
-      expect(() => parse('a.toUpperCase()')).to.throw();
+      expect(() => processQ('a.toUpperCase()')).to.throw();
     });
 
     it('Should correctly parse/execute transforms', function () {
-      //expect(parse('(a).toUpperCase()')).eq('a');
+      //expect(process('(a).toUpperCase()')).eq('a');
 
       // TODO: working here
 
@@ -40,13 +21,14 @@ describe('Parser Tests', function () {
   describe('Parse Symbols', function () {
 
     it('Should throw on bad symbols', function () {
-      expect(() => parse('$')).to.throw();
+      expect(() => processQ('$')).to.throw();
     });
 
     it('Should correctly parse/resolve symbols', function () {
-      expect(parse('a $dog', { dog: 'terrier' })).eq('a terrier');
-      expect(parse('I ate the $dog', { dog: 'beagle' }, 0)).eq('I ate the beagle');
-      //expect(parse('I ate the $dog.', { dog: 'lab' }, 0)).eq('I ate the lab.');
+      expect(process('a $dog', { dog: 'terrier' })).eq('a terrier');
+      expect(process('I ate the $dog', { dog: 'beagle' }, 0)).eq('I ate the beagle');
+      expect(process('The $dog today.', { dog: 'lab' }, 0)).eq('The lab today.');
+      expect(process('I ate the $dog.', { dog: 'lab' }, 0)).eq('I ate the lab.');
     });
   });
 
@@ -54,21 +36,21 @@ describe('Parser Tests', function () {
 
     it('Should throw on bad choices', function () {
 
-      expect(() => parse('|')).to.throw();
-      expect(() => parse('a |')).to.throw();
-      expect(() => parse('(|)')).to.throw();
-      expect(() => parse('a | b')).to.throw();
-      expect(() => parse('a | b | c')).to.throw();
-      expect(() => parse('(a | b) | c')).to.throw();
+      expect(() => processQ('|')).to.throw();
+      expect(() => processQ('a |')).to.throw();
+      expect(() => processQ('(|)')).to.throw();
+      expect(() => processQ('a | b')).to.throw();
+      expect(() => processQ('a | b | c')).to.throw();
+      expect(() => processQ('(a | b) | c')).to.throw();
     });
 
     it('Should correctly parse/select choices', function () {
-      expect(parse('(a)')).eq('a');
-      expect(parse('(a | a)')).eq('a');
-      expect(parse('(a | )')).to.be.oneOf(['a', '']);
-      expect(parse('(a | b)')).to.be.oneOf(['a', 'b']);
-      expect(parse('(a | b | c)'), {}, 1).to.be.oneOf(['a', 'b', 'c']);
-      expect(parse('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
+      expect(process('(a)')).eq('a');
+      expect(process('(a | a)')).eq('a');
+      expect(process('(a | )')).to.be.oneOf(['a', '']);
+      expect(process('(a | b)')).to.be.oneOf(['a', 'b']);
+      expect(process('(a | b | c)'), {}, 1).to.be.oneOf(['a', 'b', 'c']);
+      expect(process('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
     });
   });
 });

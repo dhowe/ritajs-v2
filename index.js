@@ -1,30 +1,22 @@
 const antlr4 = require('antlr4');
-
-const Errors = require('./errors');
-const Lexer = require('./lib/RitaScriptLexer.js');
-const Parser = require('./lib/RitaScriptParser.js');
-const Visitor = require('./visitor.js');
+const { lex, parse } = require('./parser');
 
 let input = 'The (good | $adj |) man ate.';
+let context = { adj: 'bad' }
+let runs = 100000;
 
-let stream = new antlr4.InputStream(input);
-let lexer = new Lexer.RitaScriptLexer(stream);
-lexer.strictMode = false;
+console.log('Input:\n' + input + '\n\nTokens:');
 
-let tokens = new antlr4.CommonTokenStream(lexer);
-let parser = new Parser.RitaScriptParser(tokens);
-parser.removeErrorListeners();
-parser.addErrorListener(new Errors());
+let tokens = lex(input, context, true);
 
-let tree, runs = 100000, results = {};
-
-console.log('Input: ', input, '[' + runs + ']');
-tree = parser.script();
+console.log('Tree:');
+let tree = parse(tokens, input, context, true);
 
 if (tree) {
-  console.log(tree.toStringTree(parser.ruleNames));
+  console.log('\nOutput: [' + runs + ']');
   try {
-    let visitor = new Visitor({ adj: 'bad' });
+    let results = {};
+    let visitor = new(require('./visitor'))();
     for (var i = 0; i < runs; i++) {
       let output = visitor.start(tree);
       results[output] = results[output] ? results[output] + 1 : 1;
