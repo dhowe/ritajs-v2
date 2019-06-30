@@ -15,22 +15,36 @@ let lex = function (input, context, showTokens) {
   lexer.addErrorListener(new Errors());
   lexer.strictMode = false;
 
+  //console.log(Object.keys(lexer));
+
   // try the lexing
   let tokens;
   try {
     tokens = new antlr4.CommonTokenStream(lexer);
     if (showTokens) {
       tokens.fill();
-      tokens.tokens.forEach(t => console.log(t.toString(lexer)));
+      tokens.tokens.forEach(t => console.log(tokenToString(t, lexer))); //, lexer.rulesNames[t.type]));
       console.log();
-      //console.log(tokens.tokens[0].toString(lexer));
     }
   } catch (e) {
-    if (!context || !context._silent)
-      console.error('\n      ' + colors.red("LEXER: " + input));
+    if (!context || !context._silent) {
+      console.error(colors.red("LEXER: " + input + '\n' + e.message+"\n"));
+    }
     throw e;
   }
   return tokens;
+};
+
+let tokenToString = function (t, r) {
+  let txt = (t.text && t.text.length) ?
+    t.text.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t") :
+    "<no text>";
+  let type = (t.type > -1 ? r.symbolicNames[t.type] : 'EOF');
+  return "[" + t.line + "." + t.column + ": '" + txt + "' -> " + type + "]";
+  // return "[" + t.start + ":" + t.stop + "='" +
+  //   txt + "',<" +t.type + ">" +
+  //   (t.channel > 0 ? ",channel=" + t.channel : "") + "," +
+  //   t.line + ":" + t.column + "]";
 };
 
 let parse = function (tokens, input, context, showParse) {
@@ -44,8 +58,9 @@ let parse = function (tokens, input, context, showParse) {
   try {
     tree = parser.script();
   } catch (e) {
-    if (!context || !context._silent)
-      console.error('\n      ' + colors.red("PARSER: " + input));
+    if (!context || !context._silent) {
+      console.error(colors.red("PARSER: " + input + '\n' + e.message+"\n"));
+    }
     throw e;
   }
   if (showParse) console.log(tree.toStringTree(parser.ruleNames));

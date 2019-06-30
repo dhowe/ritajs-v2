@@ -1,1 +1,1 @@
-require('./parser').lexParse("The (a | a) ate.",{},true);
+require('./parser').lexParse("The (a | b)^ ate.", {}, true);

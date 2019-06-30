@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./test/*.js",
+    "test": "NODE_ENV=test mocha ./test/*.js",
     "start": "node index.js",
     "watch": "npm-watch",
     "compile": "npm run antlr4-js",

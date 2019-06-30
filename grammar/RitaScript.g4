@@ -18,4 +18,4 @@ DOLLAR: '$';
 SYM: DOLLAR [A-Za-z_] [A-Za-z_0-9-]*;
 WORD: [0-9A-Za-z,.;"'?]+;
 
-ErrorCharacter: . ;
+ERROR: . ;
