@@ -5,7 +5,7 @@ const RitaScriptParser = require('./lib/RitaScriptParser.js');
 
 const Visitor = require('./visitor.js');
 
-let input = 'a | b';
+let input = 'The (good | $adj |) man ate.';
 
 let stream = new antlr4.InputStream(input);
 let lexer = new RitaScriptLexer.RitaScriptLexer(stream);
@@ -25,8 +25,8 @@ try {
 }
 if (tree) {
   try {
-    const visitor = new Visitor({ $dog: 'terrier' });
-    for (var i = 0; i < 1; i++) {
+    const visitor = new Visitor({ adj: 'bad' });
+    for (var i = 0; i < 100; i++) {
       const output = visitor.start(tree);
       results[output] = results[output] ? results[output] + 1 : 1;
     }

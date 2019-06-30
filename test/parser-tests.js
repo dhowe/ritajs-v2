@@ -21,6 +21,30 @@ let parse = function (input, context, showParse) {
 
 describe('Parser Tests', function () {
 
+  describe('Parse Transforms', function () {
+    it('Should throw on bad inputs', function () {
+      expect(() => parse('a.toUpperCase()')).to.throw();
+    });
+
+    it('Should correctly parse/execute transforms', function () {
+      //expect(parse('(a).toUpperCase()')).eq('a');
+
+      // TODO: working here
+
+    });
+  });
+
+  describe('Parse Symbols', function () {
+
+    it('Should throw on bad inputs', function () {
+      expect(() => parse('$')).to.throw();
+    });
+
+    it('Should correctly parse/resolve symbols', function () {
+      expect(parse('$dog', { dog: 'terrier' })).eq('terrier');
+    });
+  });
+
   describe('Parse Choices', function () {
 
     it('Should throw on bad inputs', function () {
@@ -33,7 +57,7 @@ describe('Parser Tests', function () {
       expect(() => parse('(a | b) | c')).to.throw();
     });
 
-    it('Should parse choices and select randomly', function () {
+    it('Should correctly parse/select choices', function () {
       expect(parse('(a)')).eq('a');
       expect(parse('(a | a)')).eq('a');
       expect(parse('(a | )')).to.be.oneOf(['a', '']);

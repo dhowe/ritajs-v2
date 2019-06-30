@@ -23,7 +23,7 @@ class Visitor extends RitaScriptVisitor {
     for (let i = 0; i < ctx.getChildCount(); i++) {
       code += this.visit(ctx.getChild(i));
     }
-    return code.trim();
+    return code.trim().replace(/ +/g, ' ');
   }
 
   // Visits a leaf node and returns a string
@@ -34,7 +34,7 @@ class Visitor extends RitaScriptVisitor {
 
   visitScript(ctx) {
     //console.log('visitScript -> "' + ctx.getText() + '"');
-    return this.visitChildren(ctx);
+    return this.visitChildren(ctx).replace(/ +/g, ' ');
   }
 
   visitEmptyExpr(ctx) {
@@ -49,6 +49,7 @@ class Visitor extends RitaScriptVisitor {
   visitSymbol(ctx) {
     //console.log('visitSymbol -> "' + ctx.getText() + '" -> '+this.context[ctx.getText()]);
     let text = ctx.getText();
+    if (text.length && text[0] === '$') text = text.substring(1);
     return this.context[text] || text;
   }
 
