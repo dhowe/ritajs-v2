@@ -1,3 +1,4 @@
-console.log('\n'+require('./parser').lexParseVisit
-  ("(boy | girl).toUpperCase()",
-{}, true));
+let input = 'The (boy | (girl | woman)).toUpperCase() ate.';
+console.log('\n' + input + '\n');
+console.log('\n'+(new(require('./lexparser'))()
+  .lexParseVisit(input, {}, true)));

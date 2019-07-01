@@ -1,16 +1,16 @@
 const antlr4 = require('antlr4');
-const { lex, parse } = require('./parser');
+const parser = new (require('./parser'))();
 
-let input = 'The (good | $adj |) man ate.';
+let input = '(boy | (girl | woman)).toUpperCase()';
 let context = { adj: 'bad' }
 let runs = 100000;
 
 console.log('Input:\n' + input + '\n\nTokens:');
 
-let tokens = lex(input, context, true);
+let tokens = parser.lex(input, context, true);
 
 console.log('Tree:');
-let tree = parse(tokens, input, context, true);
+let tree = parser.parse(tokens, input, context, true);
 
 if (tree) {
   console.log('\nOutput: [' + runs + ']');

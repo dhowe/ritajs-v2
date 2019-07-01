@@ -5,9 +5,10 @@ const RitaScriptVisitor = require('./lib/RitaScriptVisitor').RitaScriptVisitor;
  */
 class Visitor extends RitaScriptVisitor {
 
-  constructor(context, rules) {
+  constructor(context, lexerRules, parserRules) {
     super();
-    this.rules = rules;
+    this.lexerRules = lexerRules;
+    this.parserRules = parserRules;
     this.context = context || {};
   }
 
@@ -16,39 +17,19 @@ class Visitor extends RitaScriptVisitor {
     return this.visitScript(ctx);
   }
 
-  // Visits children of current node
   visitChildren(ctx) {
-    let code = '';
-    for (let i = 0; i < ctx.getChildCount(); i++) {
-      code += this.visit(ctx.getChild(i));
-    }
-    return code.trim().replace(/ +/g, ' ');
+    return ctx.children.reduce((acc, child) => acc += this.visit(child), '');
   }
 
   // Visits a leaf node and returns a string
   visitTerminal(ctx) {
     let txt = ctx.getText();
-    return  txt !== '<EOF>' ? txt: ''; // ignore EOFs
+    return txt !== '<EOF>' ? txt: ''; // ignore EOFs
   }
 
   visitScript(ctx) {
     //console.log('visitScript -> "' + ctx.getText() + '"');
     return this.visitChildren(ctx).replace(/ +/g, ' ');
-  }
-
-  visitEmptyExpr(ctx) {
-    return this.visit(ctx.expr());
-  }
-
-  visitFullExpr(ctx) {
-    //console.log('visitExpr -> "' + ctx.getText() + '"');
-    return this.visitChildren(ctx);
-  }
-
-  visitTransform(ctx) {
-
-    //console.log('*** visitTransform -> "' + ctx.getText() + '"', ctx);
-    return this.visitChildren(ctx);
   }
 
   visitSymbol(ctx) {
@@ -58,35 +39,35 @@ class Visitor extends RitaScriptVisitor {
     return this.context[text] || text;
   }
 
-  visitFullChoice(ctx) {
+  getRuleName(ctx) {
+    return ctx.hasOwnProperty('symbol') ?
+      this.lexerRules[ctx.symbol.type] :
+      this.parserRules[ctx.ruleIndex];
+  }
+
+  printChildren(ctx) {
     for (let i = 0; i < ctx.getChildCount(); i++) {
       let child = ctx.getChild(i);
-      console.log(i, child.getText(), (child.symbol ? child.symbol.type : "none"), child.ruleIndex);//.symbol);
+      console.log(i, child.getText(), this.getRuleName(child));
     }
-    let children = this._nonterminalChildren(ctx);
-    let picked = this._randomElement(children);
-    return this.visit(picked);
+  }
+
+  visitFullChoice(ctx) {
+    let picked = this.visit(this.randomElement(ctx.expr()));
+    //this.handleTansforms(ctx.transform(), picked);
+    //console.log("\nPICK", picked, typeof picked);
+    return picked.trim();
   }
 
   visitEmptyChoice(ctx) {
-    let children = this._nonterminalChildren(ctx);
-    children.push("");
-    let picked = this._randomElement(children);
-    return typeof picked === 'string' ? picked : this.visit(picked);
+    let options = ctx.expr().concat("");
+    let picked = this.randomElement(options);
+    let result = typeof picked === 'string' ? picked : this.visit(picked);
+    //console.log("\nEMPTY-PICK", picked, typeof picked);
+    return result.trim();
   }
 
-  _nonterminalChildren(ctx) { // TODO: use filter
-    let children = [];
-
-    for (let i = 0; i < ctx.getChildCount(); i++) {
-      let child = ctx.getChild(i);
-      //console.log(i, ctx.children[i].getText() , typeof ctx.children[i].symbol);
-      if (child.children) children.push(child);
-    }
-    return children;
-  }
-
-  _randomElement(arr) {
+  randomElement(arr) {
     return arr[Math.floor((Math.random() * arr.length))];
   }
 }
