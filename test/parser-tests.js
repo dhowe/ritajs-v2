@@ -12,7 +12,7 @@ describe('Parser Tests', function () {
 
     it('Should correctly parse/execute transforms', function () {
       //expect(process('(a).toUpperCase()')).eq('a');
-
+      expect(process("The (boy | boy).toUpperCase() ate.")).eq('The BOY ate.');
       // TODO: working here
 
     });

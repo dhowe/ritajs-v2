@@ -54,9 +54,11 @@ let parse = function (tokens, input, context, showParse) {
   parser.removeErrorListeners();
   parser.addErrorListener(new Errors());
 
+  console.log(parser.ruleNames);
+
   // try the parsing
   try {
-    tree = parser.script();
+    tree = parser.expr();
   } catch (e) {
     if (!context || !context._silent) {
       console.error(colors.red("PARSER: " + input + '\n' + e.message+"\n"));
