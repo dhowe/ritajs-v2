@@ -64,7 +64,7 @@ class LexParser {
     // try the parsing
     let tree;
     try {
-      tree = this.parser.expr();
+      tree = this.parser.script();
     } catch (e) {
       if (!context || !context._silent) {
         console.error(colors.red("PARSER: " + input + '\n' + e.message + "\n"));

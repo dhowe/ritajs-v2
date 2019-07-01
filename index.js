@@ -1,12 +1,13 @@
 const antlr4 = require('antlr4');
-const parser = new (require('./parser'))();
+const LexParser = require('./lexparser');
 
 let input = '(boy | (girl | woman)).toUpperCase()';
 let context = { adj: 'bad' }
 let runs = 100000;
 
-console.log('Input:\n' + input + '\n\nTokens:');
+console.log('\nInput:\n' + input + '\n\nTokens:');
 
+let parser = new LexParser();
 let tokens = parser.lex(input, context, true);
 
 console.log('Tree:');

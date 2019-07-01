@@ -11,8 +11,10 @@ describe('Parser Tests', function () {
 
     it('Should correctly parse/execute transforms', function () {
       //expect(lexParser.lexParseVisit('(a).toUpperCase()')).eq('a');
-      expect(lexParser.lexParseVisit("The (boy | boy).toUpperCase() ate.")).eq('The BOY ate.');
+      //expect(lexParser.lexParseVisit("The (boy | boy).toUpperCase() ate.")).eq('The BOY ate.');
+
       // TODO: working here
+
     });
   });
 
@@ -43,7 +45,7 @@ describe('Parser Tests', function () {
     });
 
     it('Should correctly parse/select choices', function () {
-      expect(lexParser.lexParseVisit('(a)')).eq('a');
+
       expect(lexParser.lexParseVisit('(a | a)')).eq('a');
       expect(lexParser.lexParseVisit('(a | )')).to.be.oneOf(['a', '']);
       expect(lexParser.lexParseVisit('(a | b)')).to.be.oneOf(['a', 'b']);
@@ -51,4 +53,10 @@ describe('Parser Tests', function () {
       expect(lexParser.lexParseVisit('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
     });
   });
+
+  describe('Failing Tests', function () {
+    it('Should be fixed and pass', function () {
+      expect(lexParser.lexParseVisit('(a)')).eq('a');
+    });
+  })
 });
