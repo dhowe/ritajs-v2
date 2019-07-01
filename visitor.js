@@ -35,25 +35,23 @@ class Visitor extends RitaScriptVisitor {
   // Visits a leaf node and returns a string
   visitTerminal(ctx) {
     let text = ctx.getText();
-    if (text !== '<EOF>') {
-      for (var i = 0; ctx.transforms && i < ctx.transforms.length; i++) {
+    if (text === '<EOF>') return ''; // ignore EOFs
+    if (ctx.transforms) {
+      // Note: this is VERY inefficient for large runs
+      for (var i = 0; i < ctx.transforms.length; i++) {
         let transform = ctx.transforms[i];
-        if (typeof text[transform] === 'undefined') {
+        let ttype = typeof text[transform];
+        if (ttype === 'undefined') {
           throw Error('Bad transform:' + transform);
-        }
-        //
-        // TODO: doesn't handle nested properties (see Spectre)
-        //
-        if (typeof text[transform] === 'function') {
+        } else if (ttype === 'function') {
           text = text[transform](); // call function
         } else {
           text = text[transform]; // get property
         }
       }
-      //console.log('visitTerminal', "'" + ctx.getText() + "'", ctx.transforms || '[]', '->', text);
-      return text;
     }
-    return ''; // ignore EOFs
+    //console.log('visitTerminal', "'" + ctx.getText() + "'", ctx.transforms || '[]', '->', text);
+    return text;
   }
 
   visitSymbol(ctx) {
@@ -82,10 +80,7 @@ class Visitor extends RitaScriptVisitor {
   }
 
   appendToArray(orig, adds) {
-
-    let res = (adds && adds.length) ? (orig || []).concat(adds) : orig;
-    //console.log('     appended', '->',res);
-    return res;
+    return (adds && adds.length) ? (orig || []).concat(adds) : orig;
   }
 
   inheritTransforms(token, ctx) {
@@ -96,27 +91,17 @@ class Visitor extends RitaScriptVisitor {
 
   visitFullChoice(ctx) {
     let options = ctx.expr();
-
     let token = this.randomElement(options);
-    //console.log(this.flattenTokens(options), ' -> ', this.flattenTokens(token));
-
-    let newTransforms = ctx.transform().map(t => t.getText().substring(1, t.getText().length - 2));
-    newTransforms = this.appendToArray(newTransforms, ctx.transforms);
-    //console.log('   existing-transforms: ' + (ctx.transforms || '[]') + '\n   new-transforms: ', newTransforms);
-    //console.log('   combined: ', newTransforms);
-    token.transforms = this.appendToArray(token.transforms, newTransforms);
-    //token.transforms = this.inheritTransforms(token, ctx);
-
+    token.transforms = this.inheritTransforms(token, ctx);
     return this.visit(token);
   }
 
   visitEmptyChoice(ctx) { // TODO: remove?
     let options = ctx.expr().concat("");
-    let picked = this.randomElement(options);
-    let result = typeof picked === 'string' ? picked : this.visit(picked);
-
-    //console.log("\nEMPTY-PICK", picked, typeof picked);
-    return result;
+    let token = this.randomElement(options);
+    if (typeof token === 'string') return token; // fails for transforms
+    token.transforms = this.inheritTransforms(token, ctx);
+    return this.visit(token);
   }
 
   randomElement(arr) {
