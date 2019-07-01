@@ -1,5 +1,7 @@
 const RitaScriptVisitor = require('./lib/RitaScriptVisitor').RitaScriptVisitor;
 
+// NEXT: integrate property handling from spectre/shared/parser.js::line 15
+
 String.prototype.uc = function () {
   return this.toUpperCase();
 }
