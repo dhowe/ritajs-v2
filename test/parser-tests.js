@@ -2,6 +2,11 @@ const expect = require('chai').expect;
 const LexParser = require('../lexparser');
 const lexParser = new LexParser();
 
+/*
+ TODO:
+   -- check we can include html entities
+   -- check we can include object properties as transforms
+ */
 describe('Parser Tests', function () {
 
   describe('Parse Transforms', function () {
@@ -10,11 +15,8 @@ describe('Parser Tests', function () {
     });
 
     it('Should correctly parse/execute transforms', function () {
-      //expect(lexParser.lexParseVisit('(a).toUpperCase()')).eq('a');
-      //expect(lexParser.lexParseVisit("The (boy | boy).toUpperCase() ate.")).eq('The BOY ate.');
-
-      // TODO: working here
-
+      expect(lexParser.lexParseVisit('(a | b).toUpperCase()')).to.be.oneOf(['A', 'B']);
+      expect(lexParser.lexParseVisit("The (boy | boy).toUpperCase() ate.")).eq('The BOY ate.');
     });
   });
 
@@ -46,6 +48,7 @@ describe('Parser Tests', function () {
 
     it('Should correctly parse/select choices', function () {
 
+      expect(lexParser.lexParseVisit('(a)')).eq('a');
       expect(lexParser.lexParseVisit('(a | a)')).eq('a');
       expect(lexParser.lexParseVisit('(a | )')).to.be.oneOf(['a', '']);
       expect(lexParser.lexParseVisit('(a | b)')).to.be.oneOf(['a', 'b']);
@@ -54,9 +57,8 @@ describe('Parser Tests', function () {
     });
   });
 
-  describe('Failing Tests', function () {
-    it('Should be fixed and pass', function () {
-      expect(lexParser.lexParseVisit('(a)')).eq('a');
+  /*describe('Failing Tests', function () {
+    it('Should be fixed to pass', function () {
     });
-  })
+  })*/
 });

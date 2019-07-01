@@ -1,9 +1,9 @@
 const antlr4 = require('antlr4');
 const LexParser = require('./lexparser');
 
-let input = '(boy | (girl | woman)).toUpperCase()';
+let input = 'The ((boy).ucf() | (girl | woman).toUpperCase())';
 let context = { adj: 'bad' }
-let runs = 100000;
+let runs = 1000;
 
 console.log('\nInput:\n' + input + '\n\nTokens:');
 
