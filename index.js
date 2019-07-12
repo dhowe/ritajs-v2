@@ -2,7 +2,7 @@ const antlr4 = require('antlr4');
 const Visitor = require('./visitor');
 const LexParser = require('./lexparser');
 
-let input = 'The ((boy).ucf() | (girl | woman).toUpperCase())';
+let input = 'The [[boy].ucf() | [girl | woman].toUpperCase()]';
 let context = { adj: 'bad' };
 let runs = 1000;
 

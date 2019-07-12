@@ -6,6 +6,7 @@ const lexParser = new LexParser();
  TODO:
    -- check we can include html entities
    -- check we can include object properties as transforms
+   -- check we can include object properties without transform
  */
 describe('Parser Tests', function () {
 
@@ -15,8 +16,8 @@ describe('Parser Tests', function () {
     });
 
     it('Should correctly parse/execute transforms', function () {
-      expect(lexParser.lexParseVisit('(a | b).toUpperCase()')).to.be.oneOf(['A', 'B']);
-      expect(lexParser.lexParseVisit("The (boy | boy).toUpperCase() ate.")).eq('The BOY ate.');
+      expect(lexParser.lexParseVisit('[a | b].toUpperCase()')).to.be.oneOf(['A', 'B']);
+      expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
     });
   });
 
@@ -40,20 +41,20 @@ describe('Parser Tests', function () {
 
       expect(() => lexParser.lexParseVisitQuiet('|')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('a |')).to.throw();
-      expect(() => lexParser.lexParseVisitQuiet('(|)')).to.throw();
+      expect(() => lexParser.lexParseVisitQuiet('[|]')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('a | b')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('a | b | c')).to.throw();
-      expect(() => lexParser.lexParseVisitQuiet('(a | b) | c')).to.throw();
+      expect(() => lexParser.lexParseVisitQuiet('[a | b] | c')).to.throw();
     });
 
     it('Should correctly parse/select choices', function () {
 
-      expect(lexParser.lexParseVisit('(a)')).eq('a');
-      expect(lexParser.lexParseVisit('(a | a)')).eq('a');
-      expect(lexParser.lexParseVisit('(a | )')).to.be.oneOf(['a', '']);
-      expect(lexParser.lexParseVisit('(a | b)')).to.be.oneOf(['a', 'b']);
-      expect(lexParser.lexParseVisit('(a | b | c)'), {}, 1).to.be.oneOf(['a', 'b', 'c']);
-      expect(lexParser.lexParseVisit('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
+      expect(lexParser.lexParseVisit('[a]')).eq('a');
+      expect(lexParser.lexParseVisit('[a | a]')).eq('a');
+      expect(lexParser.lexParseVisit('[a | ]')).to.be.oneOf(['a', '']);
+      expect(lexParser.lexParseVisit('[a | b]')).to.be.oneOf(['a', 'b']);
+      expect(lexParser.lexParseVisit('[a | b | c]'), {}, 1).to.be.oneOf(['a', 'b', 'c']);
+      expect(lexParser.lexParseVisit('[a | [b | c] | d]')).to.be.oneOf(['a', 'b', 'c', 'd']);
     });
   });
 

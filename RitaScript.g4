@@ -1,14 +1,18 @@
 grammar RitaScript;
 
+// NOTE: changing this file require a re-compile
+
 script: expr+ EOF;
 transform: TF;
 symbol: SYM transform*;
 expr: (symbol | choice | WORD) (WS+ (symbol | choice | WORD))*;
-choice: (LP (expr OR)* expr RP) transform* #fullChoice
-      	| (LP (expr OR)+ RP) 	transform*   #emptyChoice
-      	| (LP (OR expr)+ RP) 	transform*   #emptyChoice
+choice: (LB (expr OR)* expr RB) transform* #fullChoice
+      	| (LB (expr OR)+ RB) 	transform*   #emptyChoice
+      	| (LB (OR expr)+ RB) 	transform*   #emptyChoice
       	;
 
+LB: '[';
+RB: ']';
 LP: '(';
 RP: ')';
 WS: [ \t]+;
