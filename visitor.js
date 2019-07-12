@@ -56,6 +56,13 @@ class Visitor extends RitaScriptVisitor {
     return text;
   }
 
+  visitStore(ctx) {
+    let text = ctx.symbol().getText();
+    if (text.length && text[0] === '$') text = text.substring(1);
+    this.context[text] = this.visit(ctx.expr());
+    return this.context[text];
+  }
+
   visitSymbol(ctx) {
     //console.log('visitSymbol -> "' + ctx.getText() + '" -> '+this.context[ctx.getText()]);
     let text = ctx.getText();

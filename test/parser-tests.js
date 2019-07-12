@@ -58,6 +58,15 @@ describe('Parser Tests', function () {
     });
   });
 
+  describe('Parse Assignments', function () {
+    it('Should correctly assign variable to choice result', function () {
+      let context = {};
+      let result = lexParser.lexParseVisit('[$stored=[a | b]]', context);
+      expect(result).to.be.oneOf(['a', 'b']);
+      expect(context.stored).eq(result);
+    });
+  });
+
   /*describe('Failing Tests', function () {
     it('Should be fixed to pass', function () {
     });
