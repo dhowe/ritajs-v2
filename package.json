@@ -12,6 +12,7 @@
   },
   "watch": {
     "compile": {
+      "patterns": ".",
       "extensions": "g4"
     }
   },

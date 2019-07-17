@@ -14,10 +14,18 @@ describe('Parser Tests', function () {
     it('Should throw on bad transforms', function () {
       expect(() => lexParser.lexParseVisitQuiet('a.toUpperCase()')).to.throw();
     });
-
-    it('Should correctly parse/execute transforms', function () {
+    it('Should correctly handle choice transforms', function () {
       expect(lexParser.lexParseVisit('[a | b].toUpperCase()')).to.be.oneOf(['A', 'B']);
       expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
+    });
+    it('Should correctly handle symbol transforms', function () {
+      expect(lexParser.lexParseVisit('The $dog.toUpperCase()', { dog: 'spot' })).eq('The SPOT');
+      //expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
+    });
+    it('Should correctly parse object properties', function () {
+      //let dog = { name: 'spot', color: 'white' };
+      expect(lexParser.lexParseVisit("It was a $dog.color dog.", { dog: 'spot' }, 1)).eq('It was a white dog.');
+      //expect(lexParser.lexParseVisit("It was a $dog.color.toUpperCase() dog.", { dog: dog })).eq('It was a WHITE dog.');
     });
   });
 
@@ -59,16 +67,15 @@ describe('Parser Tests', function () {
   });
 
   describe('Parse Assignments', function () {
-    it('Should correctly assign variable to choice result', function () {
+    it('Should correctly assign a variable to a result', function () {
       let context = {};
       let result = lexParser.lexParseVisit('[$stored=[a | b]]', context);
       expect(result).to.be.oneOf(['a', 'b']);
       expect(context.stored).eq(result);
+      result = lexParser.lexParseVisit('[$a=$stored]', context);
+      expect(context.a).eq(result);
+      expect(result).eq(context.stored);
     });
   });
 
-  /*describe('Failing Tests', function () {
-    it('Should be fixed to pass', function () {
-    });
-  })*/
 });

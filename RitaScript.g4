@@ -1,10 +1,10 @@
 grammar RitaScript;
 
 // NOTE: changing this file require a re-compile
-
 script: expr+ EOF;
 transform: TF;
-symbol: SYM transform*;
+ident: SYM;
+symbol: ident transform*;
 expr: (symbol | choice | store | WORD) (WS+ (symbol | choice | store | WORD))*;
 choice: (LB (expr OR)* expr RB) transform* #fullChoice
       	| (LB (expr OR)+ RB) 	transform*   #emptyChoice
