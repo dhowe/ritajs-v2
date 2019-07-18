@@ -20,12 +20,16 @@ describe('Parser Tests', function () {
     });
     it('Should correctly handle symbol transforms', function () {
       expect(lexParser.lexParseVisit('The $dog.toUpperCase()', { dog: 'spot' })).eq('The SPOT');
-      //expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
+      expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
     });
     it('Should correctly parse object properties', function () {
-      //let dog = { name: 'spot', color: 'white' };
-      expect(lexParser.lexParseVisit("It was a $dog.color dog.", { dog: 'spot' }, 1)).eq('It was a white dog.');
-      //expect(lexParser.lexParseVisit("It was a $dog.color.toUpperCase() dog.", { dog: dog })).eq('It was a WHITE dog.');
+      let dog = { name: 'spot', color: 'white', hair: { color: 'white' } };
+      expect(lexParser.lexParseVisit("It was a $dog.hair.color dog.", { dog: dog })).eq('It was a white dog.');
+      expect(lexParser.lexParseVisit("It was a $dog.color.toUpperCase() dog.", { dog: dog })).eq('It was a WHITE dog.');
+    });
+    it('Should correctly call member function', function () {
+      let dog = { name: 'spot', getColor: function () { return 'red' } };
+      expect(lexParser.lexParseVisit("It was a $dog.getColor() dog.", { dog: dog })).eq('It was a red dog.');
     });
   });
 
@@ -64,6 +68,35 @@ describe('Parser Tests', function () {
       expect(lexParser.lexParseVisit('[a | b | c]'), {}, 1).to.be.oneOf(['a', 'b', 'c']);
       expect(lexParser.lexParseVisit('[a | [b | c] | d]')).to.be.oneOf(['a', 'b', 'c', 'd']);
     });
+
+    it('Should parse choices from an expression', function () {
+
+      expect(lexParser.lexParseVisit("x [a | a | a] x")).eq('x a x');
+      expect(lexParser.lexParseVisit("x [a | a | a]")).eq('x a');
+      expect(lexParser.lexParseVisit("x [a | a | a]x")).eq('x ax');
+      expect(lexParser.lexParseVisit("x[a | a | a] x")).eq('xa x');
+      expect(lexParser.lexParseVisit("x[a | a | a]x")).eq('xax');
+      expect(lexParser.lexParseVisit("x [a | a | a] [b | b | b] x")).eq('x a b x');
+      expect(lexParser.lexParseVisit("x [a | a | a][b | b | b] x")).eq('x ab x');
+      expect(lexParser.lexParseVisit("x [a | a] [b | b] x")).eq('x a b x');
+      expect(lexParser.lexParseVisit('[a|b]')).matches(/a|b/);
+      expect(lexParser.lexParseVisit('[a|]')).matches(/a?/);
+      expect(lexParser.lexParseVisit('[a|a]')).eq('a');
+    });
+
+    it('Should parse symbols/choices from an expr', function () {
+      var ctx = { user: { name: 'jen' } }
+      expect(lexParser.lexParseVisit('Was the $dog.breed [ok | ok] today?', { dog: { breed: 'lab' } }, 0)).eq('Was the lab ok today?');
+      expect(lexParser.lexParseVisit("Was $user.name.ucf() [ok | ok] today?", ctx)).eq('Was Jen ok today?');
+      expect(lexParser.lexParseVisit("$user.name was ok", ctx)).eq('jen was ok');
+      expect(lexParser.lexParseVisit("That was $user.name", ctx)).eq('That was jen');
+      expect(lexParser.lexParseVisit("Was that $user.name.ucf()?", ctx)).eq('Was that Jen?');
+      expect(lexParser.lexParseVisit("$user.name", ctx)).eq('jen');
+      expect(lexParser.lexParseVisit("$user.name", ctx)).eq('jen');
+      expect(lexParser.lexParseVisit("$user.name.toUpperCase()", ctx, 0)).eq('JEN');
+      expect(lexParser.lexParseVisit("$user.name.uc()", ctx, 0)).eq('JEN');
+      expect(lexParser.lexParseVisit("$user.name.ucf()", ctx, 0)).eq('Jen');
+    });
   });
 
   describe('Parse Assignments', function () {
@@ -75,6 +108,14 @@ describe('Parser Tests', function () {
       result = lexParser.lexParseVisit('[$a=$stored]', context);
       expect(context.a).eq(result);
       expect(result).eq(context.stored);
+    });
+  });
+
+  describe('Failing Tests', function () {
+    it('Should be fixed to pass', function () {
+      var ctx = { user: { name: 'jen' } }
+      //expect(lexParser.lexParseVisit("That was $user.name.", ctx, 1)).eq('That was jen.');
+      //expect(lexParser.lexParseVisit("That was $user.name!", ctx)).eq('That was jen!');
     });
   });
 

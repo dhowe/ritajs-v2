@@ -1,7 +1,5 @@
 const RitaScriptVisitor = require('./lib/RitaScriptVisitor').RitaScriptVisitor;
 
-// NEXT: integrate property handling from spectre/shared/parser.js::line 15
-
 String.prototype.uc = function () {
   return this.toUpperCase();
 }
@@ -10,7 +8,7 @@ String.prototype.ucf = function () {
   return this[0].toUpperCase() + this.substring(1);
 }
 
-class Symbol { // hrmmm?
+class Symbol {
   constructor(visitor, text) {
     this.text = text;
     this.parent = visitor;
@@ -47,76 +45,34 @@ class Visitor extends RitaScriptVisitor {
     }, '');
   }
 
-  parseSymbols(s) {
-    let extractParts = (match) => {
-      let parts = match.split('.');
-      parts.shift();
-      for (var i = 0; i < parts.length; i++) {
-        if (parts[i].endsWith('()')) {
-          parts[i] = parts[i].substring(0, parts[i].length - 2);
-        }
-      }
-      return parts;
-    }
-
-    let parts, resolved, pre, pos;
-    let ms = symbols.exec(s);
-    while (ms) {
-      parts = extractParts(ms[1])
-      resolved = this.user[parts[0]];
-
-      if (typeof resolved === 'function') {
-        resolved = resolved.apply(this.user);
-      }
-
-      if (typeof resolved !== 'string') {
-        throw Error(this.user.hasOwnProperty(parts[0]) ?
-          'user.' + parts[0] + ' is ' + this.user[parts[0]] :
-          'Parser: No User.' + parts[0] + ' property for ' + this.user.name);
-      }
-
-      for (var i = 1; i < parts.length; i++) {
-        let func = resolved[parts[i]];
-        if (typeof func !== 'function') {
-          throw Error('Error parsing function \'' + parts[i] + '()\' in\n' + s);
-        }
-        resolved = resolved[parts[i]]();
-      }
-
-      pre = s.substring(0, ms.index);
-      pos = s.substring(ms.index + ms[0].length);
-      s = pre + resolved + pos;
-      ms = symbols.exec(s);
-    }
-
-    return s;
-  }
-
   // Visits a leaf node and returns a string
   visitTerminal(ctx) {
-    let text = ctx.getText();
-    //console.log('TEXT:' + text, ctx.transforms);
-    if (text === '<EOF>') return ''; // ignore EOFs
+    let term = ctx.getText();
+    if (term === '<EOF>') return '';
+
     if (ctx.transforms) {
-      //console.log('TRANSFORMS',ctx.transforms);
-      // Note:  VERY inefficient for large runs
-      for (var i = 0; i < ctx.transforms.length; i++) {
+      //console.log(0,term, typeof term);
+      for (let i = 0; i < ctx.transforms.length; i++) {
         let transform = ctx.transforms[i];
-        let ttype = typeof text[transform];
-        if (ttype === 'undefined') {
-          throw Error('Bad transform:' + transform);
-        } else if (ttype === 'function') {
-          text = text[transform](); // call function
-        } else {
-          text = text[transform]; // get property
+        let comps = transform.split('.');
+        for (let j = 1; j < comps.length; j++) {
+          //console.log(j,comps[j]);
+          if (comps[j].endsWith('()')) comps[j] = comps[j].substring(0, comps[j].length - 2);
+          if (typeof term[comps[j]] === 'function') {
+            term = term[comps[j]]();
+          } else if (term.hasOwnProperty(comps[j])) {
+            term = term[comps[j]];
+          } else {
+            //console.warn('Bad transform:', transform, 'for', JSON.stringify(term));
+            term = ctx.getText() + ctx.transforms[i];
+          }
         }
       }
     }
-    //console.log('visitTerminal', "'" + ctx.getText() + "'", ctx.transforms || '[]', '->', text);
-    return text;
+    return term;
   }
 
-  visitStore(ctx) {
+  visitAssign(ctx) {
     let text = ctx.symbol().getText();
     if (text.length && text[0] === '$') text = text.substring(1);
     this.context[text] = this.visit(ctx.expr());
@@ -151,15 +107,18 @@ class Visitor extends RitaScriptVisitor {
   }
 
   visitSymbol(ctx) {
-    let ident = ctx.ident().getText();
-    if (ident.length && ident[0] === '$') ident = ident.substring(1);
-    let token = new Symbol(this, ident);
-    token.transforms = this.inheritTransforms(token, ctx);
-    return this.visit(token);
+    let id = ctx.ident().getText();
+    //console.log('id',id);
+    if (id.length && id[0] === '$') id = id.substring(1);
+    let symbol = new Symbol(this, id);
+    //console.log('symbol='+symbol.text, typeof symbol);
+    symbol.transforms = this.inheritTransforms(symbol, ctx);
+    //console.log('symbol.transforms',symbol.transforms);
+    return this.visit(symbol);
   }
 
   inheritTransforms(token, ctx) {
-    let newTransforms = ctx.transform().map(t => t.getText().substring(1, t.getText().length - 2));
+    let newTransforms = ctx.transform().map(t => t.getText()); //.substring(1, t.getText().length - 2));
     newTransforms = this.appendToArray(newTransforms, ctx.transforms);
     return this.appendToArray(token.transforms, newTransforms);
   }

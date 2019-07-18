@@ -5,12 +5,12 @@ script: expr+ EOF;
 transform: TF;
 ident: SYM;
 symbol: ident transform*;
-expr: (symbol | choice | store | WORD) (WS+ (symbol | choice | store | WORD))*;
+expr: (symbol | choice | assign | WORD) (WS+ (symbol | choice | assign | WORD))*;
 choice: (LB (expr OR)* expr RB) transform* #fullChoice
       	| (LB (expr OR)+ RB) 	transform*   #emptyChoice
       	| (LB (OR expr)+ RB) 	transform*   #emptyChoice
       	;
-store: LB symbol EQ expr RB;
+assign: LB symbol EQ expr RB;
 
 LB: '[';
 RB: ']';
@@ -21,7 +21,7 @@ DOLLAR: '$';
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
 SYM: DOLLAR [A-Za-z_] [A-Za-z_0-9-]*;
-TF: '.' ([A-Za-z_] [A-Za-z_0-9-]*) (LP RP)?;
+TF: ('.' ([A-Za-z_] [A-Za-z_0-9-]*) (LP RP)?)+;
 WORD: [0-9A-Za-z,.;"'?]+;
 
 ERROR: . ;
