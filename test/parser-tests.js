@@ -31,6 +31,21 @@ describe('Parser Tests', function () {
       let dog = { name: 'spot', getColor: function () { return 'red' } };
       expect(lexParser.lexParseVisit("It was a $dog.getColor() dog.", { dog: dog })).eq('It was a red dog.');
     });
+
+    it('Should correctly handle transforms ending with punctuation', function () {
+      expect(lexParser.lexParseVisit('[a | b].toUpperCase().')).to.be.oneOf(['A.', 'B.']);
+      expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase()!")).eq('The BOY!');
+      expect(lexParser.lexParseVisit('The $dog.toUpperCase()?', { dog: 'spot' })).eq('The SPOT?');
+      expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase().")).eq('The BOY.');
+      let dog = { name: 'spot', color: 'white', hair: { color: 'white' } };
+      expect(lexParser.lexParseVisit("It was $dog.hair.color.", { dog: dog })).eq('It was white.');
+      expect(lexParser.lexParseVisit("It was $dog.color.toUpperCase()!", { dog: dog })).eq('It was WHITE!');
+      let col = {  getColor: function () { return 'red' } };
+      expect(lexParser.lexParseVisit("It was $dog.getColor()?", { dog: col })).eq('It was red?');
+      let ctx = { user: { name: 'jen' } }
+      expect(lexParser.lexParseVisit("That was $user.name.", ctx)).eq('That was jen.');
+      expect(lexParser.lexParseVisit("That was $user.name!", ctx)).eq('That was jen!');
+    });
   });
 
   describe('Parse Symbols', function () {
@@ -87,7 +102,7 @@ describe('Parser Tests', function () {
     });
 
     it('Should parse symbols/choices from an expr', function () {
-      var ctx = { user: { name: 'jen' } }
+      let ctx = { user: { name: 'jen' } }
       expect(lexParser.lexParseVisit('Was the $dog.breed [ok | ok] today?', { dog: { breed: 'lab' } }, 0)).eq('Was the lab ok today?');
       expect(lexParser.lexParseVisit("Was $user.name.ucf() [ok | ok] today?", ctx)).eq('Was Jen ok today?');
       expect(lexParser.lexParseVisit("$user.name was ok", ctx)).eq('jen was ok');
@@ -113,14 +128,9 @@ describe('Parser Tests', function () {
     });
   });
 
-  describe('Failing Tests', function () {
+  /*describe('Failing Tests', function () {
     it('Should be fixed to pass', function () {
-      var ctx = { user: { name: 'jen' } }
-      //expect(lexParser.lexParseVisit("That was $user.name.", ctx, 1)).eq('That was jen.');
-      //expect(lexParser.lexParseVisit("That was $user.name!", ctx)).eq('That was jen!');
-
-
     });
-  });
+  });*/
 
 });
