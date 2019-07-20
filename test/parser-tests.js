@@ -83,6 +83,7 @@ describe('Parser Tests', function () {
       expect(lexParser.lexParseVisit('[a|b]')).matches(/a|b/);
       expect(lexParser.lexParseVisit('[a|]')).matches(/a?/);
       expect(lexParser.lexParseVisit('[a|a]')).eq('a');
+      expect(lexParser.lexParseVisit('[|a|]')).to.be.oneOf(['a', '']);
     });
 
     it('Should parse symbols/choices from an expr', function () {
@@ -117,7 +118,7 @@ describe('Parser Tests', function () {
       var ctx = { user: { name: 'jen' } }
       //expect(lexParser.lexParseVisit("That was $user.name.", ctx, 1)).eq('That was jen.');
       //expect(lexParser.lexParseVisit("That was $user.name!", ctx)).eq('That was jen!');
-      expect(lexParser.lexParseVisit('[|a|]')).to.be.oneOf(['a', '']);
+
 
     });
   });

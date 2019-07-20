@@ -19,7 +19,7 @@ if (tree) {
   console.log('\nOutput: [' + runs + ']');
   try {
     let results = {};
-    let visitor = new Visitor();
+    let visitor = parser.createVisitor(context);
     for (var i = 0; i < runs; i++) {
       let output = visitor.start(tree);
       results[output] = results[output] ? results[output] + 1 : 1;

@@ -88,7 +88,7 @@ class Visitor extends RitaScriptVisitor {
   countChildRules(ctx, ruleName) {
     let count = 0;
     for (let i = 0; i < ctx.getChildCount(); i++) {
-      if (this.getRuleName(ctx.getChild(i)) === ruleName)  count++;
+      if (this.getRuleName(ctx.getChild(i)) === ruleName) count++;
     }
     return count;
   }
@@ -134,31 +134,15 @@ class Visitor extends RitaScriptVisitor {
   handleEmptyChoices(ctx, options) {
     let ors = this.countChildRules(ctx, "OR");
     let exprs = this.countChildRules(ctx, "expr");
-    let adds = (ors+1) - exprs;
-    console.log("ADD",adds);
-    for (var i = 0; i < adds; i++) {
-
-      // WORKING HERE
-
-      //exprs[i]
-    }
+    let adds = (ors + 1) - exprs;
+    for (var i = 0; i < adds; i++) options.push(""); // should be token
   }
 
-  visitFullChoice(ctx) {
+  visitChoice(ctx) {
     let options = ctx.expr();
     this.handleEmptyChoices(ctx, options);
     let token = this.randomElement(options);
-    token.transforms = this.inheritTransforms(token, ctx);
-    return this.visit(token);
-  }
-
-  visitEmptyChoice(ctx) { // TODO: remove?
-    this.printChildren(ctx);
-    console.log("OR", this.countChildRules(ctx, "OR"));
-    console.log("expr", this.countChildRules(ctx, "expr"));
-    let options = ctx.expr().concat("");
-    let token = this.randomElement(options);
-    if (typeof token === 'string') return token; // fails for transforms
+    if (typeof token === 'string') return token; // fails for transforms ?
     token.transforms = this.inheritTransforms(token, ctx);
     return this.visit(token);
   }

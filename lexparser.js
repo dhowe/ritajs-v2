@@ -11,6 +11,7 @@ class LexParser {
   constructor() {
     this.lexer = null;
     this.parser = null;
+    this.visitor = null;
   }
 
   lex(input, context, showTokens) {
@@ -21,8 +22,6 @@ class LexParser {
     this.lexer.removeErrorListeners();
     this.lexer.addErrorListener(new Errors());
     this.lexer.strictMode = false;
-
-    //console.log(Object.keys(lexer));
 
     // try the lexing
     let tokens;
@@ -81,10 +80,13 @@ class LexParser {
     return this.parse(tokens, input, context, showParse);
   }
 
+  createVisitor(context) {
+    return new Visitor(context, this.lexer.symbolicNames, this.parser.ruleNames);
+  }
+
   lexParseVisit(input, context, showParse) {
     let tree = this.lexParse(input, context, showParse);
-    //let Vis = require('./lib/RitaScriptVisitor');
-    return new Visitor(context, this.lexer.symbolicNames, this.parser.ruleNames).start(tree);
+    return this.createVisitor(context).start(tree);
   }
 
   lexParseVisitQuiet(input, context, showParse) {

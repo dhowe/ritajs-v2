@@ -6,11 +6,11 @@ transform: TF;
 ident: SYM;
 symbol: ident transform*;
 expr: (symbol | choice | assign | WORD | PUNCT) (WS+ (symbol | choice | assign | WORD | PUNCT))*;
-choice: (LB (expr OR)* expr RB) transform* #fullChoice
-      	| (LB (expr OR)+ RB)  transform*   #emptyChoice
-      	| (LB (OR expr)+ RB) 	transform*   #emptyChoice
-        | (LB OR RB) 	        transform*   #emptyChoice
-        | (LB OR expr OR RB)  transform*   #emptyChoice
+choice: ((LB (expr OR)* expr RB) 
+      	| (LB (expr OR)+ RB)
+      	| (LB (OR expr)+ RB)
+        | (LB OR RB)
+        | (LB OR expr OR RB))  transform*
       	;
 assign: LB symbol EQ expr RB;
 
