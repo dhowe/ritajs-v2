@@ -53,7 +53,7 @@ describe('Parser Tests', function () {
 
       expect(() => lexParser.lexParseVisitQuiet('|')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('a |')).to.throw();
-      expect(() => lexParser.lexParseVisitQuiet('[|]')).to.throw();
+      //expect(() => lexParser.lexParseVisitQuiet('[|]')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('a | b')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('a | b | c')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('[a | b] | c')).to.throw();
@@ -67,6 +67,7 @@ describe('Parser Tests', function () {
       expect(lexParser.lexParseVisit('[a | b]')).to.be.oneOf(['a', 'b']);
       expect(lexParser.lexParseVisit('[a | b | c]'), {}, 1).to.be.oneOf(['a', 'b', 'c']);
       expect(lexParser.lexParseVisit('[a | [b | c] | d]')).to.be.oneOf(['a', 'b', 'c', 'd']);
+      expect(lexParser.lexParseVisitQuiet('[|]')).eq('');
     });
 
     it('Should parse choices from an expression', function () {
@@ -116,6 +117,8 @@ describe('Parser Tests', function () {
       var ctx = { user: { name: 'jen' } }
       //expect(lexParser.lexParseVisit("That was $user.name.", ctx, 1)).eq('That was jen.');
       //expect(lexParser.lexParseVisit("That was $user.name!", ctx)).eq('That was jen!');
+      expect(lexParser.lexParseVisit('[|a|]')).to.be.oneOf(['a', '']);
+
     });
   });
 
