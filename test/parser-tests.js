@@ -19,6 +19,13 @@ describe('Parser Tests', function () {
       ['&rsqb;','&rbrack;','&#x0005D;','&#93;'].forEach(e =>
         expect(lexParser.lexParseVisit('The '+e+' symbol')).eq('The ] symbol'));
     });
+
+    it('Should allow basic punctuation', function () {
+      expect(lexParser.lexParseVisit("The (-;:.!?')`",{},0)).eq("The (-;:.!?')`");
+      expect(lexParser.lexParseVisit('The (-;:.!?")`',{})).eq('The (-;:.!?")`');
+      expect(lexParser.lexParseVisit(",.;:\\'?!-_`“”’‘…‐–—―",{},0)).eq(",.;:\\'?!-_`“”’‘…‐–—―");
+      expect(lexParser.lexParseVisit(',.;:\\"?!-_`“”’‘…‐–—―',{},0)).eq(',.;:\\"?!-_`“”’‘…‐–—―');
+    });
   });
 
   describe('Parse Transforms', function () {
@@ -32,6 +39,9 @@ describe('Parser Tests', function () {
     it('Should correctly handle symbol transforms', function () {
       expect(lexParser.lexParseVisit('The $dog.toUpperCase()', { dog: 'spot' })).eq('The SPOT');
       expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
+    });
+    it('Should correctly handle built-in transforms', function () {
+      expect(lexParser.lexParseVisit('How many [tooth | tooth].pluralize() do you have?')).eq('How many teeth.pluralize() do you have?');
     });
     it('Should correctly parse object properties', function () {
       let dog = { name: 'spot', color: 'white', hair: { color: 'white' } };

@@ -28,7 +28,7 @@ EQ: WS* '=' WS*;
 ENT: '&' [A-Za-z0-9#]+ ';';
 SYM: DOLLAR [A-Za-z_] [A-Za-z_0-9-]*;
 TF: ('.' ([A-Za-z_] [A-Za-z_0-9-]*) (LP RP)?)+;
-WORD: [0-9A-Z_a-z-]+;
-PUNCT: [,.;:"'?!]+;
+WORD: [0-9A-Za-z]+;
+PUNCT: [,.;:"\\'?!-_`“”’‘…‐–—―]+;
 
 ERROR: . ;
