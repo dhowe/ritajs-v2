@@ -1,6 +1,6 @@
 require('../transforms');
 const expect = require('chai').expect;
-const lexParser = new (require('../lexparser'))();
+const lexParser = new(require('../lexparser'))();
 
 describe('Parser Tests', function () {
 
@@ -143,14 +143,6 @@ describe('Parser Tests', function () {
     });
   });
 
-  describe('Parse Labels', function () {
-    it('Should follow labels', function () {
-      expect(lexParser.lexParseVisit("#start", {})).eq("#start");
-      let inp = "#start\nThis is an [a | a].";
-      expect(lexParser.lexParseVisit(inp, {})).eq("#start\nThis is an a.");
-    });
-  });
-
   describe('Parse Assignments', function () {
     it('Should correctly assign a variable to a result', function () {
       let context = {};
@@ -172,9 +164,17 @@ describe('Parser Tests', function () {
     });
   });
 
+  describe('Parse Label Work', function () {
+    it('Should follow labels', function () {
+      expect(lexParser.lexParseVisit("#start", {})).eq("");
+      let inp = "#start\nThis is an [a | a].";
+      expect(lexParser.lexParseVisit(inp, {})).eq("\nThis is an a.");
+    });
+  });
+
   // describe('Failing Tests', function () {
   //   it('Should be fixed to pass', function () {
-    // expect(lexParser.lexParseVisit('How many [tooth | tooth].pluralize() do you have?')).eq('How many teeth do you have?');
+  // expect(lexParser.lexParseVisit('How many [tooth | tooth].pluralize() do you have?')).eq('How many teeth do you have?');
   //   });
   // });
 

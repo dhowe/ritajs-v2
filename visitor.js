@@ -70,7 +70,7 @@ class Visitor extends RitaScriptVisitor {
   }
 
   visitLabel(ctx) {
-    this.currentLabel = ctx.getText());
+    this.currentLabel = ctx.getText();
     return '';
   }
 
