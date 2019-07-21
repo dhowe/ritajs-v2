@@ -9,7 +9,7 @@ String.prototype.uc = function () {
 /// Capitalizes the first character.
 /// </summary>
 String.prototype.ucf = function () {
-  return this[0].toUpperCase() + this.substring(1);
+  return this.capitalize();
 }
 
 /// <summary>
@@ -23,8 +23,6 @@ String.prototype.articlize = function () {
 /// Capitalizes the first character.
 /// </summary>
 String.prototype.capitalize = function () {
-  var idx = 0;
-  while (this[idx] == '(') idx++;
   return this[0].toUpperCase() + this.substring(1);
 }
 
