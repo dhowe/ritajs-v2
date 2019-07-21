@@ -3,7 +3,6 @@ const Visitor = require('./visitor');
 const LexParser = require('./lexparser');
 
 let input = 'The [[boy].ucf() | [girl | woman].toUpperCase()]';
-input = '[|a|]';
 let context = { adj: 'bad' };
 let runs = 1000;
 

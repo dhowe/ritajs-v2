@@ -137,6 +137,14 @@ describe('Parser Tests', function () {
       expect(context.a).eq(result);
       expect(result).eq(context.stored);
     });
+    it('Should correctly reuse an assigned variable', function () {
+      let ctx = {};
+      let inp = 'Once there was a girl called [$hero=[Jane | Jane]].';
+      inp += '\n$hero lived in [$home=[Neverland | Neverland]].';
+      inp += '\n$hero liked living in $home.';
+      let out = 'Once there was a girl called Jane.\nJane lived in Neverland.\nJane liked living in Neverland.';
+      expect(lexParser.lexParseVisit(inp, ctx)).eq(out);
+    });
   });
 
   /*describe('Failing Tests', function () {

@@ -6,8 +6,8 @@ script: expr+ EOF;
 transform: TF;
 ident: SYM;
 symbol: ident transform*;
-expr: (symbol | choice | assign | WORD | PUNCT | ENT)
-  (WS+ (symbol | choice | assign | WORD | PUNCT | ENT))*;
+expr: (symbol | choice | assign | WORD | PUNCT | ENT | NL)
+  (WS+ (symbol | choice | assign | WORD | PUNCT | ENT | NL))*;
 choice: ((LB (expr OR)* expr RB)
       	| (LB (expr OR)+ RB)
       	| (LB (OR expr)+ RB)
@@ -21,6 +21,7 @@ RB: ']';
 LP: '(';
 RP: ')';
 WS: [ \t]+;
+NL: '\r'? '\n';
 DOLLAR: '$';
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
