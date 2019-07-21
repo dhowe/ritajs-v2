@@ -72,7 +72,7 @@ class Visitor extends RitaScriptVisitor {
         }
       }
     }
-    return he.decode(term);
+    return (typeof term === 'string') ? he.decode(term) : JSON.stringify(term);
   }
 
   visitAssign(ctx) {

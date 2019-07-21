@@ -1,3 +1,4 @@
+require('../transforms');
 const expect = require('chai').expect;
 const LexParser = require('../lexparser');
 const lexParser = new LexParser();
@@ -7,67 +8,6 @@ const lexParser = new LexParser();
    -- check we can include html entities
  */
 describe('Parser Tests', function () {
-
-  describe('Parse Entities', function () { // using 'he' lib for now
-    it('Should correctly decode HTML entities', function () {
-      expect(lexParser.lexParseVisit('The &num; symbol')).eq('The # symbol');
-      expect(lexParser.lexParseVisit('The &#x00023; symbol')).eq('The # symbol');
-      expect(lexParser.lexParseVisit('The &#35; symbol')).eq('The # symbol');
-      expect(lexParser.lexParseVisit('The&num;symbol')).eq('The#symbol');
-      ['&lsqb;','&lbrack;','&#x0005B;','&#91;'].forEach(e =>
-        expect(lexParser.lexParseVisit('The '+e+' symbol')).eq('The [ symbol'));
-      ['&rsqb;','&rbrack;','&#x0005D;','&#93;'].forEach(e =>
-        expect(lexParser.lexParseVisit('The '+e+' symbol')).eq('The ] symbol'));
-    });
-
-    it('Should allow basic punctuation', function () {
-      expect(lexParser.lexParseVisit("The (-;:.!?')`",{},0)).eq("The (-;:.!?')`");
-      expect(lexParser.lexParseVisit('The (-;:.!?")`',{})).eq('The (-;:.!?")`');
-      expect(lexParser.lexParseVisit(",.;:\\'?!-_`“”’‘…‐–—―",{},0)).eq(",.;:\\'?!-_`“”’‘…‐–—―");
-      expect(lexParser.lexParseVisit(',.;:\\"?!-_`“”’‘…‐–—―',{},0)).eq(',.;:\\"?!-_`“”’‘…‐–—―');
-    });
-  });
-
-  describe('Parse Transforms', function () {
-    it('Should throw on bad transforms', function () {
-      expect(() => lexParser.lexParseVisitQuiet('a.toUpperCase()')).to.throw();
-    });
-    it('Should correctly handle choice transforms', function () {
-      expect(lexParser.lexParseVisit('[a | b].toUpperCase()')).to.be.oneOf(['A', 'B']);
-      expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
-    });
-    it('Should correctly handle symbol transforms', function () {
-      expect(lexParser.lexParseVisit('The $dog.toUpperCase()', { dog: 'spot' })).eq('The SPOT');
-      expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
-    });
-    it('Should correctly handle built-in transforms', function () {
-      expect(lexParser.lexParseVisit('How many [tooth | tooth].pluralize() do you have?')).eq('How many teeth.pluralize() do you have?');
-    });
-    it('Should correctly parse object properties', function () {
-      let dog = { name: 'spot', color: 'white', hair: { color: 'white' } };
-      expect(lexParser.lexParseVisit("It was a $dog.hair.color dog.", { dog: dog })).eq('It was a white dog.');
-      expect(lexParser.lexParseVisit("It was a $dog.color.toUpperCase() dog.", { dog: dog })).eq('It was a WHITE dog.');
-    });
-    it('Should correctly call member function', function () {
-      let dog = { name: 'spot', getColor: function () { return 'red' } };
-      expect(lexParser.lexParseVisit("It was a $dog.getColor() dog.", { dog: dog })).eq('It was a red dog.');
-    });
-
-    it('Should correctly handle transforms ending with punctuation', function () {
-      expect(lexParser.lexParseVisit('[a | b].toUpperCase().')).to.be.oneOf(['A.', 'B.']);
-      expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase()!")).eq('The BOY!');
-      expect(lexParser.lexParseVisit('The $dog.toUpperCase()?', { dog: 'spot' })).eq('The SPOT?');
-      expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase().")).eq('The BOY.');
-      let dog = { name: 'spot', color: 'white', hair: { color: 'white' } };
-      expect(lexParser.lexParseVisit("It was $dog.hair.color.", { dog: dog })).eq('It was white.');
-      expect(lexParser.lexParseVisit("It was $dog.color.toUpperCase()!", { dog: dog })).eq('It was WHITE!');
-      let col = {  getColor: function () { return 'red' } };
-      expect(lexParser.lexParseVisit("It was $dog.getColor()?", { dog: col })).eq('It was red?');
-      let ctx = { user: { name: 'jen' } }
-      expect(lexParser.lexParseVisit("That was $user.name.", ctx)).eq('That was jen.');
-      expect(lexParser.lexParseVisit("That was $user.name!", ctx)).eq('That was jen!');
-    });
-  });
 
   describe('Parse Symbols', function () {
 
@@ -137,6 +77,74 @@ describe('Parser Tests', function () {
     });
   });
 
+  describe('Parse Entities', function () { // using 'he' lib for now
+    it('Should correctly decode HTML entities', function () {
+      expect(lexParser.lexParseVisit('The &num; symbol')).eq('The # symbol');
+      expect(lexParser.lexParseVisit('The &#x00023; symbol')).eq('The # symbol');
+      expect(lexParser.lexParseVisit('The &#35; symbol')).eq('The # symbol');
+      expect(lexParser.lexParseVisit('The&num;symbol')).eq('The#symbol');
+      ['&lsqb;', '&lbrack;', '&#x0005B;', '&#91;'].forEach(e =>
+        expect(lexParser.lexParseVisit('The ' + e + ' symbol')).eq('The [ symbol'));
+      ['&rsqb;', '&rbrack;', '&#x0005D;', '&#93;'].forEach(e =>
+        expect(lexParser.lexParseVisit('The ' + e + ' symbol')).eq('The ] symbol'));
+    });
+
+    it('Should allow basic punctuation', function () {
+      expect(lexParser.lexParseVisit("The -;:.!?'`", {}, 0)).eq("The -;:.!?'`");
+      expect(lexParser.lexParseVisit('The -;:.!?"`', {})).eq('The -;:.!?"`');
+      expect(lexParser.lexParseVisit(",.;:\\'?!-_`“”’‘…‐–—―", {}, 0)).eq(",.;:\\'?!-_`“”’‘…‐–—―");
+      expect(lexParser.lexParseVisit(',.;:\\"?!-_`“”’‘…‐–—―', {}, 0)).eq(',.;:\\"?!-_`“”’‘…‐–—―');
+      expect(lexParser.lexParseVisit("/&%©@*")).eq("/&%©@*");
+    });
+  });
+
+  describe('Parse Transforms', function () {
+    it('Should throw on bad transforms', function () {
+      expect(() => lexParser.lexParseVisitQuiet('a.toUpperCase()')).to.throw();
+    });
+    it('Should correctly handle choice transforms', function () {
+      expect(lexParser.lexParseVisit('[a | b].toUpperCase()')).to.be.oneOf(['A', 'B']);
+      expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
+    });
+    it('Should correctly handle symbol transforms', function () {
+      expect(lexParser.lexParseVisit('The $dog.toUpperCase()', { dog: 'spot' })).eq('The SPOT');
+      expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
+    });
+
+    it('Should correctly parse object properties', function () {
+      let dog = { name: 'spot', color: 'white', hair: { color: 'white' } };
+      expect(lexParser.lexParseVisit("It was a $dog.hair.color dog.", { dog: dog })).eq('It was a white dog.');
+      expect(lexParser.lexParseVisit("It was a $dog.color.toUpperCase() dog.", { dog: dog })).eq('It was a WHITE dog.');
+    });
+    it('Should correctly call member function', function () {
+      let dog = { name: 'spot', getColor: function () { return 'red' } };
+      expect(lexParser.lexParseVisit("It was a $dog.getColor() dog.", { dog: dog })).eq('It was a red dog.');
+    });
+
+    it('Should correctly handle transforms ending with punctuation', function () {
+      expect(lexParser.lexParseVisit('[a | b].toUpperCase().')).to.be.oneOf(['A.', 'B.']);
+      expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase()!")).eq('The BOY!');
+      expect(lexParser.lexParseVisit('The $dog.toUpperCase()?', { dog: 'spot' })).eq('The SPOT?');
+      expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase().")).eq('The BOY.');
+
+      let dog = { name: 'spot', color: 'white', hair: { color: 'white' } };
+      expect(lexParser.lexParseVisit("It was $dog.hair.color.", { dog: dog })).eq('It was white.');
+      expect(lexParser.lexParseVisit("It was $dog.color.toUpperCase()!", { dog: dog })).eq('It was WHITE!');
+
+      let col = { getColor: function () { return 'red' } };
+      expect(lexParser.lexParseVisit("It was $dog.getColor()?", { dog: col })).eq('It was red?');
+
+      let ctx = { user: { name: 'jen' } }
+      expect(lexParser.lexParseVisit("That was $user.name!", ctx)).eq('That was jen!');
+      expect(lexParser.lexParseVisit("That was $user.name.", ctx)).eq('That was jen.');
+    });
+
+    it('Should correctly handle built-in transforms', function () {
+      expect(lexParser.lexParseVisit('How many [teeth].quotify() do you have?')).eq('How many "teeth" do you have?');
+      expect(lexParser.lexParseVisit('That is [ant].articlize().')).eq('That is an ant.');
+    });
+  });
+
   describe('Parse Assignments', function () {
     it('Should correctly assign a variable to a result', function () {
       let context = {};
@@ -157,9 +165,10 @@ describe('Parser Tests', function () {
     });
   });
 
-  /*describe('Failing Tests', function () {
-    it('Should be fixed to pass', function () {
-    });
-  });*/
+  // describe('Failing Tests', function () {
+  //   it('Should be fixed to pass', function () {
+    // expect(lexParser.lexParseVisit('How many [tooth | tooth].pluralize() do you have?')).eq('How many teeth do you have?');
+  //   });
+  // });
 
 });

@@ -23,6 +23,7 @@
     "he": "^1.2.0"
   },
   "devDependencies": {
+    "npm-watch": "^0.6.0",
     "colors": "^1.3.3",
     "chai": "^4.2.0",
     "mocha": "^6.1.4"
