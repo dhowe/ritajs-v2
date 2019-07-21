@@ -1,12 +1,7 @@
 require('../transforms');
 const expect = require('chai').expect;
-const LexParser = require('../lexparser');
-const lexParser = new LexParser();
+const lexParser = new (require('../lexparser'))();
 
-/*
- TODO:
-   -- check we can include html entities
- */
 describe('Parser Tests', function () {
 
   describe('Parse Symbols', function () {
@@ -29,7 +24,6 @@ describe('Parser Tests', function () {
 
       expect(() => lexParser.lexParseVisitQuiet('|')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('a |')).to.throw();
-      //expect(() => lexParser.lexParseVisitQuiet('[|]')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('a | b')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('a | b | c')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('[a | b] | c')).to.throw();
@@ -99,13 +93,16 @@ describe('Parser Tests', function () {
   });
 
   describe('Parse Transforms', function () {
+
     it('Should throw on bad transforms', function () {
       expect(() => lexParser.lexParseVisitQuiet('a.toUpperCase()')).to.throw();
     });
+
     it('Should correctly handle choice transforms', function () {
       expect(lexParser.lexParseVisit('[a | b].toUpperCase()')).to.be.oneOf(['A', 'B']);
       expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
     });
+
     it('Should correctly handle symbol transforms', function () {
       expect(lexParser.lexParseVisit('The $dog.toUpperCase()', { dog: 'spot' })).eq('The SPOT');
       expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
@@ -116,6 +113,7 @@ describe('Parser Tests', function () {
       expect(lexParser.lexParseVisit("It was a $dog.hair.color dog.", { dog: dog })).eq('It was a white dog.');
       expect(lexParser.lexParseVisit("It was a $dog.color.toUpperCase() dog.", { dog: dog })).eq('It was a WHITE dog.');
     });
+
     it('Should correctly call member function', function () {
       let dog = { name: 'spot', getColor: function () { return 'red' } };
       expect(lexParser.lexParseVisit("It was a $dog.getColor() dog.", { dog: dog })).eq('It was a red dog.');
@@ -145,6 +143,14 @@ describe('Parser Tests', function () {
     });
   });
 
+  describe('Parse Labels', function () {
+    it('Should follow labels', function () {
+      expect(lexParser.lexParseVisit("#start", {})).eq("#start");
+      let inp = "#start\nThis is an [a | a].";
+      expect(lexParser.lexParseVisit(inp, {})).eq("#start\nThis is an a.");
+    });
+  });
+
   describe('Parse Assignments', function () {
     it('Should correctly assign a variable to a result', function () {
       let context = {};
@@ -155,6 +161,7 @@ describe('Parser Tests', function () {
       expect(context.a).eq(result);
       expect(result).eq(context.stored);
     });
+
     it('Should correctly reuse an assigned variable', function () {
       let ctx = {};
       let inp = 'Once there was a girl called [$hero=[Jane | Jane]].';

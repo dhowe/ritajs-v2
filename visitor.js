@@ -1,14 +1,6 @@
 const RitaScriptVisitor = require('./lib/RitaScriptVisitor').RitaScriptVisitor;
 const he = require('he');
 
-String.prototype.uc = function () {
-  return this.toUpperCase();
-}
-
-String.prototype.ucf = function () {
-  return this[0].toUpperCase() + this.substring(1);
-}
-
 class Symbol {
   constructor(visitor, text) {
     this.text = text;
@@ -29,9 +21,11 @@ class Visitor extends RitaScriptVisitor {
 
   constructor(context, lexerRules, parserRules) {
     super();
+    this.labels = {};
     this.lexerRules = lexerRules;
     this.parserRules = parserRules;
     this.context = context || {};
+    this.currentLabel = '_default_';
   }
 
   // Entry point for tree visiting
@@ -73,6 +67,11 @@ class Visitor extends RitaScriptVisitor {
       }
     }
     return (typeof term === 'string') ? he.decode(term) : JSON.stringify(term);
+  }
+
+  visitLabel(ctx) {
+    this.currentLabel = ctx.getText());
+    return '';
   }
 
   visitAssign(ctx) {
