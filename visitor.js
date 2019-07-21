@@ -1,4 +1,5 @@
 const RitaScriptVisitor = require('./lib/RitaScriptVisitor').RitaScriptVisitor;
+const he = require('he');
 
 String.prototype.uc = function () {
   return this.toUpperCase();
@@ -57,7 +58,9 @@ class Visitor extends RitaScriptVisitor {
         let comps = transform.split('.');
         for (let j = 1; j < comps.length; j++) {
           //console.log(j,comps[j]);
-          if (comps[j].endsWith('()')) comps[j] = comps[j].substring(0, comps[j].length - 2);
+          if (comps[j].endsWith('()')) { // remove parens
+            comps[j] = comps[j].substring(0, comps[j].length - 2);
+          }
           if (typeof term[comps[j]] === 'function') {
             term = term[comps[j]]();
           } else if (term.hasOwnProperty(comps[j])) {
@@ -69,7 +72,7 @@ class Visitor extends RitaScriptVisitor {
         }
       }
     }
-    return term;
+    return he.decode(term);
   }
 
   visitAssign(ctx) {

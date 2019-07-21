@@ -5,10 +5,21 @@ const lexParser = new LexParser();
 /*
  TODO:
    -- check we can include html entities
-   -- check we can include object properties as transforms
-   -- check we can include object properties without transform
  */
 describe('Parser Tests', function () {
+
+  describe('Parse Entities', function () { // using 'he' lib for now
+    it('Should correctly decode HTML entities', function () {
+      expect(lexParser.lexParseVisit('The &num; symbol')).eq('The # symbol');
+      expect(lexParser.lexParseVisit('The &#x00023; symbol')).eq('The # symbol');
+      expect(lexParser.lexParseVisit('The &#35; symbol')).eq('The # symbol');
+      expect(lexParser.lexParseVisit('The&num;symbol')).eq('The#symbol');
+      ['&lsqb;','&lbrack;','&#x0005B;','&#91;'].forEach(e =>
+        expect(lexParser.lexParseVisit('The '+e+' symbol')).eq('The [ symbol'));
+      ['&rsqb;','&rbrack;','&#x0005D;','&#93;'].forEach(e =>
+        expect(lexParser.lexParseVisit('The '+e+' symbol')).eq('The ] symbol'));
+    });
+  });
 
   describe('Parse Transforms', function () {
     it('Should throw on bad transforms', function () {
