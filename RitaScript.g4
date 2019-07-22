@@ -18,20 +18,13 @@ expr: (symbol | choice | assign | CHR | FS | ENT)
 
 LB: '[';
 RB: ']';
-LP: '(';
-RP: ')';
 FS: '.';
 WS: [ \t]+;
-DOLLAR: '$';
+SYM: '$' ID;
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
+TF: ('.' ID ( '(' ')' )? )+;
 ENT: '&' [A-Za-z0-9#]+ ';';
-SYM: DOLLAR [A-Za-z_] [A-Za-z_0-9-]*;
-TF: ('.' ([A-Za-z_] [A-Za-z_0-9-]*) (LP RP)?)+;
-CHR: ~( '.' | '[' | ']' | '(' | ')' | ' ' | '\t' | '|' | '=' | '$')+;
+CHR: ~( '.' | '[' | ']' | ' ' | '\t' | '|' | '=' | '$' )+;
 
-//NL: '\r'? '\n';
-/* WORD: [0-9A-Za-z]+;
-PUNCT: [,.;:"\\'?!-_`“”’‘…‐–—―©]+;
-
-ERROR: . ; */
+fragment ID: [A-Za-z_] [A-Za-z_0-9-]*;
