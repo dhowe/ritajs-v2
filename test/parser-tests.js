@@ -146,15 +146,32 @@ describe('Parser Tests', function () {
   });
 
   describe('Parse Assignments', function () {
+
     it('Should correctly assign a variable to a result', function () {
       let context = {};
       let result = lexParser.lexParseVisit('[$stored=[a | b]]', context);
       expect(result).to.be.oneOf(['a', 'b']);
       expect(context.stored).eq(result);
+
       result = lexParser.lexParseVisit('[$a=$stored]', context);
       expect(context.a).eq(result);
       expect(result).eq(context.stored);
+
     });
+
+    // WORKING HERE *************
+    it('Should correctly assign a variable to code', function () {
+    });
+
+    // NEXT HERE: sassign
+    0 && it('Should correctly process a silent assignment', function () {
+      let exp = 'A dog is a mammal';
+      expect(lexParser.lexParseVisit('{$stored=[a | a]} [$stored].toUpperCase() dog is a mammal}')).eq(exp);
+      expect(lexParser.lexParseVisit('{$stored=[a | a]}[$stored].toUpperCase() dog is a mammal}')).eq(exp);
+      expect(lexParser.lexParseVisit('{$stored=[a | a]}\n[$stored].toUpperCase() dog is a mammal}')).eq(exp);
+      expect(lexParser.lexParseVisit('{$stored=[a | a].toUpperCase()}[$stored] dog is a mammal}')).eq(exp);
+    });
+
     it('Should correctly reuse an assigned variable', function () {
       let ctx = {};
       let inp = 'Once there was a girl called [$hero=[Jane | Jane]].';
@@ -165,10 +182,12 @@ describe('Parser Tests', function () {
     });
   });
 
-  // describe('Failing Tests', function () {
-  //   it('Should be fixed to pass', function () {
-    // expect(lexParser.lexParseVisit('How many [tooth | tooth].pluralize() do you have?')).eq('How many teeth do you have?');
-  //   });
-  // });
+  describe('Failing Tests', function () {
+    it('Should be fixed to pass', function () {
+      0 && expect(lexParser.lexParseVisit('A [$stored=[$animal | $animal]] is a mammal',{ animal: 'dog'})).eq('A dog is a mammal');
+      0 && expect(lexParser.lexParseVisit('How many [tooth | tooth].pluralize() do you have?')).eq('How many teeth do you have?');
+      0 && expect(lexParser.lexParseVisit('[$stored=[a | a]].toUpperCase() dog is a mammal', {}, 1)).eq('A dog is a mammal');
+    });
+  });
 
 });

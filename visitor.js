@@ -34,18 +34,6 @@ class Visitor extends RitaScriptVisitor {
     this.context = context || {};
   }
 
-  // Entry point for tree visiting
-  start(ctx) {
-    return this.visitScript(ctx).replace(/ +/g, ' ');
-  }
-
-  visitChildren(ctx) {
-    return ctx.children.reduce((acc, child) => {
-      (child.transforms = ctx.transforms);
-      return acc + this.visit(child);
-    }, '');
-  }
-
   // Visits a leaf node and returns a string
   visitTerminal(ctx) {
     let term = ctx.getText();
@@ -76,10 +64,31 @@ class Visitor extends RitaScriptVisitor {
   }
 
   visitAssign(ctx) {
-    let text = ctx.symbol().getText();
-    if (text.length && text[0] === '$') text = text.substring(1);
-    this.context[text] = this.visit(ctx.expr());
-    return this.context[text];
+    let id = this.symbolName(ctx.symbol().getText());
+    this.context[id] = this.visit(ctx.expr());
+    return this.context[id];
+  }
+
+  visitSymbol(ctx) {
+    let id = this.symbolName(ctx.ident().getText());
+    let symbol = new Symbol(this, id);
+    symbol.transforms = this.inheritTransforms(symbol, ctx);
+    return this.visit(symbol);
+  }
+
+  visitChoice(ctx) {
+    let options = ctx.expr();
+    this.handleEmptyChoices(ctx, options);
+    let token = this.randomElement(options);
+    if (typeof token === 'string') return token; // fails for transforms ?
+    token.transforms = this.inheritTransforms(token, ctx);
+    return this.visit(token);
+  }
+
+  // ---------------------- Helpers ---------------------------
+
+  symbolName(text) {
+    return (text.length && text[0] === '$') ? text.substring(1) : text;
   }
 
   getRuleName(ctx) {
@@ -117,17 +126,6 @@ class Visitor extends RitaScriptVisitor {
     return (adds && adds.length) ? (orig || []).concat(adds) : orig;
   }
 
-  visitSymbol(ctx) {
-    let id = ctx.ident().getText();
-    //console.log('id',id);
-    if (id.length && id[0] === '$') id = id.substring(1);
-    let symbol = new Symbol(this, id);
-    //console.log('symbol='+symbol.text, typeof symbol);
-    symbol.transforms = this.inheritTransforms(symbol, ctx);
-    //console.log('symbol.transforms',symbol.transforms);
-    return this.visit(symbol);
-  }
-
   inheritTransforms(token, ctx) {
     let newTransforms = ctx.transform().map(t => t.getText()); //.substring(1, t.getText().length - 2));
     newTransforms = this.appendToArray(newTransforms, ctx.transforms);
@@ -141,17 +139,20 @@ class Visitor extends RitaScriptVisitor {
     for (var i = 0; i < adds; i++) options.push(""); // should be token
   }
 
-  visitChoice(ctx) {
-    let options = ctx.expr();
-    this.handleEmptyChoices(ctx, options);
-    let token = this.randomElement(options);
-    if (typeof token === 'string') return token; // fails for transforms ?
-    token.transforms = this.inheritTransforms(token, ctx);
-    return this.visit(token);
-  }
-
   randomElement(arr) {
     return arr[Math.floor((Math.random() * arr.length))];
+  }
+
+  visitChildren(ctx) {
+    return ctx.children.reduce((acc, child) => {
+      (child.transforms = ctx.transforms);
+      return acc + this.visit(child);
+    }, '');
+  }
+
+  // Entry point for tree visiting
+  start(ctx) {
+    return this.visitScript(ctx).replace(/ +/g, ' ');
   }
 }
 
