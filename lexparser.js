@@ -80,13 +80,13 @@ class LexParser {
     return this.parse(tokens, input, context, showParse);
   }
 
-  createVisitor(context) {
-    return new Visitor(context, this.lexer.symbolicNames, this.parser.ruleNames);
+  createVisitor(context, showParse) {
+    return new Visitor(context, this.lexer.symbolicNames, this.parser.ruleNames, showParse);
   }
 
   lexParseVisit(input, context, showParse) {
     let tree = this.lexParse(input, context, showParse);
-    return this.createVisitor(context).start(tree);
+    return this.createVisitor(context, showParse).start(tree);
   }
 
   lexParseVisitQuiet(input, context, showParse) {

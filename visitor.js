@@ -27,8 +27,9 @@ class Symbol {
  */
 class Visitor extends RitaScriptVisitor {
 
-  constructor(context, lexerRules, parserRules) {
+  constructor(context, lexerRules, parserRules, trace) {
     super();
+    this.trace = trace || false;
     this.lexerRules = lexerRules;
     this.parserRules = parserRules;
     this.context = context || {};
@@ -60,19 +61,30 @@ class Visitor extends RitaScriptVisitor {
         }
       }
     }
-    return (typeof term === 'string') ? he.decode(term) : JSON.stringify(term);
+    let result = (typeof term === 'string') ? he.decode(term) : JSON.stringify(term);
+    this.trace && console.log('visitTerminal: "', result, '"');
+    return result;
   }
 
   visitAssign(ctx) {
     let id = this.symbolName(ctx.symbol().getText());
-    this.context[id] = this.visit(ctx.expr());
-    return this.context[id];
+    let token = ctx.expr();
+    token.transforms = this.inheritTransforms(token, ctx);
+    this.trace && console.log('visitAssign: $' + id + '=' +
+      this.flatten(token), "tfs=" + (token.transforms || "[]"));
+    this.context[id] = this.visit(token);
+    let delims = ctx.children[0].getText() + ctx.children[4].getText();
+    // PROBLEM IS HERE
+    if (delims === '[]') return this.context[id];
+    if (delims === '{}') return ''; // silent
+    throw Error('Bad assign delims: ' + delims);
   }
 
   visitSymbol(ctx) {
     let id = this.symbolName(ctx.ident().getText());
     let symbol = new Symbol(this, id);
     symbol.transforms = this.inheritTransforms(symbol, ctx);
+    this.trace && console.log('visitSymbol: $'+symbol.text+' '+(symbol.transforms || "[]"));
     return this.visit(symbol);
   }
 
@@ -80,9 +92,14 @@ class Visitor extends RitaScriptVisitor {
     let options = ctx.expr();
     this.handleEmptyChoices(ctx, options);
     let token = this.randomElement(options);
-    if (typeof token === 'string') return token; // fails for transforms ?
-    token.transforms = this.inheritTransforms(token, ctx);
-    return this.visit(token);
+    if (typeof token === 'string') {
+      this.trace && console.log('visitChoice: "' + token + '"');
+      return token; // fails for transforms ?
+    } else {
+      token.transforms = this.inheritTransforms(token, ctx);
+      this.trace && console.log('visitChoice: ' + this.flattenChoice(token), "tfs=" + (token.transforms || "[]"));
+      return this.visit(token);
+    }
   }
 
   // ---------------------- Helpers ---------------------------
@@ -152,7 +169,7 @@ class Visitor extends RitaScriptVisitor {
 
   // Entry point for tree visiting
   start(ctx) {
-    return this.visitScript(ctx).replace(/ +/g, ' ');
+    return this.visitScript(ctx).trim().replace(/ +/g, ' ');
   }
 }
 

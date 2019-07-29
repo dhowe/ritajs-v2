@@ -3,10 +3,10 @@ const expect = require('chai').expect;
 const LexParser = require('../lexparser');
 const lexParser = new LexParser();
 
-/*
- TODO:
-   -- check we can include html entities
- */
+// NEXT: See failing test below
+ 
+// TODO: verify leading, trailing, double spaces
+
 describe('Parser Tests', function () {
 
   describe('Parse Symbols', function () {
@@ -29,7 +29,6 @@ describe('Parser Tests', function () {
 
       expect(() => lexParser.lexParseVisitQuiet('|')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('a |')).to.throw();
-      //expect(() => lexParser.lexParseVisitQuiet('[|]')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('a | b')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('a | b | c')).to.throw();
       expect(() => lexParser.lexParseVisitQuiet('[a | b] | c')).to.throw();
@@ -41,9 +40,9 @@ describe('Parser Tests', function () {
       expect(lexParser.lexParseVisit('[a | a]')).eq('a');
       expect(lexParser.lexParseVisit('[a | ]')).to.be.oneOf(['a', '']);
       expect(lexParser.lexParseVisit('[a | b]')).to.be.oneOf(['a', 'b']);
-      expect(lexParser.lexParseVisit('[a | b | c]'), {}, 1).to.be.oneOf(['a', 'b', 'c']);
+      expect(lexParser.lexParseVisit('[a | b | c]'), {}).to.be.oneOf(['a', 'b', 'c']);
       expect(lexParser.lexParseVisit('[a | [b | c] | d]')).to.be.oneOf(['a', 'b', 'c', 'd']);
-      expect(lexParser.lexParseVisitQuiet('[|]')).eq('');
+      expect(lexParser.lexParseVisit('[|]')).eq('');
     });
 
     it('Should parse choices from an expression', function () {
@@ -102,10 +101,20 @@ describe('Parser Tests', function () {
     it('Should throw on bad transforms', function () {
       expect(() => lexParser.lexParseVisitQuiet('a.toUpperCase()')).to.throw();
     });
+
     it('Should correctly handle choice transforms', function () {
       expect(lexParser.lexParseVisit('[a | b].toUpperCase()')).to.be.oneOf(['A', 'B']);
       expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
     });
+
+    it('Should correctly handle assign transforms', function () {
+      expect(lexParser.lexParseVisit('[$stored=[a | a].toUpperCase()] dog is a mammal.', {})).eq('A dog is a mammal.');
+      expect(lexParser.lexParseVisit('[$stored=[a | a]].toUpperCase() dog is a mammal.', {})).eq('A dog is a mammal.');
+      let ctx = {};
+      lexParser.lexParseVisit('[$x=[a | b]].toUpperCase()', ctx);
+      expect(ctx.x).to.be.oneOf(['A', 'B']);
+    });
+
     it('Should correctly handle symbol transforms', function () {
       expect(lexParser.lexParseVisit('The $dog.toUpperCase()', { dog: 'spot' })).eq('The SPOT');
       expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase() ate.")).eq('The BOY ate.');
@@ -116,12 +125,13 @@ describe('Parser Tests', function () {
       expect(lexParser.lexParseVisit("It was a $dog.hair.color dog.", { dog: dog })).eq('It was a white dog.');
       expect(lexParser.lexParseVisit("It was a $dog.color.toUpperCase() dog.", { dog: dog })).eq('It was a WHITE dog.');
     });
+
     it('Should correctly call member function', function () {
       let dog = { name: 'spot', getColor: function () { return 'red' } };
       expect(lexParser.lexParseVisit("It was a $dog.getColor() dog.", { dog: dog })).eq('It was a red dog.');
     });
 
-    it('Should correctly handle transforms ending with punctuation', function () {
+    it('Should handle transforms ending with punc', function () {
       expect(lexParser.lexParseVisit('[a | b].toUpperCase().')).to.be.oneOf(['A.', 'B.']);
       expect(lexParser.lexParseVisit("The [boy | boy].toUpperCase()!")).eq('The BOY!');
       expect(lexParser.lexParseVisit('The $dog.toUpperCase()?', { dog: 'spot' })).eq('The SPOT?');
@@ -152,24 +162,15 @@ describe('Parser Tests', function () {
       let result = lexParser.lexParseVisit('[$stored=[a | b]]', context);
       expect(result).to.be.oneOf(['a', 'b']);
       expect(context.stored).eq(result);
-
-      result = lexParser.lexParseVisit('[$a=$stored]', context);
-      expect(context.a).eq(result);
-      expect(result).eq(context.stored);
-
+      let result2 = lexParser.lexParseVisit('[$a=$stored]', context);
+      expect(context.a).eq(result2);
+      expect(result2).eq(context.stored);
     });
 
-    // WORKING HERE *************
+
     it('Should correctly assign a variable to code', function () {
-    });
-
-    // NEXT HERE: sassign
-    0 && it('Should correctly process a silent assignment', function () {
-      let exp = 'A dog is a mammal';
-      expect(lexParser.lexParseVisit('{$stored=[a | a]} [$stored].toUpperCase() dog is a mammal}')).eq(exp);
-      expect(lexParser.lexParseVisit('{$stored=[a | a]}[$stored].toUpperCase() dog is a mammal}')).eq(exp);
-      expect(lexParser.lexParseVisit('{$stored=[a | a]}\n[$stored].toUpperCase() dog is a mammal}')).eq(exp);
-      expect(lexParser.lexParseVisit('{$stored=[a | a].toUpperCase()}[$stored] dog is a mammal}')).eq(exp);
+      expect(lexParser.lexParseVisit('A [$stored=[$animal | $animal]] is a mammal',{ animal: 'dog'})).eq('A dog is a mammal');
+      expect(lexParser.lexParseVisit('[$b=[a | a]].toUpperCase() dog is a $b.', {}, 0)).eq('A dog is a A.');
     });
 
     it('Should correctly reuse an assigned variable', function () {
@@ -182,11 +183,51 @@ describe('Parser Tests', function () {
     });
   });
 
+  describe('Parse S-assignments', function () {
+
+    it('Should correctly process a silent assignment', function () {
+      let exp = 'A dog is a mammal';
+      expect(lexParser.lexParseVisit('{$stored=[a | a]} $stored dog is a mammal',{})).eq(exp.toLowerCase());
+      expect(lexParser.lexParseVisit('{$stored=[a | a]} [$stored].toUpperCase() dog is a mammal')).eq(exp);
+      expect(lexParser.lexParseVisit('{$stored=[a | a]}[$stored].toUpperCase() dog is a mammal')).eq(exp);
+      expect(lexParser.lexParseVisit('{$stored=[a | a]}\n[$stored].toUpperCase() dog is a mammal')).eq(exp);
+      expect(lexParser.lexParseVisit('{$stored=[a | a].toUpperCase()}[$stored] dog is a mammal')).eq(exp);
+    });
+
+    it('Should correctly assign a silent variable to a result', function () {
+      let context = {};
+      let result = lexParser.lexParseVisit('{$stored=[a | b]}', context);
+      expect(result).eq('');
+      expect(context.stored).to.be.oneOf(['a', 'b']);
+      let result2 = lexParser.lexParseVisit('{$a=$stored}', context);
+      expect(result2).eq('');
+      expect(context.a).eq(context.stored);
+    });
+
+    it('Should correctly assign a silent variable to code', function () {
+      expect(lexParser.lexParseVisit('A {$stored=[$animal | $animal]} is a mammal',{ animal: 'dog'}, 0)).eq('A is a mammal');
+      expect(lexParser.lexParseVisit('{$b=[a | a].toUpperCase()} dog is a $b.', {}, 0)).eq('dog is a A.');
+
+    });
+
+    it('Should correctly reuse silent assigned variables', function () {
+      let ctx = {};
+      let inp = 'Once there was a girl called {$hero=[Jane | Jane]} $hero.';
+      inp += '\n$hero lived in {$home=[Neverland | Neverland]} $home.';
+      inp += '\n$hero liked living in $home.';
+      let out = 'Once there was a girl called Jane.\nJane lived in Neverland.\nJane liked living in Neverland.';
+      expect(lexParser.lexParseVisit(inp, ctx)).eq(out);
+    });
+  });
+
   describe('Failing Tests', function () {
     it('Should be fixed to pass', function () {
-      0 && expect(lexParser.lexParseVisit('A [$stored=[$animal | $animal]] is a mammal',{ animal: 'dog'})).eq('A dog is a mammal');
+
+      // *** WORKING HERE: transform should not be applied to silent assign
+      expect(lexParser.lexParseVisit('{$b=[a | a]}.toUpperCase() dog is a $b.', {}, 0)).eq('dog is a a.');
+      expect(lexParser.lexParseVisit('[$b=[a | a]].toUpperCase() dog is a [$b].toLowerCase()', {}, 0)).eq('A dog is a a.');
+
       0 && expect(lexParser.lexParseVisit('How many [tooth | tooth].pluralize() do you have?')).eq('How many teeth do you have?');
-      0 && expect(lexParser.lexParseVisit('[$stored=[a | a]].toUpperCase() dog is a mammal', {}, 1)).eq('A dog is a mammal');
     });
   });
 
