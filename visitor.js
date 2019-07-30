@@ -1,5 +1,5 @@
 const RitaScriptVisitor = require('./lib/RitaScriptVisitor').RitaScriptVisitor;
-const he = require('he');
+const Entities = require('he');
 
 String.prototype.uc = function () {
   return this.toUpperCase();
@@ -40,14 +40,13 @@ class Visitor extends RitaScriptVisitor {
     let term = ctx.getText();
     if (term === Visitor.EOF) return '';
 
-    if (ctx.transforms) {
-      //console.log(0,term, typeof term);
+    if (ctx.transforms && (typeof term !== 'string' || term.length)) {
       for (let i = 0; i < ctx.transforms.length; i++) {
         let transform = ctx.transforms[i];
         let comps = transform.split('.');
         for (let j = 1; j < comps.length; j++) {
           //console.log(j,comps[j]);
-          if (comps[j].endsWith('()')) { // remove parens
+          if (comps[j].endsWith(Visitor.FUNCTION)) { // remove parens
             comps[j] = comps[j].substring(0, comps[j].length - 2);
           }
           if (typeof term[comps[j]] === 'function') {
@@ -61,22 +60,33 @@ class Visitor extends RitaScriptVisitor {
         }
       }
     }
-    let result = (typeof term === 'string') ? he.decode(term) : JSON.stringify(term);
+    let result = (typeof term === 'string') ?
+      Entities.decode(term) : JSON.stringify(term);
+
     this.trace && console.log('visitTerminal: "', result, '"');
+
     return result;
   }
 
   visitAssign(ctx) {
     let id = this.symbolName(ctx.symbol().getText());
     let token = ctx.expr();
+
     token.transforms = this.inheritTransforms(token, ctx);
     this.trace && console.log('visitAssign: $' + id + '=' +
       this.flatten(token), "tfs=" + (token.transforms || "[]"));
     this.context[id] = this.visit(token);
+
     let delims = ctx.children[0].getText() + ctx.children[4].getText();
-    // PROBLEM IS HERE
-    if (delims === Visitor.ASSIGN) return this.context[id];
-    if (delims === Visitor.SASSIGN) return ''; // silent
+    if (delims === Visitor.ASSIGN) {
+      return this.context[id];
+    }
+    if (delims === Visitor.SASSIGN) {
+      if (token.transforms && token.transforms.length) {
+        throw Error('Transforms not allowed on silent assignments: ' + ctx.getText());
+      }
+      return ''; // silent
+    }
     throw Error('Bad assign delims: ' + delims);
   }
 
@@ -84,7 +94,7 @@ class Visitor extends RitaScriptVisitor {
     let id = this.symbolName(ctx.ident().getText());
     let symbol = new Symbol(this, id);
     symbol.transforms = this.inheritTransforms(symbol, ctx);
-    this.trace && console.log('visitSymbol: $'+symbol.text+' '+(symbol.transforms || "[]"));
+    this.trace && console.log('visitSymbol: $' + symbol.text + ' ' + (symbol.transforms || "[]"));
     return this.visit(symbol);
   }
 
@@ -180,5 +190,6 @@ Visitor.SYM = '$';
 Visitor.EOF = '<EOF>';
 Visitor.ASSIGN = '[]';
 Visitor.SASSIGN = '{}';
+Visitor.FUNCTION = '()';
 
 module.exports = Visitor;

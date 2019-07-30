@@ -36,13 +36,13 @@ describe('Parser Tests', function () {
 
     it('Should correctly parse/select choices', function () {
 
-      //expect(lexParser.lexParseVisit('(a)')).eq('a');
-      //expect(lexParser.lexParseVisit('(a | a)')).eq('a');
+      expect(lexParser.lexParseVisit('(a)')).eq('a');
+      expect(lexParser.lexParseVisit('(a | a)')).eq('a');
       expect(lexParser.lexParseVisit('(a | )')).to.be.oneOf(['a', '']);
-      // expect(lexParser.lexParseVisit('(a | b)')).to.be.oneOf(['a', 'b'));
-      // expect(lexParser.lexParseVisit('(a | b | c)'), {}).to.be.oneOf(['a', 'b', 'c']);
-      // expect(lexParser.lexParseVisit('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
-      // expect(lexParser.lexParseVisit('(|)')).eq('');
+      expect(lexParser.lexParseVisit('(a | b)')).to.be.oneOf(['a', 'b']);
+      expect(lexParser.lexParseVisit('(a | b | c)'), {}).to.be.oneOf(['a', 'b', 'c']);
+      expect(lexParser.lexParseVisit('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
+      expect(lexParser.lexParseVisit('(|)')).eq('');
     });
 
     it('Should parse choices from an expression', function () {
@@ -185,6 +185,10 @@ describe('Parser Tests', function () {
 
   describe('Parse S-assignments', function () {
 
+    it('Should throw on silent assign with transform', function () {
+      expect(() => lexParser.lexParseVisit('{$b=(a | a)}.toUpperCase() dog is a $b.', {}, 0)).to.throw();
+    });
+
     it('Should correctly process a silent assignment', function () {
       let exp = 'A dog is a mammal';
       expect(lexParser.lexParseVisit('{$stored=(a | a)} $stored dog is a mammal',{})).eq(exp.toLowerCase());
@@ -224,8 +228,7 @@ describe('Parser Tests', function () {
     it('Should be fixed to pass', function () {
 
       // *** WORKING HERE: transform should not be applied to silent assign
-      expect(lexParser.lexParseVisit('{$b=(a | a)}.toUpperCase() dog is a $b.', {}, 0)).eq('dog is a a.');
-      expect(lexParser.lexParseVisit('[$b=(a | a)].toUpperCase() dog is a ($b).toLowerCase()', {}, 0)).eq('A dog is a a.');
+      expect(lexParser.lexParseVisit('[$b=(a | a)].toUpperCase() dog is a ($b).toLowerCase().', {})).eq('A dog is a a.');
 
       0 && expect(lexParser.lexParseVisit('How many (tooth | tooth).pluralize() do you have?')).eq('How many teeth do you have?');
     });
