@@ -38,7 +38,7 @@ class Visitor extends RitaScriptVisitor {
   // Visits a leaf node and returns a string
   visitTerminal(ctx) {
     let term = ctx.getText();
-    if (term === '<EOF>') return '';
+    if (term === Visitor.EOF) return '';
 
     if (ctx.transforms) {
       //console.log(0,term, typeof term);
@@ -75,8 +75,8 @@ class Visitor extends RitaScriptVisitor {
     this.context[id] = this.visit(token);
     let delims = ctx.children[0].getText() + ctx.children[4].getText();
     // PROBLEM IS HERE
-    if (delims === '[]') return this.context[id];
-    if (delims === '{}') return ''; // silent
+    if (delims === Visitor.ASSIGN) return this.context[id];
+    if (delims === Visitor.SASSIGN) return ''; // silent
     throw Error('Bad assign delims: ' + delims);
   }
 
@@ -105,7 +105,7 @@ class Visitor extends RitaScriptVisitor {
   // ---------------------- Helpers ---------------------------
 
   symbolName(text) {
-    return (text.length && text[0] === '$') ? text.substring(1) : text;
+    return (text.length && text[0] === Visitor.SYM) ? text.substring(1) : text;
   }
 
   getRuleName(ctx) {
@@ -150,7 +150,7 @@ class Visitor extends RitaScriptVisitor {
   }
 
   handleEmptyChoices(ctx, options) {
-    let ors = this.countChildRules(ctx, "OR");
+    let ors = this.countChildRules(ctx, Visitor.OR);
     let exprs = this.countChildRules(ctx, "expr");
     let adds = (ors + 1) - exprs;
     for (var i = 0; i < adds; i++) options.push(""); // should be token
@@ -172,5 +172,13 @@ class Visitor extends RitaScriptVisitor {
     return this.visitScript(ctx).trim().replace(/ +/g, ' ');
   }
 }
+
+Visitor.LP = '(';
+Visitor.RP = ')';
+Visitor.OR = 'OR';
+Visitor.SYM = '$';
+Visitor.EOF = '<EOF>';
+Visitor.ASSIGN = '[]';
+Visitor.SASSIGN = '{}';
 
 module.exports = Visitor;
