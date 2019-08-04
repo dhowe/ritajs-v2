@@ -1,3 +1,25 @@
+// FUNCTIONS /////////////////////////////////////////////////////////////////
+
+class Utils {
+
+  static trim(str) {
+    return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+  }
+
+  static last(word) {
+    if (!word || !word.length) return E;
+    return word.charAt(word.length - 1);
+  }
+
+  static equalsIgnoreCase(str1, str2) {
+    return str1.toLowerCase() === str2.toLowerCase();
+  }
+
+  static isNode() {
+    return (typeof module != 'undefined' && module.exports);
+  }
+}
+
 // CLASSES ////////////////////////////////////////////////////////////////////
 
 class RE {
@@ -9,11 +31,11 @@ class RE {
   }
 
   applies(word) {
-    return this.regex.test(trim(word));
+    return this.regex.test(Utils.trim(word));
   }
 
   fire(word) {
-    return this.truncate(trim(word)) + this.suffix;
+    return this.truncate(Utils.trim(word)) + this.suffix;
   }
 
   analyze(word) {
@@ -25,27 +47,7 @@ class RE {
   }
 }
 
-// FUNCTIONS /////////////////////////////////////////////////////////////////
 
-class Utils {
-
-  trim(str) {
-    return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-  }
-
-  last(word) {
-    if (!word || !word.length) return E;
-    return word.charAt(word.length - 1);
-  }
-
-  equalsIgnoreCase(str1, str2) {
-    return str1.toLowerCase() === str2.toLowerCase();
-  }
-
-  isNode() {
-    return (typeof module != 'undefined' && module.exports);
-  }
-}
 
 // CONSTANTS /////////////////////////////////////////////////////////////////
 
