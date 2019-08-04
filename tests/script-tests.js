@@ -7,7 +7,7 @@ const lexParser = new LexParser();
 
 // TODO: verify leading, trailing, double spaces
 
-describe('Parser Tests', function () {
+describe('RiScript Tests', function () {
 
   describe('Parse Symbols', function () {
 
