@@ -9,18 +9,19 @@ const randgen = require('./random');
 class RiTa {
 
   constructor() {
-    throw Error('Illegal instantiation');
+    throw Error('Invalid instantiation');
   }
 
   static alliterations() {
-    return "";
+    let lex = _lexicon();
+    return lex.alliterations.apply(lex, arguments);
   }
 
   static concordance() {
     return "";
   }
 
-  static conjugate() {
+  static conjugate(verb, opts) {
     return "";
   }
 
@@ -32,67 +33,67 @@ class RiTa {
     return Utils.isNode() ? RiTa.NODE : RiTa.JS;
   }
 
-  static pastParticiple() {
+  static pastParticiple(verb) {
     return "";
   }
 
-  static phonemes() {
+  static phonemes(str) {
     return "";
   }
 
-  static posTags() {
+  static posTags(str) {
     return "";
   }
 
-  static posTagsInline() {
+  static posTagsInline(str) { // TODO: add as option
     return "";
   }
 
-  static presentParticiple() {
+  static presentParticiple(verb) {
     return "";
   }
 
-  static stresses() {
+  static stresses(str) {
     return "";
   }
 
-  static syllables() {
+  static syllables(str) {
     return "";
   }
 
-  static isAbbrev() {
+  static isAbbrev(str) {
     return "";
   }
 
-  static isAdjective() {
+  static isAdjective(word) {
     return "";
   }
 
-  static isAdverb() {
+  static isAdverb(word) {
     return "";
   }
 
-  static isAlliteration() {
+  static isAlliteration(word1, word2) {
     return "";
   }
 
-  static isNoun() {
+  static isNoun(word) {
     return "";
   }
 
-  static isPunctuation() {
+  static isPunctuation(str) {
     return "";
   }
 
-  static isQuestion() {
+  static isQuestion(str) {
     return "";
   }
 
-  static isRhyme() {
+  static isRhyme(word1, word2) {
     return "";
   }
 
-  static isVerb() {
+  static isVerb(word) {
     return "";
   }
 
@@ -100,7 +101,7 @@ class RiTa {
     return "";
   }
 
-  static pluralize() {
+  static pluralize(verb) {
     return "";
   }
 
@@ -122,7 +123,8 @@ class RiTa {
   }
 
   static rhymes() {
-    return "";
+    let lex = _lexicon();
+    return lex.rhymes.apply(lex, arguments);
   }
 
   static runScript(s) {
@@ -131,14 +133,15 @@ class RiTa {
   }
 
   static similarBy() {
+    let lex = _lexicon();
+    return lex.similarBy.apply(lex, arguments);
+  }
+
+  static singularize(verb) {
     return "";
   }
 
-  static singularize() {
-    return "";
-  }
-
-  static sentences() {
+  static sentences(str) {
     return "";
   }
 
@@ -147,16 +150,16 @@ class RiTa {
     return RiTa.stemmer.stem(word);
   }
 
-  static tokenize() {
+  static tokenize(str) {
     return "";
   }
 
-  static untokenize() {
+  static untokenize(arr) {
     return "";
   }
 
   static words() {
-    return "";
+    return _lexicon().words();
   }
 
 }

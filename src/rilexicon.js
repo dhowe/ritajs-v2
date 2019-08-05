@@ -9,9 +9,25 @@ class RiLexicon {
     this.dict = dict;
   }
 
+  alliterations(word) {
+    return [];
+  }
+
   hasWord(word) {
     word = word ? word.toLowerCase() : '';
     return this.dict.hasOwnProperty(word) || _isPlural(word);
+  }
+
+  rhymes(word) {
+    return [];
+  }
+
+  similarBy(word) {
+    return [];
+  }
+
+  words() {
+    return Object.keys(this.dict);
   }
 
   randomWord() {

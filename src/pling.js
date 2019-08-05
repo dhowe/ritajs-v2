@@ -49,14 +49,6 @@ const categoryIE_IES = ['aeries', 'anomies', 'aunties', 'baddies', 'beanies', 'b
 /* Maps irregular Germanic English plural nouns to their singular form */
 const categoryIRR = ['blondes', 'blonde', 'teeth', 'tooth', 'beefs', 'beef', 'brethren', 'brother', 'busses', 'bus', 'cattle', 'cow', 'children', 'child', 'corpora', 'corpus', 'femora', 'femur', 'genera', 'genus', 'genies', 'genie', 'genii', 'genie', 'lice', 'louse', 'mice', 'mouse', 'mongooses', 'mongoose', 'monies', 'money', 'octopodes', 'octopus', 'oxen', 'ox', 'people', 'person', 'schemata', 'schema', 'soliloquies', 'soliloquy', 'taxis', 'taxi', 'throes', 'throes', 'trilbys', 'trilby', 'innings', 'inning', 'alibis', 'alibi', 'skis', 'ski', 'safaris', 'safari', 'rabbis', 'rabbi'];
 
-Array.prototype._contains = function (ele) {
-  return (this.indexOf(ele) > -1);
-};
-
-String.prototype._endsWith = function (suffix) {
-  return this.indexOf(suffix, this.length - suffix.length) !== -1;
-};
-
 class PlingStemmer {
 
   isPlural(s) {
@@ -65,11 +57,11 @@ class PlingStemmer {
 
   // Note that a word can be both plural and singular
   isSingular(s) {
-    return (categorySP._contains(s.toLowerCase()) || !isPlural(s));
+    return (categorySP.includes(s.toLowerCase()) || !isPlural(s));
   }
 
   isSingularAndPlural(s) {
-    return (categorySP._contains(s.toLowerCase()));
+    return (categorySP.includes(s.toLowerCase()));
   }
 
   // Cuts a suffix from a string (that is the number of chars given by the
@@ -79,18 +71,18 @@ class PlingStemmer {
 
   /* Returns true if a word is probably not Latin */
   noLatin(s) {
-    return (s.indexOf('h') > 0 || s.indexOf('j') > 0 || s.indexOf('k') > 0 || s.indexOf('w') > 0 || s.indexOf('y') > 0 || s.indexOf('z') > 0 || s.indexOf("ou") > 0 || s.indexOf("sh") > 0 || s.indexOf("ch") > 0 || s._endsWith("aus"));
+    return (s.indexOf('h') > 0 || s.indexOf('j') > 0 || s.indexOf('k') > 0 || s.indexOf('w') > 0 || s.indexOf('y') > 0 || s.indexOf('z') > 0 || s.indexOf("ou") > 0 || s.indexOf("sh") > 0 || s.indexOf("ch") > 0 || s.endsWith("aus"));
   }
 
   /* Returns true if a word is probably Greek */
   greek(s) {
-    return (s.indexOf("ph") > 0 || s.indexOf('y') > 0 && s._endsWith("nges"));
+    return (s.indexOf("ph") > 0 || s.indexOf('y') > 0 && s.endsWith("nges"));
   }
 
   stem(s) {
 
     // Handle irregular ones
-    if (categoryIRR._contains(s)) {
+    if (categoryIRR.includes(s)) {
       let index = categoryIRR.indexOf(s), irreg;
       if (index % 2 == 0) {
         irreg = categoryIRR[index + 1];
@@ -98,69 +90,69 @@ class PlingStemmer {
       }
     }
     // -on to -a
-    if (categoryON_A._contains(s))
+    if (categoryON_A.includes(s))
       return (this.cut(s, "a") + "on");
 
     // -um to -a
-    if (categoryUM_A._contains(s))
+    if (categoryUM_A.includes(s))
       return (this.cut(s, "a") + "um");
 
     // -x to -ices
-    if (categoryIX_ICES._contains(s))
+    if (categoryIX_ICES.includes(s))
       return (this.cut(s, "ices") + "ix");
 
     // -o to -i
-    if (categoryO_I._contains(s))
+    if (categoryO_I.includes(s))
       return (this.cut(s, "i") + "o");
 
     // -se to ses
-    if (categorySE_SES._contains(s))
+    if (categorySE_SES.includes(s))
       return (this.cut(s, "s"));
 
     // -is to -es
-    if (categoryIS_ES._contains(s) || s._endsWith("theses"))
+    if (categoryIS_ES.includes(s) || s.endsWith("theses"))
       return (this.cut(s, "es") + "is");
 
     // -us to -i
-    if (categoryUS_I._contains(s))
+    if (categoryUS_I.includes(s))
       return (this.cut(s, "i") + "us");
 
     //Wrong plural
-    if (s._endsWith("uses") && (categoryUS_I._contains(this.cut(s, "uses") + "i") || s === ("genuses") || s === ("corpuses")))
+    if (s.endsWith("uses") && (categoryUS_I.includes(this.cut(s, "uses") + "i") || s === ("genuses") || s === ("corpuses")))
       return (this.cut(s, "es"));
 
     // -ex to -ices
-    if (categoryEX_ICES._contains(s))
+    if (categoryEX_ICES.includes(s))
       return (this.cut(s, "ices") + "ex");
 
     // Words that do not inflect in the plural
-    if (s._endsWith("ois") || s._endsWith("itis") || category00._contains(s) || categoryICS._contains(s))
+    if (s.endsWith("ois") || s.endsWith("itis") || category00.includes(s) || categoryICS.includes(s))
       return (s);
 
     // -en to -ina
     // No other common words end in -ina
-    if (s._endsWith("ina"))
+    if (s.endsWith("ina"))
       return (this.cut(s, "en"));
 
     // -a to -ae
     // No other common words end in -ae
-    if (s._endsWith("ae") && s !== 'pleae') // special case
+    if (s.endsWith("ae") && s !== 'pleae') // special case
       return (this.cut(s, "e"));
 
     // -a to -ata
     // No other common words end in -ata
-    if (s._endsWith("ata"))
+    if (s.endsWith("ata"))
       return (this.cut(s, "ta"));
 
     // trix to -trices
     // No common word ends with -trice(s)
-    if (s._endsWith("trices"))
+    if (s.endsWith("trices"))
       return (this.cut(s, "trices") + "trix");
 
     // -us to -us
     //No other common word ends in -us, except for false plurals of French words
     //Catch words that are not latin or known to end in -u
-    if (s._endsWith("us") && !s._endsWith("eaus") && !s._endsWith("ieus") && !this.noLatin(s) && !categoryU_US._contains(s))
+    if (s.endsWith("us") && !s.endsWith("eaus") && !s.endsWith("ieus") && !this.noLatin(s) && !categoryU_US.includes(s))
       return (s);
 
     // -tooth to -teeth
@@ -168,90 +160,90 @@ class PlingStemmer {
     // -foot to -feet
     // -zoon to -zoa
     //No other common words end with the indicated suffixes
-    if (s._endsWith("teeth"))
+    if (s.endsWith("teeth"))
       return (this.cut(s, "teeth") + "tooth");
-    if (s._endsWith("geese"))
+    if (s.endsWith("geese"))
       return (this.cut(s, "geese") + "goose");
-    if (s._endsWith("feet"))
+    if (s.endsWith("feet"))
       return (this.cut(s, "feet") + "foot");
-    if (s._endsWith("zoa"))
+    if (s.endsWith("zoa"))
       return (this.cut(s, "zoa") + "zoon");
 
     // -men to -man
     // -firemen to -fireman
-    if (s._endsWith("men")) return (this.cut(s, "men") + "man");
+    if (s.endsWith("men")) return (this.cut(s, "men") + "man");
 
     // -martinis to -martini
     // -bikinis to -bikini
-    if (s._endsWith("inis")) return (this.cut(s, "inis") + "ini");
+    if (s.endsWith("inis")) return (this.cut(s, "inis") + "ini");
 
     // -children to -child
     // -schoolchildren to -schoolchild
-    if (s._endsWith("children")) return (this.cut(s, "ren"));
+    if (s.endsWith("children")) return (this.cut(s, "ren"));
 
     // -eau to -eaux
     //No other common words end in eaux
-    if (s._endsWith("eaux"))
+    if (s.endsWith("eaux"))
       return (this.cut(s, "x"));
 
     // -ieu to -ieux
     //No other common words end in ieux
-    if (s._endsWith("ieux"))
+    if (s.endsWith("ieux"))
       return (this.cut(s, "x"));
 
     // -nx to -nges
     // Pay attention not to kill words ending in -nge with plural -nges
     // Take only Greek words (works fine, only a handfull of exceptions)
-    if (s._endsWith("nges") && this.greek(s))
+    if (s.endsWith("nges") && this.greek(s))
       return (this.cut(s, "nges") + "nx");
 
     // -[sc]h to -[sc]hes
     //No other common word ends with "shes", "ches" or "she(s)"
     //Quite a lot end with "che(s)", filter them out
-    if (s._endsWith("shes") || s._endsWith("ches") && !categoryCHE_CHES._contains(s))
+    if (s.endsWith("shes") || s.endsWith("ches") && !categoryCHE_CHES.includes(s))
       return (this.cut(s, "es"));
 
     // -ss to -sses
     // No other common singular word ends with "sses"
     // Filter out those ending in "sse(s)"
-    if (s._endsWith("sses") && !categorySSE_SSES._contains(s) && !s._endsWith("mousses"))
+    if (s.endsWith("sses") && !categorySSE_SSES.includes(s) && !s.endsWith("mousses"))
       return (this.cut(s, "es"));
 
     // -x to -xes
     // No other common word ends with "xe(s)" except for "axe"
-    if (s._endsWith("xes") && s !== "axes")
+    if (s.endsWith("xes") && s !== "axes")
       return (this.cut(s, "es"));
 
     // -[nlw]ife to -[nlw]ives
     //No other common word ends with "[nlw]ive(s)" except for olive
-    if (s._endsWith("nives") || s._endsWith("lives") && !s._endsWith("olives") || s._endsWith("wives"))
+    if (s.endsWith("nives") || s.endsWith("lives") && !s.endsWith("olives") || s.endsWith("wives"))
       return (this.cut(s, "ves") + "fe");
 
     // -[aeo]lf to -ves  exceptions: valve, solve
     // -[^d]eaf to -ves  exceptions: heave, weave
     // -arf to -ves      no exception
-    if (s._endsWith("alves") && !s._endsWith("valves") || s._endsWith("olves") && !s._endsWith("solves") || s._endsWith("eaves") && !s._endsWith("heaves") && !s._endsWith("weaves") || s._endsWith("arves") || s._endsWith("shelves") || s._endsWith("selves"))
+    if (s.endsWith("alves") && !s.endsWith("valves") || s.endsWith("olves") && !s.endsWith("solves") || s.endsWith("eaves") && !s.endsWith("heaves") && !s.endsWith("weaves") || s.endsWith("arves") || s.endsWith("shelves") || s.endsWith("selves"))
       return (this.cut(s, "ves") + "f");
 
     // -y to -ies
     // -ies is very uncommon as a singular suffix
     // but -ie is quite common, filter them out
-    if (s._endsWith("ies") && !categoryIE_IES._contains(s))
+    if (s.endsWith("ies") && !categoryIE_IES.includes(s))
       return (this.cut(s, "ies") + "y");
 
     // -o to -oes
     // Some words end with -oe, so don't kill the "e"
-    if (s._endsWith("oes") && !categoryOE_OES._contains(s))
+    if (s.endsWith("oes") && !categoryOE_OES.includes(s))
       return (this.cut(s, "es"));
 
     // -s to -ses
     // -z to -zes
     // no words end with "-ses" or "-zes" in singular
-    if (s._endsWith("ses") || s._endsWith("zes"))
+    if (s.endsWith("ses") || s.endsWith("zes"))
       return (this.cut(s, "es"));
 
     // - to -s
-    if (s._endsWith("s") && !s._endsWith("ss") && !s._endsWith("is"))
+    if (s.endsWith("s") && !s.endsWith("ss") && !s.endsWith("is"))
       return (this.cut(s, "s"));
 
     return (s);

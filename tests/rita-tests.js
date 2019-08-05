@@ -22,7 +22,7 @@ describe('Library Structure', () => {
   describe('RiTa API functions', () => {
 
     it('Should correctly call alliterations()', () => {
-      expect(RiTa.alliterations()).eq('');
+      expect(RiTa.alliterations()).eql([]);
     });
 
     it('Should correctly call concordance()', () => {
@@ -133,7 +133,7 @@ describe('Library Structure', () => {
     });
 
     it('Should correctly call rhymes()', () => {
-      expect(RiTa.rhymes()).eq('');
+      expect(RiTa.rhymes()).eql([]);
     });
 
     it('Should correctly call runScript()', () => {
@@ -141,7 +141,7 @@ describe('Library Structure', () => {
     });
 
     it('Should correctly call similarBy()', () => {
-      expect(RiTa.similarBy()).eq('');
+      expect(RiTa.similarBy()).eql([]);
     });
 
     it('Should correctly call singularize()', () => {
@@ -165,7 +165,7 @@ describe('Library Structure', () => {
     });
 
     it('Should correctly call words()', () => {
-      expect(RiTa.words()).eq('');
+      expect(RiTa.words().length).gt(20000);
     });
 
   });
