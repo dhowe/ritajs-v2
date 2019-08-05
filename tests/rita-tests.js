@@ -115,19 +115,21 @@ describe('Library Structure', () => {
     });
 
     it('Should correctly call random()', () => {
-      expect(RiTa.random()).eq('');
+      let r = RiTa.random();
+      expect(r).gte(0);
+      expect(r).lt(1);
     });
 
     it('Should correctly call randomOrdering()', () => {
-      expect(RiTa.randomOrdering()).eq('');
+      expect(RiTa.randomOrdering(1)).eql([0]);
     });
 
     it('Should correctly call randomSeed()', () => {
-      expect(RiTa.randomSeed()).eq('');
+      expect(RiTa.randomSeed).is.a('function');
     });
 
     it('Should correctly call randomWord()', () => {
-      expect(RiTa.randomWord()).eq('');
+      expect(RiTa.randomWord()).is.a('string');
     });
 
     it('Should correctly call rhymes()', () => {

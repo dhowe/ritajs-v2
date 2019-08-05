@@ -2,8 +2,12 @@ const Utils = require("./utils");
 const Parser = require('./parser');
 const Stemmer = require('./pling');
 const RiMarkov = require('./rimarkov');
+const RiLexicon = require('./rilexicon');
+
+const randgen = require('./random');
 
 class RiTa {
+
   constructor() {
     throw Error('Illegal instantiation');
   }
@@ -21,8 +25,7 @@ class RiTa {
   }
 
   static hasWord(word) {
-    word = word ? word.toLowerCase() : '';
-    return _lexicon().hasOwnProperty(word) || _isPlural(word);
+    return _lexicon().hasWord(word);
   }
 
   static env() {
@@ -101,20 +104,21 @@ class RiTa {
     return "";
   }
 
+  static randomOrdering(num) {
+    return randgen.randomOrdering(num);
+  }
+
   static random() {
-    return "";
+    return randgen.random.apply(randgen, arguments);
   }
 
-  static randomOrdering() {
-    return "";
-  }
-
-  static randomSeed() {
-    return "";
+  static randomSeed(theSeed) {
+    return randgen.seed(theSeed);
   }
 
   static randomWord() {
-    return "";
+    let lex = _lexicon();
+    return lex.randomWord.apply(lex, arguments);
   }
 
   static rhymes() {
@@ -122,7 +126,8 @@ class RiTa {
   }
 
   static runScript(s) {
-    return _parser().lexParseVisit(s);
+    let parser = _parser();
+    return parser.lexParseVisit.apply(parser, arguments);
   }
 
   static similarBy() {
@@ -156,20 +161,30 @@ class RiTa {
 
 }
 
+RiTa.VERSION = 2;
 RiTa.NODE = 'node';
 RiTa.BROWSER = 'browser';
 
-RiTa.VERSION = 2;
 RiTa.RiMarkov = RiMarkov;
+
+RiTa.randSource = undefined;
+RiTa.parser = undefined;
 RiTa.dict = undefined;
 
 // Helper functions
 
+// function _randomSource() {
+//   if (!RiTa.randSource) {
+//     RiTa.randSource = new SeededRandom();
+//   }
+//   return RiTa.randSource;
+// }
+
 function _lexicon() {
-  if (typeof RiTa.dict === 'undefined') {
-    RiTa.dict = require('./rita_dict');
+  if (typeof RiTa.lexicon === 'undefined') {
+    RiTa.lexicon = new RiLexicon(RiTa, require('./rita_dict'));
   }
-  return RiTa.dict;
+  return RiTa.lexicon;
 }
 
 function _parser() {
@@ -177,41 +192,6 @@ function _parser() {
     RiTa.parser = new Parser();
   }
   return RiTa.parser;
-}
-
-function _isPlural(word) {
-
-  if (Utils.NULL_PLURALS.applies(word))
-    return true;
-
-  var stem = RiTa.stem(word);
-  if (stem === word) {
-    return false;
-  }
-
-  var sing = RiTa.singularize(word);
-  var data = this.data[sing];
-
-  if (data && data.length === 2) {
-    var pos = data[1].split(SP);
-    for (var i = 0; i < pos.length; i++) {
-      if (pos[i] === 'nn')
-        return true;
-    }
-
-  } else if (word.endsWith("ses") || word.endsWith("zes")) {
-
-    sing = word.substring(0, word.length - 1);
-    data = this.data[sing];
-    if (data && data.length === 2) {
-      var pos = data[1].split(SP);
-      for (var i = 0; i < pos.length; i++) {
-        if (pos[i] === 'nn')
-          return true;
-      }
-    }
-  }
-  return false;
 }
 
 module && (module.exports = RiTa);
