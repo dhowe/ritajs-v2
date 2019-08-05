@@ -164,24 +164,29 @@ class RiTa {
 
 }
 
+// CONSTANTS
 RiTa.VERSION = 2;
 RiTa.NODE = 'node';
 RiTa.BROWSER = 'browser';
+RiTa.LEX_WARN = false;
+RiTa.SILENT = false;
 
-RiTa.RiMarkov = RiMarkov;
-
+// LAZY-LOADS
+RiTa.tagger = undefined;
 RiTa.randSource = undefined;
 RiTa.parser = undefined;
 RiTa.dict = undefined;
 
-// Helper functions
+// CLASSES
+RiTa.RiMarkov = RiMarkov;
 
-// function _randomSource() {
-//   if (!RiTa.randSource) {
-//     RiTa.randSource = new SeededRandom();
-//   }
-//   return RiTa.randSource;
-// }
+// HELPERS
+function _tagger() {
+  if (typeof RiTa.tagger === 'undefined') {
+    RiTa.tagger = new PosTagger(RiTa);
+  }
+  return RiTa.tagger;
+}
 
 function _lexicon() {
   if (typeof RiTa.lexicon === 'undefined') {
