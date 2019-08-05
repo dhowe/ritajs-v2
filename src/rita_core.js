@@ -1,6 +1,6 @@
-//const RiLexicon = require("./rita_lex");
 const Utils = require("./utils");
-const Lexicon = require('./rita_dict');
+const Parser = require('./parser');
+const Stemmer = require('./pling');
 const RiMarkov = require('./rimarkov');
 
 class RiTa {
@@ -22,7 +22,7 @@ class RiTa {
 
   static hasWord(word) {
     word = word ? word.toLowerCase() : '';
-    return this.dict.hasOwnProperty(word) || _isPlural(word);
+    return _lexicon().hasOwnProperty(word) || _isPlural(word);
   }
 
   static env() {
@@ -121,8 +121,8 @@ class RiTa {
     return "";
   }
 
-  static runScript() {
-    return "";
+  static runScript(s) {
+    return _parser().lexParseVisit(s);
   }
 
   static similarBy() {
@@ -137,8 +137,9 @@ class RiTa {
     return "";
   }
 
-  static stem() {
-    return "";
+  static stem(word) {
+    if (!RiTa.stemmer) RiTa.stemmer = new Stemmer();
+    return RiTa.stemmer.stem(word);
   }
 
   static tokenize() {
@@ -159,17 +160,31 @@ RiTa.NODE = 'node';
 RiTa.BROWSER = 'browser';
 
 RiTa.VERSION = 2;
-RiTa.dict = Lexicon;
 RiTa.RiMarkov = RiMarkov;
+RiTa.dict = undefined;
 
 // Helper functions
+
+function _lexicon() {
+  if (typeof RiTa.dict === 'undefined') {
+    RiTa.dict = require('./rita_dict');
+  }
+  return RiTa.dict;
+}
+
+function _parser() {
+  if (typeof RiTa.parser === 'undefined') {
+    RiTa.parser = new Parser();
+  }
+  return RiTa.parser;
+}
 
 function _isPlural(word) {
 
   if (Utils.NULL_PLURALS.applies(word))
     return true;
 
-  var stem = RiTa.stem(word, 'Pling');
+  var stem = RiTa.stem(word);
   if (stem === word) {
     return false;
   }

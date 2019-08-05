@@ -3,8 +3,8 @@ const colors = require('colors');
 
 const Errors = require('./errors');
 const Visitor = require('./visitor');
-const Lexer = require('./lib/RitaScriptLexer');
-const Parser = require('./lib/RitaScriptParser');
+const Lexer = require('../lib/RitaScriptLexer');
+const Parser = require('../lib/RitaScriptParser');
 
 class LexParser {
 

@@ -1,4 +1,4 @@
-const RitaScriptVisitor = require('./lib/RitaScriptVisitor').RitaScriptVisitor;
+const RitaScriptVisitor = require('../lib/RitaScriptVisitor').RitaScriptVisitor;
 const Entities = require('he');
 
 String.prototype.uc = function () {

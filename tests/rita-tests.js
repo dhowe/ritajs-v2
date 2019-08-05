@@ -8,9 +8,11 @@ describe('Library Structure', () => {
     it('Should access static constants', () => {
       expect(RiTa.VERSION).eq(2);
     });
+
     it('Should access static functions', () => {
       expect(RiTa.hasWord("dog")).eq(true);
     });
+
     it('Should access member classes', () => {
       let rm = new RiTa.RiMarkov(3);
       expect(rm.n).eq(3);
@@ -133,7 +135,7 @@ describe('Library Structure', () => {
     });
 
     it('Should correctly call runScript()', () => {
-      expect(RiTa.runScript()).eq('');
+      expect(RiTa.runScript('(a | a)')).eq('a');
     });
 
     it('Should correctly call similarBy()', () => {
@@ -149,7 +151,7 @@ describe('Library Structure', () => {
     });
 
     it('Should correctly call stem()', () => {
-      expect(RiTa.stem()).eq('');
+      expect(RiTa.stem("cakes")).eq('cake');
     });
 
     it('Should correctly call tokenize()', () => {
