@@ -13,31 +13,11 @@ class Concorder {
     this.ignorePunctuation = false;
   }
 
-  parseOptions(options) {
-    if (options) {
-      options.ignoreCase && (this.ignoreCase = true);
-      options.ignoreStopWords && (this.ignoreStopWords = true);
-      options.ignorePunctuation && (this.ignorePunctuation = true);
-      options.wordsToIgnore && (this.wordsToIgnore = options.wordsToIgnore);
-    }
-
-    if (this.ignoreStopWords) {
-      this.wordsToIgnore = this.wordsToIgnore.concat(RiTa.STOP_WORDS);
-    }
-  }
-
-  count(word) {
-
-    let value = this.lookup(word);
-    return value === null ? 0 : value.count;
-  }
-
   concordance(text, options) {
 
     this.parseOptions(options);
 
     this.words = Array.isArray(text) ? text : RiTa.tokenize(text);
-console.log("WORDS:",this.words, text);
     this.build();
 
     let result = {};
@@ -66,12 +46,31 @@ console.log("WORDS:",this.words, text);
     return result;
   }
 
+  parseOptions(options) {
+    if (options) {
+      options.ignoreCase && (this.ignoreCase = true);
+      options.ignoreStopWords && (this.ignoreStopWords = true);
+      options.ignorePunctuation && (this.ignorePunctuation = true);
+      options.wordsToIgnore && (this.wordsToIgnore = options.wordsToIgnore);
+    }
+
+    if (this.ignoreStopWords) {
+      this.wordsToIgnore = this.wordsToIgnore.concat(RiTa.STOP_WORDS);
+    }
+  }
+
+  count(word) {
+
+    let value = this.lookup(word);
+    return value === null ? 0 : value.count;
+  }
+
+
   build() {
 
     if (!this.words) throw Error('No text in model');
 
     this.model = {};
-    let ts = +new Date();
     for (let j = 0; j < this.words.length; j++) {
 
       let word = this.words[j];
@@ -109,7 +108,6 @@ console.log("WORDS:",this.words, text);
 
   lookup(word) {
     let key = this.compareKey(word);
-    if (!this.model) this.build();
     return this.model[key];
   }
 }

@@ -1,6 +1,6 @@
 const Util = require("./utils");
 const Parser = require('./parser');
-const Stemmer = require('./pling');
+const Stemmer = require('./stemmer');
 const RiMarkov = require('./rimarkov');
 const RiLexicon = require('./rilexicon');
 const Concorder = require('./concorder');
