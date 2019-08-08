@@ -163,7 +163,7 @@ class Visitor extends RitaScriptVisitor {
     let ors = this.countChildRules(ctx, Visitor.OR);
     let exprs = this.countChildRules(ctx, "expr");
     let adds = (ors + 1) - exprs;
-    for (var i = 0; i < adds; i++) options.push(""); // should be token
+    for (let i = 0; i < adds; i++) options.push(""); // should be token
   }
 
   randomElement(arr) {

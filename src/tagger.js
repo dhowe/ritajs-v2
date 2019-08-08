@@ -304,5 +304,6 @@ class PosTagger {
       }
     }
   }
+}
 
-}; // end PosTagger
+module && (module.exports = PosTagger);

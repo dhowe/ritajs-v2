@@ -1,13 +1,19 @@
+let RiTa;
+
 class Concorder {
 
-  constructor(text, options) {
+  constructor(parent) {
 
-    this.model = null;
+    RiTa = parent;
+
+    this.model = undefined;
     this.wordsToIgnore = [];
     this.ignoreCase = false;
     this.ignoreStopWords = false;
     this.ignorePunctuation = false;
+  }
 
+  parseOptions(options) {
     if (options) {
       options.ignoreCase && (this.ignoreCase = true);
       options.ignoreStopWords && (this.ignoreStopWords = true);
@@ -15,32 +21,36 @@ class Concorder {
       options.wordsToIgnore && (this.wordsToIgnore = options.wordsToIgnore);
     }
 
-    if (this.ignoreStopWords)
+    if (this.ignoreStopWords) {
       this.wordsToIgnore = this.wordsToIgnore.concat(RiTa.STOP_WORDS);
-
-    this.words = is(text, A) ? text : RiTa.tokenize(text);
-  },
+    }
+  }
 
   count(word) {
 
     let value = this.lookup(word);
     return value === null ? 0 : value.count;
-  },
+  }
 
-  concordance() {
+  concordance(text, options) {
 
-    if (!this.model) this.build();
+    this.parseOptions(options);
+
+    this.words = Array.isArray(text) ? text : RiTa.tokenize(text);
+console.log("WORDS:",this.words, text);
+    this.build();
 
     let result = {};
-    for (let name in this.model)
+    for (let name in this.model) {
       result[name] = this.model[name].indexes.length;
+    }
 
     // TODO: need to sort by value here
     return result;
-  },
+  }
 
   kwic(word, numWords) {
-
+    if (!this.model) throw Error('Call concordance() first');
     let value = this.lookup(word),
       result = [];
     if (value) {
@@ -54,7 +64,7 @@ class Concorder {
       }
     }
     return result;
-  },
+  }
 
   build() {
 
@@ -78,7 +88,7 @@ class Concorder {
       }
       lookup.indexes.push(j);
     }
-  },
+  }
 
   ignorable(key) {
 
@@ -91,11 +101,11 @@ class Concorder {
         return true;
     }
     return false;
-  },
+  }
 
   compareKey(word) {
     return this.ignoreCase ? word.toLowerCase() : word;
-  },
+  }
 
   lookup(word) {
     let key = this.compareKey(word);

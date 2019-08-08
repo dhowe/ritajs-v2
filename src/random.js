@@ -16,7 +16,7 @@ class SeededRandom {
   seed(s) {
     this.mt[0] = s >>> 0;
     for (this.mti = 1; this.mti < this.N; this.mti++) {
-      var s = this.mt[this.mti - 1] ^ (this.mt[this.mti - 1] >>> 30);
+      let s = this.mt[this.mti - 1] ^ (this.mt[this.mti - 1] >>> 30);
       this.mt[this.mti] = (((((s & 0xffff0000) >>> 16) * 1812433253) << 16) +
         (s & 0x0000ffff) * 1812433253) + this.mti;
       this.mt[this.mti] >>>= 0;
@@ -24,7 +24,7 @@ class SeededRandom {
   }
 
   randInt() {
-    var y, kk, mag01 = new Array(0x0, this.MATRIX_A);
+    let y, kk, mag01 = new Array(0x0, this.MATRIX_A);
     if (this.mti >= this.N) {
       if (this.mti == this.N + 1) this.seed(5489);
       for (kk = 0; kk < this.N - this.M; kk++) {

@@ -13,7 +13,7 @@ class Conjugator {
   // !@# TODO: add handling of past tense modals.
   conjugate(theVerb, args) {
 
-    var v, s, actualModal, conjs = [],
+    let v, s, actualModal, conjs = [],
       frontVG, verbForm;
 
     if (!theVerb || !theVerb.length) return E;
@@ -72,7 +72,7 @@ class Conjugator {
     if (frontVG) {
       if (this.form === RiTa.GERUND) { // gerund - use ING form
 
-        var pp = this.getPresentParticiple(frontVG);
+        let pp = this.getPresentParticiple(frontVG);
 
         // !@# not yet implemented! ??? WHAT?
         conjs.push(pp);
@@ -90,7 +90,7 @@ class Conjugator {
     actualModal && conjs.push(actualModal);
 
     s = E;
-    for (var i = 0; i < conjs.length; i++) {
+    for (let i = 0; i < conjs.length; i++) {
       s = conjs[i] + " " + s;
     }
 
@@ -102,7 +102,7 @@ class Conjugator {
 
   checkRules(ruleSet, theVerb) {
 
-    var res, name = ruleSet.name,
+    let res, name = ruleSet.name,
       dbug = 0,
       rules = ruleSet.rules,
       defRule = ruleSet.defaultRule;
@@ -111,12 +111,12 @@ class Conjugator {
 
     if (inArray(MODALS, theVerb)) return theVerb;
 
-    for (var i = 0; i < rules.length; i++) {
+    for (let i = 0; i < rules.length; i++) {
 
       dbug && console.log("checkRules(" + name + ").fire(" + i + ")=" + rules[i].regex);
       if (rules[i].applies(theVerb)) {
 
-        var got = rules[i].fire(theVerb);
+        let got = rules[i].fire(theVerb);
 
         dbug && console.log("HIT(" + name + ").fire(" + i + ")=" + rules[i].regex + "_returns: " + got);
         return got;

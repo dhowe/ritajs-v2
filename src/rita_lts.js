@@ -6,17 +6,17 @@ class LetterToSound {
     this.fval_buff = [];
     this.stateMachine = null;
     this.numStates = 0;
-    for (var i = 0; i < LetterToSound.RULES.length; i++)
+    for (let i = 0; i < LetterToSound.RULES.length; i++)
       this.parseAndAdd(LetterToSound.RULES[i]);
   }
 
   _createState(type, tokenizer) {
 
     if (type === "STATE") {
-      var index = parseInt(tokenizer.nextToken());
-      var c = tokenizer.nextToken();
-      var qtrue = parseInt(tokenizer.nextToken());
-      var qfalse = parseInt(tokenizer.nextToken());
+      let index = parseInt(tokenizer.nextToken());
+      let c = tokenizer.nextToken();
+      let qtrue = parseInt(tokenizer.nextToken());
+      let qfalse = parseInt(tokenizer.nextToken());
 
       return new DecisionState(index, c.charAt(0), qtrue, qfalse);
 
@@ -30,17 +30,17 @@ class LetterToSound {
 
   // Creates a word from an input line and adds it to the state machine
   parseAndAdd(line) {
-    var tokenizer = new StringTokenizer(line, SP);
-    var type = tokenizer.nextToken();
+    let tokenizer = new Tokenizer(line, SP);
+    let type = tokenizer.nextToken();
 
     if (type === "STATE" || type === "PHONE") {
       this.stateMachine[this.numStates++] = this._createState(type, tokenizer);
     } else if (type === "INDEX") {
-      var index = parseInt(tokenizer.nextToken());
+      let index = parseInt(tokenizer.nextToken());
       if (index != this.numStates) {
         throw Error("Bad INDEX in file.");
       } else {
-        var c = tokenizer.nextToken();
+        let c = tokenizer.nextToken();
         this.letterIndex[c] = index;
       }
       //log(type+" : "+c+" : "+index + " "+this.letterIndex[c]);
@@ -52,7 +52,7 @@ class LetterToSound {
 
   getPhones(input, delim) {
 
-    var i, ph, result = [];
+    let i, ph, result = [];
 
     delim = delim || '-';
 
@@ -75,7 +75,7 @@ class LetterToSound {
     if (result.length > 0 && result.indexOf("1") === -1 && result.indexOf(" ") === -1) {
           ph = result.split("-");
           result = "";
-          for (var i = 0; i < ph.length; i++) {
+          for (let i = 0; i < ph.length; i++) {
               if (/[aeiou]/.test(ph[i])) ph[i] += "1";
               result += ph[i] + "-";
           }
@@ -87,7 +87,7 @@ class LetterToSound {
 
   _computePhones(word) {
 
-    var dig, phoneList = [], windowSize = 4,
+    let dig, phoneList = [], windowSize = 4,
       full_buff, tmp, currentState, startIndex, stateIndex, c;
 
 
@@ -109,7 +109,7 @@ class LetterToSound {
 
       word = (word.length > 1) ? word.split(E) : [word];
 
-      for (var k = 0; k < word.length; k++) {
+      for (let k = 0; k < word.length; k++) {
 
         dig = parseInt(word[k]);
         if (dig < 0 || dig > 9)
@@ -123,9 +123,9 @@ class LetterToSound {
     // Create "000#word#000", uggh
     tmp = "000#" + word.trim() + "#000", full_buff = tmp.split(E);
 
-    for (var pos = 0; pos < word.length; pos++) {
+    for (let pos = 0; pos < word.length; pos++) {
 
-      for (var i = 0; i < windowSize; i++) {
+      for (let i = 0; i < windowSize; i++) {
 
         this.fval_buff[i] = full_buff[pos + i];
         this.fval_buff[i + windowSize] =
@@ -161,20 +161,33 @@ class LetterToSound {
   getState(i) {
 
     if (is(i, N)) {
-      var state = null;
+      let state = null;
       if (is(this.stateMachine[i], S)) {
         state = this.getState(this.stateMachine[i]);
       } else
         state = this.stateMachine[i];
       return state;
     } else {
-      var tokenizer = new StringTokenizer(i, " ");
+      let tokenizer = new StringTokenizer(i, " ");
       return this.getState(tokenizer.nextToken(), tokenizer);
     }
   }
 }
 
-// DecisionState
+
+class StringTokenizer {
+
+  constructor(str, delim) {
+    this.idx = 0;
+    this.text = str;
+    this.delim = delim || ' ';
+    this.tokens = str.split(delim);
+  }
+
+  nextToken() {
+    return (this.idx < this.tokens.length) ? this.tokens[this.idx++] : null;
+  }
+}
 
 class DecisionState {
 
@@ -209,7 +222,7 @@ class FinalState {
     } else if (is(phones, A)) {
       this.phoneList = phones;
     } else {
-      var i = phones.indexOf('-');
+      let i = phones.indexOf('-');
       if (i != -1) {
         this.phoneList[0] = phones.substring(0, i);
         this.phoneList[1] = phones.substring(i + 1);
@@ -224,7 +237,7 @@ class FinalState {
   append(array) {
 
     if (!this.phoneList) return;
-    for (var i = 0; i < this.phoneList.length; i++)
+    for (let i = 0; i < this.phoneList.length; i++)
       array.push(this.phoneList[i]);
   }
 }

@@ -26,7 +26,7 @@ describe('Library Structure', () => {
     });
 
     it('Should correctly call concordance()', () => {
-      expect(RiTa.concordance()).eq('');
+      expect(RiTa.concordance('cat')).eql({cat:1});
     });
 
     it('Should correctly call conjugate()', () => {
@@ -107,7 +107,9 @@ describe('Library Structure', () => {
     });
 
     it('Should correctly call kwic()', () => {
-      expect(RiTa.kwic()).eq('');
+      // ok
+      RiTa.concordance('The dog ate the cat');
+      expect(RiTa.kwic('')).eql([]);
     });
 
     it('Should correctly call pluralize()', () => {
@@ -157,11 +159,11 @@ describe('Library Structure', () => {
     });
 
     it('Should correctly call tokenize()', () => {
-      expect(RiTa.tokenize()).eq('');
+      expect(RiTa.tokenize('')).eql([]);
     });
 
     it('Should correctly call untokenize()', () => {
-      expect(RiTa.untokenize()).eq('');
+      expect(RiTa.untokenize('')).eq('');
     });
 
     it('Should correctly call words()', () => {

@@ -116,17 +116,17 @@ function _isPlural(word) {
   if (Utils.NULL_PLURALS.applies(word))
     return true;
 
-  var stem = RiTa.stem(word);
+  let stem = RiTa.stem(word);
   if (stem === word) {
     return false;
   }
 
-  var sing = RiTa.singularize(word);
-  var data = this.data[sing];
+  let sing = RiTa.singularize(word);
+  let data = this.data[sing];
 
   if (data && data.length === 2) {
-    var pos = data[1].split(SP);
-    for (var i = 0; i < pos.length; i++) {
+    let pos = data[1].split(SP);
+    for (let i = 0; i < pos.length; i++) {
       if (pos[i] === 'nn')
         return true;
     }
@@ -136,8 +136,8 @@ function _isPlural(word) {
     sing = word.substring(0, word.length - 1);
     data = this.data[sing];
     if (data && data.length === 2) {
-      var pos = data[1].split(SP);
-      for (var i = 0; i < pos.length; i++) {
+      let pos = data[1].split(SP);
+      for (let i = 0; i < pos.length; i++) {
         if (pos[i] === 'nn')
           return true;
       }
