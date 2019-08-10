@@ -3,8 +3,8 @@ const colors = require('colors');
 
 const Errors = require('./errors');
 const Visitor = require('./visitor');
-const Lexer = require('../lib/RitaScriptLexer');
-const Parser = require('../lib/RitaScriptParser');
+const Lexer = require('../lib/RiScriptLexer');
+const Parser = require('../lib/RiScriptParser');
 
 class LexParser {
 
@@ -18,7 +18,7 @@ class LexParser {
 
     // create the lexer
     let stream = new antlr4.InputStream(input);
-    this.lexer = new Lexer.RitaScriptLexer(stream);
+    this.lexer = new Lexer.RiScriptLexer(stream);
     this.lexer.removeErrorListeners();
     this.lexer.addErrorListener(new Errors());
     this.lexer.strictMode = false;
@@ -56,7 +56,7 @@ class LexParser {
   parse(tokens, input, context, showParse) {
 
     // create the parser
-    this.parser = new Parser.RitaScriptParser(tokens);
+    this.parser = new Parser.RiScriptParser(tokens);
     this.parser.removeErrorListeners();
     this.parser.addErrorListener(new Errors());
 

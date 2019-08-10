@@ -26,7 +26,7 @@ LCB: '{';
 RCB: '}';
 FS: '.';
 WS: [ \t]+;
-SYM: '$' IDENT;
+SYM: ('$' IDENT) | ('$' '{' IDENT '}') ;
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
 TF: ('.' IDENT ( '(' ')' )? )+;

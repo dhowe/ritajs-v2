@@ -4,8 +4,9 @@ const Parser = require('../src/parser');
 const expect = require('chai').expect;
 const parser = new Parser();
 
-// TODO: verify leading, trailing, double spaces
 // TODO: concat variable with string $un + 'helpful', eg ${un}helpful
+
+// TODO: store custom transforms in context
 
 // IDEA: variable assigments are normally SILENT, we add an operator to
 // make them output (reverse what we have now):
@@ -127,9 +128,12 @@ describe('RiScript Tests', function() {
     });
 
     it('Should correctly handle assign transforms', function() {
-      expect(parser.lexParseVisit('[$stored=(a | a).toUpperCase()] dog is a mammal.', {})).eq('A dog is a mammal.');
-      expect(parser.lexParseVisit('[$stored=(a | a)].toUpperCase() dog is a mammal.', {})).eq('A dog is a mammal.');
       let ctx = {};
+      expect(parser.lexParseVisit('[$stored=(a | a).toUpperCase()] dog is a mammal.', ctx)).eq('A dog is a mammal.');
+      expect(ctx.stored).eq('A');
+      expect(parser.lexParseVisit('[$stored=(the | the)].toUpperCase() dog is a mammal.', ctx)).eq('THE dog is a mammal.');
+      expect(ctx.stored).eq('the');
+      ctx = {};
       parser.lexParseVisit('[$x=(a | b)].toUpperCase()', ctx);
       expect(ctx.x).to.be.oneOf(['A', 'B']);
     });
@@ -176,6 +180,33 @@ describe('RiScript Tests', function() {
 
   describe('Parse Assignments', function() {
 
+    it('Should correctly parse assignments', function() {
+      let ctx = {};
+      expect(parser.lexParseVisit('$foo=(a | a)', ctx, 0)).eq('');
+      expect(ctx.foo).eq('a');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=(hi | hi) $foo there', ctx, 0)).eq('hi there');
+      expect(ctx.foo).eq('a');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=The boy walked his dog', ctx, 0)).eq('');
+      expect(ctx.foo).eq('a');
+
+      expect(parser.lexParseVisit('$foo=(hi | hi)$foo there', {}, 0))
+        .eq(parser.lexParseVisit('[$foo=(hi | hi)] there'));
+    });
+
+    it('Should correctly concatenate variables', function() {
+      let ctx = {};
+      expect(parser.lexParseVisit('{$foo=(h | h)} ${foo}ello', ctx, 0)).eq('hello'); // TODO
+      expect(ctx.foo).eq('h');
+      expect(parser.lexParseVisit('[$foo=(a | a)]', ctx, 0)).eq('a');
+      expect(ctx.foo).eq('a');
+      expect(parser.lexParseVisit('${foo} b c', ctx, 0)).eq('a b c');
+      expect(parser.lexParseVisit('${foo}bc', ctx, 0)).eq('abc');
+    });
+
     it('Should correctly assign a variable to a result', function() {
       let context = {};
       let result = parser.lexParseVisit('[$stored=(a | b)]', context);
@@ -190,6 +221,7 @@ describe('RiScript Tests', function() {
     it('Should correctly assign a variable to code', function() {
       expect(parser.lexParseVisit('A [$stored=($animal | $animal)] is a mammal', { animal: 'dog' })).eq('A dog is a mammal');
       expect(parser.lexParseVisit('[$b=(a | a)].toUpperCase() dog is a $b.', {}, 0)).eq('A dog is a A.');
+      expect(parser.lexParseVisit('[$b=(a | a).toUpperCase()] dog is a $b.', {}, 0)).eq('A dog is a A.');
     });
 
     it('Should correctly reuse an assigned variable', function() {

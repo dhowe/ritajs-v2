@@ -11,7 +11,7 @@
   },
   "watch": {
     "compile": {
-      "patterns": ".",
+      "patterns": "grammar",
       "extensions": "g4"
     }
   },
