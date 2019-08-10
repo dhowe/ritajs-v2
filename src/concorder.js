@@ -15,10 +15,10 @@ class Concorder {
 
   concordance(text, options) {
 
-    this.parseOptions(options);
+    this._parseOptions(options);
 
     this.words = Array.isArray(text) ? text : RiTa.tokenize(text);
-    this.build();
+    this._build();
 
     let result = {};
     for (let name in this.model) {
@@ -31,7 +31,7 @@ class Concorder {
 
   kwic(word, numWords) {
     if (!this.model) throw Error('Call concordance() first');
-    let value = this.lookup(word),
+    let value = this._lookup(word),
       result = [];
     if (value) {
       let idxs = value.indexes;
@@ -39,14 +39,23 @@ class Concorder {
         let sub = this.words.slice(Math.max(0, idxs[i] - numWords),
           Math.min(this.words.length, idxs[i] + numWords + 1));
 
-        if (i < 1 || (idxs[i] - idxs[i - 1]) > numWords)
+        if (i < 1 || (idxs[i] - idxs[i - 1]) > numWords) {
           result.push(RiTa.untokenize(sub));
+        }
       }
     }
     return result;
   }
 
-  parseOptions(options) {
+  count(word) {
+
+    let value = this._lookup(word);
+    return value === null ? 0 : value.count;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////
+
+  _parseOptions(options) {
     if (options) {
       options.ignoreCase && (this.ignoreCase = true);
       options.ignoreStopWords && (this.ignoreStopWords = true);
@@ -59,14 +68,7 @@ class Concorder {
     }
   }
 
-  count(word) {
-
-    let value = this.lookup(word);
-    return value === null ? 0 : value.count;
-  }
-
-
-  build() {
+  _build() {
 
     if (!this.words) throw Error('No text in model');
 
@@ -74,22 +76,22 @@ class Concorder {
     for (let j = 0; j < this.words.length; j++) {
 
       let word = this.words[j];
-      if (this.ignorable(word)) continue;
-      let lookup = this.lookup(word);
+      if (this._isIgnorable(word)) continue;
+      let _lookup = this._lookup(word);
 
       // The typeof check below fixes a strange bug in Firefox: #XYZ
-      // where the string 'watch' comes back from lookup as a function
+      // where the string 'watch' comes back from _lookup as a function
       // TODO: resolve in a better way
-      if (!lookup || typeof lookup !== 'object') {
+      if (!_lookup || typeof _lookup !== 'object') {
 
-        lookup = { word: word, key: this.compareKey(word), indexes: [] };
-        this.model[lookup.key] = lookup;
+        _lookup = { word: word, key: this._compareKey(word), indexes: [] };
+        this.model[_lookup.key] = _lookup;
       }
-      lookup.indexes.push(j);
+      _lookup.indexes.push(j);
     }
   }
 
-  ignorable(key) {
+  _isIgnorable(key) {
 
     if (this.ignorePunctuation && RiTa.isPunctuation(key))
       return true;
@@ -102,12 +104,12 @@ class Concorder {
     return false;
   }
 
-  compareKey(word) {
+  _compareKey(word) {
     return this.ignoreCase ? word.toLowerCase() : word;
   }
 
-  lookup(word) {
-    let key = this.compareKey(word);
+  _lookup(word) {
+    let key = this._compareKey(word);
     return this.model[key];
   }
 }

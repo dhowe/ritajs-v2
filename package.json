@@ -7,7 +7,7 @@
     "test": "NODE_ENV=test mocha ./tests/*.js",
     "watch": "npm-watch",
     "compile": "npm run antlr4-js",
-    "antlr4-js": "java -Xmx500M -cp '/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH' org.antlr.v4.Tool -Dlanguage=JavaScript -lib grammar -o lib -visitor -Xexact-output-dir RitaScript.g4"
+    "antlr4-js": "java -Xmx500M -cp '/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH' org.antlr.v4.Tool -Dlanguage=JavaScript -lib grammar -o lib -visitor -Xexact-output-dir grammar/RiScript.g4"
   },
   "watch": {
     "compile": {

@@ -1,6 +1,8 @@
 const RitaScriptVisitor = require('../lib/RitaScriptVisitor').RitaScriptVisitor;
 const Entities = require('he');
 
+const NBSPs = [ '&nbsp;', '&NonBreakingSpace;', '&#x000A0;', '&#160;' ];
+
 String.prototype.uc = function () {
   return this.toUpperCase();
 }
@@ -60,12 +62,16 @@ class Visitor extends RitaScriptVisitor {
         }
       }
     }
-    let result = (typeof term === 'string') ?
-      Entities.decode(term) : JSON.stringify(term);
+    //let result = (typeof term === 'string') ?
+      //this.decodeEntities(term) : JSON.stringify(term);
 
-    this.trace && console.log('visitTerminal: "', result, '"');
+    this.trace && console.log('visitTerminal: "', term, '"');
 
-    return result;
+    return term;
+  }
+
+  decodeEntities(term) {
+    return Entities.decode(term);
   }
 
   visitAssign(ctx) {
@@ -179,7 +185,10 @@ class Visitor extends RitaScriptVisitor {
 
   // Entry point for tree visiting
   start(ctx) {
-    return this.visitScript(ctx).trim().replace(/ +/g, ' ');
+    let result = this.visitScript(ctx).trim();
+    result = result.replace(/ +/g, ' ');
+    result = Entities.decode(result);
+    return result.replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
   }
 }
 

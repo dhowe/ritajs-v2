@@ -1,4 +1,4 @@
-grammar RitaScript;
+grammar RiScript;
 
 // NOTE: changing this file require a re-compile
 
