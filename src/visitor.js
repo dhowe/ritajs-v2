@@ -76,7 +76,7 @@ class Visitor extends SuperClass {
     let id = this.symbolName(ctx.symbol().getText());
     let token = ctx.expr();
 
-    token.transforms = this.inheritTransforms(token, ctx);
+    //token.transforms = this.inheritTransforms(token, ctx);
     this.trace && console.log('visitAssign: $' + id + '=' +
       this.flatten(token), "tfs=" + (token.transforms || "[]"));
     this.context[id] = this.visit(token);
@@ -85,12 +85,14 @@ class Visitor extends SuperClass {
     if (delims === Visitor.ASSIGN) {
       return this.context[id];
     }
+
     if (delims === Visitor.SASSIGN) {
-      if (token.transforms && token.transforms.length) {
-        throw Error('Transforms not allowed on silent assignments: ' + ctx.getText());
-      }
+      // if (token.transforms && token.transforms.length) {
+      //   throw Error('Transforms not allowed on silent assignments: ' + ctx.getText());
+      // }
       return ''; // silent
     }
+
     throw Error('Bad assign delims: ' + delims);
   }
 
