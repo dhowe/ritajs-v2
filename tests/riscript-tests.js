@@ -129,7 +129,7 @@ describe('RiScript Tests', function() {
       expect(parser.lexParseVisit("The (boy | boy).toUpperCase() ate.")).eq('The BOY ate.');
     });
 
-    it('Should correctly handle assign transforms', function() {
+    /*it('Should correctly handle assign transforms', function() {
       let ctx = {};
       expect(parser.lexParseVisit('[$stored=(a | a).toUpperCase()] dog is a mammal.', ctx)).eq('A dog is a mammal.');
       expect(ctx.stored).eq('A');
@@ -138,7 +138,7 @@ describe('RiScript Tests', function() {
       ctx = {};
       parser.lexParseVisit('[$x=(a | b)].toUpperCase()', ctx);
       expect(ctx.x).to.be.oneOf(['a', 'b']);
-    });
+    });*/
 
     it('Should correctly handle symbol transforms', function() {
       expect(parser.lexParseVisit('The $dog.toUpperCase()', { dog: 'spot' })).eq('The SPOT');
@@ -177,6 +177,29 @@ describe('RiScript Tests', function() {
     it('Should correctly handle built-in transforms', function() {
       expect(parser.lexParseVisit('How many (teeth).quotify() do you have?')).eq('How many "teeth" do you have?');
       expect(parser.lexParseVisit('That is (ant).articlize().')).eq('That is an ant.');
+    });
+  });
+
+  describe('Parse Assignments', function() {
+
+    it('Should correctly parse assignments', function() {
+      let ctx = {};
+      expect(parser.lexParseVisit('$foo=a', ctx, 0)).eq('');
+      expect(ctx.foo).eq('a');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=(a | a)', ctx, 0)).eq('');
+      expect(ctx.foo).eq('a');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=ab', ctx, 0)).eq('');
+      expect(ctx.foo).eq('ab');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=ab bc', ctx, 0)).eq('bc');
+      expect(ctx.foo).eq('ab');
+
+      // WORKING HERE
     });
   });
 

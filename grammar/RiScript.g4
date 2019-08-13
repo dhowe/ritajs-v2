@@ -14,9 +14,11 @@ choice: ((LP (expr OR)* expr RP)
         | (LP OR RP)
         | (LP OR expr OR RP))
         transform*;
-assign: ((LB symbol EQ expr RB) | (LCB symbol EQ expr RCB)) transform*;
+//assign: ((LB symbol EQ expr RB) | (LCB symbol EQ expr RCB)) transform*;
+assign: symbol EQ value;
+value: (symbol | choice | CHR | FS | ENT);
 expr: (symbol | choice | assign | CHR | FS | ENT)
-  (WS+ (symbol | choice | assign | CHR | FS | ENT))*;
+  (WS+ (symbol | choice | assign |  CHR | FS | ENT))*;
 
 LP: '(';
 RP: ')';
