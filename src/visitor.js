@@ -60,26 +60,29 @@ class Visitor extends SuperClass {
         }
       }
     }
-    //let result = (typeof term === 'string') ?
-      //this.decodeEntities(term) : JSON.stringify(term);
-
     this.trace && console.log('visitTerminal: "', term, '"');
 
     return term;
   }
 
-  decodeEntities(term) {
-    return Entities.decode(term);
-  }
+  // visitValue(ctx) {
+  //   let token = ctx;
+  //   token.transforms = this.inheritTransforms(token, ctx);
+  //   //this.trace &&
+  //   console.log('visitValue: '+
+  //     this.flatten(token), "tfs=" + (token.transforms || "[]"));
+  // }
 
   visitAssign(ctx) {
     let id = this.symbolName(ctx.symbol().getText());
     let token = ctx.value();
-    //console.log('expr',token, token.transforms);
+
+    //console.log('val', flattoken, token.transforms);
     //token.transforms = this.inheritTransforms(token, ctx);
     this.trace && console.log('visitAssign: $' + id + '=' +
       this.flatten(token), "tfs=" + (token.transforms || "[]"));
-    this.context[id] = this.visit(token);
+
+    this.context[id] = token ? this.visit(token) : '';
 
     return ''; // no output on vanilla assign
   }

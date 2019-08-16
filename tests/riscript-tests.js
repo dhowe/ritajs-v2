@@ -4,23 +4,6 @@ const Parser = require('../src/parser');
 const expect = require('chai').expect;
 const parser = new Parser();
 
-// TODO: store custom transforms in context
-
-// IDEA: variable assigments are normally SILENT, we add an operator to
-// make them output (reverse what we have now):
-// $hero=(Jane | Jill) -> silent
-// [$hero=(Jane | Jill)] -> spoken
-
-// QUESTION: how long is the variable text? or is this invalid
-// $hero = the boy ate  -> $hero = 'the'
-// $hero = (the boy ate) -> $hero = 'the boy ate'
-
-// ASSIGNMENT:
-// $foo=hello
-// $foo=(hello there)
-
-// TODO: Labels
-
 describe('RiScript Tests', function() {
 
   describe('Parse Symbols', function() {
@@ -182,9 +165,13 @@ describe('RiScript Tests', function() {
 
   describe('Parse Assignments', function() {
 
-    it('Should correctly parse assignments', function() {
+    it('Should parse assignments', function() {
       let ctx = {};
       expect(parser.lexParseVisit('$foo=a', ctx, 0)).eq('');
+      expect(ctx.foo).eq('a');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=a\nb', ctx, 0)).eq('b');
       expect(ctx.foo).eq('a');
 
       ctx = {};
@@ -199,7 +186,71 @@ describe('RiScript Tests', function() {
       expect(parser.lexParseVisit('$foo=ab bc', ctx, 0)).eq('bc');
       expect(ctx.foo).eq('ab');
 
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=(ab) (bc)', ctx, 0)).eq('bc');
+      expect(ctx.foo).eq('ab');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=(ab bc)', ctx, 0)).eq('');
+      expect(ctx.foo).eq('ab bc');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=(a | a) (b | b)', ctx, 0)).eq('b');
+      expect(ctx.foo).eq('a');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=((a | a) | (a | a))', ctx, 0)).eq('');
+      expect(ctx.foo).eq('a');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=()', ctx, 0)).eq(''); // empty string
+      expect(ctx.foo).eq('');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=a\n$bar=$foo', ctx, 0)).eq(''); // empty string
+      expect(ctx.foo).eq('a');
+      expect(ctx.bar).eq('a');
+    });
+
+    it('Should parse transformed assignments', function() {
+
       // WORKING HERE
+
+      let ctx = {};
+      expect(parser.lexParseVisit('$foo=(a).toUpperCase()', ctx, 0)).eq('');
+      expect(ctx.foo).eq('A');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=(a | a).toUpperCase()', ctx, 0)).eq('');
+      expect(ctx.foo).eq('A');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=(ab).toUpperCase()', ctx, 0)).eq('');
+      expect(ctx.foo).eq('AB');
+      //return;
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=(ab).toUpperCase() (bc).toUpperCase()', ctx, 0)).eq('BC');
+      expect(ctx.foo).eq('AB');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=(ab bc).toUpperCase()', ctx, 0)).eq('');
+      expect(ctx.foo).eq('AB BC');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=(a | a).toUpperCase() (b | b)', ctx, 0)).eq('b');
+      expect(ctx.foo).eq('A');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=(a | a).toUpperCase() (b | b).toUpperCase()', ctx, 0)).eq('B');
+      expect(ctx.foo).eq('A');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=((a | a) | (a | a))', ctx, 0)).eq('');
+      expect(ctx.foo).eq('a');
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=().toUpperCase()', ctx, 0)).eq(''); // empty string
+      expect(ctx.foo).eq('');
     });
   });
 
@@ -303,6 +354,11 @@ describe('RiScript Tests', function() {
 
   describe('Failing Tests', function() {
     it('Should be fixed to pass', function() {
+      //return;
+
+      ctx = {};
+      expect(parser.lexParseVisit('$foo=().toUpperCase()', ctx, 0)).eq('');
+      expect(ctx.foo).eq('');
 
       // *** WORKING HERE: transform should not be applied to silent assign
       0 && expect(parser.lexParseVisit('How many (tooth | tooth).pluralize() do you have?')).eq('How many teeth do you have?');

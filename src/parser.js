@@ -1,7 +1,9 @@
 const antlr4 = require('antlr4');
 const colors = require('colors');
 
-const Errors = require('./errors');
+const LexerErrors = require('./errors').LexerErrors;
+const ParserErrors = require('./errors').ParserErrors;
+//const Errors = require('antlr4/error/ErrorListener').ConsoleErrorListener;
 const Visitor = require('./visitor');
 const Lexer = require('../lib/RiScriptLexer');
 const Parser = require('../lib/RiScriptParser');
@@ -20,7 +22,7 @@ class LexParser {
     let stream = new antlr4.InputStream(input);
     this.lexer = new Lexer.RiScriptLexer(stream);
     this.lexer.removeErrorListeners();
-    this.lexer.addErrorListener(new Errors());
+    this.lexer.addErrorListener(new LexerErrors());
     this.lexer.strictMode = false;
 
     // try the lexing
@@ -58,7 +60,8 @@ class LexParser {
     // create the parser
     this.parser = new Parser.RiScriptParser(tokens);
     this.parser.removeErrorListeners();
-    this.parser.addErrorListener(new Errors());
+    this.parser.addErrorListener(new ParserErrors());
+    //this.parser.addErrorListener(new ConsoleErrorListener());
 
     // try the parsing
     let tree;
