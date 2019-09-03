@@ -1,174 +1,52 @@
 const expect = require('chai').expect;
 const RiTa = require('../src/rita_core');
 
-describe('Library Structure', () => {
+describe('RiTa Object', () => {
 
-  describe('RiTa Object', () => {
-
-    it('Should access static constants', () => {
-      expect(RiTa.VERSION).eq(2);
-    });
-
-    it('Should access static functions', () => {
-      expect(RiTa.hasWord("dog")).eq(true);
-    });
-
-    it('Should access member classes', () => {
-      let rm = new RiTa.RiMarkov(3);
-      expect(rm.n).eq(3);
+  describe('RiTa.tokenizer', () => {
+    it('Should correctly call tokenize()', () => {
+      expect(RiTa.analyze('')).eql([]);
+      let feats = RiTa.analyze("chevrolet");
+      console.log("FEATS",feats);
+      expect(feats.words).eq("chevrolet");
+      expect(feats.syllables).eq("sh-eh-v/r-ow/l-ey");
     });
   });
+  describe('RiTa.syllables()', () => {
 
-  describe('RiTa API functions', () => {
-
-    it('Should correctly call alliterations()', () => {
-      expect(RiTa.alliterations()).eql([]);
+    it('Should correctly call analyze()', () => {
+      expect(RiTa.analyze('')).eql([]);
+      let feats = RiTa.analyze("chevrolet");
+      console.log("FEATS",feats);
+      expect(feats.words).eq("chevrolet");
+      expect(feats.syllables).eq("sh-eh-v/r-ow/l-ey");
     });
 
-    it('Should correctly call concordance()', () => {
-      expect(RiTa.concordance('cat')).eql({cat:1});
-    });
-
-    it('Should correctly call conjugate()', () => {
-      expect(RiTa.conjugate()).eq('');
-    });
-
-    it('Should correctly call hasWord()', () => {
-      expect(RiTa.hasWord('dog')).eq(true);
-      expect(RiTa.hasWord('')).eq(false);
-    });
-
-    it('Should correctly call env()', () => {
-      expect(RiTa.env()).eq('node');
-    });
-
-    it('Should correctly call pastParticiple()', () => {
-      expect(RiTa.pastParticiple()).eq('');
-    });
-
-    it('Should correctly call phonemes()', () => {
-      expect(RiTa.phonemes()).eq('');
-    });
-
-    it('Should correctly call posTags()', () => {
-      expect(RiTa.posTags()).eq('');
-    });
-
-    it('Should correctly call posTagsInline()', () => {
-      expect(RiTa.posTagsInline()).eq('');
-    });
-
-    it('Should correctly call presentParticiple()', () => {
-      expect(RiTa.presentParticiple()).eq('');
-    });
-
-    it('Should correctly call stresses()', () => {
-      expect(RiTa.stresses()).eq('');
-    });
+return;
 
     it('Should correctly call syllables()', () => {
-      expect(RiTa.syllables()).eq('');
+
+      expect(RiTa.syllables('')).eq('');
+      expect(RiTa.syllables("chevrolet")).eq("sh-eh-v/r-ow/l-ey");
+      expect(RiTa.syllables("women")).eq("w-ih/m-eh-n");
+      expect(RiTa.syllables("genuine")).eq("jh-eh-n/y-uw/w-ah-n");
+
+      let input, expected;
+
+      input = 'The dog ran faster than the other dog. But the other dog was prettier.';
+      expected = 'dh-ah d-ao-g r-ae-n f-ae/s-t-er dh-ae-n dh-ah ah/dh-er d-ao-g . b-ah-t dh-ah ah/dh-er d-ao-g w-aa-z p-r-ih/t-iy/er .';
+      expect(RiTa.syllables(input)).eq(expected);
+
+      input = 'The emperor had no clothes on.';
+      expected = 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .';
+      expect(RiTa.syllables(input)).eq(expected);
+
+      input = 'The Laggin Dragon';
+      expected = 'dh-ah l-ae/g-ih-n d-r-ae/g-ah-n';
+      expect(RiTa.syllables(input)).eq(expected);
     });
 
-    it('Should correctly call isAbbrev()', () => {
-      expect(RiTa.isAbbrev()).eq('');
-    });
-
-    it('Should correctly call isAdjective()', () => {
-      expect(RiTa.isAdjective()).eq('');
-    });
-
-    it('Should correctly call isAdverb()', () => {
-      expect(RiTa.isAdverb()).eq('');
-    });
-
-    it('Should correctly call isAlliteration()', () => {
-      expect(RiTa.isAlliteration()).eq('');
-    });
-
-    it('Should correctly call isNoun()', () => {
-      expect(RiTa.isNoun()).eq('');
-    });
-
-    it('Should correctly call isPunctuation()', () => {
-      expect(RiTa.isPunctuation()).eq('');
-    });
-
-    it('Should correctly call isQuestion()', () => {
-      expect(RiTa.isQuestion()).eq('');
-    });
-
-    it('Should correctly call isRhyme()', () => {
-      expect(RiTa.isRhyme()).eq('');
-    });
-
-    it('Should correctly call isVerb()', () => {
-      expect(RiTa.isVerb()).eq('');
-    });
-
-    it('Should correctly call kwic()', () => {
-      // ok
-      RiTa.concordance('The dog ate the cat');
-      expect(RiTa.kwic('')).eql([]);
-    });
-
-    it('Should correctly call pluralize()', () => {
-      expect(RiTa.pluralize()).eq('');
-    });
-
-    it('Should correctly call random()', () => {
-      let r = RiTa.random();
-      expect(r).gte(0);
-      expect(r).lt(1);
-    });
-
-    it('Should correctly call randomOrdering()', () => {
-      expect(RiTa.randomOrdering(1)).eql([0]);
-    });
-
-    it('Should correctly call randomSeed()', () => {
-      expect(RiTa.randomSeed).is.a('function');
-    });
-
-    it('Should correctly call randomWord()', () => {
-      expect(RiTa.randomWord()).is.a('string');
-    });
-
-    it('Should correctly call rhymes()', () => {
-      expect(RiTa.rhymes()).eql([]);
-    });
-
-    it('Should correctly call runScript()', () => {
-      expect(RiTa.runScript('(a | a)')).eq('a');
-    });
-
-    it('Should correctly call similarBy()', () => {
-      expect(RiTa.similarBy()).eql([]);
-    });
-
-    it('Should correctly call singularize()', () => {
-      expect(RiTa.singularize()).eq('');
-    });
-
-    it('Should correctly call sentences()', () => {
-      expect(RiTa.sentences()).eq('');
-    });
-
-    it('Should correctly call stem()', () => {
-      expect(RiTa.stem("cakes")).eq('cake');
-    });
-
-    it('Should correctly call tokenize()', () => {
-      expect(RiTa.tokenize('')).eql([]);
-    });
-
-    it('Should correctly call untokenize()', () => {
-      expect(RiTa.untokenize('')).eq('');
-    });
-
-    it('Should correctly call words()', () => {
-      expect(RiTa.words().length).gt(20000);
-    });
+    // TODO: remainder of rita functions
 
   });
 

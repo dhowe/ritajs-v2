@@ -5,6 +5,8 @@ grammar RiScript;
 // TODO:  silent assigns
 //        single and double quotes
 //        numbers/arithmetic (++, etc)
+//        line breaks in vars (&#13; (or &#10; for newline))
+//        adjacent vars: $me$me, $me$me=hello, $me$me$me=hello
 
 // TODO: store custom transforms in context
 
@@ -13,14 +15,11 @@ grammar RiScript;
 // $hero=(Jane | Jill) -> silent
 // [$hero=(Jane | Jill)] -> spoken
 
-// QUESTION: how long is the variable text? or is this invalid
-// $hero = the boy ate  -> $hero = 'the'
-// $hero = (the boy ate) -> $hero = 'the boy ate'
-// $hero = the boy\nate) -> $hero = 'the boy'  -- how to include line breaks
-
-// ASSIGNMENT:
-// $foo=hello
-// $foo=(hello there)
+// $hero=&(Jane | Jill)
+// $hero=>(Jane | Jill)
+// $hero=+(Jane | Jill)
+// $hero<-(Jane | Jill)
+// $hero$hero<-(Jane | Jill)
 
 // TODO: Labels
 
@@ -44,11 +43,11 @@ LP: '(';
 RP: ')';
 LB: '[';
 RB: ']';
-NL: '\r'? '\n';
 LCB: '{';
 RCB: '}';
 DOT: '.';
 WS: [ \t]+;
+NL: '\r'? '\n';
 SYM: ('$' IDENT) | ('$' '{' IDENT '}') ;
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;

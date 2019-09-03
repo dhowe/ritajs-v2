@@ -4,6 +4,7 @@ const Stemmer = require('./stemmer');
 const RiMarkov = require('./rimarkov');
 const RiLexicon = require('./rilexicon');
 const Concorder = require('./concorder');
+const Syllabifier = require('./syllabifier');
 
 const randgen = require('./random');
 
@@ -11,6 +12,10 @@ class RiTa {
 
   constructor() {
     throw Error('Invalid instantiation');
+  }
+
+  static analyze(text) {
+    return [];
   }
 
   static alliterations() {
@@ -60,7 +65,7 @@ class RiTa {
   }
 
   static syllables(str) {
-    return "";
+    return Syllabifier.syllabify(str);
   }
 
   static isAbbrev(str) {
@@ -164,13 +169,93 @@ class RiTa {
   static words() {
     return _lexicon().words();
   }
+}
 
+class Analyzer {
+
+  constructor() {
+    this.cache = {};
+  }
+
+  analyze(text) {
+
+    let E = '', SP = ' ',
+      phonemes = E,
+      syllables = E,
+      stresses = E,
+      slash = '/',
+      delim = '-',
+      stressyls, phones, lts, ltsPhones, useRaw,
+      features = {};
+      words = RiTa.tokenize(text),
+      lex = RiTa._lexicon();
+
+    features.tokens = words.join(SP);
+    return features;
+
+    features.pos = RiTa.getPosTags(text).join(SP);
+
+    for (let i = 0, l = words.length; i < l; i++) {
+
+      useRaw = false;
+      phones = lex._getRawPhones(words[i]);
+
+      if (!phones) {
+
+        lts = lex._letterToSound();
+        ltsPhones = lts && lts.getPhones(words[i]);
+        if (ltsPhones && ltsPhones.length > 0) {
+
+          if (words[i].match(/[a-zA-Z]+/))
+            log("[RiTa] Used LTS-rules for '" + words[i] + "'");
+
+          phones = RiString._syllabify(ltsPhones);
+
+        } else {
+
+          phones = words[i];
+          useRaw = true;
+        }
+      }
+
+      phonemes += phones.replace(/[0-2]/g, E).replace(/ /g, delim) + SP;
+      syllables += phones.replace(/ /g, slash).replace(/1/g, E) + SP;
+
+      if (!useRaw) {
+        stressyls = phones.split(SP);
+        for (let j = 0; j < stressyls.length; j++) {
+
+          if (!stressyls[j].length) continue;
+
+          stresses += (stressyls[j].indexOf(RiTa.STRESSED) > -1) ?
+            RiTa.STRESSED : RiTa.UNSTRESSED;
+
+          if (j < stressyls.length - 1) stresses += slash;
+        }
+      } else {
+
+        stresses += words[i];
+      }
+
+      if (!endsWith(stresses, SP)) stresses += SP;
+    }
+
+    stresses = stresses.trim();
+    phonemes = phonemes.trim().replace(/\\s+/, SP);
+    syllables = syllables.trim().replace(/\\s+/, SP);
+
+    features.stresses = stresses;
+    features.phonemes = phonemes;
+    features.syllables = syllables;
+
+    return this;
+  }
 }
 
 class Tokenizer {
   static tokenize(words, regex) {
 
-    if (typeof words !== 'string' || !words.length) return [];
+    if (typeof words !== 'string') return [];
 
     if (regex) return words.split(regex);
 
@@ -218,7 +303,7 @@ class Tokenizer {
 
     delim = delim || ' ';
 
-    var thisPunct, lastPunct, thisQuote, lastQuote, thisComma, isLast,
+    let thisPunct, lastPunct, thisQuote, lastQuote, thisComma, isLast,
       lastComma, lastEndWithS, punct = /^[,\.\;\:\?\!\)""“”\u2019‘`']+$/,
       dbug = 0,
       quotes = /^[\(""“”\u2019‘`']+$/,
@@ -229,7 +314,7 @@ class Tokenizer {
       result = arr[0] || '',
       midSentence = false;
 
-    for (var i = 1; i < arr.length; i++) {
+    for (let i = 1; i < arr.length; i++) {
 
       if (!arr[i]) continue;
 
@@ -282,7 +367,7 @@ class Tokenizer {
       }
     }
 
-    return  Util.trim(result);
+    return Util.trim(result);
   }
 }
 

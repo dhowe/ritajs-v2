@@ -19,6 +19,21 @@ class Utils {
   static isNode() {
     return (typeof module != 'undefined' && module.exports);
   }
+
+  static isNum(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+  }
+
+  static last(word) {
+    if (!word || !word.length) return E;
+    return word.charAt(word.length - 1);
+  }
+
+  static extend(l1, l2) {
+    for (var i = 0; i < l2.length; i++) {
+      l1.push(l2[i]);
+    }
+  }
 }
 
 // CLASSES ////////////////////////////////////////////////////////////////////
