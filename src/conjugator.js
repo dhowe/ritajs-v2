@@ -8,7 +8,7 @@ class Conjugator {
     this.person = RiTa.FIRST_PERSON;
     this.number = RiTa.SINGULAR;
     this.form = RiTa.NORMAL;
-  },
+  }
 
   // !@# TODO: add handling of past tense modals.
   conjugate(theVerb, args) {

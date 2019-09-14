@@ -3,22 +3,13 @@ const RiTa = require('../src/rita_core');
 
 describe('RiTa Object', () => {
 
-  describe('RiTa.tokenizer', () => {
-    it('Should correctly call tokenize()', () => {
-      expect(RiTa.analyze('')).eql([]);
-      let feats = RiTa.analyze("chevrolet");
-      console.log("FEATS",feats);
-      expect(feats.words).eq("chevrolet");
-      expect(feats.syllables).eq("sh-eh-v/r-ow/l-ey");
-    });
-  });
   describe('RiTa.syllables()', () => {
 
     it('Should correctly call analyze()', () => {
-      expect(RiTa.analyze('')).eql([]);
+      //expect(RiTa.analyze('')).eql([]);
       let feats = RiTa.analyze("chevrolet");
       console.log("FEATS",feats);
-      expect(feats.words).eq("chevrolet");
+      expect(feats.tokens).eq("chevrolet");
       expect(feats.syllables).eq("sh-eh-v/r-ow/l-ey");
     });
 

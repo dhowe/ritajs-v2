@@ -248,6 +248,22 @@ class PlingStemmer {
 
     return (s);
   }
+
+  _checkPluralNoLex(s) {
+    let cats = [
+      categoryUM_A,
+      categoryON_A,
+      categoryO_I,
+      categoryUS_I,
+      categoryIX_ICES
+    ];
+    for (var i = 0; i < cats.length; i++) {
+      if (cats[i].indexOf(s) > -1)
+        return true;
+    }
+    let idx = categoryIRR.indexOf(s); // plurals at even indices
+    return (idx % 2 === 0) ? true : false;
+  }
 }
 
 module && (module.exports = PlingStemmer);

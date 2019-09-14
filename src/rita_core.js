@@ -1,9 +1,11 @@
 const Util = require("./utils");
 const Parser = require('./parser');
+const Markov = require('./markov');
 const Stemmer = require('./stemmer');
-const RiMarkov = require('./rimarkov');
-const RiLexicon = require('./rilexicon');
+const Lexicon = require('./lexicon');
+const PosTagger = require('./tagger');
 const Concorder = require('./concorder');
+const LetterToSound = require("./rita_lts");
 const Syllabifier = require('./syllabifier');
 
 const randgen = require('./random');
@@ -14,8 +16,9 @@ class RiTa {
     throw Error('Invalid instantiation');
   }
 
-  static analyze(text) {
-    return [];
+  static analyze() {
+    let analyzer = _analyzer();
+    return analyzer.analyze.apply(analyzer, arguments);
   }
 
   static alliterations() {
@@ -32,40 +35,12 @@ class RiTa {
     return "";
   }
 
-  static hasWord(word) {
-    return _lexicon().hasWord(word);
-  }
-
   static env() {
     return Util.isNode() ? RiTa.NODE : RiTa.JS;
   }
 
-  static pastParticiple(verb) {
-    return "";
-  }
-
-  static phonemes(str) {
-    return "";
-  }
-
-  static posTags(str) {
-    return "";
-  }
-
-  static posTagsInline(str) { // TODO: add as option
-    return "";
-  }
-
-  static presentParticiple(verb) {
-    return "";
-  }
-
-  static stresses(str) {
-    return "";
-  }
-
-  static syllables(str) {
-    return Syllabifier.syllabify(str);
+  static hasWord(word) {
+    return _lexicon().hasWord(word);
   }
 
   static isAbbrev(str) {
@@ -107,6 +82,41 @@ class RiTa {
   static kwic() {
     let concorder = _concorder();
     return concorder.kwic.apply(concorder, arguments);
+  }
+
+  static pastParticiple(verb) {
+    return "";
+  }
+
+  static phonemes(str) {
+    return "";
+  }
+
+  static posTags(words, opts) {
+    _stemmer(); // TMP: make sure we have a stemmer
+    _lts(); // TMP: make sure we have lts engine
+    if (opts) {
+      words = typeof words === 'string' ? Tokenizer.tokenize(words) : words;
+      if (opts.wordNetTags) return _tagger().tagForWordNet(words);
+      if (opts.inline) return _tagger().tagForWordNet(words);
+    }
+    return _tagger().tag(words);
+  }
+
+  static posTagsInline(str) { // TODO: add as option
+    return "";
+  }
+
+  static presentParticiple(verb) {
+    return "";
+  }
+
+  static stresses(str) {
+    return "";
+  }
+
+  static syllables(str) {
+    return Syllabifier.syllabify(str);
   }
 
   static pluralize(verb) {
@@ -154,8 +164,7 @@ class RiTa {
   }
 
   static stem(word) {
-    if (!RiTa.stemmer) RiTa.stemmer = new Stemmer();
-    return RiTa.stemmer.stem(word);
+    return _stemmer().stem(word);
   }
 
   static tokenize(str) {
@@ -179,21 +188,21 @@ class Analyzer {
 
   analyze(text) {
 
-    let E = '', SP = ' ',
-      phonemes = E,
+    let E = '', SP = ' ';
+    let stressyls, phones, lts, ltsPhones, useRaw;
+    let phonemes = E,
       syllables = E,
       stresses = E,
       slash = '/',
       delim = '-',
-      stressyls, phones, lts, ltsPhones, useRaw,
-      features = {};
-      words = RiTa.tokenize(text),
-      lex = RiTa._lexicon();
+      features = {},
+      lex = _lexicon();
+
+    let words = Tokenizer.tokenize(text);
+    let tags = RiTa.posTags(text);
 
     features.tokens = words.join(SP);
-    return features;
-
-    features.pos = RiTa.getPosTags(text).join(SP);
+    features.pos = tags.join(SP);
 
     for (let i = 0, l = words.length; i < l; i++) {
 
@@ -391,7 +400,7 @@ RiTa.parser = undefined;
 RiTa.dict = undefined;
 
 // CLASSES
-RiTa.RiMarkov = RiMarkov;
+RiTa.RiMarkov = Markov;
 
 // HELPERS
 
@@ -411,16 +420,38 @@ function _tagger() {
 
 function _lexicon() {
   if (typeof RiTa.lexicon === 'undefined') {
-    RiTa.lexicon = new RiLexicon(RiTa, require('./rita_dict'));
+    RiTa.lexicon = new Lexicon(RiTa, require('./rita_dict'));
   }
   return RiTa.lexicon;
 }
+
+function _lts() {
+  if (typeof RiTa.lts === 'undefined') {
+    RiTa.lts = new LetterToSound();
+  }
+  return RiTa.lexicon;
+}
+
 
 function _parser() {
   if (typeof RiTa.parser === 'undefined') {
     RiTa.parser = new Parser();
   }
   return RiTa.parser;
+}
+
+function _analyzer() {
+  if (typeof RiTa.analyzer === 'undefined') {
+    RiTa.analyzer = new Analyzer();
+  }
+  return RiTa.analyzer;
+}
+
+function _stemmer() {
+  if (typeof RiTa.stemmer === 'undefined') {
+    RiTa.stemmer = new Stemmer();
+  }
+  return RiTa.stemmer;
 }
 
 module && (module.exports = RiTa);

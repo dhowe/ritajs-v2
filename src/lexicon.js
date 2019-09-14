@@ -2,7 +2,7 @@ const Utils = require("./utils");
 
 let RiTa;
 
-class RiLexicon {
+class Lexicon {
 
   constructor(parent, dict) {
     RiTa = parent;
@@ -57,57 +57,100 @@ class RiLexicon {
 
     switch (a.length) {
 
-    case 2: // a[0]=pos  a[1]=syllableCount
-
-      for (i = 0; i < words.length; i++) {
-        j = (ran + i) % words.length;
-        rdata = this.data[words[j]];
-        numSyls = rdata[0].split(SP).length;
-        if (numSyls === a[1] && a[0] === rdata[1].split(SP)[0]) {
-          if (!pluralize) return words[j];
-          else if (!isNNWithoutNNS(words[j], rdata[1])) {
-            return RiTa.pluralize(words[j]);
-          }
-        }
-      }
-      //warn("No words with pos=" + a[0] + " found");
-      break;
-
-    case 1:
-
-      if (typeof a[0] === 'string') { // a[0] = pos
+      case 2: // a[0]=pos  a[1]=syllableCount
 
         for (i = 0; i < words.length; i++) {
           j = (ran + i) % words.length;
           rdata = this.data[words[j]];
-          if (a[0] === rdata[1].split(SP)[0]) {
+          numSyls = rdata[0].split(SP).length;
+          if (numSyls === a[1] && a[0] === rdata[1].split(SP)[0]) {
             if (!pluralize) return words[j];
             else if (!isNNWithoutNNS(words[j], rdata[1])) {
               return RiTa.pluralize(words[j]);
             }
           }
         }
-
         //warn("No words with pos=" + a[0] + " found");
+        break;
 
-      } else {
+      case 1:
 
-        // a[0] = syllableCount
-        for (i = 0; i < words.length; i++) {
-          j = (ran + i) % words.length;
-          rdata = this.data[words[j]];
-          if (rdata[0].split(SP).length === a[0]) {
-            return words[j];
+        if (typeof a[0] === 'string') { // a[0] = pos
+
+          for (i = 0; i < words.length; i++) {
+            j = (ran + i) % words.length;
+            rdata = this.data[words[j]];
+            if (a[0] === rdata[1].split(SP)[0]) {
+              if (!pluralize) return words[j];
+              else if (!isNNWithoutNNS(words[j], rdata[1])) {
+                return RiTa.pluralize(words[j]);
+              }
+            }
+          }
+
+          //warn("No words with pos=" + a[0] + " found");
+
+        } else {
+
+          // a[0] = syllableCount
+          for (i = 0; i < words.length; i++) {
+            j = (ran + i) % words.length;
+            rdata = this.data[words[j]];
+            if (rdata[0].split(SP).length === a[0]) {
+              return words[j];
+            }
           }
         }
-      }
-      break;
+        break;
 
-    case 0:
-      return words[ran];
+      case 0:
+        return words[ran];
     }
 
     return E;
+  }
+
+  //////////////////////////////////////////////////////////////////////
+
+  _getPosData(word) {
+
+    let rdata = this._lookupRaw(word);
+    return (rdata && rdata.length === 2) ? rdata[1] : '';
+  }
+
+  _getPosArr(word) {
+
+    let pl = this._getPosData(word);
+    if (!pl || !pl.length) return [];
+    return pl.split(' ');
+  }
+
+  _getBestPos(word) {
+
+    let pl = this._getPosArr(word);
+    return (pl.length > 0) ? pl[0] : [];
+  }
+
+  _lookupRaw(word) {
+
+    word = word && word.toLowerCase();
+    if (this.data && this.data[word]) return this.data[word];
+  }
+
+  _getRawPhones(word, useLTS) {
+
+    let phones, lts, rdata = this._lookupRaw(word);
+    useLTS = useLTS || false;
+
+    if (rdata === undefined || (useLTS && !RiTa.SILENT && !RiTa.lexicon.SILENCE_LTS)) {
+
+      lts = RiTa._lts();
+      phones = lts && lts.getPhones(word);
+      if (phones && phones.length)
+        return RiString._syllabify(phones);
+
+    }
+    return (rdata && rdata.length === 2) ? rdata[0] : '';
   }
 }
 
@@ -146,4 +189,4 @@ function _isPlural(word) {
   return false;
 }
 
-module && (module.exports = RiLexicon);
+module && (module.exports = Lexicon);

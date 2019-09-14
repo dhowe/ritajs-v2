@@ -30,6 +30,8 @@ class LetterToSound {
 
   // Creates a word from an input line and adds it to the state machine
   parseAndAdd(line) {
+
+    // WORKING HERE 9/14 (is this RiTa.tokenizer?)
     let tokenizer = new Tokenizer(line, SP);
     let type = tokenizer.nextToken();
 
