@@ -1,4 +1,4 @@
-const Utils = require("./utils");
+const Util = require("./utils");
 
 let RiTa;
 
@@ -144,10 +144,9 @@ class Lexicon {
 
     if (rdata === undefined || (useLTS && !RiTa.SILENT && !RiTa.lexicon.SILENCE_LTS)) {
 
-      lts = RiTa._lts();
-      phones = lts && lts.getPhones(word);
+      phones = RiTa.lts && RiTa.lts.getPhones(word);
       if (phones && phones.length)
-        return RiString._syllabify(phones);
+        return RiTa.syllables(phones);
 
     }
     return (rdata && rdata.length === 2) ? rdata[0] : '';
@@ -156,7 +155,7 @@ class Lexicon {
 
 function _isPlural(word) {
 
-  if (Utils.NULL_PLURALS.applies(word))
+  if (Util.NULL_PLURALS.applies(word))
     return true;
 
   let stem = RiTa.stem(word);

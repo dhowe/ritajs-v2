@@ -57,12 +57,10 @@ class PosTagger {
   // each corresponding to one word of input
   tag(words) {
 
-    let result = [],
-      choices2d = [],
-      lex = RiTa.lexicon;
+    let result = [], choices2d = [];
 
     //words = is(words, A) ? words : [words];
-    if (typeof words !== 'array') words = [words];// remove
+    if (!Array.isArray(words)) words = [words];// remove?
 
     for (let i = 0, l = words.length; i < l; i++) {
 
@@ -78,7 +76,7 @@ class PosTagger {
         continue;
       }
 
-      let data = lex && lex._getPosArr(words[i]);
+      let data = RiTa.lexicon._getPosArr(words[i]);
       if (!data.length) {
 
         // use stemmer categories if no lexicon
@@ -301,7 +299,7 @@ class PosTagger {
 
   _lexHas(pos, words) { // takes ([n|v|a|r] or a full tag)
 
-    if (typeof words !== 'array') words = [words];
+    if (!Array.isArray(words)) words = [words];// remove?
 
     for (let i = 0; i < words.length; i++) {
 

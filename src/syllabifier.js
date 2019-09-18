@@ -4,7 +4,7 @@ class Syllabifier {
 
   // Takes a syllabification and turns it into a string of phonemes,
   // delimited with dashes, with spaces between syllables
-  static stringify(syllables) {
+  stringify(syllables) {
 
     let i, j, ret = [];
     for (i = 0; i < syllables.length; i++) {
@@ -32,7 +32,7 @@ class Syllabifier {
     return ret.join(' ');
   }
 
-  static syllabify(input) { // adapted from FreeTTS
+  syllabify(input) { // adapted from FreeTTS
 
     let dbug, none, internuclei = [],
       syllables = [], // returned data structure.

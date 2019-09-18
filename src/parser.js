@@ -3,7 +3,6 @@ const colors = require('colors');
 
 const LexerErrors = require('./errors').LexerErrors;
 const ParserErrors = require('./errors').ParserErrors;
-//const Errors = require('antlr4/error/ErrorListener').ConsoleErrorListener;
 const Visitor = require('./visitor');
 const Lexer = require('../lib/RiScriptLexer');
 const Parser = require('../lib/RiScriptParser');

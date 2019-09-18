@@ -72,4 +72,4 @@ Utils.NULL_PLURALS = new RE("^(bantu|bengalese|bengali|beninese|boche|bonsai|boo
 Utils.RE = function() { return new RE(arguments) };
 //Utils.StringTokenizer = StringTokenizer;
 
-module.exports = Utils;
+module && (module.exports = Utils);

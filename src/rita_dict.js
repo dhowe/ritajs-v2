@@ -1,4 +1,4 @@
-module.exports = {
+module && (module.exports = {
   'a':['ey1','dt'],
   'abalone':['ae b-ah l-ow1 n-iy','nn'],
   'abandon':['ah b-ae1-n d-ah-n','vb nn vbp'],
@@ -27779,4 +27779,4 @@ module.exports = {
   'zoomed':['z-uw1-m-d','vbd vbn'],
   'zooming':['z-uw1 m-ih-ng','vbg'],
   'zooms':['z-uw1-m-z','vbz']
-};
+});

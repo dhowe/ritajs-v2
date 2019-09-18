@@ -51,6 +51,9 @@ const categoryIRR = ['blondes', 'blonde', 'teeth', 'tooth', 'beefs', 'beef', 'br
 
 class PlingStemmer {
 
+  constructor() {
+  }
+
   isPlural(s) {
     return s !== this.stem(s);
   }
