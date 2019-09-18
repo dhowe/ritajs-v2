@@ -1,6 +1,13 @@
 const Util = require("./utils");
 
+let RiTa;
+
 class Syllabifier {
+
+  constructor(parent) {
+    RiTa = parent;
+    //this.cache = {};
+  }
 
   // Takes a syllabification and turns it into a string of phonemes,
   // delimited with dashes, with spaces between syllables
@@ -32,13 +39,25 @@ class Syllabifier {
     return ret.join(' ');
   }
 
-  syllabify(input) { // adapted from FreeTTS
+  // fromWords(input) {
+  //   if (!input || !input.length) return '';
+  //   let wordArr = RiTa.tokenize(input);
+  //   let raw = wordArr.map(w => RiTa.lexicon._getRawPhones(w).replace(/\s/g, '/'));
+  //   // for (var i = 0; i < wordArr.length; i++)
+  //   //   raw[i] = this._getRawPhones(wordArr[i]).replace(/\s/g, '/');
+  //   // console.log("[RiTa] syllables" + " " + word + " " + raw);
+  //   return RiTa.untokenize(raw).replace(/1/g, '').trim();
+  // }
 
-    let dbug, none, internuclei = [],
-      syllables = [], // returned data structure.
-      sylls = ((typeof (input) == 'string') ? input.split('-') : input);
+  fromPhones(input) { // adapted from FreeTTS
+
+    let dbug, none;
+    let internuclei = [];
+    let syllables = []; // returned data structure
+    let sylls = typeof input == 'string' ? input.split('-') : input;
 
     for (let i = 0; i < sylls.length; i++) {
+
       let phoneme = sylls[i].trim(),
         stress = none;
 

@@ -66,7 +66,7 @@ class PosTagger {
 
       if (words[i].length < 1) {
 
-        result.push(E);
+        result.push('');
         continue;
       }
 
@@ -203,18 +203,18 @@ class PosTagger {
 
       // transform 3: convert a noun to a past participle if
       // word ends with "ed" and (following any nn or prp?)
-      if (i > 0 && tag.startsWith("n") && word.endsWith( "ed") && !word.endsWith( "eed") && result[i - 1].match(/^(nn|prp)$/)) {
+      if (i > 0 && tag.startsWith("n") && word.endsWith("ed") && !word.endsWith("eed") && result[i - 1].match(/^(nn|prp)$/)) {
         tag = "vbn";
       }
 
       // transform 4: convert any type to adverb if it ends in "ly";
-      if (word.endsWith( "ly")) {
+      if (word.endsWith("ly")) {
         tag = "rb";
       }
 
       // transform 5: convert a common noun (NN or NNS) to a
       // adjective if it ends with "al", special-case for mammal
-      if (tag.startsWith("nn") && word.endsWith( "al") && word != 'mammal') {
+      if (tag.startsWith("nn") && word.endsWith("al") && word != 'mammal') {
         tag = "jj";
       }
 
@@ -226,7 +226,7 @@ class PosTagger {
 
       // transform 8: convert a common noun to a present
       // participle verb (i.e., a gerund)
-      if (tag.startsWith("nn") && word.endsWith( "ing")) {
+      if (tag.startsWith("nn") && word.endsWith("ing")) {
 
         // DH: fixed here -- add check on choices for any verb: eg. // 'morning'
         if (this.hasTag(choices[i], "vb")) {
@@ -311,10 +311,10 @@ class PosTagger {
 
         for (let j = 0; j < tags.length; j++) {
 
-          if (pos === 'n' && PosTagger.isNoun(tags[j]) ||
-            pos === 'v' && PosTagger.isVerb(tags[j]) ||
-            pos === 'r' && PosTagger.isAdverb(tags[j]) ||
-            pos === 'a' && PosTagger.isAdj(tags[j]) ||
+          if (pos === 'n' && this.isNoun(tags[j]) ||
+            pos === 'v' && this.isVerb(tags[j]) ||
+            pos === 'r' && this.isAdverb(tags[j]) ||
+            pos === 'a' && this.isAdj(tags[j]) ||
             pos === tags[j]) {
             return true;
           }

@@ -61,7 +61,7 @@ class Lexicon {
 
         for (i = 0; i < words.length; i++) {
           j = (ran + i) % words.length;
-          rdata = this.data[words[j]];
+          rdata = this.dict[words[j]];
           numSyls = rdata[0].split(SP).length;
           if (numSyls === a[1] && a[0] === rdata[1].split(SP)[0]) {
             if (!pluralize) return words[j];
@@ -79,7 +79,7 @@ class Lexicon {
 
           for (i = 0; i < words.length; i++) {
             j = (ran + i) % words.length;
-            rdata = this.data[words[j]];
+            rdata = this.dict[words[j]];
             if (a[0] === rdata[1].split(SP)[0]) {
               if (!pluralize) return words[j];
               else if (!isNNWithoutNNS(words[j], rdata[1])) {
@@ -95,7 +95,7 @@ class Lexicon {
           // a[0] = syllableCount
           for (i = 0; i < words.length; i++) {
             j = (ran + i) % words.length;
-            rdata = this.data[words[j]];
+            rdata = this.dict[words[j]];
             if (rdata[0].split(SP).length === a[0]) {
               return words[j];
             }
@@ -134,12 +134,12 @@ class Lexicon {
   _lookupRaw(word) {
 
     word = word && word.toLowerCase();
-    if (this.data && this.data[word]) return this.data[word];
+    if (this.dict && this.dict[word]) return this.dict[word];
   }
 
-  _getRawPhones(word, useLTS) {
+  _getRawPhones(word, useLTS) { // TODO: confusing -> break into 2 funcs
 
-    let phones, lts, rdata = this._lookupRaw(word);
+    let phones, rdata = this._lookupRaw(word);
     useLTS = useLTS || false;
 
     if (rdata === undefined || (useLTS && !RiTa.SILENT && !RiTa.lexicon.SILENCE_LTS)) {
@@ -164,7 +164,7 @@ function _isPlural(word) {
   }
 
   let sing = RiTa.singularize(word);
-  let data = this.data[sing];
+  let data = this.dict[sing];
 
   if (data && data.length === 2) {
     let pos = data[1].split(SP);
@@ -176,7 +176,7 @@ function _isPlural(word) {
   } else if (word.endsWith("ses") || word.endsWith("zes")) {
 
     sing = word.substring(0, word.length - 1);
-    data = this.data[sing];
+    data = this.dict[sing];
     if (data && data.length === 2) {
       let pos = data[1].split(SP);
       for (let i = 0; i < pos.length; i++) {

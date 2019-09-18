@@ -9,14 +9,13 @@ class Analyzer {
 
   analyze(text) {
 
-    let stressyls, phones, lts, ltsPhones, useRaw;
+    let stressyls, phones, ltsPhones, useRaw;
     let phonemes = '',
       syllables = '',
       stresses = '',
       slash = '/',
       delim = '-',
-      features = {},
-      lex = RiTa.lexicon;
+      features = {};
 
     let words = RiTa.tokenizer.tokenize(text);
     let tags = RiTa.posTags(text);
@@ -27,18 +26,18 @@ class Analyzer {
     for (let i = 0, l = words.length; i < l; i++) {
 
       useRaw = false;
-      phones = lex._getRawPhones(words[i]);
+      phones = RiTa.lexicon._getRawPhones(words[i], false);
 
       if (!phones) {
 
-        lts = lex._letterToSound();
-        ltsPhones = lts && lts.getPhones(words[i]);
+        ltsPhones = RiTa.lts.getPhones(words[i]);
         if (ltsPhones && ltsPhones.length > 0) {
 
-          if (words[i].match(/[a-zA-Z]+/))
-            log("[RiTa] Used LTS-rules for '" + words[i] + "'");
+          if (!RiTa.SILENT && !RiTa.SILENCE_LTS && words[i].match(/[a-zA-Z]+/)) {
+            console.log("[RiTa] Used LTS-rules for '" + words[i] + "'");
+          }
 
-          phones = RiTa.syllables(ltsPhones);
+          phones = RiTa.syllabifier.fromPhones(ltsPhones);
 
         } else {
 
@@ -77,7 +76,7 @@ class Analyzer {
     features.phonemes = phonemes;
     features.syllables = syllables;
 
-    return this;
+    return features;
   }
 }
 

@@ -141,8 +141,10 @@ class LetterToSound {
 
       // must check for null here, not 0 (and not ===)
       if (!isNum(startIndex)) {
-        warn("Unable to generate LTS for '" + word + "'\n       No LTS index for character: '" +
+        if (!RiTa.SILENT && !RiTa.SILENCE_LTS) {
+          console.warn("Unable to generate LTS for '" + word + "'\n       No LTS index for character: '" +
           c + "', isDigit=" + isNum(c) + ", isPunct=" + RiTa.isPunctuation(c));
+        }
         return null;
       }
 

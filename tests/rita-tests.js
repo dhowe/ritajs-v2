@@ -8,12 +8,9 @@ describe('RiTa Object', () => {
     it('Should correctly call analyze()', () => {
       //expect(RiTa.analyze('')).eql([]);
       let feats = RiTa.analyze("chevrolet");
-      console.log("FEATS",feats);
       expect(feats.tokens).eq("chevrolet");
       expect(feats.syllables).eq("sh-eh-v/r-ow/l-ey");
     });
-
-return;
 
     it('Should correctly call syllables()', () => {
 

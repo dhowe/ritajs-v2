@@ -19,14 +19,12 @@ class RiTa {
     throw Error('Invalid instantiation');
   }
 
-  static analyze() {
-    _lexicon() && _lts(); // init data objects
-    return RiTa.analyzer.analyze.apply(RiTa.analyzer, arguments);
+  static analyze(text) {
+    return RiTa._loadData().analyzer.analyze(text);//.apply(RiTa.analyzer, arguments);
   }
 
-  static alliterations() {
-    let lex = _lexicon();
-    return lex.alliterations.apply(lex, arguments);
+  static alliterations(text) {
+    return RiTa._loadData().lexicon.alliterations(text);
   }
 
   static concordance() {
@@ -42,7 +40,7 @@ class RiTa {
   }
 
   static hasWord(word) {
-    return _lexicon().hasWord(word);
+    return RiTa._loadData().lexicon.hasWord(word);
   }
 
   static isAbbrev(str) {
@@ -94,13 +92,14 @@ class RiTa {
   }
 
   static posTags(words, opts) {
-    _lts(); // TMP: make sure we have lts engine
+    RiTa._loadData(); // init dict/lts
+    words = typeof words === 'string' ? RiTa.tokenizer.tokenize(words) : words;
     if (opts) {
-      words = typeof words === 'string' ? RiTa.tokenizer.tokenize(words) : words;
+      //words = typeof words === 'string' ? RiTa.tokenizer.tokenize(words) : words;
       if (opts.wordNetTags) return RiTa.tagger.tagForWordNet(words);
       if (opts.inline) return RiTa.tagger.tagForWordNet(words);
     }
-    return RiTa.tagger.tag(words);
+    return RiTa.tagger.tag(words); // or split on spaces instead?
   }
 
   static posTagsInline(str) { // TODO: add as option
@@ -111,13 +110,6 @@ class RiTa {
     return "";
   }
 
-  static stresses(str) {
-    return "";
-  }
-
-  static syllables(str) {
-    return RiTa.syllabifier.syllabify(str);
-  }
 
   static pluralize(verb) {
     return "";
@@ -135,23 +127,28 @@ class RiTa {
     return RandGen.seed(theSeed);
   }
 
-  static randomWord() {
-    let lex = _lexicon();
-    return lex.randomWord.apply(lex, arguments);
+  static randomWord(opts) {
+    return RiTa._loadData().lexicon.randomWord(opts);
   }
 
-  static rhymes() {
-    let lex = _lexicon();
-    return lex.rhymes.apply(lex, arguments);
+  static rhymes(word, opts) {
+    return RiTa._loadData().lexicon.rhymes(word, opts);
   }
 
   static runScript(s) {
     return RiTa.parser.lexParseVisit.apply(RiTa.parser, arguments);
   }
 
-  static similarBy() {
-    let lex = _lexicon();
-    return lex.similarBy.apply(lex, arguments);
+  static stresses(str) {
+    return "";
+  }
+
+  static syllables(str) {
+    return RiTa._loadData().analyzer.analyze(str).syllables;
+  }
+
+  static similarBy(word, opts) {
+    return RiTa._loadData().lexicon.similarBy(word, opts);
   }
 
   static singularize(verb) {
@@ -175,7 +172,17 @@ class RiTa {
   }
 
   static words() {
-    return _lexicon().words();
+    return RiTa._loadData().lexicon.words();
+  }
+
+  /////////////////////////////////////////////////////////////////
+
+  static _loadData() {
+    if (typeof RiTa.lexicon === 'undefined') {
+      RiTa.lts = new LetterToSound(RiTa);
+      RiTa.lexicon = new Lexicon(RiTa, require('./rita_dict'));
+    }
+    return RiTa;
   }
 }
 
@@ -191,7 +198,6 @@ RiTa.syllabifier = new Syllabifier(RiTa);
 // CLASSES
 RiTa.RiMarkov = Markov;
 
-
 // LAZY-LOADS
 RiTa.lexicon = undefined;
 RiTa.dict = undefined;
@@ -202,6 +208,25 @@ RiTa.VERSION = 2;
 RiTa.NODE = 'node';
 RiTa.BROWSER = 'browser';
 RiTa.SILENT = false;
+RiTa.SILENCE_LTS = true;
+RiTa.FIRST_PERSON = 1;
+RiTa.SECOND_PERSON = 2;
+RiTa.THIRD_PERSON = 3;
+RiTa.PAST_TENSE = 4;
+RiTa.PRESENT_TENSE = 5;
+RiTa.FUTURE_TENSE = 6;
+RiTa.SINGULAR = 7;
+RiTa.PLURAL = 8;
+RiTa.NORMAL = 9;
+RiTa.FEATURE_DELIM = ' =';
+RiTa.STRESSED = '1';
+RiTa.UNSTRESSED = '0';
+RiTa.PHONEME_BOUNDARY = '-';
+RiTa.WORD_BOUNDARY = " ";
+RiTa.SYLLABLE_BOUNDARY = "/";
+RiTa.SENTENCE_BOUNDARY = "|";
+RiTa.VOWELS = "aeiou";
+RiTa.ABBREVIATIONS = ["Adm.", "Capt.", "Cmdr.", "Col.", "Dr.", "Gen.", "Gov.", "Lt.", "Maj.", "Messrs.", "Mr.", "Mrs.", "Ms.", "Prof.", "Rep.", "Reps.", "Rev.", "Sen.", "Sens.", "Sgt.", "Sr.", "St.", "a.k.a.", "c.f.", "i.e.", "e.g.", "vs.", "v.", "Jan.", "Feb.", "Mar.", "Apr.", "Mar.", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
 
 // Warn on words not found  in lexicon
 RiTa.LEX_WARN = false;
@@ -209,21 +234,13 @@ RiTa.LEX_WARN = false;
 // For tokenization, Can't -> Can not, etc.
 RiTa.SPLIT_CONTRACTIONS = false;
 
+RiTa.FEATURES = ['tokens', 'stresses', 'phonemes', 'syllables', 'pos', 'text'].map(f => f.toUpperCase());
+
 // HELPERS
 
-function _lexicon() {
-  if (typeof RiTa.lexicon === 'undefined') {
-    RiTa.lexicon = new Lexicon(RiTa, require('./rita_dict'));
-  }
-  return RiTa.lexicon;
-}
-
-function _lts() {
-  if (typeof RiTa.lts === 'undefined') {
-    RiTa.lts = new LetterToSound(RiTa);
-  }
-  return RiTa.lexicon;
-}
+// function _lexicon() {
+//
+// }
 
 function _stemmer() {
   if (typeof RiTa.stemmer === 'undefined') {
@@ -231,6 +248,13 @@ function _stemmer() {
   }
   return RiTa.stemmer;
 }
+
+// function _lts() {
+//   if (typeof RiTa.lts === 'undefined') {
+//     RiTa.lts = new LetterToSound(RiTa);
+//   }
+//   return RiTa.lexicon;
+// }
 
 // function _concorder() {
 //   if (typeof RiTa.concorder === 'undefined') {
