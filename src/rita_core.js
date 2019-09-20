@@ -1,6 +1,5 @@
 const Util = require("./utils");
 const RandGen = require('./random');
-
 const Parser = require('./parser');
 const Markov = require('./markov');
 const Stemmer = require('./stemmer');
@@ -12,6 +11,10 @@ const Concorder = require('./concorder');
 const LetterToSound = require("./rita_lts");
 const Syllabifier = require('./syllabifier');
 
+let ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
+let ALL_PUNCT = /^[-[\]{}()*+!?%&.,\\^$|#@<>|+=;:]+$/g;
+
+//let DEFAULT_PLURAL_RULE = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s");
 
 class RiTa {
 
@@ -63,8 +66,8 @@ class RiTa {
     return "";
   }
 
-  static isPunctuation(str) {
-    return "";
+  static isPunctuation(text) {
+    return text && text.length && ONLY_PUNCT.test(text);
   }
 
   static isQuestion(str) {

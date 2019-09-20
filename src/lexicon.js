@@ -62,8 +62,8 @@ class Lexicon {
         for (i = 0; i < words.length; i++) {
           j = (ran + i) % words.length;
           rdata = this.dict[words[j]];
-          numSyls = rdata[0].split(SP).length;
-          if (numSyls === a[1] && a[0] === rdata[1].split(SP)[0]) {
+          numSyls = rdata[0].split(' ').length;
+          if (numSyls === a[1] && a[0] === rdata[1].split(' ')[0]) {
             if (!pluralize) return words[j];
             else if (!isNNWithoutNNS(words[j], rdata[1])) {
               return RiTa.pluralize(words[j]);
@@ -80,7 +80,7 @@ class Lexicon {
           for (i = 0; i < words.length; i++) {
             j = (ran + i) % words.length;
             rdata = this.dict[words[j]];
-            if (a[0] === rdata[1].split(SP)[0]) {
+            if (a[0] === rdata[1].split(' ')[0]) {
               if (!pluralize) return words[j];
               else if (!isNNWithoutNNS(words[j], rdata[1])) {
                 return RiTa.pluralize(words[j]);
@@ -96,7 +96,7 @@ class Lexicon {
           for (i = 0; i < words.length; i++) {
             j = (ran + i) % words.length;
             rdata = this.dict[words[j]];
-            if (rdata[0].split(SP).length === a[0]) {
+            if (rdata[0].split(' ').length === a[0]) {
               return words[j];
             }
           }
@@ -107,7 +107,7 @@ class Lexicon {
         return words[ran];
     }
 
-    return E;
+    return '';
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -167,7 +167,7 @@ function _isPlural(word) {
   let data = this.dict[sing];
 
   if (data && data.length === 2) {
-    let pos = data[1].split(SP);
+    let pos = data[1].split(' ');
     for (let i = 0; i < pos.length; i++) {
       if (pos[i] === 'nn')
         return true;
@@ -178,7 +178,7 @@ function _isPlural(word) {
     sing = word.substring(0, word.length - 1);
     data = this.dict[sing];
     if (data && data.length === 2) {
-      let pos = data[1].split(SP);
+      let pos = data[1].split(' ');
       for (let i = 0; i < pos.length; i++) {
         if (pos[i] === 'nn')
           return true;

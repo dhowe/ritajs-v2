@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "NODE_ENV=test mocha ./tests/*.js",
-    "test-lib": "NODE_ENV=test mocha ./tests/rita-api.js",
+    "test-api": "NODE_ENV=test mocha ./tests/rita-api.js",
     "test-rita": "NODE_ENV=test mocha ./tests/rita-tests.js",
     "test-grammar": "NODE_ENV=test mocha ./tests/riscript-tests.js",
     "watch": "npm-watch",

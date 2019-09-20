@@ -116,8 +116,9 @@ class LetterToSound {
       for (let k = 0; k < word.length; k++) {
 
         dig = parseInt(word[k]);
-        if (dig < 0 || dig > 9)
+        if (dig < 0 || dig > 9) {
           throw Error("Attempt to pass multi-digit number to LTS: '" + word + "'");
+        }
 
         phoneList.push(RiString._phones.digits[dig]);
       }
@@ -142,7 +143,7 @@ class LetterToSound {
       // must check for null here, not 0 (and not ===)
       if (!isNum(startIndex)) {
         if (!RiTa.SILENT && !RiTa.SILENCE_LTS) {
-          console.warn("Unable to generate LTS for '" + word + "'\n       No LTS index for character: '" +
+          console.warn("Unable to generate LTS for '" + word + "', no index for '" +
           c + "', isDigit=" + isNum(c) + ", isPunct=" + RiTa.isPunctuation(c));
         }
         return null;
