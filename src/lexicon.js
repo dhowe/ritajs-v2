@@ -142,7 +142,7 @@ class Lexicon {
     let phones, rdata = this._lookupRaw(word);
     useLTS = useLTS || false;
 
-    if (rdata === undefined || (useLTS && !RiTa.SILENT && !RiTa.lexicon.SILENCE_LTS)) {
+    if (!rdata && useLTS) {
 
       phones = RiTa.lts && RiTa.lts.getPhones(word);
       if (phones && phones.length)

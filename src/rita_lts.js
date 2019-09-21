@@ -120,7 +120,7 @@ class LetterToSound {
           throw Error("Attempt to pass multi-digit number to LTS: '" + word + "'");
         }
 
-        phoneList.push(RiString._phones.digits[dig]);
+        phoneList.push(RiTa.syllabifier.Phones.digits[dig]);
       }
       return phoneList;
     }

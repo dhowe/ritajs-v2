@@ -68,13 +68,9 @@ class Analyzer {
       if (!stresses.endsWith(' ')) stresses += ' ';
     }
 
-    stresses = stresses.trim();
-    phonemes = phonemes.trim().replace(/\\s+/, ' ');
-    syllables = syllables.trim().replace(/\\s+/, ' ');
-
-    features.stresses = stresses;
-    features.phonemes = phonemes;
-    features.syllables = syllables;
+    features.stresses = stresses.trim();
+    features.phonemes = phonemes.trim(); //.replace(/\\s+/, ' '); // needed?
+    features.syllables = syllables.trim();//.replace(/\\s+/, ' '); // needed?
 
     return features;
   }
