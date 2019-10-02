@@ -22,7 +22,7 @@ class RiTa {
   }
 
   static analyze(text) {
-    return RiTa._loadData().analyzer.analyze(text);//.apply(RiTa.analyzer, arguments);
+    return RiTa._loadData().analyzer.analyze(text);
   }
 
   static alliterations(text) {
@@ -30,7 +30,7 @@ class RiTa {
   }
 
   static concordance() {
-    return RiTa.concorder.concordance.apply(RiTa.concorder, arguments);
+    return RiTa.concorder.concordance(...arguments);
   }
 
   static conjugate(verb, opts) {
@@ -82,7 +82,7 @@ class RiTa {
   }
 
   static kwic() {
-    return RiTa.concorder.kwic.apply(RiTa.concorder, arguments);
+    return RiTa.concorder.kwic(...arguments);
   }
 
   static pastParticiple(verb) {
@@ -90,7 +90,7 @@ class RiTa {
   }
 
   static phonemes(str) {
-    return "";
+    return RiTa._loadData().analyzer.analyze(str).phonemes;
   }
 
   static posTags(words, opts) {
@@ -113,7 +113,6 @@ class RiTa {
   }
 
   static pluralize(word) {
-    console.log('pluralize1',word);
     return RiTa.pluralizer.pluralize(word);
   }
 
@@ -122,7 +121,7 @@ class RiTa {
   }
 
   static random() {
-    return RandGen.random.apply(RandGen, arguments);
+    return RandGen.random(...arguments);
   }
 
   static randomSeed(theSeed) {
@@ -138,11 +137,11 @@ class RiTa {
   }
 
   static runScript(s) {
-    return RiTa.parser.lexParseVisit.apply(RiTa.parser, arguments);
+    return RiTa.parser.lexParseVisit(...arguments);
   }
 
   static stresses(str) {
-    return "";
+    return RiTa._loadData().analyzer.analyze(str).stresses;
   }
 
   static syllables(str) {
@@ -153,8 +152,8 @@ class RiTa {
     return RiTa._loadData().lexicon.similarBy(word, opts);
   }
 
-  static singularize(verb) {
-    return "";
+  static singularize(word) {
+    return RiTa.pluralizer.singularize(word);
   }
 
   static sentences(str) {

@@ -15,7 +15,7 @@ class Lexicon {
 
   hasWord(word) {
     word = word ? word.toLowerCase() : '';
-    return this.dict.hasOwnProperty(word) || _isPlural(word);
+    return this.dict.hasOwnProperty(word) || RiTa.pluralizer.isPlural(word);
   }
 
   rhymes(word) {
@@ -151,41 +151,6 @@ class Lexicon {
     }
     return (rdata && rdata.length === 2) ? rdata[0] : '';
   }
-}
-
-function _isPlural(word) {
-
-  if (Util.NULL_PLURALS.applies(word))
-    return true;
-
-  let stem = RiTa.stem(word);
-  if (stem === word) {
-    return false;
-  }
-
-  let sing = RiTa.singularize(word);
-  let data = this.dict[sing];
-
-  if (data && data.length === 2) {
-    let pos = data[1].split(' ');
-    for (let i = 0; i < pos.length; i++) {
-      if (pos[i] === 'nn')
-        return true;
-    }
-
-  } else if (word.endsWith("ses") || word.endsWith("zes")) {
-
-    sing = word.substring(0, word.length - 1);
-    data = this.dict[sing];
-    if (data && data.length === 2) {
-      let pos = data[1].split(' ');
-      for (let i = 0; i < pos.length; i++) {
-        if (pos[i] === 'nn')
-          return true;
-      }
-    }
-  }
-  return false;
 }
 
 module && (module.exports = Lexicon);

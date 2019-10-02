@@ -69,6 +69,6 @@ class RE {
   }
 }
 
-Utils.RE = RE; // export RE class
+Utils.RE = function(a,b,c) { return new RE(a,b,c) };
 
 module && (module.exports = Utils);
