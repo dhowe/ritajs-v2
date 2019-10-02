@@ -91,9 +91,104 @@ describe('RiTa Object', () => {
     ok(!RiTa.isPunctuation(""));
   });
 
-  it('Should correctly call syllables()', () => {
+  it('Should correctly call pluralize()', () => {
 
-    RiTa.SILENCE_LTS = false;
+    let tests = [
+      "media", "medium",
+      "millennia", "millennium",
+      "consortia", "consortium",
+      "concerti", "concerto",
+      "septa", "septum",
+      "termini", "terminus",
+      "larvae", "larva",
+      "vertebrae", "vertebra",
+      "memorabilia", "memorabilium",
+      "sheafs", "sheaf",
+      "spoofs", "spoof",
+      "proofs", "proof",
+      "roofs", "roof",
+      "disbeliefs", "disbelief",
+      "indices", "index",
+      "accomplices", "accomplice"
+    ];
+    for (let i = 0; i < tests.length; i += 2) {
+      //console.log(tests[i], RiTa.pluralize(tests[i + 1]),tests[i + 1]);
+      equal(tests[i], RiTa.pluralize(tests[i + 1]));
+    }
+
+    // uncountable
+    tests = [
+      "turf", "macaroni", "spaghetti", "potpourri", "electrolysis"
+    ];
+    for (let i = 0; i < tests.length; i++) {
+      equal(tests[i], RiTa.pluralize(tests[i]));
+    }
+
+    equal("blondes", RiTa.pluralize("blonde"));
+    equal("eyes", RiTa.pluralize("eye"));
+    equal("blondes", RiTa.pluralize("blond"));
+
+    equal("dogs", RiTa.pluralize("dog"));
+    equal("feet", RiTa.pluralize("foot"));
+    equal("men", RiTa.pluralize("man"));
+
+    equal("beautifuls", RiTa.pluralize("beautiful"));
+    equal("teeth", RiTa.pluralize("tooth"));
+    equal("cakes", RiTa.pluralize("cake"));
+    equal("kisses", RiTa.pluralize("kiss"));
+    equal("children", RiTa.pluralize("child"));
+
+    equal("randomwords", RiTa.pluralize("randomword"));
+    equal("lice", RiTa.pluralize("louse"));
+
+    equal("sheep", RiTa.pluralize("sheep"));
+    equal("shrimps", RiTa.pluralize("shrimp"));
+    equal("series", RiTa.pluralize("series"));
+    equal("mice", RiTa.pluralize("mouse"));
+
+    equal("", RiTa.pluralize(""));
+
+    equal(RiTa.pluralize("tomato"), "tomatoes");
+    equal(RiTa.pluralize("toe"), "toes");
+
+    equal(RiTa.pluralize("deer"), "deer");
+    equal(RiTa.pluralize("ox"), "oxen");
+
+    equal(RiTa.pluralize("tobacco"), "tobacco");
+    equal(RiTa.pluralize("cargo"), "cargo");
+    equal(RiTa.pluralize("golf"), "golf");
+    equal(RiTa.pluralize("grief"), "grief");
+    equal(RiTa.pluralize("wildlife"), "wildlife");
+    equal(RiTa.pluralize("taxi"), "taxis");
+    equal(RiTa.pluralize("Chinese"), "Chinese");
+    equal(RiTa.pluralize("bonsai"), "bonsai");
+
+    equal(RiTa.pluralize("whiz"), "whizzes");
+    equal(RiTa.pluralize("prognosis"), "prognoses");
+    equal(RiTa.pluralize("gas"), "gases");
+    equal(RiTa.pluralize("bus"), "buses");
+
+    equal("crises", RiTa.pluralize("crisis"));
+    equal("theses", RiTa.pluralize("thesis"));
+    equal("apotheses", RiTa.pluralize("apothesis"));
+    equal("stimuli", RiTa.pluralize("stimulus"));
+    equal("alumni", RiTa.pluralize("alumnus"));
+    equal("corpora", RiTa.pluralize("corpus"));
+    equal("menus", RiTa.pluralize("menu"));
+
+    equal("hardness", RiTa.pluralize("hardness"));
+    equal("shortness", RiTa.pluralize("shortness"));
+    equal("dreariness", RiTa.pluralize("dreariness"));
+    equal("unwillingness", RiTa.pluralize("unwillingness"));
+    equal("deer", RiTa.pluralize("deer"));
+    equal("fish", RiTa.pluralize("fish"));
+    equal("moose", RiTa.pluralize("moose"));
+
+    equal("aquatics", RiTa.pluralize("aquatics"));
+    equal("mechanics", RiTa.pluralize("mechanics"));
+  });
+
+  it('Should correctly call syllables()', () => {
 
     expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
 
@@ -102,7 +197,6 @@ describe('RiTa Object', () => {
 
     expect(RiTa.syllables("women")).eq("w-ih/m-eh-n");
     expect(RiTa.syllables("genuine")).eq("jh-eh-n/y-uw/w-ah-n");
-
 
     let input, expected;
 
@@ -125,12 +219,7 @@ describe('RiTa Object', () => {
 
   it('Should correctly call syllables(lts)', () => {
     RiTa.SILENCE_LTS = true;
-
-    let input, expected;
-    input = 'The Laggin Dragon';
-    expected = 'dh-ah l-ae/g-ih-n d-r-ae/g-ah-n';
-    expect(RiTa.syllables(input)).eq(expected);
-
+    expect(RiTa.syllables('The Laggin Dragon')).eq('dh-ah l-ae/g-ih-n d-r-ae/g-ah-n');
     RiTa.SILENCE_LTS = false;
   });
 
@@ -139,3 +228,7 @@ describe('RiTa Object', () => {
 
 
 function ok(res) { expect(res).eq(true); }
+function equal(a,b) {
+  console.log(a,"?=",b);
+  expect(a).eq(b);
+}

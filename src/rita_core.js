@@ -8,13 +8,12 @@ const Tokenizer = require('./tokenizer');
 const PosTagger = require('./tagger');
 const Analyzer = require('./analyzer');
 const Concorder = require('./concorder');
+const Pluralizer = require('./pluralizer');
 const LetterToSound = require("./rita_lts");
 const Syllabifier = require('./syllabifier');
 
 let ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
 let ALL_PUNCT = /^[-[\]{}()*+!?%&.,\\^$|#@<>|+=;:]+$/g;
-
-//let DEFAULT_PLURAL_RULE = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s");
 
 class RiTa {
 
@@ -113,9 +112,9 @@ class RiTa {
     return "";
   }
 
-
-  static pluralize(verb) {
-    return "";
+  static pluralize(word) {
+    console.log('pluralize1',word);
+    return RiTa.pluralizer.pluralize(word);
   }
 
   static randomOrdering(num) {
@@ -196,6 +195,7 @@ RiTa.tagger = new PosTagger(RiTa);
 RiTa.concorder = new Concorder(RiTa);
 RiTa.tokenizer = new Tokenizer(RiTa);
 RiTa.analyzer = new Analyzer(RiTa);
+RiTa.pluralizer = new Pluralizer(RiTa);
 RiTa.syllabifier = new Syllabifier(RiTa);
 
 // CLASSES
@@ -251,40 +251,5 @@ function _stemmer() {
   }
   return RiTa.stemmer;
 }
-
-// function _lts() {
-//   if (typeof RiTa.lts === 'undefined') {
-//     RiTa.lts = new LetterToSound(RiTa);
-//   }
-//   return RiTa.lexicon;
-// }
-
-// function _concorder() {
-//   if (typeof RiTa.concorder === 'undefined') {
-//     RiTa.concorder = new Concorder(RiTa);
-//   }
-//   return RiTa.concorder;
-// }
-//
-// function _tagger() {
-//   if (typeof RiTa.tagger === 'undefined') {
-//     RiTa.tagger = new PosTagger(RiTa);
-//   }
-//   return RiTa.tagger;
-// }
-
-// function _parser() {
-//   if (typeof RiTa.parser === 'undefined') {
-//     RiTa.parser = new Parser();
-//   }
-//   return RiTa.parser;
-// }
-//
-// function _analyzer() {
-//   if (typeof RiTa.analyzer === 'undefined') {
-//     RiTa.analyzer = new Analyzer();
-//   }
-//   return RiTa.analyzer;
-// }
 
 module && (module.exports = RiTa);
