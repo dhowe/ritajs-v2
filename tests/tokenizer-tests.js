@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const RiTa = require('../src/rita_core');
 
-describe('RiTa.tokenizer', () => {
+describe('RiTa.Tokenizer', () => {
 
   it('Should correctly call tokenize()', () => {
 

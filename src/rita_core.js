@@ -8,12 +8,13 @@ const Tokenizer = require('./tokenizer');
 const PosTagger = require('./tagger');
 const Analyzer = require('./analyzer');
 const Concorder = require('./concorder');
+const Conjugator = require('./conjugator');
 const Pluralizer = require('./pluralizer');
 const LetterToSound = require("./rita_lts");
 const Syllabifier = require('./syllabifier');
 
 let ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
-let ALL_PUNCT = /^[-[\]{}()*+!?%&.,\\^$|#@<>|+=;:]+$/g;
+//let ALL_PUNCT = /^[-[\]{}()*+!?%&.,\\^$|#@<>|+=;:]+$/g;
 
 class RiTa {
 
@@ -33,8 +34,8 @@ class RiTa {
     return RiTa.concorder.concordance(...arguments);
   }
 
-  static conjugate(verb, opts) {
-    return "";
+  static conjugate() {
+    return RiTa.conjugator.conjugate(...arguments);
   }
 
   static env() {
@@ -86,7 +87,7 @@ class RiTa {
   }
 
   static pastParticiple(verb) {
-    return "";
+    return RiTa.conjugator.pastParticiple(verb);
   }
 
   static phonemes(str) {
@@ -108,20 +109,20 @@ class RiTa {
     return "";
   }
 
-  static presentParticiple(verb) {
-    return "";
-  }
-
   static pluralize(word) {
     return RiTa.pluralizer.pluralize(word);
   }
 
-  static randomOrdering(num) {
-    return RandGen.randomOrdering(num);
+  static presentParticiple(verb) {
+    return RiTa.conjugator.presentParticiple(verb);
   }
 
   static random() {
     return RandGen.random(...arguments);
+  }
+
+  static randomOrdering(num) {
+    return RandGen.randomOrdering(num);
   }
 
   static randomSeed(theSeed) {
@@ -136,7 +137,7 @@ class RiTa {
     return RiTa._loadData().lexicon.rhymes(word, opts);
   }
 
-  static runScript(s) {
+  static evaluate(s) {
     return RiTa.parser.lexParseVisit(...arguments);
   }
 
@@ -195,6 +196,7 @@ RiTa.concorder = new Concorder(RiTa);
 RiTa.tokenizer = new Tokenizer(RiTa);
 RiTa.analyzer = new Analyzer(RiTa);
 RiTa.pluralizer = new Pluralizer(RiTa);
+RiTa.conjugator = new Conjugator(RiTa);
 RiTa.syllabifier = new Syllabifier(RiTa);
 
 // CLASSES
@@ -229,6 +231,12 @@ RiTa.SYLLABLE_BOUNDARY = "/";
 RiTa.SENTENCE_BOUNDARY = "|";
 RiTa.VOWELS = "aeiou";
 RiTa.ABBREVIATIONS = ["Adm.", "Capt.", "Cmdr.", "Col.", "Dr.", "Gen.", "Gov.", "Lt.", "Maj.", "Messrs.", "Mr.", "Mrs.", "Ms.", "Prof.", "Rep.", "Reps.", "Rev.", "Sen.", "Sens.", "Sgt.", "Sr.", "St.", "a.k.a.", "c.f.", "i.e.", "e.g.", "vs.", "v.", "Jan.", "Feb.", "Mar.", "Apr.", "Mar.", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
+RiTa.INFINITIVE = 1;
+RiTa.GERUND = 2;
+RiTa.IMPERATIVE = 3;
+RiTa.BARE_INFINITIVE = 4;
+RiTa.SUBJUNCTIVE = 5;
+
 
 // Warn on words not found  in lexicon
 RiTa.LEX_WARN = false;

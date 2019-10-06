@@ -4,7 +4,7 @@ const Parser = require('../src/parser');
 const expect = require('chai').expect;
 const parser = new Parser();
 
-describe('RiScript Tests', function() {
+describe('RiTa.RiScript', function() {
 
   describe('Parse Symbols', function() {
 
