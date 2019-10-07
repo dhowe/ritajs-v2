@@ -157,16 +157,16 @@ class RiTa {
     return RiTa.pluralizer.singularize(word);
   }
 
-  static sentences(str) {
-    return "";
+  static sentences(text) {
+    return RiTa.tokenizer.sentences(text);
   }
 
   static stem(word) {
     return RiTa.stemmer.stem(word);
   }
 
-  static tokenize(str) {
-    return RiTa.tokenizer.tokenize(str);
+  static tokenize(text) {
+    return RiTa.tokenizer.tokenize(text);
   }
 
   static untokenize(arr) {

@@ -6,6 +6,39 @@ class Tokenizer {
 
   constructor(parent) {
     RiTa = parent;
+    this.splitter = /(\S.+?[.!?]["”\u201D]?)(?=\s+|$)/g;
+  }
+
+  sentences(text, regex) {
+    if (!text || !text.length) return [text];
+
+    let delim = '___';
+    let re = new RegExp(delim, 'g');
+    let pattern = regex || this.splitter;
+
+    function unescapeAbbrevs(arr) {
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = arr[i].replace(re, ".");
+      }
+      return arr;
+    }
+
+    function escapeAbbrevs(text) {
+      let abbrevs = RiTa.ABBREVIATIONS;
+      for (let i = 0; i < abbrevs.length; i++) {
+        let abv = abbrevs[i];
+        let idx = text.indexOf(abv);
+        while (idx > -1) {
+          text = text.replace(abv, abv.replace('.', delim));
+          idx = text.indexOf(abv);
+        }
+      }
+      return text;
+    }
+
+    let arr = escapeAbbrevs(text).match(pattern);
+
+    return arr && arr.length ? unescapeAbbrevs(arr) : [text];
   }
 
   tokenize(words, regex) {
