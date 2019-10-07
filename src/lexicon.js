@@ -1,5 +1,3 @@
-const Util = require("./utils");
-
 let RiTa;
 
 class Lexicon {
@@ -36,8 +34,8 @@ class Lexicon {
     let words = Object.keys(this.dict);
     let ran = Math.floor(RiTa.random(0, words.length));
     let pluralize = false;
-    let found = false;
     let a = arguments;
+    //let found = false;
 
     let isNNWithoutNNS = (w, pos) => (w.endsWith("ness") ||
       w.endsWith("ism") || pos.indexOf("vbg") > 0);

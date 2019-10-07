@@ -5,6 +5,7 @@ class Analyzer {
   constructor(parent) {
     RiTa = parent;
     this.cache = {};
+    this.lexicon = RiTa._lexicon();
   }
 
   analyze(text) {
@@ -26,7 +27,7 @@ class Analyzer {
     for (let i = 0, l = words.length; i < l; i++) {
 
       useRaw = false;
-      phones = RiTa.lexicon._getRawPhones(words[i], false);
+      phones = this.lexicon._getRawPhones(words[i], false);
 
       if (!phones) {
 

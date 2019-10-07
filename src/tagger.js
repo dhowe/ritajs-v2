@@ -1,30 +1,57 @@
+const ADJ = ['jj', 'jjr', 'jjs'];
+const ADV = ['rb', 'rbr', 'rbs', 'rp'];
+const NOUNS = ['nn', 'nns', 'nnp', 'nnps'];
+const VERBS = ['vb', 'vbd', 'vbg', 'vbn', 'vbp', 'vbz'];
+
 let RiTa;
 
 class PosTagger {
 
   constructor(parent) {
     RiTa = parent;
-    this.ADJ = ['jj', 'jjr', 'jjs'];
-    this.ADV = ['rb', 'rbr', 'rbs', 'rp'];
-    this.NOUNS = ['nn', 'nns', 'nnp', 'nnps'];
-    this.VERBS = ['vb', 'vbd', 'vbg', 'vbn', 'vbp', 'vbz'];
-    this.DBUG = 0;
   }
 
-  isVerb(tag) {
-    return this.VERBS.includes(tag);
+  isVerb(word) {
+
+    return this.checkType(word, VERBS);
   }
 
-  isNoun(tag) {
-    return this.NOUNS.includes(tag);
+  isNoun(word) {
+
+    let result = this.checkType(word, NOUNS);
+    if (!result) {
+      let singular = RiTa.singularize(word);
+      if (singular !== word) {
+        result = this.checkType(singular, NOUNS);
+      }
+    }
+    return result;
   }
 
-  isAdverb(tag) {
-    return this.ADV.includes(tag);
+  isAdverb(word) {
+
+    return this.checkType(word, ADV);
   }
 
-  isAdj(tag) {
-    return this.ADJ.includes(tag);
+  isAdjective(word) {
+
+    return this.checkType(word, ADJ);
+  }
+
+  isVerbTag(tag) {
+    return VERBS.includes(tag);
+  }
+
+  isNounTag(tag) {
+    return NOUNS.includes(tag);
+  }
+
+  isAdverbTag(tag) {
+    return ADV.includes(tag);
+  }
+
+  isAdjTag(tag) {
+    return ADJ.includes(tag);
   }
 
   hasTag(choices, tag) {
@@ -35,13 +62,15 @@ class PosTagger {
 
   tagInline(words, delimiter) {
 
-    if (!words || !words.length) return E;
+    if (!words || !words.length) return '';
+
+    if (!Array.isArray(words)) words = RiTa.tokenizer.tokenize(words);
 
     delimiter = delimiter || '/';
 
     let sb = '';
     let tags = this.tag(words);
-    for (var i = 0; i < words.length; i++) {
+    for (let i = 0; i < words.length; i++) {
 
       sb += words[i];
       if (!RiTa.isPunctuation(words[i])) {
@@ -53,14 +82,36 @@ class PosTagger {
     return sb.trim();
   }
 
+  tagSimple(words) {
+
+    let tags = this.tag(words);
+
+    if (words && tags.length) {
+
+      for (let i = 0; i < tags.length; i++) {
+        if (NOUNS.includes(tags[i])) tags[i] = 'n';
+        else if (VERBS.includes(tags[i])) tags[i] = 'v';
+        else if (ADJ.includes(tags[i])) tags[i] = 'a';
+        else if (ADV.includes(tags[i])) tags[i] = 'r';
+        else tags[i] = '-'; // default: other
+      }
+
+      return tags;
+    }
+    return [];
+  }
+
   // Returns an array of parts-of-speech from the Penn tagset,
   // each corresponding to one word of input
   tag(words) {
 
+    let lexicon = RiTa._lexicon();
     let result = [], choices2d = [];
 
-    //words = is(words, A) ? words : [words];
-    if (!Array.isArray(words)) words = [words];// remove?
+    if (!Array.isArray(words)) {
+      if (words === '') return [];
+      words = RiTa.tokenizer.tokenize(words);
+    }
 
     for (let i = 0, l = words.length; i < l; i++) {
 
@@ -76,7 +127,7 @@ class PosTagger {
         continue;
       }
 
-      let data = RiTa.lexicon._getPosArr(words[i]);
+      let data = lexicon._getPosArr(words[i]);
       if (!data.length) {
 
         // use stemmer categories if no lexicon
@@ -137,6 +188,29 @@ class PosTagger {
     return this._applyContext(words, result, choices2d);
   }
 
+  checkType(word, tagArray) {
+
+    if (word) {
+
+      if (!word.length) return false;
+
+      if (word.indexOf(' ') < 0) {
+
+        let psa = RiTa._lexicon()._getPosArr(word);
+
+        if (RiTa.LEX_WARN && psa.length < 1 && this.size() <= 1000) {
+          warn(RiTa.LEX_WARN);
+          RiTa.LEX_WARN = 0; // only once
+        }
+
+        return psa.filter(p => tagArray.indexOf(p) > -1).length > 0;
+      }
+
+      throw Error("checkType() expects single word, found: '" + word + "'");
+    }
+  }
+
+
   _handleSingleLetter(c) {
 
     let result = c;
@@ -151,16 +225,15 @@ class PosTagger {
     return result;
   }
 
-  _ct(i, frm, to) { // log custom tag
+  _logCustom(i, frm, to) { // log custom tag
 
-    if (this.DBUG) console.log("\n  Custom(" +
-      i + ") tagged '" + frm + "' -> '" + to + "'\n\n");
+    //console.log("\n  Custom("+i+") tagged '" + frm + "' -> '" + to + "'\n\n");
   }
 
   // Applies a customized subset of the Brill transformations
   _applyContext(words, result, choices) {
 
-    if (this.DBUG) console.log("ac(" + words + "," + result + "," + choices + ")");
+    //console.log("ac(" + words + "," + result + "," + choices + ")");
 
     // Apply transformations
     for (let i = 0, l = words.length; i < l; i++) {
@@ -181,7 +254,7 @@ class PosTagger {
               tag = "nns";
           }
 
-          this._ct("1a", word, tag);
+          this._logCustom("1a", word, tag);
         }
 
         // transform 1b: DT, {RB | RBR | RBS} --> DT, {JJ |
@@ -189,7 +262,7 @@ class PosTagger {
         else if (tag.startsWith("rb")) {
 
           tag = (tag.length > 2) ? "jj" + tag.charAt(2) : "jj";
-          this._ct("1b", word, tag);
+          this._logCustom("1b", word, tag);
         }
       }
 
@@ -231,7 +304,7 @@ class PosTagger {
         // DH: fixed here -- add check on choices for any verb: eg. // 'morning'
         if (this.hasTag(choices[i], "vb")) {
           tag = "vbg";
-          this._ct(8, word, tag);
+          this._logCustom(8, word, tag);
         }
       }
 
@@ -239,7 +312,7 @@ class PosTagger {
       // 3sg-verbs when following a singular noun (the dog dances, Dave dances, he dances)
       if (i > 0 && tag == "nns" && this.hasTag(choices[i], "vbz") && result[i - 1].match(/^(nn|prp|nnp)$/)) {
         tag = "vbz";
-        this._ct(9, word, tag);
+        this._logCustom(9, word, tag);
       }
 
       // transform 10(dch): convert common nouns to proper
@@ -249,7 +322,7 @@ class PosTagger {
         // or when it is at the start of a sentence but can't be found in the dictionary
         if (i != 0 || words.length === 1 || (i == 0 && !this._lexHas('nn', RiTa.singularize(word).toLowerCase()))) {
           tag = tag.endsWith("s") ? "nnps" : "nnp";
-          this._ct(10, word, tag);
+          this._logCustom(10, word, tag);
         }
       }
 
@@ -258,7 +331,7 @@ class PosTagger {
       if (i < result.length - 1 && tag == "nns" && result[i + 1].startsWith("rb") &&
         this.hasTag(choices[i], "vbz")) {
         tag = "vbz";
-        this._ct(11, word, tag);
+        this._logCustom(11, word, tag);
       }
 
       // transform 12(dch): convert plural nouns which have an entry for their base form to vbz
@@ -269,7 +342,7 @@ class PosTagger {
           // if word is ends with s or es and is 'nns' and has a vb
           if (this._lexHas('vb', RiTa.singularize(word))) {
             tag = "vbz";
-            this._ct(12, word, tag);
+            this._logCustom(12, word, tag);
           }
         } // if only word and not in lexicon
         else if (words.length === 1 && !choices[i].length) {
@@ -277,7 +350,7 @@ class PosTagger {
           // only return vbz when the stem is vb but not nn
           if (!this._lexHas('nn', RiTa.singularize(word)) && this._lexHas('vb', RiTa.singularize(word))) {
             tag = "vbz";
-            this._ct(12, word, tag);
+            this._logCustom(12, word, tag);
           }
 
         }
@@ -287,7 +360,7 @@ class PosTagger {
       if (tag === "vb" || (tag === "nn" && this.hasTag(choices[i], "vb"))) {
         if (i > 0 && result[i - 1].match(/^(nns|nnps|prp)$/)) {
           tag = "vbp";
-          this._ct(13, word, tag);
+          this._logCustom(13, word, tag);
         }
       }
 
@@ -311,10 +384,10 @@ class PosTagger {
 
         for (let j = 0; j < tags.length; j++) {
 
-          if (pos === 'n' && this.isNoun(tags[j]) ||
-            pos === 'v' && this.isVerb(tags[j]) ||
-            pos === 'r' && this.isAdverb(tags[j]) ||
-            pos === 'a' && this.isAdj(tags[j]) ||
+          if (pos === 'n' && this.isNounTag(tags[j]) ||
+            pos === 'v' && this.isVerbTag(tags[j]) ||
+            pos === 'r' && this.isAdverbTag(tags[j]) ||
+            pos === 'a' && this.isAdjTag(tags[j]) ||
             pos === tags[j]) {
             return true;
           }
@@ -322,6 +395,7 @@ class PosTagger {
       }
     }
   }
+
 }
 
 module && (module.exports = PosTagger);

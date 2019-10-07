@@ -141,8 +141,6 @@ const PAST_PARTICIPLE_RULES = [
   RE("^overwind$", 3, "ound", 0),
   RE("^overwrite$", 1, "ten", 0),
   RE("^plead$", 2, "d", 0),
-  //RE("^run$", 3, "ran", 0), //DH
-  //RE("^rerun$", 3, "run", 0),
   RE("^rebuild$", 3, "ilt", 0),
   RE("^red$", 3, "red", 0),
   RE("^redo$", 1, "one", 0),
@@ -225,8 +223,7 @@ const PAST_TENSE_RULES = [
   RE("(([sfc][twlp]?r?|w?r)ing)$", 3, "ang", 1),
   RE("^" + VERBAL_PREFIX + "?(bend|spend|send|lend|spend)$", 1, "t", 0),
   RE("^" + VERBAL_PREFIX + "?lie$", 2, "ay", 0),
-  RE("^" + VERBAL_PREFIX + "?(weep|sleep|sweep|creep|keep)$", 2, "pt",
-    0),
+  RE("^" + VERBAL_PREFIX + "?(weep|sleep|sweep|creep|keep)$", 2, "pt", 0),
   RE("^" + VERBAL_PREFIX + "?(sell|tell)$", 3, "old", 0),
   RE("^" + VERBAL_PREFIX + "?do$", 1, "id", 0),
   RE("^" + VERBAL_PREFIX + "?dig$", 2, "ug", 0),
@@ -482,7 +479,6 @@ const PRESENT_TENSE_RULES = [
   RE("^gen-up$", 3, "s-up", 0),
   RE("^prologue$", 3, "gs", 0),
   RE("^picknic$", 0, "ks", 0),
-  //RE("^swim$", 0, "s", 0),
   RE("^ko$", 0, "'s", 0),
   RE("[osz]$", 0, "es", 1),
   RE("^have$", 2, "s", 0),
@@ -689,12 +685,7 @@ class Conjugator {
 
     if (!args) return theVerb;
 
-    // ------------------ handle arguments ------------------
-
-    let v = theVerb.toLowerCase();
-    if (v === "am" || v === "are" || v === "is" || v === "was" || v === "were") {
-      v = "be";
-    }
+    // --------------------- handle args ---------------------
 
     this.reset();
 
@@ -707,9 +698,13 @@ class Conjugator {
     args.interrogative && (this.interrogative = args.interrogative);
     args.perfect && (this.perfect = args.perfect);
 
+    // ----------------------- start ---------------------------
+
+    let v = theVerb.toLowerCase(); // handle to-be forms
+    if (["am", "are", "is", "was", "were"].includes(v)) v = "be";
+
     let actualModal, conjs = [], verbForm, frontVG = v;
 
-    // ----------------------- start ---------------------------
     if (this.form === RiTa.INFINITIVE) {
       actualModal = "to";
     }
@@ -734,8 +729,6 @@ class Conjugator {
     }
 
     if (actualModal) {
-
-      // log("push: "+frontVG);
       conjs.push(frontVG);
       frontVG = null;
     }
@@ -761,13 +754,9 @@ class Conjugator {
     // add modal, and we're done
     actualModal && conjs.push(actualModal);
 
-    let s = '';
-    for (let i = 0; i < conjs.length; i++) {
-      s = conjs[i] + " " + s;
-    }
-
     // !@# test this
-    s.endsWith("peted") && err("Unexpected output: " + this.toString());
+    let s = conjs.reduce((acc, cur) => cur +  ' ' + acc);
+    if (s.endsWith("peted")) throw Error("Unexpected output: ", this);
 
     return s.trim();
   }
@@ -777,14 +766,14 @@ class Conjugator {
     if (!theVerb || !theVerb.length) return '';
 
     theVerb = theVerb.trim();
-    
+
     let dbug = 0;
 
     let res, name = ruleSet.name,
       rules = ruleSet.rules,
       defRule = ruleSet.defaultRule;
 
-    if (!rules) err("no rule: " + ruleSet.name + ' of ' + theVerb);
+    if (!rules) console.error("no rule: " + ruleSet.name + ' of ' + theVerb);
 
     if (MODALS.includes(theVerb)) return theVerb;
 

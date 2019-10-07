@@ -13,8 +13,7 @@ const Pluralizer = require('./pluralizer');
 const LetterToSound = require("./rita_lts");
 const Syllabifier = require('./syllabifier');
 
-let ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
-//let ALL_PUNCT = /^[-[\]{}()*+!?%&.,\\^$|#@<>|+=;:]+$/g;
+const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
 
 class RiTa {
 
@@ -23,11 +22,11 @@ class RiTa {
   }
 
   static analyze(text) {
-    return RiTa._loadData().analyzer.analyze(text);
+    return RiTa._analyzer().analyze(text);
   }
 
   static alliterations(text) {
-    return RiTa._loadData().lexicon.alliterations(text);
+    return RiTa._lexicon().alliterations(text);
   }
 
   static concordance() {
@@ -43,7 +42,7 @@ class RiTa {
   }
 
   static hasWord(word) {
-    return RiTa._loadData().lexicon.hasWord(word);
+    return RiTa._lexicon().hasWord(word);
   }
 
   static isAbbrev(str) {
@@ -51,11 +50,11 @@ class RiTa {
   }
 
   static isAdjective(word) {
-    return "";
+    return RiTa.tagger.isAdjective(word);
   }
 
   static isAdverb(word) {
-    return "";
+    return RiTa.tagger.isAdverb(word);
   }
 
   static isAlliteration(word1, word2) {
@@ -63,7 +62,7 @@ class RiTa {
   }
 
   static isNoun(word) {
-    return "";
+    return RiTa.tagger.isNoun(word);
   }
 
   static isPunctuation(text) {
@@ -79,7 +78,8 @@ class RiTa {
   }
 
   static isVerb(word) {
-    return "";
+    return RiTa.tagger.isVerb(word);
+
   }
 
   static kwic() {
@@ -91,22 +91,13 @@ class RiTa {
   }
 
   static phonemes(str) {
-    return RiTa._loadData().analyzer.analyze(str).phonemes;
+    return RiTa._analyzer().analyze(str).phonemes;
   }
 
   static posTags(words, opts) {
-    RiTa._loadData(); // init dict/lts
-    words = typeof words === 'string' ? RiTa.tokenizer.tokenize(words) : words;
-    if (opts) {
-      //words = typeof words === 'string' ? RiTa.tokenizer.tokenize(words) : words;
-      if (opts.wordNetTags) return RiTa.tagger.tagForWordNet(words);
-      if (opts.inline) return RiTa.tagger.tagForWordNet(words);
-    }
-    return RiTa.tagger.tag(words); // or split on spaces instead?
-  }
-
-  static posTagsInline(str) { // TODO: add as option
-    return "";
+    if (opts && opts.simple) return RiTa.tagger.tagSimple(words);
+    if (opts && opts.inline) return RiTa.tagger.tagInline(words);
+    return RiTa.tagger.tag(words);
   }
 
   static pluralize(word) {
@@ -130,11 +121,11 @@ class RiTa {
   }
 
   static randomWord(opts) {
-    return RiTa._loadData().lexicon.randomWord(opts);
+    return RiTa._lexicon().randomWord(opts);
   }
 
   static rhymes(word, opts) {
-    return RiTa._loadData().lexicon.rhymes(word, opts);
+    return RiTa._lexicon().rhymes(word, opts);
   }
 
   static evaluate(s) {
@@ -142,15 +133,15 @@ class RiTa {
   }
 
   static stresses(str) {
-    return RiTa._loadData().analyzer.analyze(str).stresses;
+    return RiTa._analyzer().analyze(str).stresses;
   }
 
   static syllables(str) {
-    return RiTa._loadData().analyzer.analyze(str).syllables;
+    return RiTa._analyzer().analyze(str).syllables;
   }
 
   static similarBy(word, opts) {
-    return RiTa._loadData().lexicon.similarBy(word, opts);
+    return RiTa._lexicon().similarBy(word, opts);
   }
 
   static singularize(word) {
@@ -174,17 +165,25 @@ class RiTa {
   }
 
   static words() {
-    return RiTa._loadData().lexicon.words();
+    return RiTa._lexicon().words();
   }
 
   /////////////////////////////////////////////////////////////////
 
-  static _loadData() {
+  static _lexicon() {
     if (typeof RiTa.lexicon === 'undefined') {
       RiTa.lts = new LetterToSound(RiTa);
       RiTa.lexicon = new Lexicon(RiTa, require('./rita_dict'));
     }
-    return RiTa;
+    return RiTa.lexicon;
+  }
+
+  static _analyzer() {
+    if (typeof RiTa.analyzer === 'undefined') {
+      RiTa._lexicon();
+      RiTa.analyzer = new Analyzer(RiTa);
+    }
+    return RiTa.analyzer;
   }
 }
 
@@ -194,7 +193,6 @@ RiTa.stemmer = new Stemmer(RiTa);
 RiTa.tagger = new PosTagger(RiTa);
 RiTa.concorder = new Concorder(RiTa);
 RiTa.tokenizer = new Tokenizer(RiTa);
-RiTa.analyzer = new Analyzer(RiTa);
 RiTa.pluralizer = new Pluralizer(RiTa);
 RiTa.conjugator = new Conjugator(RiTa);
 RiTa.syllabifier = new Syllabifier(RiTa);
@@ -203,6 +201,7 @@ RiTa.syllabifier = new Syllabifier(RiTa);
 RiTa.RiMarkov = Markov;
 
 // LAZY-LOADS
+RiTa.analyzer = undefined;
 RiTa.lexicon = undefined;
 RiTa.dict = undefined;
 RiTa.lts = undefined;
@@ -237,26 +236,12 @@ RiTa.IMPERATIVE = 3;
 RiTa.BARE_INFINITIVE = 4;
 RiTa.SUBJUNCTIVE = 5;
 
-
-// Warn on words not found  in lexicon
+// Warn on words not found in lexicon
 RiTa.LEX_WARN = false;
 
 // For tokenization, Can't -> Can not, etc.
 RiTa.SPLIT_CONTRACTIONS = false;
 
 RiTa.FEATURES = ['tokens', 'stresses', 'phonemes', 'syllables', 'pos', 'text'].map(f => f.toUpperCase());
-
-// HELPERS
-
-// function _lexicon() {
-//
-// }
-
-function _stemmer() {
-  if (typeof RiTa.stemmer === 'undefined') {
-    RiTa.stemmer = new Stemmer(RiTa);
-  }
-  return RiTa.stemmer;
-}
 
 module && (module.exports = RiTa);
