@@ -42,7 +42,7 @@ class Lexicon {
 
     if (typeof a[0] === "string") {
 
-      a[0] = trim(a[0]).toLowerCase();
+      a[0] = a[0].trim().toLowerCase();
 
       pluralize = (a[0] === "nns");
 
@@ -108,7 +108,75 @@ class Lexicon {
     return '';
   }
 
+  isAlliteration(word1, word2, useLTS) {
+
+    if (!word1 || !word2 || !word1.length || !word2.length) {
+      return false;
+    }
+
+    if (word1.indexOf(" ") > -1 || word2.indexOf(" ") > -1) {
+      throw Error('isAlliteration expects single words only');
+    }
+
+    let c1 = this._firstPhoneme(this._firstStressedSyllable(word1, useLTS)),
+      c2 = this._firstPhoneme(this._firstStressedSyllable(word2, useLTS));
+
+    if (this._isVowel(c1.charAt(0)) || this._isVowel(c2.charAt(0))) {
+      return false;
+    }
+
+    return c1 && c2 && c1 === c2;
+  }
   //////////////////////////////////////////////////////////////////////
+
+  _isVowel(c) {
+
+    return c && c.length && RiTa.VOWELS.indexOf(c) > -1;
+  }
+
+  _isConsonant(p) {
+
+    return (typeof p === S && p.length === 1 && // precompile
+      RiTa.VOWELS.indexOf(p) < 0 && /^[a-z\u00C0-\u00ff]+$/.test(p));
+  }
+
+  _firstPhoneme(rawPhones) {
+
+    if (!rawPhones || !rawPhones.length) return '';
+
+    let phones = rawPhones.split(RiTa.PHONEME_BOUNDARY);
+
+    if (phones) return phones[0];
+
+    return ''; // return null?
+  }
+
+  _firstStressedSyllable(word, useLTS) {
+
+    let raw = this._getRawPhones(word, useLTS);
+
+    if (!raw || !raw.length) return ''; // return null?
+
+    let idx = raw.indexOf(RiTa.STRESSED);
+
+    if (idx < 0) return ''; // no stresses... return null?
+
+    let c = raw.charAt(--idx);
+
+    while (c != ' ') {
+      if (--idx < 0) {
+        // single-stressed syllable
+        idx = 0;
+        break;
+      }
+      c = raw.charAt(idx);
+    }
+
+    let firstToEnd = idx === 0 ? raw : raw.substring(idx).trim();
+    idx = firstToEnd.indexOf(' ');
+
+    return idx < 0 ? firstToEnd : firstToEnd.substring(0, idx);
+  }
 
   _getPosData(word) {
 
@@ -140,13 +208,14 @@ class Lexicon {
     let phones, rdata = this._lookupRaw(word);
     useLTS = useLTS || false;
 
-    if (!rdata && useLTS) {
+    if (rdata === undefined || useLTS) { // ??
 
       phones = RiTa.lts && RiTa.lts.getPhones(word);
-      if (phones && phones.length)
-        return RiTa.syllables(phones);
-
+      if (phones && phones.length) {
+        return RiTa.syllabifier.fromPhones(phones);
+      }
     }
+
     return (rdata && rdata.length === 2) ? rdata[0] : '';
   }
 }

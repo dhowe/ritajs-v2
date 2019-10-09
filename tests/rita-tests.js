@@ -3,6 +3,50 @@ const RiTa = require('../src/rita_core');
 
 describe('RiTa.Core', () => {
 
+  it('Should correctly call isAbbreviation()', () => {
+
+    ok(RiTa.isAbbreviation("Dr."));
+    ok(RiTa.isAbbreviation("dr."));
+    //T in java
+
+    ok(!RiTa.isAbbreviation("DR."));
+    // F in Processing.lowercase is true but uppercase is false
+    ok(!RiTa.isAbbreviation("Dr. "));
+    //space
+    ok(!RiTa.isAbbreviation(" Dr."));
+    //space
+    ok(!RiTa.isAbbreviation("  Dr."));
+    //double space
+    ok(!RiTa.isAbbreviation("Dr.  "));
+    //double space
+    ok(!RiTa.isAbbreviation("   Dr."));
+    //tab space
+    ok(!RiTa.isAbbreviation("Dr.    "));
+    //tab space
+    ok(!RiTa.isAbbreviation("Dr"));
+    ok(!RiTa.isAbbreviation("Doctor"));
+    ok(!RiTa.isAbbreviation("Doctor."));
+
+    ok(RiTa.isAbbreviation("Prof."));
+    ok(RiTa.isAbbreviation("prof."));
+    //T in java
+    ok(!RiTa.isAbbreviation("PRFO."));
+    //  F in Processing. lowercase is true but uppercase is false
+    ok(!RiTa.isAbbreviation("PrFo."));
+    //  F in Processing. lowercase is true but uppercase is false
+    ok(!RiTa.isAbbreviation("Professor"));
+    ok(!RiTa.isAbbreviation("professor"));
+    ok(!RiTa.isAbbreviation("PROFESSOR"));
+    ok(!RiTa.isAbbreviation("Professor."));
+
+    ok(!RiTa.isAbbreviation("@#$%^&*()"));
+
+    ok(!RiTa.isAbbreviation(""));
+    ok(!RiTa.isAbbreviation(null));
+    ok(!RiTa.isAbbreviation(undefined));
+    ok(!RiTa.isAbbreviation(1));
+  });
+
   it('Should correctly call isPunctuation()', () => {
 
     ok(!RiTa.isPunctuation("What the"));
@@ -301,6 +345,6 @@ describe('RiTa.Core', () => {
 
   function ok(res) { expect(res).eq(true); }
   function equal(a, b) { expect(a).eq(b); }
-  
+
   // TODO: remainder of rita functions
 });

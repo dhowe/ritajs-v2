@@ -65,8 +65,8 @@ describe('RiTa.API', () => {
     expect(RiTa.syllables).to.be.a('function');
   });
 
-  it('Should call isAbbrev', () => {
-    expect(RiTa.isAbbrev).to.be.a('function');
+  it('Should call isAbbreviation', () => {
+    expect(RiTa.isAbbreviation).to.be.a('function');
   });
 
   it('Should call isAdjective', () => {

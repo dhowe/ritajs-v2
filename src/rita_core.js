@@ -45,8 +45,17 @@ class RiTa {
     return RiTa._lexicon().hasWord(word);
   }
 
-  static isAbbrev(str) {
-    return "";
+  static isAbbreviation(input, caseSensitive) {
+
+    let titleCase = function(input) {
+      if (!input || !input.length) return input;
+      return input.substring(0, 1).toUpperCase() + input.substring(1);
+    };
+
+    caseSensitive = caseSensitive || false;
+    input = caseSensitive ? input : titleCase(input);
+
+    return RiTa.ABBREVIATIONS.includes(input);
   }
 
   static isAdjective(word) {
@@ -58,7 +67,7 @@ class RiTa {
   }
 
   static isAlliteration(word1, word2) {
-    return "";
+    return RiTa._lexicon().isAlliteration(word1, word2);
   }
 
   static isNoun(word) {

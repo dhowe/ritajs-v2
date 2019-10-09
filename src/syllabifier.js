@@ -2,7 +2,7 @@ const Util = require("./utils");
 
 let RiTa;
 
-class Syllabifier {
+class Syllabifier { // move to analyzer?
 
   constructor(parent) {
     RiTa = parent;
