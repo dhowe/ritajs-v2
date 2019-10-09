@@ -11,17 +11,17 @@ class Lexicon {
     return [];
   }
 
-  hasWord(word) {
-    word = word ? word.toLowerCase() : '';
-    return this.dict.hasOwnProperty(word) || RiTa.pluralizer.isPlural(word);
-  }
-
   rhymes(word) {
     return [];
   }
 
   similarBy(word) {
     return [];
+  }
+
+  hasWord(word) {
+    word = word ? word.toLowerCase() : '';
+    return this.dict.hasOwnProperty(word) || RiTa.pluralizer.isPlural(word);
   }
 
   words() {
@@ -127,6 +127,24 @@ class Lexicon {
 
     return c1 && c2 && c1 === c2;
   }
+
+  isRhyme(word1, word2, useLTS) {
+
+    if (!word1 || !word2 || word1.toUpperCase() === word2.toUpperCase()) {
+      return false;
+    }
+
+    let phones1 = this._getRawPhones(word1, useLTS),
+      phones2 = this._getRawPhones(word2, useLTS);
+
+    if (phones2 === phones1) return false;
+
+    let p1 = this._lastStressedVowelPhonemeToEnd(word1, useLTS),
+      p2 = this._lastStressedVowelPhonemeToEnd(word2, useLTS);
+
+    return p1 && p2 && p1 === p2;
+  }
+
   //////////////////////////////////////////////////////////////////////
 
   _isVowel(c) {
@@ -149,6 +167,55 @@ class Lexicon {
     if (phones) return phones[0];
 
     return ''; // return null?
+  }
+
+  _lastStressedPhoneToEnd(word, useLTS) {
+
+    if (!word || !word.length) return ''; // return null?
+
+    let idx, c, result;
+    let raw = this._getRawPhones(word, useLTS);
+
+    if (!raw || !raw.length) return ''; // return null?
+
+    idx = raw.lastIndexOf(RiTa.STRESSED);
+
+    if (idx < 0) return E; // return null?
+
+    c = raw.charAt(--idx);
+    while (c != '-' && c != ' ') {
+      if (--idx < 0) {
+        return raw; // single-stressed syllable
+      }
+      c = raw.charAt(idx);
+    }
+    result = raw.substring(idx + 1);
+
+    return result;
+  }
+
+
+  _lastStressedVowelPhonemeToEnd(word, useLTS) {
+
+    if (!word || !word.length) return ''; // return null?
+
+    let raw = this._lastStressedPhoneToEnd(word, useLTS);
+    if (!raw || !raw.length) return ''; // return null?
+
+    let syllables = raw.split(' ');
+    let lastSyllable = syllables[syllables.length - 1];
+    lastSyllable = lastSyllable.replace('[^a-z-1 ]', '');
+
+    let idx = -1;
+    for (let i = 0; i < lastSyllable.length; i++) {
+      let c = lastSyllable.charAt(i);
+      if (this._isVowel(c)) {
+        idx = i;
+        break;
+      }
+    }
+
+    return lastSyllable.substring(idx);
   }
 
   _firstStressedSyllable(word, useLTS) {

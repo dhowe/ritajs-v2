@@ -78,17 +78,16 @@ class RiTa {
     return text && text.length && ONLY_PUNCT.test(text);
   }
 
-  static isQuestion(str) {
-    return "";
+  static isQuestion(sentence) { // remove?
+    return RiTa.QUESTIONS.includes(RiTa.tokenize(sentence)[0].toLowerCase());
   }
 
   static isRhyme(word1, word2) {
-    return "";
+    return RiTa._lexicon().isRhyme(word1, word2);
   }
 
   static isVerb(word) {
     return RiTa.tagger.isVerb(word);
-
   }
 
   static kwic() {
@@ -239,6 +238,7 @@ RiTa.SYLLABLE_BOUNDARY = "/";
 RiTa.SENTENCE_BOUNDARY = "|";
 RiTa.VOWELS = "aeiou";
 RiTa.ABBREVIATIONS = ["Adm.", "Capt.", "Cmdr.", "Col.", "Dr.", "Gen.", "Gov.", "Lt.", "Maj.", "Messrs.", "Mr.", "Mrs.", "Ms.", "Prof.", "Rep.", "Reps.", "Rev.", "Sen.", "Sens.", "Sgt.", "Sr.", "St.", "a.k.a.", "c.f.", "i.e.", "e.g.", "vs.", "v.", "Jan.", "Feb.", "Mar.", "Apr.", "Mar.", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
+RiTa.QUESTIONS = ["was", "what", "when", "where", "which", "why", "who", "will", "would", "who", "how", "if",  "is", "could", "might", "does", "are", "have"];
 RiTa.INFINITIVE = 1;
 RiTa.GERUND = 2;
 RiTa.IMPERATIVE = 3;

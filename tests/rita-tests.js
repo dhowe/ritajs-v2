@@ -3,6 +3,23 @@ const RiTa = require('../src/rita_core');
 
 describe('RiTa.Core', () => {
 
+  it('Should correctly call isQuestion()', () => {
+    ok(RiTa.isQuestion("what"));
+    ok(RiTa.isQuestion("what"));
+    ok(RiTa.isQuestion("what is this"));
+    ok(RiTa.isQuestion("what is this?"));
+    ok(RiTa.isQuestion("Does it?"));
+    ok(RiTa.isQuestion("Would you believe it?"));
+    ok(RiTa.isQuestion("Have you been?"));
+    ok(RiTa.isQuestion("Is this yours?"));
+    ok(RiTa.isQuestion("Are you done?"));
+    ok(RiTa.isQuestion("what is this? , where is that?"));
+    ok(!RiTa.isQuestion("That is not a toy This is an apple"));
+    ok(!RiTa.isQuestion("string"));
+    ok(!RiTa.isQuestion("?"));
+    ok(!RiTa.isQuestion(""));
+  });
+
   it('Should correctly call isAbbreviation()', () => {
 
     ok(RiTa.isAbbreviation("Dr."));

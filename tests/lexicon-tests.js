@@ -4,6 +4,35 @@ const RiTa = require('../src/rita_core');
 describe('RiTa.Lexicon', () => {
 
   it('Should correctly call isAlliteration()', () => {
+    ok(!RiTa.isRhyme("apple", "polo"));
+    ok(!RiTa.isRhyme("this", "these"));
+
+    ok(RiTa.isRhyme("cat", "hat"));
+    ok(RiTa.isRhyme("yellow", "mellow"));
+    ok(RiTa.isRhyme("toy", "boy"));
+    ok(RiTa.isRhyme("sieve", "give"));
+
+    ok(RiTa.isRhyme("solo", "tomorrow"));
+    ok(RiTa.isRhyme("tense", "sense"));
+    ok(RiTa.isRhyme("crab", "drab"));
+    ok(RiTa.isRhyme("shore", "more"));
+    ok(!RiTa.isRhyme("hose", "house"));
+    ok(!RiTa.isRhyme("sieve", "mellow"));
+
+    ok(RiTa.isRhyme("mouse", "house")); //why??
+    // ok(!RiTa.isRhyme("solo   ", "tomorrow")); // Word with tab space
+    // ok(!RiTa.isRhyme("solo", "yoyo"));
+    // ok(!RiTa.isRhyme("yoyo", "jojo")); -> Known Issues
+
+    ok(RiTa.isRhyme("yo", "bro"));
+    ok(!RiTa.isRhyme("swag", "grab"));
+    ok(!RiTa.isRhyme("", ""));
+
+    ok(RiTa.isRhyme("weight", "eight"));
+    ok(RiTa.isRhyme("eight", "weight"));
+  });
+
+  it('Should correctly call isAlliteration()', () => {
 
     ok(RiTa.isAlliteration("knife", "gnat")); // gnat=lts
     ok(RiTa.isAlliteration("knife", "naughty"));
