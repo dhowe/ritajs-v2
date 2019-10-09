@@ -3,7 +3,106 @@ const RiTa = require('../src/rita_core');
 
 describe('RiTa.Lexicon', () => {
 
-  it('Should correctly call isAlliteration()', () => {
+  // WORKING HERE: check RiTa v1 for options
+
+  it('Should correctly call similarBy(Letter)', () => {
+return;
+    let result;
+
+    result = RiTa.similarByLetter("banana", true);
+    deepEqual(result, ["cabana"]);
+
+    result = RiTa.similarByLetter("banana", false);
+    deepEqual(result, ["banal", "bonanza", "cabana", "manna"]);
+
+    //delete the word 'lice', not exists anymore in dict.
+    result = RiTa.similarByLetter("banana");
+    deepEqual(result, ["banal", "bonanza", "cabana", "manna"]);
+
+    result = RiTa.similarByLetter("banana", 1, true);
+    deepEqual(result, ["cabana"]);
+
+    result = RiTa.similarByLetter("banana", 1, false);
+    deepEqual(result, ["banal", "bonanza", "cabana", "manna"]);
+
+    result = RiTa.similarByLetter("tornado");
+    deepEqual(result, ["torpedo"]);
+
+    result = RiTa.similarByLetter("ice");
+    deepEqual(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
+
+    result = RiTa.similarByLetter("ice", 1);
+    deepEqual(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
+
+    result = RiTa.similarByLetter("ice", 2, true);
+    ok(result.length > 10);
+
+    result = RiTa.similarByLetter("ice", 0, true); // defaults to 1
+    deepEqual(result, ["ace", "icy", "ire"]);
+
+    result = RiTa.similarByLetter("ice", 1, true);
+    deepEqual(result, ["ace", "icy", "ire"]);
+
+    result = RiTa.similarByLetter("worngword");
+    deepEqual(result, ["foreword", "wormwood"]);
+
+    result = RiTa.similarByLetter("123");
+    ok(result.length > 400);
+
+    result = RiTa.similarByLetter("");
+    deepEqual(result, []);
+  });
+
+  it('Should correctly call similarBy(Sound)', () => {
+return;
+    let result, answer;
+
+    deepEqual(RiTa.similarBySound("tornado"), ["torpedo"]);
+
+    result = RiTa.similarBySound("try");
+    answer = ["cry", "dry", "fry", "pry", "rye", "tie", "tray", "tree", "tribe", "tried", "tripe", "trite", "true", "wry"];
+    deepEqual(result, answer);
+
+    result = RiTa.similarBySound("try", 2);
+    ok(result.length > answer.length); // more
+
+    result = RiTa.similarBySound("happy");
+    answer = ["happier", "hippie"];
+    deepEqual(result, answer);
+
+    result = RiTa.similarBySound("happy", 2);
+    ok(result.length > answer.length); // more
+
+    result = RiTa.similarBySound("cat");
+    answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "can\'t", "cap", "capped", "cash", "cashed", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
+    deepEqual(result, answer);
+
+    result = RiTa.similarBySound("cat", 2);
+    ok(result.length > answer.length);
+
+    result = RiTa.similarBySound("worngword");
+    deepEqual(result, ["watchword", "wayward", "wormwood"]);
+  });
+
+  it('Should correctly call similarBy(SoundAndLetter)', () => {
+return;
+    let result = RiTa.similarBySoundAndLetter("try");
+    deepEqual(result, ["cry", "dry", "fry", "pry", "tray", "wry"]);
+
+    result = RiTa.similarBySoundAndLetter("daddy");
+    deepEqual(result, ["dandy", "paddy"]);
+
+    result = RiTa.similarBySoundAndLetter("banana");
+    deepEqual(result, ["bonanza"]);
+
+    result = RiTa.similarBySoundAndLetter("worngword");
+    deepEqual(result, ["wormwood"]);
+
+    result = RiTa.similarBySoundAndLetter("");
+    deepEqual(result, []);
+  });
+
+  it('Should correctly call isRhyme()', () => {
     ok(!RiTa.isRhyme("apple", "polo"));
     ok(!RiTa.isRhyme("this", "these"));
 
@@ -75,6 +174,8 @@ describe('RiTa.Lexicon', () => {
     ok(!RiTa.isAlliteration("omen", "open"));
     ok(!RiTa.isAlliteration("amicable", "atmosphere"));
   });
+
+  function deepEqual(output, expected) { expect(output).eql(expected); }
   function ok(res) { expect(res).eq(true); }
   function equal(a, b) { expect(a).eq(b); }
 });
