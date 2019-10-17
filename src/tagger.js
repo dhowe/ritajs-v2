@@ -127,7 +127,7 @@ class PosTagger {
         continue;
       }
 
-      let data = lexicon._getPosArr(words[i]);
+      let data = lexicon._posArr(words[i]);
       if (!data.length) {
 
         // use stemmer categories if no lexicon
@@ -196,7 +196,7 @@ class PosTagger {
 
       if (word.indexOf(' ') < 0) {
 
-        let psa = RiTa._lexicon()._getPosArr(word);
+        let psa = RiTa._lexicon()._posArr(word);
 
         if (RiTa.LEX_WARN && psa.length < 1 && this.size() <= 1000) {
           warn(RiTa.LEX_WARN);
@@ -380,7 +380,7 @@ class PosTagger {
 
         if (pos == null) return true;
 
-        let tags = RiTa.lexicon._getPosArr(words[i]);
+        let tags = RiTa.lexicon._posArr(words[i]);
 
         for (let j = 0; j < tags.length; j++) {
 

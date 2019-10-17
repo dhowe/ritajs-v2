@@ -1,3 +1,5 @@
+const Util = require("./utils");
+
 let RiTa;
 
 class Lexicon {
@@ -7,8 +9,34 @@ class Lexicon {
     this.dict = dict;
   }
 
-  alliterations(word) {
-    return [];
+  alliterations(word, opts) {
+
+    word = word.includes(' ') ? word.substring(0, word.indexOf(' ')) : word;
+
+    if (RiTa.VOWELS.includes(word.charAt(0))) return [];
+
+    let matchMinLength = opts && opts.matchMinLength || 4;
+    let useLTS = opts && opts.useLTS || false;
+
+    let results = [];
+    let words = Object.keys(this.dict);
+    let fss = this._firstStressedSyl(word, useLTS);
+    let c1 = this._firstPhone(fss);
+
+    if (!c1 || !c1.length) return [];
+
+    for (let i = 0; i < words.length; i++) {
+
+      if (words[i].length < matchMinLength) continue;
+
+      let c2 = this._firstPhone(this._firstStressedSyl(words[i], useLTS));
+
+      if (RiTa.VOWELS.includes(word.charAt(0))) return []; // ????
+
+      if (c1 === c2) results.push(words[i]);
+    }
+
+    return Util.shuffle(results, RiTa);
   }
 
   rhymes(word) {
@@ -26,6 +54,10 @@ class Lexicon {
 
   words() {
     return Object.keys(this.dict);
+  }
+
+  size() {
+    return this.words.length;
   }
 
   randomWord() {
@@ -118,8 +150,8 @@ class Lexicon {
       throw Error('isAlliteration expects single words only');
     }
 
-    let c1 = this._firstPhoneme(this._firstStressedSyllable(word1, useLTS)),
-      c2 = this._firstPhoneme(this._firstStressedSyllable(word2, useLTS));
+    let c1 = this._firstPhone(this._firstStressedSyl(word1, useLTS)),
+      c2 = this._firstPhone(this._firstStressedSyl(word2, useLTS));
 
     if (this._isVowel(c1.charAt(0)) || this._isVowel(c2.charAt(0))) {
       return false;
@@ -134,8 +166,8 @@ class Lexicon {
       return false;
     }
 
-    let phones1 = this._getRawPhones(word1, useLTS),
-      phones2 = this._getRawPhones(word2, useLTS);
+    let phones1 = this._rawPhones(word1, useLTS),
+      phones2 = this._rawPhones(word2, useLTS);
 
     if (phones2 === phones1) return false;
 
@@ -149,7 +181,7 @@ class Lexicon {
 
   _isVowel(c) {
 
-    return c && c.length && RiTa.VOWELS.indexOf(c) > -1;
+    return c && c.length && RiTa.VOWELS.includes(c);
   }
 
   _isConsonant(p) {
@@ -158,7 +190,7 @@ class Lexicon {
       RiTa.VOWELS.indexOf(p) < 0 && /^[a-z\u00C0-\u00ff]+$/.test(p));
   }
 
-  _firstPhoneme(rawPhones) {
+  _firstPhone(rawPhones) {
 
     if (!rawPhones || !rawPhones.length) return '';
 
@@ -174,7 +206,7 @@ class Lexicon {
     if (!word || !word.length) return ''; // return null?
 
     let idx, c, result;
-    let raw = this._getRawPhones(word, useLTS);
+    let raw = this._rawPhones(word, useLTS);
 
     if (!raw || !raw.length) return ''; // return null?
 
@@ -209,7 +241,7 @@ class Lexicon {
     let idx = -1;
     for (let i = 0; i < lastSyllable.length; i++) {
       let c = lastSyllable.charAt(i);
-      if (this._isVowel(c)) {
+      if (RiTa.VOWELS.includes(c)) {
         idx = i;
         break;
       }
@@ -218,9 +250,9 @@ class Lexicon {
     return lastSyllable.substring(idx);
   }
 
-  _firstStressedSyllable(word, useLTS) {
+  _firstStressedSyl(word, useLTS) {
 
-    let raw = this._getRawPhones(word, useLTS);
+    let raw = this._rawPhones(word, useLTS);
 
     if (!raw || !raw.length) return ''; // return null?
 
@@ -245,22 +277,22 @@ class Lexicon {
     return idx < 0 ? firstToEnd : firstToEnd.substring(0, idx);
   }
 
-  _getPosData(word) {
+  _posData(word) {
 
     let rdata = this._lookupRaw(word);
     return (rdata && rdata.length === 2) ? rdata[1] : '';
   }
 
-  _getPosArr(word) {
+  _posArr(word) {
 
-    let pl = this._getPosData(word);
+    let pl = this._posData(word);
     if (!pl || !pl.length) return [];
     return pl.split(' ');
   }
 
-  _getBestPos(word) {
+  _bestPos(word) {
 
-    let pl = this._getPosArr(word);
+    let pl = this._posArr(word);
     return (pl.length > 0) ? pl[0] : [];
   }
 
@@ -270,20 +302,23 @@ class Lexicon {
     if (this.dict && this.dict[word]) return this.dict[word];
   }
 
-  _getRawPhones(word, useLTS) { // TODO: confusing -> break into 2 funcs
+  _rawPhones(word) {//, forceLTS) {
 
-    let phones, rdata = this._lookupRaw(word);
-    useLTS = useLTS || false;
+    // TODO: remove all useLTS vars ?
 
-    if (rdata === undefined || useLTS) { // ??
+    let phones, result, rdata = this._lookupRaw(word);
+    //useLTS = useLTS || false;
 
+    if (rdata) result = rdata.length === 2 ? rdata[0] : '';
+
+    if (rdata === undefined) { //|| forceLTS) { // ??
       phones = RiTa.lts && RiTa.lts.getPhones(word);
       if (phones && phones.length) {
-        return RiTa.syllabifier.fromPhones(phones);
+        result = RiTa.syllabifier.fromPhones(phones);
       }
     }
 
-    return (rdata && rdata.length === 2) ? rdata[0] : '';
+    return result;
   }
 }
 

@@ -4,13 +4,15 @@ class LetterToSound {
 
   constructor(parent) {
     RiTa = parent;
+    this.cache = {}; // TODO
     this.warnedForNoLTS = false;
     this.letterIndex = {};
     this.fval_buff = [];
     this.stateMachine = null;
     this.numStates = 0;
-    for (let i = 0; i < LetterToSound.RULES.length; i++)
+    for (let i = 0; i < LetterToSound.RULES.length; i++) {
       this.parseAndAdd(LetterToSound.RULES[i]);
+    }
   }
 
   _createState(type, tokenizer) {
@@ -57,9 +59,9 @@ class LetterToSound {
 
   getPhones(input, delim) {
 
-    let i, ph, result = [];
-
     delim = delim || '-';
+
+    let result = [];
 
     if (typeof input === 'string') {
 
@@ -68,18 +70,18 @@ class LetterToSound {
       input = RiTa.tokenize(input);
     }
 
-    for (i = 0; i < input.length; i++) {
-      ph = this._computePhones(input[i]);
+    for (let i = 0; i < input.length; i++) {
+      let ph = this._computePhones(input[i]);
       result[i] = ph ? ph.join(delim) : '';
     }
 
     result = result.join(delim).replace(/ax/g, 'ah');
 
-    result.replace("/0/g","");
+    result.replace("/0/g", "");
 
     if (result.length > 0 && result.indexOf("1") === -1 && result.indexOf(" ") === -1) {
-          ph = result.split("-");
-          result = "";
+      let ph = result.split("-");
+      result = "";
       for (let i = 0; i < ph.length; i++) {
         if (/[aeiou]/.test(ph[i])) ph[i] += "1";
         result += ph[i] + "-";
@@ -122,6 +124,7 @@ class LetterToSound {
 
         phoneList.push(RiTa.syllabifier.Phones.digits[dig]);
       }
+
       return phoneList;
     }
 
@@ -138,13 +141,14 @@ class LetterToSound {
       }
 
       c = word.charAt(pos);
+      if (c == "'") continue;
       startIndex = this.letterIndex[c];
 
       // must check for null here, not 0 (and not ===)
       if (!isNum(startIndex)) {
         if (!RiTa.SILENT && !RiTa.SILENCE_LTS) {
           console.warn("Unable to generate LTS for '" + word + "', no index for '" +
-          c + "', isDigit=" + isNum(c) + ", isPunct=" + RiTa.isPunctuation(c));
+            c + "', isDigit=" + isNum(c) + ", isPunct=" + RiTa.isPunctuation(c));
         }
         return null;
       }

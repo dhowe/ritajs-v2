@@ -3,10 +3,46 @@ const RiTa = require('../src/rita_core');
 
 describe('RiTa.Lexicon', () => {
 
+  it('Should correctly call alliterations()', () => {
+
+    let result;
+
+    // TODO: make sure we have LTS cases in here
+
+    result = RiTa.alliterations("");
+    ok(result.length < 1);
+
+    result = RiTa.alliterations("#$%^&*");
+    ok(result.length < 1);
+
+    result = RiTa.alliterations("umbrella");
+    ok(result.length < 1);
+
+    result = RiTa.alliterations("cat stress");
+    ok(result.length > 2000);
+
+    result = RiTa.alliterations("cat");
+    ok(result.length > 2000);
+    for (let i = 0; i < result.length; i++) {
+      ok(RiTa.isAlliteration(result[i], "cat"));
+    }
+
+    result = RiTa.alliterations("dog");
+    ok(result.length > 1000);
+    for (let i = 0; i < result.length; i++) {
+      ok(RiTa.isAlliteration(result[i], "dog"));
+    }
+  });
+
+  // NEXT
+  it('Should correctly call rhymes()', () => {
+    return;
+  });
+
   // WORKING HERE: check RiTa v1 for options
 
   it('Should correctly call similarBy(Letter)', () => {
-return;
+    return;
     let result;
 
     result = RiTa.similarByLetter("banana", true);
@@ -54,7 +90,7 @@ return;
   });
 
   it('Should correctly call similarBy(Sound)', () => {
-return;
+    return;
     let result, answer;
 
     deepEqual(RiTa.similarBySound("tornado"), ["torpedo"]);
@@ -85,7 +121,7 @@ return;
   });
 
   it('Should correctly call similarBy(SoundAndLetter)', () => {
-return;
+    return;
     let result = RiTa.similarBySoundAndLetter("try");
     deepEqual(result, ["cry", "dry", "fry", "pry", "tray", "wry"]);
 

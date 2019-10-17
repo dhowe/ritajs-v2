@@ -2,17 +2,12 @@
 
 class Utils {
 
-  static trim(str) {
+  static trim(str) { // remove?
     if (!str || !str.length) return str;
     return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
   }
 
-  static last(word) {
-    if (!word || !word.length) return E;
-    return word.charAt(word.length - 1);
-  }
-
-  static equalsIgnoreCase(str1, str2) {
+  static equalsIgnoreCase(str1, str2) { // remove?
     return (str1 && str2 && str1.toLowerCase() === str2.toLowerCase());
   }
 
@@ -24,12 +19,25 @@ class Utils {
     return !isNaN(parseFloat(n)) && isFinite(n);
   }
 
-  static last(word) {
-    if (!word || !word.length) return E;
+  static last(word) { // remove?
+    if (!word || !word.length) return '';
     return word.charAt(word.length - 1);
   }
 
-  static extend(l1, l2) {
+  static shuffle(arr, randomable) { // shuffle array
+    let newArray = arr.slice(),
+      len = newArray.length,
+      i = len;
+    while (i--) {
+      let p = parseInt(randomable.random() * len),
+        t = newArray[i];
+      newArray[i] = newArray[p];
+      newArray[p] = t;
+    }
+    return newArray;
+  }
+
+  static extend(l1, l2) { // remove?
     for (var i = 0; i < l2.length; i++) {
       l1.push(l2[i]);
     }
@@ -65,10 +73,10 @@ class RE {
   }
 
   toString() {
-    return '/'+this.raw+'/';
+    return '/' + this.raw + '/';
   }
 }
 
-Utils.RE = function(a,b,c) { return new RE(a,b,c) };
+Utils.RE = function(a, b, c) { return new RE(a, b, c) };
 
 module && (module.exports = Utils);
