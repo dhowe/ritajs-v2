@@ -39,8 +39,24 @@ class Lexicon {
     return Util.shuffle(results, RiTa);
   }
 
-  rhymes(word) {
-    return [];
+  rhymes(theWord) {
+
+    if (!theWord || !theWord.length) return [];
+
+    let word = theWord.toLowerCase();
+
+    let results = [];
+    let words = Object.keys(this.dict);
+    let p = this._lastStressedPhoneToEnd(word);
+
+    for (let i = 0; i < words.length; i++) {
+
+      if (words[i] === word) continue;
+
+      if (this.dict[words[i]][0].endsWith(p)) results.push(words[i]);
+    }
+
+    return results;
   }
 
   similarBy(word) {

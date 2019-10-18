@@ -21,12 +21,12 @@ class RiTa {
     throw Error('Invalid instantiation');
   }
 
-  static analyze(text) {
-    return RiTa._analyzer().analyze(text);
+  static analyze() {
+    return RiTa._analyzer().analyze(...arguments);
   }
 
-  static alliterations(text) {
-    return RiTa._lexicon().alliterations(text);
+  static alliterations() {
+    return RiTa._lexicon().alliterations(...arguments);
   }
 
   static concordance() {
@@ -41,8 +41,8 @@ class RiTa {
     return Util.isNode() ? RiTa.NODE : RiTa.JS;
   }
 
-  static hasWord(word) {
-    return RiTa._lexicon().hasWord(word);
+  static hasWord() {
+    return RiTa._lexicon().hasWord(...arguments);
   }
 
   static isAbbreviation(input, caseSensitive) {
@@ -59,7 +59,7 @@ class RiTa {
   }
 
   static isAdjective(word) {
-    return RiTa.tagger.isAdjective(word);
+    return RiTa.tagger.isAdjective(...arguments);
   }
 
   static isAdverb(word) {
@@ -98,14 +98,14 @@ class RiTa {
     return RiTa.conjugator.pastParticiple(verb);
   }
 
-  static phonemes(str) {
-    return RiTa._analyzer().analyze(str).phonemes;
+  static phonemes(text) {
+    return RiTa._analyzer().analyze(text).phonemes;
   }
 
   static posTags(words, opts) {
-    if (opts && opts.simple) return RiTa.tagger.tagSimple(words);
-    if (opts && opts.inline) return RiTa.tagger.tagInline(words);
-    return RiTa.tagger.tag(words);
+    return (opts && opts.simple) ? RiTa.tagger.tagSimple(words)
+      : (opts && opts.inline) ? RiTa.tagger.tagInline(words)
+        : RiTa.tagger.tag(words);
   }
 
   static pluralize(word) {
@@ -132,24 +132,24 @@ class RiTa {
     return RiTa._lexicon().randomWord(opts);
   }
 
-  static rhymes(word, opts) {
-    return RiTa._lexicon().rhymes(word, opts);
+  static rhymes() {
+    return RiTa._lexicon().rhymes(...arguments);
   }
 
-  static evaluate(s) {
+  static evaluate() {
     return RiTa.parser.lexParseVisit(...arguments);
   }
 
-  static stresses(str) {
-    return RiTa._analyzer().analyze(str).stresses;
+  static stresses(text) {
+    return RiTa._analyzer().analyze(text).stresses;
   }
 
-  static syllables(str) {
-    return RiTa._analyzer().analyze(str).syllables;
+  static syllables(text) {
+    return RiTa._analyzer().analyze(text).syllables;
   }
 
-  static similarBy(word, opts) {
-    return RiTa._lexicon().similarBy(word, opts);
+  static similarBy() {
+    return RiTa._lexicon().similarBy(...arguments);
   }
 
   static singularize(word) {
@@ -168,8 +168,8 @@ class RiTa {
     return RiTa.tokenizer.tokenize(text);
   }
 
-  static untokenize(arr) {
-    return RiTa.tokenizer.untokenize(arr);
+  static untokenize(words) {
+    return RiTa.tokenizer.untokenize(words);
   }
 
   static words() {
@@ -238,7 +238,7 @@ RiTa.SYLLABLE_BOUNDARY = "/";
 RiTa.SENTENCE_BOUNDARY = "|";
 RiTa.VOWELS = "aeiou";
 RiTa.ABBREVIATIONS = ["Adm.", "Capt.", "Cmdr.", "Col.", "Dr.", "Gen.", "Gov.", "Lt.", "Maj.", "Messrs.", "Mr.", "Mrs.", "Ms.", "Prof.", "Rep.", "Reps.", "Rev.", "Sen.", "Sens.", "Sgt.", "Sr.", "St.", "a.k.a.", "c.f.", "i.e.", "e.g.", "vs.", "v.", "Jan.", "Feb.", "Mar.", "Apr.", "Mar.", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
-RiTa.QUESTIONS = ["was", "what", "when", "where", "which", "why", "who", "will", "would", "who", "how", "if",  "is", "could", "might", "does", "are", "have"];
+RiTa.QUESTIONS = ["was", "what", "when", "where", "which", "why", "who", "will", "would", "who", "how", "if", "is", "could", "might", "does", "are", "have"];
 RiTa.INFINITIVE = 1;
 RiTa.GERUND = 2;
 RiTa.IMPERATIVE = 3;

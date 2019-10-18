@@ -32,11 +32,43 @@ describe('RiTa.Lexicon', () => {
     for (let i = 0; i < result.length; i++) {
       ok(RiTa.isAlliteration(result[i], "dog"));
     }
+
+    result = RiTa.alliterations("dog", { matchMinLength: 15 });
+    ok(result.length < 5, "got length=" + result.length);
+    for (let i = 0; i < result.length; i++) {
+      ok(RiTa.isAlliteration(result[i], "dog"), 'FAIL1: ' + result[i]);
+    }
+
+    result = RiTa.alliterations("cat", { matchMinLength: 16 });
+    ok(result.length < 15);
+    for (let i = 0; i < result.length; i++) {
+      ok(RiTa.isAlliteration(result[i], "cat"), 'FAIL2: ' + result[i]);
+    }
   });
 
   // NEXT
   it('Should correctly call rhymes()', () => {
-    return;
+
+    ok(RiTa.rhymes("cat").includes("hat"));
+    ok(RiTa.rhymes("yellow").includes("mellow"));
+    ok(RiTa.rhymes("toy").includes("boy"));
+    ok(RiTa.rhymes("sieve").includes("give"));
+
+    ok(RiTa.rhymes("tense").includes("sense"));
+    ok(RiTa.rhymes("crab").includes("drab"));
+    ok(RiTa.rhymes("shore").includes("more"));
+
+    ok(RiTa.rhymes("mouse").includes("house"));
+
+    ok(RiTa.rhymes("weight").includes("eight"));
+    ok(RiTa.rhymes("eight").includes("weight"));
+
+    ok(!RiTa.rhymes("apple").includes("polo"));
+    ok(!RiTa.rhymes("this").includes( "these"));
+
+    ok(!RiTa.rhymes("hose").includes("house"));
+    ok(!RiTa.rhymes("sieve").includes("mellow"));
+    ok(!RiTa.rhymes("swag").includes("grab"));
   });
 
   // WORKING HERE: check RiTa v1 for options
@@ -155,7 +187,6 @@ describe('RiTa.Lexicon', () => {
     ok(!RiTa.isRhyme("sieve", "mellow"));
 
     ok(RiTa.isRhyme("mouse", "house")); //why??
-    // ok(!RiTa.isRhyme("solo   ", "tomorrow")); // Word with tab space
     // ok(!RiTa.isRhyme("solo", "yoyo"));
     // ok(!RiTa.isRhyme("yoyo", "jojo")); -> Known Issues
 
@@ -211,7 +242,7 @@ describe('RiTa.Lexicon', () => {
     ok(!RiTa.isAlliteration("amicable", "atmosphere"));
   });
 
-  function deepEqual(output, expected) { expect(output).eql(expected); }
-  function ok(res) { expect(res).eq(true); }
-  function equal(a, b) { expect(a).eq(b); }
+  function deepEqual(output, expected, msg) { expect(output).eql(expected, msg); }
+  function ok(res, msg) { expect(res).eq(true, msg); }
+  function equal(a, b, msg) { expect(a).eq(b, msg); }
 });
