@@ -48,9 +48,7 @@ class Utils {
 
     //log('computeRaw: '+arguments.length+ " "+Type.get(source));
 
-    if (Array.isArray(source)) {
-      return Utils.arrayMinEditDist(source, target);
-    }
+    if (Array.isArray(source)) return Utils.arrayMinEditDist(source, target);
 
     if (!source.length && !target.length) return 0;
 

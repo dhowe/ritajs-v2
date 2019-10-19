@@ -59,6 +59,7 @@ class LetterToSound {
 
   getPhones(input) {
 
+    // use cached value if possible
     if (this.cache && typeof this.cache[input] !== 'undefined') {
       return this.cache[input];
     }
@@ -92,6 +93,7 @@ class LetterToSound {
       if (ph.length > 1) result = result.substring(0, result.length - 1);
     }
 
+    // cached the value for later
     if (this.cache) this.cache[input] = result;
 
     return result;
@@ -258,7 +260,6 @@ class FinalState {
   }
 }
 FinalState.TYPE = 2;
-
 
 LetterToSound.RULES = [
   'T 13100',

@@ -64,117 +64,32 @@ class Lexicon {
 
     if (!word || !word.length) return [];
 
-    let type = opts && opts.type || 'letter';
-    type = type[0].toUpperCase() + type.substring(1);
+    opts = opts || {};
+    opts.type = opts.type || 'letter';
 
-    return this['similarBy' + type](word, opts);
+    return (opts.type === 'soundAndLetter') ?
+      this.similarBySoundAndLetter(word, opts)
+      : this.similarByType(word, opts);
   }
 
-  similarBySoundAndLetter(word, opts) {
-
-    function intersect() { // https://gist.github.com/lovasoa/3361645
-      let i, all, n, len, ret = [],
-        obj = {},
-        shortest = 0,
-        nOthers = arguments.length - 1,
-        nShortest = arguments[0].length;
-      for (i = 0; i <= nOthers; i++) {
-        n = arguments[i].length;
-        if (n < nShortest) {
-          shortest = i;
-          nShortest = n;
-        }
-      }
-      for (i = 0; i <= nOthers; i++) {
-        n = (i === shortest) ? 0 : (i || shortest);
-        len = arguments[n].length;
-        for (let j = 0; j < len; j++) {
-          let elem = arguments[n][j];
-          if (obj[elem] === i - 1) {
-            if (i === nOthers) {
-              ret.push(elem);
-              obj[elem] = 0;
-            } else {
-              obj[elem] = i;
-            }
-          } else if (i === 0) {
-            obj[elem] = 0;
-          }
-        }
-      }
-      return ret;
-    }
-
-    let simLetter = this.similarByLetter(word, opts);
-    if (simLetter.length < 1) return [];
-
-    let simSound = this.similarBySound(word, opts);
-    if (simSound.length < 1) return [];
-
-    return intersect(simSound, simLetter);
-  }
-
-  similarBySound(input, opts) {
+  similarByType(word, opts) {
 
     let minLen = opts && opts.minimumWordLen || 2;
-    let minEditDist = opts && opts.minAllowedDistance || 1;
-
-    let minVal = Number.MAX_VALUE;
-    let result = [];
-    let words = Object.keys(this.dict);
-    let phones = RiTa.phonemes(input);
-    let targetPhonesArr = phones ? phones.split('-') : [];
-    let input_s = input + 's';
-    let input_es = input + 'es';
-
-    if (!targetPhonesArr[0] || !(input && input.length)) return [];
-
-    //console.log("TARGET "+targetPhonesArr);
-
-    for (let i = 0; i < words.length; i++) {
-
-      let entry = words[i];
-
-      if (entry.length < minLen) continue;
-      if (entry === input || entry === input_s || entry === input_es) continue;
-
-      phones = this.dict[entry][0];
-      //if (i<10) console.log(phones+" :: "+);
-      let phonesArr = phones.replace(/1/g, '').replace(/ /g, '-').split('-');
-
-      let med = Util.arrayMinEditDist(phonesArr, targetPhonesArr);
-
-      // found something even closer
-      if (med >= minEditDist && med < minVal) {
-
-        minVal = med;
-        result = [entry];
-        //console.log("BEST "+entry + " "+med + " "+phonesArr);
-      }
-
-      // another best to add
-      else if (med === minVal) {
-
-        //console.log("TIED "+entry + " "+med + " "+phonesArr);
-        result.push(entry);
-      }
-    }
-
-    return result;
-  };
-
-  similarByLetter(word, opts) {
-
     let preserveLength = opts && opts.preserveLength || 0;
     let minAllowedDist = opts && opts.minAllowedDistance || 1;
 
+    let result = [];
     let minVal = Number.MAX_VALUE;
     let words = Object.keys(this.dict);
     let input = word.toLowerCase();
-    let inputS = input + 's';
-    let inputES = input + 'es';
-    let result = [];
-    let minLen = 2;
+    let variations = [input, input + 's', input + 'es'];
+
+    let compareA = input;
+    if (opts.type === 'sound') {
+      let iphones = RiTa.phonemes(input);
+      if (!iphones) return [];
+      compareA = iphones.split('-');
+    }
 
     for (let i = 0; i < words.length; i++) {
 
@@ -182,28 +97,44 @@ class Lexicon {
 
       if ((entry.length < minLen) ||
         (preserveLength && (entry.length !== input.length)) ||
-        (entry === input || entry === inputS || entry === inputES)) {
+        variations.includes(entry)) {
         continue;
       }
 
-      let med = Util.minEditDist(entry, input);
-      //let med = MED(entry, input);
-
-      // we found something even closer
-      if (med >= minAllowedDist && med < minVal) {
-        //console.log(entry, med);
-        minVal = med;
-        result = [entry];
+      let compareB = entry;
+      if (Array.isArray(compareA)) {
+        compareB = this.dict[entry][0].replace(/1/g, '').replace(/ /g, '-').split('-');
       }
 
-      // we have another best to add
+      let med = Util.minEditDist(compareA, compareB);
+
+      // found something even closer
+      if (med >= minAllowedDist && med < minVal) {
+        minVal = med;
+        result = [entry];
+        //console.log("BEST(" + med + ")" + entry + " -> " + phonesArr);
+      }
+
+      // another best to add
       else if (med === minVal) {
-        //console.log(entry, med);
+        //console.log("TIED(" + med + ")" + entry + " -> " + phonesArr);
         result.push(entry);
       }
     }
-
     return result;
+  }
+
+  similarBySoundAndLetter(word, opts) {
+
+    opts.type = 'letter';
+    let simLetter = this.similarByType(word, opts);
+    if (simLetter.length < 1) return [];
+
+    opts.type = 'sound';
+    let simSound = this.similarByType(word, opts);
+    if (simSound.length < 1) return [];
+
+    return this._intersect(simSound, simLetter);
   }
 
   hasWord(word) {
@@ -352,12 +283,42 @@ class Lexicon {
   _firstPhone(rawPhones) {
 
     if (!rawPhones || !rawPhones.length) return '';
-
     let phones = rawPhones.split(RiTa.PHONEME_BOUNDARY);
-
     if (phones) return phones[0];
-
     return ''; // return null?
+  }
+
+  _intersect() { // https://gist.github.com/lovasoa/3361645
+    let i, all, n, len, ret = [],
+      obj = {},
+      shortest = 0,
+      nOthers = arguments.length - 1,
+      nShortest = arguments[0].length;
+    for (i = 0; i <= nOthers; i++) {
+      n = arguments[i].length;
+      if (n < nShortest) {
+        shortest = i;
+        nShortest = n;
+      }
+    }
+    for (i = 0; i <= nOthers; i++) {
+      n = (i === shortest) ? 0 : (i || shortest);
+      len = arguments[n].length;
+      for (let j = 0; j < len; j++) {
+        let elem = arguments[n][j];
+        if (obj[elem] === i - 1) {
+          if (i === nOthers) {
+            ret.push(elem);
+            obj[elem] = 0;
+          } else {
+            obj[elem] = i;
+          }
+        } else if (i === 0) {
+          obj[elem] = 0;
+        }
+      }
+    }
+    return ret;
   }
 
   _lastStressedPhoneToEnd(word, useLTS) {
