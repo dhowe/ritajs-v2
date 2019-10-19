@@ -46,12 +46,6 @@ class Utils {
   // med for 2 strings (or 2 arrays)
   static minEditDist(source, target) {
 
-    //log('computeRaw: '+arguments.length+ " "+Type.get(source));
-
-    if (Array.isArray(source)) return Utils.arrayMinEditDist(source, target);
-
-    if (!source.length && !target.length) return 0;
-
     let i, j, matrix = []; // matrix
     let cost; // cost
     let sI; // ith character of s
@@ -59,106 +53,40 @@ class Utils {
 
     // Step 1 ----------------------------------------------
 
-    let sourceLength = source.length;
-    let targetLength = target.length;
-
-    if (!sourceLength) return targetLength;
-
-    if (!targetLength) return sourceLength;
-
-    // Step 2 ----------------------------------------------
-
-    for (i = 0; i <= sourceLength; i++) {
+    for (i = 0; i <= source.length; i++) {
       matrix[i] = [];
       matrix[i][0] = i;
     }
 
-    for (j = 0; j <= targetLength; j++)
+    for (j = 0; j <= target.length; j++) {
       matrix[0][j] = j;
+    }
 
-    // Step 3 ----------------------------------------------
+    // Step 2 ----------------------------------------------
 
-    for (i = 1; i <= sourceLength; i++) {
-      sI = source.charAt(i - 1);
+    for (i = 1; i <= source.length; i++) {
+      sI = source[i - 1];
 
-      // Step 4 --------------------------------------------
+      // Step 3 --------------------------------------------
 
-      for (j = 1; j <= targetLength; j++) {
-        tJ = target.charAt(j - 1);
+      for (j = 1; j <= target.length; j++) {
+        tJ = target[j - 1];
 
-        // Step 5 ------------------------------------------
+        // Step 4 ------------------------------------------
 
         cost = (sI == tJ) ? 0 : 1;
 
-        // Step 6 ------------------------------------------
-        matrix[i][j] = Utils._min3(
-          matrix[i - 1][j] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j - 1] + cost);
-      }
-    }
-
-    // Step 7 ----------------------------------------------
-
-    return matrix[sourceLength][targetLength];
-  }
-
-  // med where each array element either matches or does not
-  static arrayMinEditDist(srcArr, trgArr) {
-
-    //log((srcArr)+" "+(trgArr));
-
-    let matrix = []; // matrix
-    let sI; // ith element of s
-    let tJ; // jth element of t
-    let cost; // cost
-    let i, j, sl, tl;
-
-    // Step 1 ----------------------------------------------
-
-    if (!srcArr.length) return trgArr.length;
-
-    if (!trgArr.length) return srcArr.length;
-
-    // Step 2 ----------------------------------------------
-
-    for (i = 0, sl = srcArr.length; i <= sl; i++) {
-
-      matrix[i] = [];
-      matrix[i][0] = i;
-    }
-
-    for (j = 0, tl = trgArr.length; j <= tl; j++)
-      matrix[0][j] = j;
-
-    // Step 3 ----------------------------------------------
-
-    for (i = 1, sl = srcArr.length; i <= sl; i++) {
-
-      sI = srcArr[i - 1];
-
-      // Step 4 --------------------------------------------
-
-      for (j = 1, tl = trgArr.length; j <= tl; j++) {
-
-        tJ = trgArr[j - 1];
-
         // Step 5 ------------------------------------------
-
-        cost = (sI === tJ) ? 0 : 1;
-
-        // Step 6 ------------------------------------------
-
-        matrix[i][j] = Utils._min3(
+        matrix[i][j] = Math.min(
           matrix[i - 1][j] + 1,
           matrix[i][j - 1] + 1,
           matrix[i - 1][j - 1] + cost);
       }
     }
 
-    // Step 7 ----------------------------------------------
+    // Step 6 ----------------------------------------------
 
-    return matrix[srcArr.length][trgArr.length];
+    return matrix[source.length][target.length];
   }
 
   static _min3(a, b, c) {

@@ -72,6 +72,22 @@ class Lexicon {
       : this.similarByType(word, opts);
   }
 
+  toPhoneArray(raw) {
+    let result = [];
+    let sofar = '';
+    for (let i = 0; i < raw.length; i++) {
+      if (raw[i] == ' ' || raw[i] == '-') {
+        result[result.length] = sofar;
+        sofar = '';
+      }
+      else if (raw[i] != '1' && raw[i] != '0') {
+        sofar += raw[i];
+      }
+    }
+    result[result.length] = sofar;
+    return result;
+  }
+
   similarByType(word, opts) {
 
     let minLen = opts && opts.minimumWordLen || 2;
@@ -84,12 +100,8 @@ class Lexicon {
     let input = word.toLowerCase();
     let variations = [input, input + 's', input + 'es'];
 
-    let compareA = input;
-    if (opts.type === 'sound') {
-      let iphones = RiTa.phonemes(input);
-      if (!iphones) return [];
-      compareA = iphones.split('-');
-    }
+    let compareA = opts.type === 'sound' ?
+      this.toPhoneArray(this._rawPhones(input)) : input;
 
     for (let i = 0; i < words.length; i++) {
 
@@ -101,10 +113,8 @@ class Lexicon {
         continue;
       }
 
-      let compareB = entry;
-      if (Array.isArray(compareA)) {
-        compareB = this.dict[entry][0].replace(/1/g, '').replace(/ /g, '-').split('-');
-      }
+      let compareB = Array.isArray(compareA) ?
+        this.toPhoneArray(this.dict[entry][0]) : entry;
 
       let med = Util.minEditDist(compareA, compareB);
 
@@ -121,6 +131,7 @@ class Lexicon {
         result.push(entry);
       }
     }
+    
     return result;
   }
 
