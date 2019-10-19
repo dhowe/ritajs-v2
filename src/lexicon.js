@@ -1,4 +1,5 @@
 const Util = require("./utils");
+//const MED = require("js-levenshtein");
 
 let RiTa;
 
@@ -59,8 +60,150 @@ class Lexicon {
     return results;
   }
 
-  similarBy(word) {
-    return [];
+  similarBy(word, opts) {
+
+    if (!word || !word.length) return [];
+
+    let type = opts && opts.type || 'letter';
+    type = type[0].toUpperCase() + type.substring(1);
+
+    return this['similarBy' + type](word, opts);
+  }
+
+  similarBySoundAndLetter(word, opts) {
+
+    function intersect() { // https://gist.github.com/lovasoa/3361645
+      let i, all, n, len, ret = [],
+        obj = {},
+        shortest = 0,
+        nOthers = arguments.length - 1,
+        nShortest = arguments[0].length;
+      for (i = 0; i <= nOthers; i++) {
+        n = arguments[i].length;
+        if (n < nShortest) {
+          shortest = i;
+          nShortest = n;
+        }
+      }
+      for (i = 0; i <= nOthers; i++) {
+        n = (i === shortest) ? 0 : (i || shortest);
+        len = arguments[n].length;
+        for (let j = 0; j < len; j++) {
+          let elem = arguments[n][j];
+          if (obj[elem] === i - 1) {
+            if (i === nOthers) {
+              ret.push(elem);
+              obj[elem] = 0;
+            } else {
+              obj[elem] = i;
+            }
+          } else if (i === 0) {
+            obj[elem] = 0;
+          }
+        }
+      }
+      return ret;
+    }
+
+    let simLetter = this.similarByLetter(word, opts);
+    if (simLetter.length < 1) return [];
+
+    let simSound = this.similarBySound(word, opts);
+    if (simSound.length < 1) return [];
+
+    return intersect(simSound, simLetter);
+  }
+
+  similarBySound(input, opts) {
+
+    let minLen = opts && opts.minimumWordLen || 2;
+    let minEditDist = opts && opts.minAllowedDistance || 1;
+
+    let minVal = Number.MAX_VALUE;
+    let result = [];
+    let words = Object.keys(this.dict);
+    let phones = RiTa.phonemes(input);
+    let targetPhonesArr = phones ? phones.split('-') : [];
+    let input_s = input + 's';
+    let input_es = input + 'es';
+
+    if (!targetPhonesArr[0] || !(input && input.length)) return [];
+
+    //console.log("TARGET "+targetPhonesArr);
+
+    for (let i = 0; i < words.length; i++) {
+
+      let entry = words[i];
+
+      if (entry.length < minLen) continue;
+      if (entry === input || entry === input_s || entry === input_es) continue;
+
+      phones = this.dict[entry][0];
+      //if (i<10) console.log(phones+" :: "+);
+      let phonesArr = phones.replace(/1/g, '').replace(/ /g, '-').split('-');
+
+      let med = Util.arrayMinEditDist(phonesArr, targetPhonesArr);
+
+      // found something even closer
+      if (med >= minEditDist && med < minVal) {
+
+        minVal = med;
+        result = [entry];
+        //console.log("BEST "+entry + " "+med + " "+phonesArr);
+      }
+
+      // another best to add
+      else if (med === minVal) {
+
+        //console.log("TIED "+entry + " "+med + " "+phonesArr);
+        result.push(entry);
+      }
+    }
+
+    return result;
+  };
+
+  similarByLetter(word, opts) {
+
+    let preserveLength = opts && opts.preserveLength || 0;
+    let minAllowedDist = opts && opts.minAllowedDistance || 1;
+
+    let minVal = Number.MAX_VALUE;
+    let words = Object.keys(this.dict);
+    let input = word.toLowerCase();
+    let inputS = input + 's';
+    let inputES = input + 'es';
+    let result = [];
+    let minLen = 2;
+
+    for (let i = 0; i < words.length; i++) {
+
+      let entry = words[i];
+
+      if ((entry.length < minLen) ||
+        (preserveLength && (entry.length !== input.length)) ||
+        (entry === input || entry === inputS || entry === inputES)) {
+        continue;
+      }
+
+      let med = Util.minEditDist(entry, input);
+      //let med = MED(entry, input);
+
+      // we found something even closer
+      if (med >= minAllowedDist && med < minVal) {
+        //console.log(entry, med);
+        minVal = med;
+        result = [entry];
+      }
+
+      // we have another best to add
+      else if (med === minVal) {
+        //console.log(entry, med);
+        result.push(entry);
+      }
+    }
+
+    return result;
   }
 
   hasWord(word) {

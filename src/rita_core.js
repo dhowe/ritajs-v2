@@ -79,7 +79,8 @@ class RiTa {
   }
 
   static isQuestion(sentence) { // remove?
-    return RiTa.QUESTIONS.includes(RiTa.tokenize(sentence)[0].toLowerCase());
+    return RiTa.QUESTIONS.includes
+      (RiTa.tokenize(sentence)[0].toLowerCase());
   }
 
   static isRhyme(word1, word2) {

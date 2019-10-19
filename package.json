@@ -22,7 +22,8 @@
   "license": "ISC",
   "dependencies": {
     "antlr4": "^4.7.2",
-    "he": "^1.2.0"
+    "he": "^1.2.0",
+    "js-levenshtein": "^1.1.6"
   },
   "devDependencies": {
     "chai": "^4.2.0",
