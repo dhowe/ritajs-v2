@@ -96,8 +96,8 @@ class Lexicon {
 
     let result = [];
     let minVal = Number.MAX_VALUE;
-    let words = Object.keys(this.dict);
     let input = word.toLowerCase();
+    let words = Object.keys(this.dict);
     let variations = [input, input + 's', input + 'es'];
 
     let compareA = opts.type === 'sound' ?
@@ -131,7 +131,7 @@ class Lexicon {
         result.push(entry);
       }
     }
-    
+
     return result;
   }
 

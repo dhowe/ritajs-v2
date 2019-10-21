@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const RiTa = require('../src/rita_core');
+const RiTa = require('../src/rita_api');
 
 describe('RiTa.Lexicon', () => {
 
