@@ -100,24 +100,24 @@ describe('RiTa.Core', () => {
 
     punct = ",;:!?)([].#\"\\!@$%&}<>|+=-_\\/*{^";
     for (let i = 0; i < punct.length; i++) {
-      ok(RiTa.isPunctuation(punct[i]), punct[i]);
+      ok(RiTa.isPunctuation(punct[i]));
     }
 
     // TODO: also test multiple characters strings here ****
     punct = "\"��������`'";
     for (let i = 0; i < punct.length; i++) {
-      ok(RiTa.isPunctuation(punct[i]), punct[i]);
+      ok(RiTa.isPunctuation(punct[i]));
     }
 
     punct = "\"��������`',;:!?)([].#\"\\!@$%&}<>|+=-_\\/*{^";
     for (let i = 0; i < punct.length; i++) {
-      ok(RiTa.isPunctuation(punct[i]), punct[i]);
+      ok(RiTa.isPunctuation(punct[i]));
     }
 
     // TODO: and here...
     let nopunct = 'Helloasdfnals  FgG   \t kjdhfakjsdhf askjdfh aaf98762348576';
     for (let i = 0; i < nopunct.length; i++) {
-      ok(!RiTa.isPunctuation(nopunct[i]), nopunct[i]);
+      ok(!RiTa.isPunctuation(nopunct[i]));
     }
 
     ok(!RiTa.isPunctuation(""));
