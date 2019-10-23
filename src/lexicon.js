@@ -1,4 +1,4 @@
-const Util = require("./utils");
+const Util = require("./util");
 //const MED = require("js-levenshtein");
 
 let RiTa;

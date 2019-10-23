@@ -3,7 +3,7 @@ const RiTa = require('../src/rita_api');
 
 describe('RiTa.Tagger', () => {
 
-  it('Should correctly call posTags()', () => {
+  it('Should correctly call posTags', () => {
     let result, answer, resultArr, answerArr, txt;
 
     deepEqual(RiTa.posTags(""), []);
@@ -41,7 +41,6 @@ describe('RiTa.Tagger', () => {
     result = RiTa.posTags("teeth");
     answer = ["nns"];
     deepEqual(result, answer);
-    //return;
 
     result = RiTa.posTags("memories");
     answer = ["nns"];
@@ -141,7 +140,7 @@ describe('RiTa.Tagger', () => {
     }
   });
 
-  it('Should correctly call simple posTags()', () => {
+  it('Should correctly call simple posTags', () => {
     //deepEqual(RiTa.posTags("", { simple: true }), []);
     deepEqual(RiTa.posTags("biped", { simple: true }), ["n"]);
     deepEqual(RiTa.posTags("greed", { simple: true }), ["n"]);
@@ -153,7 +152,7 @@ describe('RiTa.Tagger', () => {
     deepEqual(RiTa.posTags("freed", { simple: true }), ["a"]);
   });
 
-  it('Should correctly call inline posTags()', () => {
+  it('Should correctly call inline posTags', () => {
     let result, answer, txt;
 
     deepEqual(RiTa.posTags("", { inline: true }), "");
@@ -181,7 +180,93 @@ describe('RiTa.Tagger', () => {
     equal(result, answer);
   });
 
-  it('Should correctly call isAdverb()', () => {
+
+  it('Should correctly call posTagsInline', () => {
+    let result, answer, txt;
+
+    deepEqual(RiTa.posTagsInline(""), "");
+    deepEqual(RiTa.posTagsInline("asdfaasd"), "asdfaasd/nn");
+
+    result = RiTa.posTagsInline("clothes");
+    answer = "clothes/nns";
+    deepEqual(result, answer);
+
+    result = RiTa.posTagsInline("teeth");
+    answer = "teeth/nns";
+    deepEqual(result, answer);
+
+    result = RiTa.posTagsInline("There is a cat.");
+    answer = "There/ex is/vbz a/dt cat/nn .";
+    deepEqual(result, answer);
+
+    result = RiTa.posTagsInline("The boy, dressed in red, ate an apple.");
+    answer = "The/dt boy/nn , dressed/vbn in/in red/jj , ate/vbd an/dt apple/nn .";
+    deepEqual(result, answer);
+
+    txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
+    result = RiTa.posTagsInline(txt);
+    answer = "The/dt dog/nn ran/vbd faster/rbr than/in the/dt other/jj dog/nn . But/cc the/dt other/jj dog/nn was/vbd prettier/jjr .";
+    equal(result, answer);
+  });
+
+  it('Should correctly call inline simple posTags', () => {
+    let result, answer, txt;
+
+    deepEqual(RiTa.posTags("", { inline: true, simple: true }), "");
+    deepEqual(RiTa.posTags("asdfaasd", { inline: true, simple: true }), "asdfaasd/n");
+
+    result = RiTa.posTags("clothes", { inline: true, simple: true });
+    answer = "clothes/n";
+    deepEqual(result, answer);
+
+    result = RiTa.posTags("teeth", { inline: true, simple: true });
+    answer = "teeth/n";
+    deepEqual(result, answer);
+
+    result = RiTa.posTags("There is a cat.", { inline: true, simple: true });
+    answer = "There/- is/v a/- cat/n .";
+    deepEqual(result, answer);
+
+    result = RiTa.posTags("The boy, dressed in red, ate an apple.", { inline: true, simple: true });
+    answer = "The/- boy/n , dressed/v in/- red/a , ate/v an/- apple/n .";
+    deepEqual(result, answer);
+
+    txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
+    result = RiTa.posTags(txt, { inline: true, simple: true });
+    answer = "The/- dog/n ran/v faster/r than/- the/- other/a dog/n . But/- the/- other/a dog/n was/v prettier/a .";
+    equal(result, answer);
+  });
+
+  it('Should correctly call simple posTagsInline', () => {
+    let result, answer, txt;
+
+    deepEqual(RiTa.posTagsInline("", { inline: true, simple: true }), "");
+    deepEqual(RiTa.posTagsInline("asdfaasd", { inline: true, simple: true }), "asdfaasd/n");
+
+    result = RiTa.posTagsInline("clothes", { inline: true, simple: true });
+    answer = "clothes/n";
+    deepEqual(result, answer);
+
+    result = RiTa.posTagsInline("teeth", { inline: true, simple: true });
+    answer = "teeth/n";
+    deepEqual(result, answer);
+
+    result = RiTa.posTagsInline("There is a cat.", { inline: true, simple: true });
+    answer = "There/- is/v a/- cat/n .";
+    deepEqual(result, answer);
+
+    result = RiTa.posTagsInline("The boy, dressed in red, ate an apple.", { inline: true, simple: true });
+    answer = "The/- boy/n , dressed/v in/- red/a , ate/v an/- apple/n .";
+    deepEqual(result, answer);
+
+    txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
+    result = RiTa.posTagsInline(txt, { inline: true, simple: true });
+    answer = "The/- dog/n ran/v faster/r than/- the/- other/a dog/n . But/- the/- other/a dog/n was/v prettier/a .";
+    equal(result, answer);
+  });
+
+
+  it('Should correctly call isAdverb', () => {
 
     ok(!RiTa.isAdverb(""));
 
@@ -229,7 +314,7 @@ describe('RiTa.Tagger', () => {
     ok(RiTa.isAdverb("hard")); // +adj
   });
 
-  it('Should correctly call isNoun()', () => {
+  it('Should correctly call isNoun', () => {
 
     ok(!RiTa.isNoun(""));
 
@@ -291,7 +376,7 @@ describe('RiTa.Tagger', () => {
     ok(!RiTa.isNoun("energetically"));
   });
 
-  it('Should correctly call isVerb()', () => {
+  it('Should correctly call isVerb', () => {
 
     ok(RiTa.isVerb("dance"));
     ok(RiTa.isVerb("swim"));
@@ -340,7 +425,7 @@ describe('RiTa.Tagger', () => {
     ok(!RiTa.isVerb("energetically"));
   });
 
-  it('Should correctly call isAdjective()', () => {
+  it('Should correctly call isAdjective', () => {
 
     ok(!RiTa.isAdjective("swim"));
     ok(!RiTa.isAdjective("walk"));

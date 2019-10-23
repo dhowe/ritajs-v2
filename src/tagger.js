@@ -60,16 +60,16 @@ class PosTagger {
     return (choiceStr.indexOf(tag) > -1);
   }
 
-  tagInline(words, delimiter) {
+  /* convert from array of tags to a string with tags inline */
+  inlineTags(words, tags, delimiter) {
 
     if (!words || !words.length) return '';
 
-    if (!Array.isArray(words)) words = RiTa.tokenizer.tokenize(words);
+    if (words.length !== tags.length) throw Error('Bad lengths');
 
     delimiter = delimiter || '/';
 
     let sb = '';
-    let tags = this.tag(words);
     for (let i = 0; i < words.length; i++) {
 
       sb += words[i];
@@ -81,29 +81,31 @@ class PosTagger {
 
     return sb.trim();
   }
-
-  tagSimple(words) {
-
-    let tags = this.tag(words);
-
-    if (words && tags.length) {
-
-      for (let i = 0; i < tags.length; i++) {
-        if (NOUNS.includes(tags[i])) tags[i] = 'n';
-        else if (VERBS.includes(tags[i])) tags[i] = 'v';
-        else if (ADJ.includes(tags[i])) tags[i] = 'a';
-        else if (ADV.includes(tags[i])) tags[i] = 'r';
-        else tags[i] = '-'; // default: other
-      }
-
-      return tags;
-    }
-    return [];
-  }
+  //
+  // tagSimple(words) {
+  //
+  //   let tags = this.tag(words);
+  //
+  //   if (words && tags.length) {
+  //
+  //     for (let i = 0; i < tags.length; i++) {
+  //       if (NOUNS.includes(tags[i])) tags[i] = 'n';
+  //       else if (VERBS.includes(tags[i])) tags[i] = 'v';
+  //       else if (ADJ.includes(tags[i])) tags[i] = 'a';
+  //       else if (ADV.includes(tags[i])) tags[i] = 'r';
+  //       else tags[i] = '-'; // default: other
+  //     }
+  //
+  //     return tags;
+  //   }
+  //   return [];
+  // }
 
   // Returns an array of parts-of-speech from the Penn tagset,
   // each corresponding to one word of input
-  tag(words) {
+  tag(words, simple, inline) {
+
+    if (!words || !words.length) return inline ? '' : [];
 
     let lexicon = RiTa._lexicon();
     let result = [], choices2d = [];
@@ -185,7 +187,19 @@ class PosTagger {
     }
 
     // Adjust pos according to transformation rules
-    return this._applyContext(words, result, choices2d);
+    let tags = this._applyContext(words, result, choices2d);
+
+    if (simple) {
+      for (let i = 0; i < tags.length; i++) {
+        if (NOUNS.includes(tags[i])) tags[i] = 'n';
+        else if (VERBS.includes(tags[i])) tags[i] = 'v';
+        else if (ADJ.includes(tags[i])) tags[i] = 'a';
+        else if (ADV.includes(tags[i])) tags[i] = 'r';
+        else tags[i] = '-'; // default: other
+      }
+    }
+
+    return inline ? this.inlineTags(words, tags) : tags;
   }
 
   checkType(word, tagArray) {

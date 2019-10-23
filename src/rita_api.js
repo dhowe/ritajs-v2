@@ -1,4 +1,4 @@
-const Util = require("./utils");
+const Util = require("./util");
 const RandGen = require('./random');
 const Parser = require('./parser');
 const Markov = require('./markov');
@@ -104,9 +104,13 @@ class RiTa {
   }
 
   static posTags(words, opts) {
-    return (opts && opts.simple) ? RiTa.tagger.tagSimple(words)
-      : (opts && opts.inline) ? RiTa.tagger.tagInline(words)
-        : RiTa.tagger.tag(words);
+    let simple = (opts && opts.simple) || false;
+    let inline = (opts && opts.inline) || false;
+    return RiTa.tagger.tag(words, simple, inline);
+  }
+
+  static posTagsInline(words, opts) {
+    return RiTa.tagger.tag(words, (opts && opts.simple), true);
   }
 
   static pluralize(word) {
