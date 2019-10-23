@@ -76,7 +76,7 @@ describe('RiTa.Conjugator', () => {
     let args, s, a;
 
     equal("swum", RiTa.pastParticiple("swim"));
-    return;
+    //return;
     equal(RiTa.conjugate("be", { form: RiTa.GERUND, }), "being");
 
     s = ["swim", "need", "open"];
