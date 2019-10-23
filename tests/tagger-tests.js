@@ -3,6 +3,57 @@ const RiTa = require('../src/rita_api');
 
 describe('RiTa.Tagger', () => {
 
+  it('Should correctly call posTags with array', () => {
+    deepEqual(RiTa.posTags([]), []);
+    deepEqual(RiTa.posTags(["freed"]), ["jj"]);
+    deepEqual(RiTa.posTags("the top seed".split(/ /)), ["dt", "jj", "nn"]);
+    deepEqual(RiTa.posTags("by illegal means".split(/ /)), ["in", "jj", "nn"]);
+    deepEqual(RiTa.posTags("He outnumbers us".split(/ /)), ["prp", "vbz", "prp"]);
+    deepEqual(RiTa.posTags("I outnumber you".split(/ /)), ["prp", "vbp", "prp"]);
+    deepEqual(RiTa.posTags("Elephants dance".split(/ /)), ["nns", "vbp"]);
+    deepEqual(RiTa.posTags("the boy dances".split(/ /)), ["dt", "nn", "vbz"]);
+  });
+
+  it('Should correctly call simple posTags with array', () => {
+    deepEqual(RiTa.posTags([], {simple:true}), []);
+    deepEqual(RiTa.posTags(["freed"],{simple:true}), ["a"]);
+    deepEqual(RiTa.posTags("the top seed".split(/ /),{simple:true}), ["-", "a", "n"]);
+    deepEqual(RiTa.posTags("by illegal means".split(/ /),{simple:true}), ["-", "a", "n"]);
+    deepEqual(RiTa.posTags("He outnumbers us".split(/ /),{simple:true}), ["-", "v", "-"]);
+    deepEqual(RiTa.posTags("I outnumber you".split(/ /),{simple:true}), ["-", "v", "-"]);
+    deepEqual(RiTa.posTags("Elephants dance".split(/ /),{simple:true}), ["n", "v"]);
+    deepEqual(RiTa.posTags("the boy dances".split(/ /),{simple:true}), ["-", "n", "v"]);
+  });
+
+
+    it('Should correctly call inline simple posTags with array', () => {
+      let result, answer, txt;
+
+      deepEqual(RiTa.posTags([], { inline: true, simple: true }), "");
+      deepEqual(RiTa.posTags(["asdfaasd"], { inline: true, simple: true }), "asdfaasd/n");
+
+      result = RiTa.posTags(["clothes"], { inline: true, simple: true });
+      answer = "clothes/n";
+      deepEqual(result, answer);
+
+      result = RiTa.posTags(["teeth"], { inline: true, simple: true });
+      answer = "teeth/n";
+      deepEqual(result, answer);
+
+      result = RiTa.posTags("There is a cat".split(/ /), { inline: true, simple: true });
+      answer = "There/- is/v a/- cat/n";
+      deepEqual(result, answer);
+
+      result = RiTa.posTags(RiTa.tokenize("The boy, dressed in red, ate an apple."), { inline: true, simple: true });
+      answer = "The/- boy/n , dressed/v in/- red/a , ate/v an/- apple/n .";
+      deepEqual(result, answer);
+
+      txt = "The dog ran faster than the other dog. But the other dog was prettier.";
+      result = RiTa.posTags(RiTa.tokenize(txt), { inline: true, simple: true });
+      answer = "The/- dog/n ran/v faster/r than/- the/- other/a dog/n . But/- the/- other/a dog/n was/v prettier/a .";
+      equal(result, answer);
+    });
+
   it('Should correctly call posTags', () => {
     let result, answer, resultArr, answerArr, txt;
 
