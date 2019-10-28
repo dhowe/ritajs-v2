@@ -228,76 +228,77 @@ describe('RiTa.Tokenizer', () => {
     var input = "Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications. The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels. If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs.";
     var expected = ["Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications.", "The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels.", "If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs."];
     var output = RiTa.sentences(input);
-    deepEqual(output, expected);
+    eql(output, expected);
 
     var input = "\"The boy went fishing.\", he said. Then he went away.";
     var expected = ["\"The boy went fishing.\", he said.", "Then he went away."];
     var output = RiTa.sentences(input);
-    deepEqual(output, expected);
+    eql(output, expected);
 
     var input = "The dog";
     var output = RiTa.sentences(input);
-    deepEqual(output, [input]);
+    eql(output, [input]);
 
     var input = "I guess the dog ate the baby.";
     var output = RiTa.sentences(input);
-    deepEqual(output, [input]);
+    eql(output, [input]);
 
     var input = "Oh my god, the dog ate the baby!";
     var output = RiTa.sentences(input);
     var expected = ["Oh my god, the dog ate the baby!"];
-    deepEqual(output, expected);
+    eql(output, expected);
 
     var input = "Which dog ate the baby?"
     var output = RiTa.sentences(input);
     var expected = ["Which dog ate the baby?"];
-    deepEqual(output, expected);
+    eql(output, expected);
 
     var input = "'Yes, it was a dog that ate the baby', he said."
     var output = RiTa.sentences(input);
     var expected = ["\'Yes, it was a dog that ate the baby\', he said."];
-    deepEqual(output, expected);
+    eql(output, expected);
 
     var input = "The baby belonged to Mr. and Mrs. Stevens. They will be very sad.";
     var output = RiTa.sentences(input);
     var expected = ["The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad."];
-    deepEqual(output, expected);
+    eql(output, expected);
 
     // More quotation marks
     var input = "\"The baby belonged to Mr. and Mrs. Stevens. They will be very sad.\"";
     var output = RiTa.sentences(input);
     var expected = ["\"The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\""];
-    deepEqual(output, expected);
+    eql(output, expected);
 
     var input = "\u201CThe baby belonged to Mr. and Mrs. Stevens. They will be very sad.\u201D";
     var output = RiTa.sentences(input);
     var expected = ["\u201CThe baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\u201D"];
-    deepEqual(output, expected);
+    eql(output, expected);
 
     //https://github.com/dhowe/RiTa/issues/498
     var input = "\"My dear Mr. Bennet. Netherfield Park is let at last.\"";
     var output = RiTa.sentences(input);
     var expected = ["\"My dear Mr. Bennet.", "Netherfield Park is let at last.\""];
-    deepEqual(output, expected);
+    eql(output, expected);
 
     var input = "\u201CMy dear Mr. Bennet. Netherfield Park is let at last.\u201D";
     var output = RiTa.sentences(input);
     var expected = ["\u201CMy dear Mr. Bennet.", "Netherfield Park is let at last.\u201D"];
-    deepEqual(output, expected);
+    eql(output, expected);
     /*******************************************/
 
     var input = "She wrote: \"I don't paint anymore. For a while I thought it was just a phase that I'd get over.\"";
     var output = RiTa.sentences(input);
     var expected = ["She wrote: \"I don't paint anymore.", "For a while I thought it was just a phase that I'd get over.\""];
-    deepEqual(output, expected);
+    eql(output, expected);
 
     var input = " I had a visit from my \"friend\" the tax man.";
     var output = RiTa.sentences(input);
     var expected = ["I had a visit from my \"friend\" the tax man."];
-    deepEqual(output, expected);
+    eql(output, expected);
 
-    deepEqual(RiTa.sentences(""), [""]);
+    eql(RiTa.sentences(""), [""]);
   });
 
-  function deepEqual(output, expected) { expect(output).eql(expected); }
-});
+  function eql(a, b) { expect(a).eql(b); }
+  function eq(a, b) { expect(a).eq(b); }
+  function ok(res) { expect(res).eq(true); }});
