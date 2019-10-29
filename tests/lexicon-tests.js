@@ -4,12 +4,12 @@ const RiTa = require('../src/rita_api');
 describe('RiTa.Lexicon', () => {
 
 
-  it('Should correctly call toPhoneArray()', () => {
+  it('Should correctly call toPhoneArray', () => {
     let result = RiTa._lexicon().toPhoneArray(RiTa._lexicon()._rawPhones("tornado"));
     eql(result,[ 't', 'ao', 'r', 'n', 'ey', 'd', 'ow' ], 'got:'+result);
   });
 
-  it('Should correctly call alliterations()', () => {
+  it('Should correctly call alliterations', () => {
 
     let result;
 
@@ -53,7 +53,7 @@ describe('RiTa.Lexicon', () => {
   });
 
   // NEXT
-  it('Should correctly call rhymes()', () => {
+  it('Should correctly call rhymes', () => {
 
     // TODO: add more tests
 
@@ -79,7 +79,7 @@ describe('RiTa.Lexicon', () => {
     ok(!RiTa.rhymes("swag").includes("grab"));
   });
 
-  it('Should correctly call similarBy(letter)', () => {
+  it('Should correctly call similarBy.letter', () => {
     let result;
     result = RiTa.similarBy("banana", { preserveLength: true });
     eql(result, ["cabana"]);
@@ -124,7 +124,7 @@ describe('RiTa.Lexicon', () => {
     ok(result.length > 400);
   });
 
-  it('Should correctly call similarBy(sound)', () => {
+  it('Should correctly call similarBy.sound', () => {
 
     let result, answer;
 
@@ -155,7 +155,7 @@ describe('RiTa.Lexicon', () => {
     eql(result, ["watchword", "wayward", "wormwood"]);
   });
 
-  it('Should correctly call similarBy(soundAndLetter)', () => {
+  it('Should correctly call similarBy.soundAndLetter', () => {
     let result;
 
     //result = RiTa.similarBy("", { type: 'soundAndLetter' });
@@ -174,7 +174,7 @@ describe('RiTa.Lexicon', () => {
     eql(result, ["wormwood"]);
   });
 
-  it('Should correctly call isRhyme()', () => {
+  it('Should correctly call isRhyme', () => {
     ok(!RiTa.isRhyme("apple", "polo"));
     ok(!RiTa.isRhyme("this", "these"));
 
@@ -202,7 +202,7 @@ describe('RiTa.Lexicon', () => {
     ok(RiTa.isRhyme("eight", "weight"));
   });
 
-  it('Should correctly call isAlliteration()', () => {
+  it('Should correctly call isAlliteration', () => {
 
     ok(RiTa.isAlliteration("knife", "gnat")); // gnat=lts
     ok(RiTa.isAlliteration("knife", "naughty"));

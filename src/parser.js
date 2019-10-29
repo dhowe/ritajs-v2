@@ -98,4 +98,4 @@ class LexParser {
   }
 }
 
-module.exports = LexParser;
+module && (module.exports = LexParser);

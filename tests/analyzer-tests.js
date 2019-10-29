@@ -3,7 +3,7 @@ const RiTa = require('../src/rita_api');
 
 describe('RiTa.Analyzer', () => {
 
-  it('Should correctly call analyze()', () => {
+  it('Should correctly call analyze', () => {
 
     expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phonemes: '', syllables: '' });
 
@@ -23,7 +23,7 @@ describe('RiTa.Analyzer', () => {
     expect(feats.syllables).eq("sh-eh-v/r-ow/l-ey");
   });
 
-  it('Should correctly call analyze(lts)', () => {
+  it('Should correctly call analyze.lts', () => {
     let feats;
     feats = RiTa.analyze("cloze");
     expect(feats.pos).eq("nn");
@@ -31,7 +31,7 @@ describe('RiTa.Analyzer', () => {
     expect(feats.syllables).eq("k-l-ow-z");
   });
 
-  it('Should correctly call stresses()', () => {
+  it('Should correctly call stresses', () => {
     let result, answer;
 
     result = RiTa.stresses("");
@@ -67,7 +67,7 @@ describe('RiTa.Analyzer', () => {
     equal(RiTa.stresses("genuine"), "1/0/0");
   });
 
-  it('Should correctly call phonemes()', () => {
+  it('Should correctly call phonemes', () => {
     let result, answer;
 
     result = RiTa.phonemes("");
@@ -115,7 +115,7 @@ describe('RiTa.Analyzer', () => {
     equal(RiTa.phonemes("genuine"), "jh-eh-n-y-uw-w-ah-n");
   });
 
-  it('Should correctly call syllables()', () => {
+  it('Should correctly call syllables', () => {
 
     expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
 
@@ -144,7 +144,7 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.syllables(input)).eq(expected);
   });
 
-  it('Should correctly call syllables(lts)', () => {
+  it('Should correctly call syllables.lts', () => {
     RiTa.SILENCE_LTS = true;
     expect(RiTa.syllables('The Laggin Dragon')).eq('dh-ah l-ae/g-ih-n d-r-ae/g-ah-n');
     RiTa.SILENCE_LTS = false;

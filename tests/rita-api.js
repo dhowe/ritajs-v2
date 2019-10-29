@@ -12,7 +12,7 @@ describe('RiTa.API', () => {
   });
 
   it('Should access member classes', () => {
-    let rm = new RiTa.RiMarkov(3);
+    let rm = new RiTa.Markov(3);
     expect(rm.n).eq(3);
   });
 

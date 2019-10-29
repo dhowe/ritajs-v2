@@ -3,7 +3,7 @@ const RiTa = require('../src/rita_api');
 
 describe('RiTa.Tagger', () => {
 
-  it('Should correctly call posTags with array', () => {
+  it('Should correctly call posTags.array', () => {
     eql(RiTa.posTags([]), []);
     eql(RiTa.posTags(["freed"]), ["jj"]);
     eql(RiTa.posTags("the top seed".split(/ /)), ["dt", "jj", "nn"]);
@@ -14,7 +14,7 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.posTags("the boy dances".split(/ /)), ["dt", "nn", "vbz"]);
   });
 
-  it('Should correctly call simple posTags with array', () => {
+  it('Should correctly call simple posTags.array', () => {
     eql(RiTa.posTags([], { simple: true }), []);
     eql(RiTa.posTags(["freed"], { simple: true }), ["a"]);
     eql(RiTa.posTags("the top seed".split(/ /), { simple: true }), ["-", "a", "n"]);
@@ -26,7 +26,7 @@ describe('RiTa.Tagger', () => {
   });
 
 
-  it('Should correctly call inline simple posTags with array', () => {
+  it('Should correctly call posTags.array.inline.simple', () => {
     let result, answer, txt;
 
     eql(RiTa.posTags([], { inline: true, simple: true }), "");
@@ -191,7 +191,7 @@ describe('RiTa.Tagger', () => {
     }
   });
 
-  it('Should correctly call simple posTags', () => {
+  it('Should correctly call posTags.simple', () => {
     //eql(RiTa.posTags("", { simple: true }), []);
     eql(RiTa.posTags("biped", { simple: true }), ["n"]);
     eql(RiTa.posTags("greed", { simple: true }), ["n"]);
@@ -203,7 +203,7 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.posTags("freed", { simple: true }), ["a"]);
   });
 
-  it('Should correctly call inline posTags', () => {
+  it('Should correctly call posTags.inline', () => {
     let result, answer, txt;
 
     eql(RiTa.posTags("", { inline: true }), "");
@@ -260,7 +260,7 @@ describe('RiTa.Tagger', () => {
     eq(result, answer);
   });
 
-  it('Should correctly call inline simple posTags', () => {
+  it('Should correctly call posTags.inline.simple', () => {
     let result, answer, txt;
 
     eql(RiTa.posTags("", { inline: true, simple: true }), "");
@@ -288,7 +288,7 @@ describe('RiTa.Tagger', () => {
     eq(result, answer);
   });
 
-  it('Should correctly call simple posTagsInline', () => {
+  it('Should correctly call posTagsInline.simple', () => {
     let result, answer, txt;
 
     eql(RiTa.posTagsInline("", { inline: true, simple: true }), "");

@@ -3,7 +3,7 @@ const RiTa = require('../src/rita_api');
 
 describe('RiTa.Conjugator', () => {
 
-  it('Should correctly call pastParticiple()', () => {
+  it('Should correctly call pastParticiple', () => {
 
     equal(RiTa.pastParticiple("sleep"), "slept");
     equal(RiTa.pastParticiple("withhold"), "withheld");
@@ -33,7 +33,7 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.pastParticiple("study"), "studied");
   });
 
-  it('Should correctly call presentParticiple()', () => {
+  it('Should correctly call presentParticiple', () => {
 
     equal(RiTa.presentParticiple("sleep"), "sleeping");
     equal(RiTa.presentParticiple("withhold"), "withholding");
@@ -72,7 +72,7 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.presentParticiple(""), "");
   });
 
-  it('Should correctly call conjugate()', () => {
+  it('Should correctly call conjugate', () => {
     let args, s, a;
 
     equal("swum", RiTa.pastParticiple("swim"));

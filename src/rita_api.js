@@ -1,7 +1,6 @@
 const Util = require("./util");
 const RandGen = require('./random');
 const Parser = require('./parser');
-const Markov = require('./markov');
 const Stemmer = require('./stemmer');
 const Lexicon = require('./lexicon');
 const Tokenizer = require('./tokenizer');
@@ -93,6 +92,10 @@ class RiTa {
 
   static kwic() {
     return RiTa.concorder.kwic(...arguments);
+  }
+
+  static markov() {
+    return RiTa.markov || (RiTa.Markov = require('./markov'));
   }
 
   static pastParticiple(verb) {
@@ -211,7 +214,7 @@ RiTa.conjugator = new Conjugator(RiTa);
 RiTa.syllabifier = new Syllabifier(RiTa);
 
 // CLASSES
-RiTa.RiMarkov = Markov;
+//RiTa.RiMarkov = Markov;
 
 // LAZY-LOADS
 RiTa.analyzer = undefined;
