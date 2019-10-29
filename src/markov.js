@@ -7,7 +7,7 @@ const RiTa = require('./rita_api');
 
 const SSDLM = '<s/>';
 const MI = Number.MAX_SAFE_INTEGER;
-const MAX_GENERATION_ATTEMPTS = 100;
+const MAX_GENERATION_ATTEMPTS = 500;
 
 class Markov {
 
@@ -31,7 +31,7 @@ class Markov {
 
     // add a new token for each sentence start
     for (let i = 0; i < sentences.length; i++) {
-      let sentence = RiTa.trim(sentences[i].replace(/\s+/, ' '))
+      let sentence = sentences[i].replace(/\s+/, ' ').trim();
       let words = RiTa.tokenize(sentence);
       tokens.push(SSDLM, ...words);
     }

@@ -23,8 +23,6 @@ describe('RiTa.Markov', () => {
   });
 
   it('should correctly call generateTokens.mlm', () => {
-
-
     let rm = new Markov(2);
     let mlms = 4, start = 'The';
     let txt = "The young boy ate it. The fat boy gave up.";
@@ -39,34 +37,24 @@ describe('RiTa.Markov', () => {
         return;
       }
 
-      //console.log("Gen #"+i, toks);
-
       // All sequences of len=N must be in text
       for (let j = 0; j <= toks.length - rm.n; j++) {
-
-        //console.log(j, toks.slice(j, j + rm.n));
         part = toks.slice(j, j + rm.n);
         res = RiTa.untokenize(part);
-        //console.log(j, res);
         ok(txt.indexOf(res) > -1);
       }
 
-      //console.log("-------------------\n"+txt);
-
       // All sequences of len=mlms must NOT  be in text
       for (let j = 0; j <= toks.length - mlms; j++) {
-
-        //console.log(j, toks.slice(j, j + mlms));
         part = toks.slice(j, j + mlms);
         res = RiTa.untokenize(part);
-        //console.log(j + '  ', part, "-> " + (txt.indexOf(res) < 0 ? "OK" : "FAIL"));
         ok(txt.indexOf(res) < 0);
         ok(res.startsWith("The fat boy ate") || res.startsWith("The young boy gave"));
       }
     }
   });
 
-  /*it('should correctly call generateSentence', () => {
+  it('should correctly call generateSentence', () => {
 
     let rm = new Markov(4), s;
     rm.loadSentences(RiTa.sentences(sample));
@@ -74,7 +62,7 @@ describe('RiTa.Markov', () => {
       s = rm.generateSentence({ minTokens: (3 + i), maxTokens: (10 + i) });
       //console.log(i+") "+s);
       ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
-      ok(s.match(/[!?.]$/), "FAIL: bad last char in '" + s + "'");
+      ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
       let num = RiTa.tokenize(s).length;
       ok(num >= i && num <= 10 + i);
     }
@@ -99,7 +87,7 @@ describe('RiTa.Markov', () => {
     for (i = 0; i < sents.length; i++) {
       s = sents[i];
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
-      ok(s.match(/[!?.]$/)); //, "FAIL: bad last char in '" + s + " -> " + s[s.length - 1]);
+      ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
       num = RiTa.tokenize(s).length;
       ok(num >= minToks && num <= maxToks);
     }
@@ -107,7 +95,6 @@ describe('RiTa.Markov', () => {
     start = 'Achieving';
     for (i = 0; i < 5; i++) {
       arr = rm.generateSentences(1, { startToken: start });
-      ok(arr);
       eq(arr.length, 1);
       ok(arr[0].startsWith(start));
     }
@@ -115,11 +102,10 @@ describe('RiTa.Markov', () => {
     start = 'I';
     for (i = 0; i < 5; i++) {
       arr = rm.generateSentences(2, { startToken: start });
-      ok(arr);
       eq(arr.length, 2);
       ok(arr[0].startsWith(start));
     }
-  });*/
+  });
 
   it('should correctly call generateTokens', () => {
 
@@ -142,7 +128,7 @@ describe('RiTa.Markov', () => {
     }
   });
 
-  it('should correctly call generateTokens(str)', () => {
+  it('should correctly call generateTokens.string', () => {
 
     let toks, res, rm = new Markov(4);
     rm.loadTokens(RiTa.tokenize(sample));

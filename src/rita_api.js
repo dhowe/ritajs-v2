@@ -95,7 +95,7 @@ class RiTa {
   }
 
   static markov() {
-    return RiTa.markov || (RiTa.Markov = require('./markov'));
+    return RiTa.Markov || (RiTa.Markov = require('./markov'));
   }
 
   static pastParticiple(verb) {
