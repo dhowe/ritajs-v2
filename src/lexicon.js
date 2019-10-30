@@ -161,84 +161,59 @@ class Lexicon {
     return this.words.length;
   }
 
-  randomWord() {
+  randomWord(opts) {
 
-    let i, j, rdata, numSyls;
+    let j, rdata, pluralize = false;
     let words = Object.keys(this.dict);
-    let ran = Math.floor(RiTa.random(0, words.length));
-    let pluralize = false;
-    let a = arguments;
-    //let found = false;
+    let ran = Math.floor(RiTa.random(words.length));
+
+    let targetPos = opts && opts.pos;
+    let targetSyls = opts && opts.syllableCount || 0;
 
     let isNNWithoutNNS = (w, pos) => (w.endsWith("ness") ||
       w.endsWith("ism") || pos.indexOf("vbg") > 0);
 
-    if (typeof a[0] === "string") {
+    if (targetPos && targetPos.length) {
 
-      a[0] = a[0].trim().toLowerCase();
+      targetPos = targetPos.trim().toLowerCase();
 
-      pluralize = (a[0] === "nns");
+      pluralize = (targetPos === "nns");
 
-      if (a[0] === "n" || a[0] === "nns") a[0] = "nn";
-      else if (a[0] === "v") a[0] = "vb";
-      else if (a[0] === "r") a[0] = "rb";
-      else if (a[0] === "a") a[0] = "jj";
-
+      if (targetPos[0] === "n") targetPos = "nn";
+      else if (targetPos === "v") targetPos = "vb";
+      else if (targetPos === "r") targetPos = "rb";
+      else if (targetPos === "a") targetPos = "jj";
     }
 
-    switch (a.length) {
+    for (let i = 0; i < words.length; i++) {
+      let j = (ran + i) % words.length;
+      let rdata = this.dict[words[j]];
+      let word = words[j];
 
-      case 2: // a[0]=pos  a[1]=syllableCount
+      // match the syls if supplied
+      if (targetSyls && targetSyls !== rdata[0].split(' ').length) {
+        continue;
+      }
 
-        for (i = 0; i < words.length; i++) {
-          j = (ran + i) % words.length;
-          rdata = this.dict[words[j]];
-          numSyls = rdata[0].split(' ').length;
-          if (numSyls === a[1] && a[0] === rdata[1].split(' ')[0]) {
-            if (!pluralize) return words[j];
-            else if (!isNNWithoutNNS(words[j], rdata[1])) {
-              return RiTa.pluralize(words[j]);
-            }
+      if (targetPos) { // match the pos if supplied
+
+        if (targetPos === rdata[1].split(' ')[0]) {
+          // match any pos but plural noun
+          if (!pluralize) {
+            return word;
+          }
+          // match plural noun
+          if (!isNNWithoutNNS(word, rdata[1])) {
+            return RiTa.pluralize(word);
           }
         }
-        //warn("No words with pos=" + a[0] + " found");
-        break;
-
-      case 1:
-
-        if (typeof a[0] === 'string') { // a[0] = pos
-
-          for (i = 0; i < words.length; i++) {
-            j = (ran + i) % words.length;
-            rdata = this.dict[words[j]];
-            if (a[0] === rdata[1].split(' ')[0]) {
-              if (!pluralize) return words[j];
-              else if (!isNNWithoutNNS(words[j], rdata[1])) {
-                return RiTa.pluralize(words[j]);
-              }
-            }
-          }
-
-          //warn("No words with pos=" + a[0] + " found");
-
-        } else {
-
-          // a[0] = syllableCount
-          for (i = 0; i < words.length; i++) {
-            j = (ran + i) % words.length;
-            rdata = this.dict[words[j]];
-            if (rdata[0].split(' ').length === a[0]) {
-              return words[j];
-            }
-          }
-        }
-        break;
-
-      case 0:
-        return words[ran];
+      }
+      else {
+         return word; // no pos to match
+      }
     }
 
-    return '';
+    return []; // TODO: failed, should throw here
   }
 
   isAlliteration(word1, word2, useLTS) {

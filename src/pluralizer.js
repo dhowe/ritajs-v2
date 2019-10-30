@@ -115,7 +115,7 @@ class Pluralizer {
     if (RiTa.stem(word) === word) return false;
 
     let sing = RiTa.singularize(word);
-    let data = this.dict[sing];
+    let data = RiTa._lexicon().dict[sing];
 
     if (data && data.length === 2) {
       let pos = data[1].split(' ');
@@ -127,7 +127,7 @@ class Pluralizer {
     } else if (word.endsWith("ses") || word.endsWith("zes")) {
 
       sing = word.substring(0, word.length - 1);
-      data = this.dict[sing];
+      let data = RiTa._lexicon().dict[sing];
       if (data && data.length === 2) {
         let pos = data[1].split(' ');
         for (let i = 0; i < pos.length; i++) {

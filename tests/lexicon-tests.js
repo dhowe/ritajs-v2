@@ -3,10 +3,124 @@ const RiTa = require('../src/rita_api');
 
 describe('RiTa.Lexicon', () => {
 
+  it('Should correctly call randomWord', () => {
+
+    let result;
+
+    result = RiTa.randomWord();
+    ok(result.length > 0, "randomWord: " + result);
+
+    result = RiTa.randomWord({ pos: "nn" });
+    ok(result.length > 0, "randomWord nn: " + result);
+
+    result = RiTa.randomWord({ pos: "nns" });
+    ok(result.length > 0, "randomWord nns=" + result);
+
+    //wordNet Tag
+    result = RiTa.randomWord({ pos: "n" });
+    ok(result.length > 0, "randomWord n=" + result);
+
+    result = RiTa.randomWord({ pos: "v" });
+    ok(result.length > 0, "randomWord v=" + result);
+
+    // no result
+    result = RiTa.randomWord({ pos: "xxx" });
+    ok(result.length < 1, "randomWord rp=" + result);
+
+    //int
+    result = RiTa.randomWord({ syllableCount: 3 });
+    ok(result.length > 0, "3 syllableCount: " + result);
+
+    result = RiTa.randomWord({ syllableCount: 5 });
+    ok(result.length > 0, "5 syllableCount: " + result);
+
+  });
+
+  it('Should correctly call randomWord.nns', () => {
+    for (i = 0; i < 20; i++) {
+      let result = RiTa.randomWord({ pos: "nns" });
+      if (!RiTa.pluralizer.isPlural(result)) {
+
+        // For now, just warn here as there are too many edge cases (see #521)
+        console.warn("Pluralize/Singularize problem: randomWord(nns) was '" + result + "' (" +
+          "isPlural=" + RiTa.pluralizer.isPlural(result) + "), singularized is '" + RiTa.singularize(result)+"'");
+      }
+      //ok(RiTa._isPlural(result), "randomWord nns: " + result);
+
+      //No nn & vbg
+      //No -ness, -ism
+      let pos = RiTa.lexicon._posData(result);
+      ok(pos.indexOf("vbg") < 0, "randomWord nns: " + result);
+      ok(!result.endsWith("ness"), "randomWord nns: " + result);
+      ok(!result.endsWith("isms"), "randomWord nns: " + result);
+    }
+  });
+
+  it('Should correctly call randomWord.pos', () => {
+
+    let pos = ["nn", "jj", "jjr", "wp"];
+    for (j = 0; j < pos.length; j++) {
+      for (i = 0; i < 5; i++) {
+        let result = RiTa.randomWord({ pos: pos[j] });
+        let best = RiTa.lexicon._bestPos(result);
+        //console.log(result+": "+pos[j]+" ?= "+best);
+        eq(pos[j], best, result);
+      }
+    }
+  });
+
+
+  it('Should correctly call randomWord.syls', () => {
+    let i, result, result2, syllables, num;
+    for (i = 0; i < 10; i++) {
+      result = RiTa.randomWord({ syllableCount: 3 });
+      syllables = RiTa.syllables(result);
+      num = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
+      ok(result.length > 0);
+      ok(num == 3, result + ": " + syllables); // "3 syllableCount: "
+    }
+
+    for (i = 0; i < 10; i++) {
+      result = RiTa.randomWord({ syllableCount: 5 });
+      syllables = RiTa.syllables(result);
+      num = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
+      ok(result.length > 0); // "3 syllableCount: "
+      ok(num == 5); // "3 syllableCount: "
+    }
+  });
+
+  it('Should correctly call randomWord.pos.syls', () => {
+    let result, syllables;
+
+    for (var i = 0; i < 5; i++) {
+      result = RiTa.randomWord({ syllableCount: 3, pos: "vbz" });
+      ok(result.length > 0, "randomWord vbz: " + result);
+      syllables = RiTa.syllables(result);
+      eq(3, syllables.split(RiTa.SYLLABLE_BOUNDARY).length, result);
+      eq("vbz", RiTa.lexicon._bestPos(result), result);
+
+      result = RiTa.randomWord({ syllableCount: 1, pos: "n" });
+      ok(result.length > 0, "randomWord n: " + result);
+      syllables = RiTa.syllables(result);
+      //console.log("n: ",result,syllables.split(RiTa.SYLLABLE_BOUNDARY));
+      eq(1, syllables.split(RiTa.SYLLABLE_BOUNDARY).length, result);
+      eq(RiTa.posTags(result, { simple: true })[0], "n", result);
+    }
+  });
+
+  it('Should correctly call randomWord.pos.syls', () => {
+    result = RiTa.randomWord({ syllableCount: 5, pos: "nns" });
+    ok(result.length > 0, "randomWord nns: " + result);
+    syllables = RiTa.syllables(result);
+    let count = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
+
+    if (0 && count !== 5) console.warn("Syllabifier problem: " // see #2
+      + result + ".syllables was " +count+', expected 5');
+  });
 
   it('Should correctly call toPhoneArray', () => {
     let result = RiTa._lexicon().toPhoneArray(RiTa._lexicon()._rawPhones("tornado"));
-    eql(result,[ 't', 'ao', 'r', 'n', 'ey', 'd', 'ow' ], 'got:'+result);
+    eql(result, ['t', 'ao', 'r', 'n', 'ey', 'd', 'ow'], 'got:' + result);
   });
 
   it('Should correctly call alliterations', () => {
@@ -29,25 +143,25 @@ describe('RiTa.Lexicon', () => {
 
     result = RiTa.alliterations("cat");
     ok(result.length > 2000);
-    for (let i = 0; i < result.length; i++) {
+    for (i = 0; i < result.length; i++) {
       ok(RiTa.isAlliteration(result[i], "cat"));
     }
 
     result = RiTa.alliterations("dog");
     ok(result.length > 1000);
-    for (let i = 0; i < result.length; i++) {
+    for (i = 0; i < result.length; i++) {
       ok(RiTa.isAlliteration(result[i], "dog"));
     }
 
     result = RiTa.alliterations("dog", { matchMinLength: 15 });
     ok(result.length < 5, "got length=" + result.length);
-    for (let i = 0; i < result.length; i++) {
+    for (i = 0; i < result.length; i++) {
       ok(RiTa.isAlliteration(result[i], "dog"), 'FAIL1: ' + result[i]);
     }
 
     result = RiTa.alliterations("cat", { matchMinLength: 16 });
     ok(result.length < 15);
-    for (let i = 0; i < result.length; i++) {
+    for (i = 0; i < result.length; i++) {
       ok(RiTa.isAlliteration(result[i], "cat"), 'FAIL2: ' + result[i]);
     }
   });
@@ -105,7 +219,7 @@ describe('RiTa.Lexicon', () => {
     result = RiTa.similarBy("ice");
     eql(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
 
-    result = RiTa.similarBy("ice",  { minAllowedDistance: 1});
+    result = RiTa.similarBy("ice", { minAllowedDistance: 1 });
     eql(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
 
     result = RiTa.similarBy("ice", { minAllowedDistance: 2, preserveLength: true });

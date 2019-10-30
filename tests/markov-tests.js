@@ -75,9 +75,7 @@ describe('RiTa.Markov', () => {
 
   it('should correctly call generateSentences', () => {
 
-    let rm = new Markov(4);
-    let minToks = 7;
-    let maxToks = 15;
+    let rm = new Markov(4), minToks = 7, maxToks = 15;
 
     rm.loadSentences(RiTa.sentences(sample));
 
