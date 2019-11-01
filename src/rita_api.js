@@ -20,8 +20,8 @@ class RiTa {
     throw Error('Invalid instantiation');
   }
 
-  static analyze() {
-    return RiTa._analyzer().analyze(...arguments);
+  static analyze(text) {
+    return RiTa._analyzer().analyze(text);
   }
 
   static alliterations() {
@@ -44,21 +44,14 @@ class RiTa {
     return RiTa._lexicon().hasWord(...arguments);
   }
 
-  static isAbbreviation(input, caseSensitive) {
+  static isAbbreviation(input, { caseSensitive = false } = {}) {
 
-    let titleCase = function(input) {
-      if (!input || !input.length) return input;
-      return input.substring(0, 1).toUpperCase() + input.substring(1);
-    };
-
-    caseSensitive = caseSensitive || false;
-    input = caseSensitive ? input : titleCase(input);
-
-    return RiTa.ABBREVIATIONS.includes(input);
+    return RiTa.ABBREVIATIONS.includes
+      (caseSensitive ? input : Util.titleCase(input));
   }
 
   static isAdjective(word) {
-    return RiTa.tagger.isAdjective(...arguments);
+    return RiTa.tagger.isAdjective(word);
   }
 
   static isAdverb(word) {
@@ -106,14 +99,12 @@ class RiTa {
     return RiTa._analyzer().analyze(text).phonemes;
   }
 
-  static posTags(words, opts) {
-    let simple = (opts && opts.simple) || false;
-    let inline = (opts && opts.inline) || false;
+  static posTags(words, { simple = false, inline = false } = {}) {
     return RiTa.tagger.tag(words, simple, inline);
   }
 
-  static posTagsInline(words, opts) {
-    return RiTa.tagger.tag(words, (opts && opts.simple), true);
+  static posTagsInline(words, { simple = false } = {}) {
+    return RiTa.tagger.tag(words, simple, true);
   }
 
   static pluralize(word) {

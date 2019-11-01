@@ -20,11 +20,85 @@ describe('RiTa.Markov', () => {
     txt = "The young boy ate it. The fat boy gave up.";
     rm.loadTokens(RiTa.tokenize(txt));
     eq(txt, RiTa.untokenize(rm.input));
+
+  });
+
+  it('should correctly call generateTokens', () => {
+    let rm = new Markov(2);
+    let txt = "The young boy ate it. The fat boy gave up.";
+
+    rm.loadTokens(RiTa.tokenize(txt));
+
+    for (let i = 0; i < 5; i++) {
+
+      toks = rm.generateTokens(4);
+      if (!toks || !toks.length) throw Error('no tokens');
+
+      // All sequences of len=N must be in text
+      for (let j = 0; j <= toks.length - rm.n; j++) {
+        part = toks.slice(j, j + rm.n);
+        res = RiTa.untokenize(part);
+        ok(txt.indexOf(res) > -1);
+      }
+    }
   });
 
   it('should correctly call generateTokens.mlm', () => {
     let rm = new Markov(2);
-    let mlms = 4, start = 'The';
+    let mlms = 4;
+    let txt = "The young boy ate it. The fat boy gave up.";
+
+    rm.loadTokens(RiTa.tokenize(txt));
+
+    for (let i = 0; i < 5; i++) {
+
+      toks = rm.generateTokens(4, { maxLengthMatch: mlms });
+      if (!toks || !toks.length) throw Error('no tokens');
+
+
+      // All sequences of len=N must be in text
+      for (let j = 0; j <= toks.length - rm.n; j++) {
+        part = toks.slice(j, j + rm.n);
+        res = RiTa.untokenize(part);
+        ok(txt.indexOf(res) > -1);
+      }
+
+      // All sequences of len=mlms must NOT  be in text
+      for (let j = 0; j <= toks.length - mlms; j++) {
+        part = toks.slice(j, j + mlms);
+        res = RiTa.untokenize(part);
+        ok(txt.indexOf(res) < 0);
+      }
+    }
+  });
+
+  it('should correctly call generateTokens.start', () => {
+    let rm = new Markov(2);
+    let start = "The";
+    let txt = "The young boy ate it. The fat boy gave up.";
+
+    rm.loadTokens(RiTa.tokenize(txt));
+
+    for (let i = 0; i < 5; i++) {
+
+      toks = rm.generateTokens(4, { startToken: start });
+      if (!toks || !toks.length) throw Error('no tokens');
+
+      // All sequences of len=N must be in text
+      for (let j = 0; j <= toks.length - rm.n; j++) {
+        part = toks.slice(j, j + rm.n);
+        res = RiTa.untokenize(part);
+        ok(txt.indexOf(res) > -1);
+      }
+
+      let joined = RiTa.untokenize(toks);
+      ok(joined.startsWith("The fat boy") || joined.startsWith("The young boy"));
+    }
+  });
+
+  it('should correctly call generateTokens.mlm.start', () => {
+    let rm = new Markov(2);
+    let mlms = 4, start = "The";
     let txt = "The young boy ate it. The fat boy gave up.";
 
     rm.loadTokens(RiTa.tokenize(txt));
@@ -32,10 +106,7 @@ describe('RiTa.Markov', () => {
     for (let i = 0; i < 5; i++) {
 
       toks = rm.generateTokens(4, { startToken: start, maxLengthMatch: mlms });
-      if (!toks || !toks.length) {
-        ok("failed!");
-        return;
-      }
+      if (!toks || !toks.length) throw Error('no tokens');
 
       // All sequences of len=N must be in text
       for (let j = 0; j <= toks.length - rm.n; j++) {
@@ -53,6 +124,64 @@ describe('RiTa.Markov', () => {
       }
     }
   });
+
+  // WORKING HERE
+  /*
+  it('should correctly call generateTokens.startArray', () => {
+    let rm = new Markov(2);
+    let start = ["The", "young"];
+    let txt = "The young boy ate it. The fat boy gave up.";
+
+    rm.loadTokens(RiTa.tokenize(txt));
+
+    for (let i = 0; i < 5; i++) {
+
+      toks = rm.generateTokens(4, { startToken: start });
+      console.log(i, toks);
+      if (!toks || !toks.length) throw Error('no tokens');
+
+      // All sequences of len=N must be in text
+      for (let j = 0; j <= toks.length - rm.n; j++) {
+        part = toks.slice(j, j + rm.n);
+        res = RiTa.untokenize(part);
+        ok(txt.indexOf(res) > -1);
+      }
+
+      let joined = RiTa.untokenize(toks);
+      ok(joined.startsWith("The young boy"));
+    }
+  });
+
+  it('should correctly call generateTokens.mlm.startArray', () => {
+    let rm = new Markov(2);
+    let mlms = 4, start = ["The", "young"];
+    let txt = "The young boy ate it. The fat boy gave up.";
+
+    rm.loadTokens(RiTa.tokenize(txt));
+
+    for (let i = 0; i < 5; i++) {
+
+      toks = rm.generateTokens(4, { startToken: start, maxLengthMatch: mlms });
+      if (!toks || !toks.length) throw Error('no tokens');
+
+      // All sequences of len=N must be in text
+      for (let j = 0; j <= toks.length - rm.n; j++) {
+        part = toks.slice(j, j + rm.n);
+        res = RiTa.untokenize(part);
+        ok(txt.indexOf(res) > -1);
+      }
+
+      // All sequences of len=mlms must NOT  be in text
+      for (let j = 0; j <= toks.length - mlms; j++) {
+        part = toks.slice(j, j + mlms);
+        res = RiTa.untokenize(part);
+        ok(txt.indexOf(res) < 0);
+        ok(res.startsWith("The fat boy ate") || res.startsWith("The young boy gave"));
+      }
+    }
+  });*/
+
+  ////////////////////////////////////////////////////////////////////////
 
   it('should correctly call generateSentence', () => {
 
@@ -146,8 +275,8 @@ describe('RiTa.Markov', () => {
     let rm = new Markov(3);
     rm.loadTokens(RiTa.tokenize(sample));
 
-    for (let i = 0; i < 20; i++) {
-      let arr = rm.generateUntil('[\.\?!]', 4, 20);
+    for (let i = 0; i < 10; i++) {
+      let arr = rm.generateUntil('[\.\?!]', { minLength: 4, maxLength: 20 });
       let res = RiTa.untokenize(arr);
 
       //console.log(i+","+res);
@@ -397,15 +526,14 @@ describe('RiTa.Markov', () => {
   });
 
   it('should correctly call size', () => {
-    let tokens = RiTa.tokenize(sample);
-    let sents = RiTa.sentences(sample);
 
+    let tokens = RiTa.tokenize(sample);
     let rm = new Markov(3);
     rm.loadTokens(tokens);
     eq(rm.size(), tokens.length);
   });
 
-  function eql(a, b) { expect(a).eql(b); }
-  function eq(a, b) { expect(a).eq(b); }
-  function ok(res) { expect(res).eq(true); }
+  function eql(a, b, c) { expect(a).eql(b, c); }
+  function eq(a, b, c) { expect(a).eq(b, c); }
+  function ok(res, m) { expect(res).eq(true, m); }
 });

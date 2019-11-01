@@ -10,14 +10,14 @@ class Lexicon {
     this.dict = dict;
   }
 
-  alliterations(word, opts) {
+  alliterations(word, { matchMinLength = 4, useLTS = false } = {}) {
 
     word = word.includes(' ') ? word.substring(0, word.indexOf(' ')) : word;
 
     if (RiTa.VOWELS.includes(word.charAt(0))) return [];
 
-    let matchMinLength = opts && opts.matchMinLength || 4;
-    let useLTS = opts && opts.useLTS || false;
+    // let matchMinLength = opts && opts.matchMinLength || 4;
+    // let useLTS = opts && opts.useLTS || false;
 
     let results = [];
     let words = Object.keys(this.dict);
@@ -163,10 +163,9 @@ class Lexicon {
 
   randomWord(opts) {
 
-    let j, rdata, pluralize = false;
+    let pluralize = false;
     let words = Object.keys(this.dict);
     let ran = Math.floor(RiTa.random(words.length));
-
     let targetPos = opts && opts.pos;
     let targetSyls = opts && opts.syllableCount || 0;
 
@@ -174,11 +173,8 @@ class Lexicon {
       w.endsWith("ism") || pos.indexOf("vbg") > 0);
 
     if (targetPos && targetPos.length) {
-
       targetPos = targetPos.trim().toLowerCase();
-
       pluralize = (targetPos === "nns");
-
       if (targetPos[0] === "n") targetPos = "nn";
       else if (targetPos === "v") targetPos = "vb";
       else if (targetPos === "r") targetPos = "rb";
@@ -188,7 +184,6 @@ class Lexicon {
     for (let i = 0; i < words.length; i++) {
       let j = (ran + i) % words.length;
       let rdata = this.dict[words[j]];
-      let word = words[j];
 
       // match the syls if supplied
       if (targetSyls && targetSyls !== rdata[0].split(' ').length) {
@@ -196,20 +191,19 @@ class Lexicon {
       }
 
       if (targetPos) { // match the pos if supplied
-
         if (targetPos === rdata[1].split(' ')[0]) {
+
           // match any pos but plural noun
-          if (!pluralize) {
-            return word;
-          }
+          if (!pluralize) return words[j];
+
           // match plural noun
-          if (!isNNWithoutNNS(word, rdata[1])) {
-            return RiTa.pluralize(word);
+          if (!isNNWithoutNNS(words[j], rdata[1])) {
+            return RiTa.pluralize(words[j]);
           }
         }
       }
       else {
-         return word; // no pos to match
+        return words[j]; // no pos to match
       }
     }
 

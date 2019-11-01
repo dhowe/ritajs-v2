@@ -16,6 +16,8 @@ describe('RiTa.API', () => {
     expect(rm.n).eq(3);
   });
 
+  ///////////////////////////////// API //////////////////////////////////////
+
   it('Should call alliterations', () => {
     expect(RiTa.alliterations).to.be.a('function');
   });
