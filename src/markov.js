@@ -3,7 +3,7 @@ const RiTa = require('./rita_api');
 // TODO:
 // invertProbabilities arg
 // allow for real-time weighting ala memo
-// multiple tokens in startToken arg
+// multiple tokens in startTokens arg
 
 const SSDLM = '<s/>';
 const MI = Number.MAX_SAFE_INTEGER;
@@ -40,9 +40,9 @@ class Markov {
     this.input.push(...tokens.filter(t => t !== SSDLM));
   }
 
-  generateSentences(num, { minTokens = 5, maxTokens = 35, startToken, maxLengthMatch } = {}) {
+  generateSentences(num, { minTokens = 5, maxTokens = 35, startTokens, maxLengthMatch } = {}) {
 
-    //console.log(num + " {" + minTokens + "," + maxTokens + "," + startToken + "}");
+    //console.log(num + " {" + minTokens + "," + maxTokens + "," + startTokens + "}");
 
     let node, sent, tries = 0;
     let result = [];
@@ -52,11 +52,11 @@ class Markov {
       if (result.length == num) return result;
 
       // choose a sentence start, according to probability
-      sent = sent || [node = startToken ? this.root.child(SSDLM)
-        .child(startToken) : this.root.child(SSDLM).select()];
+      sent = sent || [node = startTokens ? this.root.child(SSDLM)
+        .child(startTokens) : this.root.child(SSDLM).select()];
 
-      if (!node) throw Error(startToken ? "No start token"
-        + " found: " + startToken : "Invalid state: " + this);
+      if (!node) throw Error(startTokens ? "No start token"
+        + " found: " + startTokens : "Invalid state: " + this);
 
       if (node.isLeaf()) {
         node = this._search(sent);
@@ -101,19 +101,33 @@ class Markov {
       ' - you may need to add more text to the model\n');
   }
 
-  generateSentence({ minTokens = 5, maxTokens = 35, startToken = undefined, maxLengthMatch = MI } = {}) {
+  generateSentence({ minTokens = 5, maxTokens = 35, startTokens, maxLengthMatch } = {}) {
 
     return this.generateSentences(1, ...arguments)[0];
   }
 
-  generateTokens(num, { startToken, maxLengthMatch } = {}) {
+  generateTokens(num, { startTokens, maxLengthMatch } = {}) {
+    //console.log("generateTokens: ",startTokens);
 
-    let tokens, tries = 0;
+    let tries = 0, tokens = (typeof startTokens === 'string')
+      ? RiTa.tokenize(startTokens) : null;
 
     while (tries < MAX_GENERATION_ATTEMPTS) {
 
-      tokens = tokens || [startToken ?
-        this.root.child(startToken) : this.root.select()];
+      if (!tokens) {
+        if (!startTokens) {
+          tokens = [this.root.select()];
+        }
+        else {
+          tokens = [];
+          let st = this._search(startTokens);
+          while (!st.isRoot()) {
+            tokens.unshift(st);
+            st = st.parent;
+          }
+        }
+      }
+      //tokens = tokens || [ startTokens ? this.root.child(startTokens) : this.root.select()];
 
       let parent = this._search(tokens);
 
@@ -139,40 +153,39 @@ class Markov {
       }
     }
 
-    let msg = '\n\nFailed after ' + tries + ' tries - ';
-    msg += 'you may need to add more text to the model';
-    if (maxLengthMatch) msg += " or reduce the maxLengthMatch parameter";
-    throw Error(msg);
+    throw Error('\n\nFailed after ' + tries + ' tries; you may' +
+      'need to add more text to the model' + maxLengthMatch ?
+      ' or reduce the maxLengthMatch parameter' : '');
   }
 
-  generateTokensX(num, { startToken, maxLengthMatch = Number.MAX_VALUE } = {}) {
+  generateTokensX(num, { startTokens, maxLengthMatch = Number.MAX_VALUE } = {}) {
 
-    console.log('generateTokens.startToken', startToken);
+    console.log('generateTokens.startTokens', startTokens);
     let tokens, tries = 0;
 
-    // if (typeof startToken === 'string') {
-    //   if (startToken.includes(' ')) {
-    //     startToken = RiTa.untokenize(startToken);
+    // if (typeof startTokens === 'string') {
+    //   if (startTokens.includes(' ')) {
+    //     startTokens = RiTa.untokenize(startTokens);
     //   }
     //   else {
-    //     startToken = [startToken];
+    //     startTokens = [startTokens];
     //   }
     // }
 
     while (tries < MAX_GENERATION_ATTEMPTS) {
 
-      //tokens = tokens || [startToken ? this._search(startToken) : this.root.select()];
+      //tokens = tokens || [startTokens ? this._search(startTokens) : this.root.select()];
 
-      // for (var i = 0; i < startToken.length - 1; i++) {
-      //   console.log('startToken[' + i + ']=' + startToken[i]);
-      //   tokens[tokens.length] = startToken[i];
+      // for (var i = 0; i < startTokens.length - 1; i++) {
+      //   console.log('startTokens[' + i + ']=' + startTokens[i]);
+      //   tokens[tokens.length] = startTokens[i];
       // }
       // console.log('generateTokens.tokens1:');
       // for (var i = 0; i < tokens.length; i++) {
       //   console.log('  #'+i, tokens[i].token);
       // }
       //
-      // tokens.push(this._search(startToken));
+      // tokens.push(this._search(startTokens));
       // console.log('generateTokens.tokens2', tokens);
       // return;
       console.log('generateTokens.tokens', this._nodesToTokens(tokens));
@@ -386,6 +399,7 @@ class Markov {
     return node; // can be null
   }
 
+
   // LATER
   _chooseChild(parent, path, mlms) {
 
@@ -533,6 +547,10 @@ class Node {
 
   isLeaf() {
     return this.childCount() < 1;
+  }
+
+  isRoot() {
+    return this.parent === null;
   }
 
   childNodes() {
