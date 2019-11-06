@@ -34,6 +34,14 @@ describe('RiTa.API', () => {
     expect(RiTa.conjugate).to.be.a('function');
   });
 
+  it('Should call createMarkov', () => {
+    expect(RiTa.createMarkov).to.be.a('function');
+  });
+
+  0 && it('Should call createGrammar', () => {
+    expect(RiTa.createGrammar).to.be.a('function');
+  });
+
   it('Should call hasWord', () => {
     expect(RiTa.hasWord('dog')).eq(true);
     expect(RiTa.hasWord('')).eq(false);

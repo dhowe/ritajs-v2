@@ -36,6 +36,14 @@ class RiTa {
     return RiTa.conjugator.conjugate(...arguments);
   }
 
+  /*static createGrammar(opts) {
+    return new RiMarkov(n, opts);
+  }*/
+
+  static createMarkov(n, opts) {
+    return new RiMarkov(n, opts);
+  }
+
   static env() {
     return Util.isNode() ? RiTa.NODE : RiTa.JS;
   }

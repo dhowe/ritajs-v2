@@ -8,6 +8,8 @@ const RiTa = require('./rita_api');
 */
 // allow for real-time weighting ala memo
 
+//next: generateSentences with start tokens, then temp
+
 const MAX_GENERATION_ATTEMPTS = 500;
 const SSDLM = '<s/>';
 class Markov {
@@ -17,7 +19,6 @@ class Markov {
     this.n = n;
     this.input = [];
     this.root = new Node(null, 'ROOT');
-    this.maxLengthMatchingSequence = 0;
   }
 
   loadTokens(tokens) {
@@ -30,6 +31,11 @@ class Markov {
 
     let tokens = [];
 
+    // tokenize if we have an string
+    if (typeof sentences === 'string') {
+      sentences = RiTa.sentences(sentences);
+    }
+
     // add a new token for each sentence start
     for (let i = 0; i < sentences.length; i++) {
       let sentence = sentences[i].replace(/\s+/, ' ').trim();
@@ -40,12 +46,88 @@ class Markov {
     this._treeify(tokens);
     this.input.push(...tokens.filter(t => t !== SSDLM));
   }
+  //
+  // generateTokens(num, { startTokens, maxLengthMatch } = {}) {
+  //   console.log('generateTokens');
+  //   let tries = 0, tokens;
+  //
+  //   let fail = () => {
+  //     tokens = null;
+  //     tries++;
+  //     return 1;
+  //   }
+  //
+  //   if (typeof startTokens === 'string') {
+  //     startTokens = RiTa.tokenize(startTokens);
+  //   }
+  //
+  //   while (tries < MAX_GENERATION_ATTEMPTS) {
+  //
+  //     if (!tokens) tokens = this._initTokens(startTokens);
+  //     let parent = this.n > 1 ? this._search(tokens) : this.root;
+  //
+  //     // if we don't have a parent, give up
+  //     if ((!parent || parent.isLeaf()) && fail()) continue;
+  //
+  //     console.log("PAR",parent.token);
+  //
+  //     let node = this._chooseChild(parent, tokens, maxLengthMatch);
+  //
+  //     // if we don't find a valid child, give up
+  //     if (!node && fail()) continue;
+  //
+  //     // if we have anough tokens, we're done
+  //     if (tokens.push(node) >= num) {
+  //       return tokens.map(n => n.token);
+  //     }
+  //   }
+  //
+  //   throw Error('\n\nFailed after ' + tries + ' tries; you may' +
+  //     ' need to add more text to the model' + (maxLengthMatch ?
+  //       ' or reduce the maxLengthMatch parameter' : ''));
+  // }
+
+  _initTokens(startTokens) {
+    let tokens;
+    if (startTokens) {
+      tokens = [];
+      let st = this._search(startTokens);
+      while (!st.isRoot()) {
+        tokens.unshift(st);
+        st = st.parent;
+      }
+    }
+    else { // start-tokens supplies
+      tokens = [this.root.pselect()];
+    }
+    return tokens;
+  }
+
+
+  //
+  // _initSentenceC(startTokens) {
+  //   let tokens;
+  //   if (!startTokens) {
+  //     //this.root.child(SSDLM).child(startTokens)
+  //     tokens = [this.root.child(SSDLM).pselect()];
+  //   }
+  //   else {
+  //     //this.root.child(SSDLM).child(startTokens)
+  //     tokens = [];
+  //     let st = this._searchSentenceStart(startTokens);
+  //     while (!st.isRoot() && st.token !== SSDLM) {
+  //       tokens.unshift(st);
+  //       st = st.parent;
+  //     }
+  //
+  //   }
+  //   return tokens;
+  // }
 
   generateTokens(num, { startTokens, maxLengthMatch } = {}) {
 
-    let tries = 0, tokens;
-
-    let fail = () => {
+    let tokens, tries = 0, fail = () => {
+      console.log('FAIL');
       tokens = null;
       tries++;
       return 1;
@@ -56,20 +138,27 @@ class Markov {
     }
 
     while (tries < MAX_GENERATION_ATTEMPTS) {
-
+console.log('===================');
       if (!tokens) tokens = this._initTokens(startTokens);
+console.log("TOK",this._flatten(tokens));
+
       let parent = this.n > 1 ? this._search(tokens) : this.root;
 
       // if we don't have a parent, give up
       if ((!parent || parent.isLeaf()) && fail()) continue;
+console.log("PAR",parent.token);
 
-      let node = this._chooseChild(parent, tokens, maxLengthMatch);
+      let next = this._chooseChild(parent, tokens, maxLengthMatch);
+console.log("NODE",next.token);
 
       // if we don't find a valid child, give up
-      if (!node && fail()) continue;
+      if (!next && fail()) continue;
 
       // if we have anough tokens, we're done
-      if (tokens.push(node) >= num) {
+      if (tokens.push(next) >= num) {
+        console.log('===================');
+        console.log("DONE",this._flatten(tokens));
+
         return tokens.map(n => n.token);
       }
     }
@@ -79,12 +168,9 @@ class Markov {
         ' or reduce the maxLengthMatch parameter' : ''));
   }
 
-  _initTokens(startTokens) {
+  _initSentence(startTokens) {
     let tokens;
-    if (!startTokens) {
-      tokens = [this.root.select()];
-    }
-    else {
+    if (startTokens) { // TODO:
       tokens = [];
       let st = this._search(startTokens);
       while (!st.isRoot()) {
@@ -92,29 +178,37 @@ class Markov {
         st = st.parent;
       }
     }
-    return tokens;
-  }
-
-  _initSentence(startTokens) {
-    let tokens;
-    if (!startTokens) {
-      //this.root.child(SSDLM).child(startTokens)
-      tokens = [this.root.child(SSDLM).select()];
-    }
-    else {
-      //this.root.child(SSDLM).child(startTokens)
-      tokens = [];
-      let st = this._searchSentenceStart(startTokens);
-      while (!st.isRoot() && st.token !== SSDLM) {
-        tokens.unshift(st);
-        st = st.parent;
-      }
-
+    else { // no start-tokens
+      //tokens = [ this.root.pselect() ];
+      let start = this.root.child(SSDLM);
+      tokens = [start.pselect()];
     }
     return tokens;
   }
 
   generateSentences(num, { minWords = 5, maxWords = 35, startTokens, maxLengthMatch } = {}) {
+    let tokens, tries = 0, fail = () => {
+      tokens = null;
+      tries++;
+      return 1;
+    };
+
+    if (typeof startTokens === 'string') {
+      startTokens = RiTa.tokenize(startTokens);
+    }
+
+    while (tries < MAX_GENERATION_ATTEMPTS) {
+
+      if (!tokens) tokens = this._initSentence(startTokens);
+      console.log("FLAT1: ", this.root.child(SSDLM).token, this._flatten(tokens));
+      let node = this._chooseChild(this.root.child(SSDLM), tokens, maxLengthMatch);
+      console.log("FLAT2: ", this._flatten(node));
+
+      break;
+    }
+  }
+
+  generateSentencesX(num, { minWords = 5, maxWords = 35, startTokens, maxLengthMatch } = {}) {
 
     //console.log(num + " {" + minWords + "," + maxWords + "," + startTokens + "}");
 
@@ -130,7 +224,7 @@ class Markov {
 
       if (!sent) {
         //sent = [ node = this._initSentence(startTokens) ];
-        sent = sent || [node = this.root.child(SSDLM).select()];
+        sent = sent || [node = this.root.child(SSDLM).pselect()];
       }
 
       if (node.isLeaf()) {
@@ -146,7 +240,7 @@ class Markov {
       }
 
       // select the next child, according to probabilities
-      node = node.select();
+      node = node.pselect();
 
       // do we have a candidate for the next start?
       if (node.token === SSDLM) {
@@ -193,7 +287,7 @@ class Markov {
         let mn = this._search(tokens);
         if (!mn || mn.isLeaf()) continue OUT; // hit a leaf, restart
 
-        mn = mn.select();
+        mn = mn.pselect();
         tokens.push(mn.token);
 
         // check against our regex
@@ -205,7 +299,7 @@ class Markov {
       "You may need to add more text to your model..." + '\n');
   }
 
-  getCompletions(pre, post) {
+  completions(pre, post) {
     let tn, result = [];
     if (post) { // fill the center
 
@@ -219,28 +313,28 @@ class Markov {
       let nexts = tn.childNodes();
       for (let i = 0; i < nexts.length; i++) {
 
-        let node = nexts[i];
         let atest = pre.slice(0);
-        atest.push(node.token);
+        atest.push(nexts[i].token);
         post.map(function(p) {
           atest.push(p);
         });
 
-        if (this._search(atest)) result.push(node.token);
+        if (this._search(atest)) result.push(nexts[i].token);
       }
 
       return result;
 
     } else { // fill the end
 
-      let hash = this.getProbabilities(pre);
+      let hash = this.probabilities(pre);
       return Object.keys(hash).sort(function(a, b) {
         return hash[b] - hash[a];
       });
     }
   }
 
-  getProbabilities(path) {
+  probabilities(path) {
+    // TODO: tokenize to handle multiple words/tokens in path
     path = (typeof path === 'string') ? [path] : path;
     if (path.length > this.n) {
       path = path.slice(Math.max(0, path.length - (this.n - 1)), path.length);
@@ -250,17 +344,17 @@ class Markov {
     let nexts = tn.childNodes();
     for (let i = 0; i < nexts.length; i++) {
       if (nexts[i]) {
-        probs[nexts[i].token] = nexts[i].probability();
+        probs[nexts[i].token] = nexts[i].nodeProb();
       }
     }
     return probs;
   }
 
-  getProbability(data) {
+  probability(data) {
     if (data && data.length) {
       let tn = (typeof data === 'string') ?
         this.root.child(data) : this._search(data);
-      if (tn) return tn.probability();
+      if (tn) return tn.nodeProb();
     }
     return 0;
   }
@@ -275,6 +369,7 @@ class Markov {
 
   ////////////////////////////// end API ////////////////////////////////
 
+  /* add tokens to tree from root */
   _treeify(tokens) {
 
     for (let i = 0; i < tokens.length; i++) {
@@ -286,11 +381,13 @@ class Markov {
     }
   }
 
+  /* create a sentence string from an array of nodes */
   _flatten(nodes) {
-
+    if (nodes.token) return nodes.token; // single-node
     return RiTa.untokenize(this._nodesToTokens(nodes));
   }
 
+  /* create a sentence string from an array of nodes */
   _validateSentence(result, nodes) {
 
     let sent = this._flatten(nodes);
@@ -363,16 +460,19 @@ class Markov {
   _chooseChild(parent, path, mlms) {
 
     // bail if we don't have maxLengthMatchingSequence
-    if (!mlms || path.length < (mlms - 1)) return parent.select();
+    if (!mlms || path.length < (mlms - 1)) return parent.pselect();
 
-    let dbug = false;
+    let dbug = false, start;
 
     if (dbug) console.log('\nSo far: ', path.map(n => n.token)
       + ' with ' + parent.childNodes().length + ' nexts = ['
       + nodeStr(parent.childNodes()) + "]\n");
 
-    let start = nodeStr(path, true);
-    if (dbug) console.log("start: " + start);
+
+    if (dbug) {
+      start = nodeStr(path, true);
+      console.log("start: " + start);
+    }
 
     let child, nodes = path.slice(-(mlms - 1)),
       excludes = [];
@@ -382,7 +482,7 @@ class Markov {
     while (!child) {
 
       if (dbug) console.log('select: ', excludes, nodes.length);
-      let candidate = parent.select({ filter: excludes });
+      let candidate = parent.pselect({ filter: excludes });
 
       if (!candidate) {
 
@@ -424,35 +524,17 @@ class Node {
 
   /*
    * Find a (direct) child node with matching token, given a word or node
-   * if word is undefined, then do prob-select
    */
   child(word) {
     let lookup = word;
-    if (word.hasOwnProperty('token')) lookup = word.token;
+    if (word.token) lookup = word.token;
     return this.children[lookup];
-  }
-
-  /*
-   * increments count for a child node and returns it
-   */
-  addChild(word, count) {
-
-    count = count || 1;
-    let node = this.children[word];
-    if (!node) {
-
-      node = new Node(this, word);
-      this.children[word] = node;
-    }
-    node.count += count;
-
-    return node;
   }
 
   /*
    * Return a (direct) child node according to probability
    */
-  select({ filter } = {}) {
+  pselect({ filter } = {}) {
 
     let applyFilter = (filter, nodes) => {
       if (isFunction(filter)) {
@@ -473,7 +555,7 @@ class Node {
     let nodes = this.childNodes();
 
     if (!nodes || !nodes.length) {
-      throw Error("Invalid arg to select(no children) " + this);
+      throw Error("Invalid arg to pselect(no children) " + this);
     }
 
     if (filter) {
@@ -483,7 +565,7 @@ class Node {
       if (!nodes.length) return; // nothing left after filtering
 
       sum = nodes.reduce(function(total, n) {
-        return total + n.probability();
+        return total + n.nodeProb();
       }, 0);
     }
 
@@ -491,11 +573,11 @@ class Node {
 
     for (let i = 0; i < nodes.length; i++) {
 
-      pTotal += nodes[i].probability();
+      pTotal += nodes[i].nodeProb();
       if (selector < pTotal) {
 
         // make sure we don't return a sentence start (<s/>) node
-        let result = nodes[i].token === SSDLM ? nodes[i].select() : nodes[i];
+        let result = nodes[i].token === SSDLM ? nodes[i].pselect() : nodes[i];
 
         if (!result) throw Error('Unexpected state');
 
@@ -503,7 +585,7 @@ class Node {
       }
     }
 
-    throw Error(this + '\nno hit for select() with filter: ' + filter +
+    throw Error(this + '\nno hit for pselect() with filter: ' + filter +
       "\nnodes(" + nodes.length + ") -> " + nodes);
   }
 
@@ -528,13 +610,27 @@ class Node {
     return sum;
   }
 
-  probability() {
+  nodeProb() {
     return this.parent ? this.count / this.parent.childCount() : -1;
+  }
+
+  /*
+   * increments count for a child node and returns it
+   */
+  addChild(word, count) {
+    count = count || 1;
+    let node = this.children[word];
+    if (!node) {
+      node = new Node(this, word);
+      this.children[word] = node;
+    }
+    node.count += count;
+    return node;
   }
 
   toString() {
     return this.parent ? this.token + '(' + this.count +
-      '/' + this.probability().toFixed(3) + '%)' : 'Root'
+      '/' + this.nodeProb().toFixed(3) + '%)' : 'Root'
   }
 
   stringify(theNode, str, depth, sort) {
@@ -563,7 +659,7 @@ class Node {
       }
 
       if (node.parent) str += " [" + node.count + ",p=" +
-        (node.probability().toFixed(3)) + "] {";
+        (node.nodeProb().toFixed(3)) + "] {";
 
       str = !this.childCount() ? this.stringify(node, str, depth + 1, sort) : str + '}';
     }
@@ -575,39 +671,26 @@ class Node {
   }
 
   asTree(sort) {
-
     let s = this.token + ' ';
-    if (this.parent) {
-      s += '(' + this.count + ')->';
-    }
+    if (this.parent) s += '(' + this.count + ')->';
     s += '{';
     return this.childCount() ? this.stringify(this, s, 1, sort) : s + '}';
   }
 
   _encode(tok) {
-
     if (tok === '\n') tok = '\\n';
     if (tok === '\r') tok = '\\r';
     if (tok === '\t') tok = '\\t';
     if (tok === '\r\n') tok = '\\r\\n';
     return tok;
   }
-}
+} // end Node
 
 // --------------------------------------------------------------
 
 function nodeStr(nodes, format) {
-  if (format) {
-    let a = [];
-    for (let i = 0; i < nodes.length; i++)
-      a.push(nodes[i].token);
-    return RiTa.untokenize(a);
-  }
-  let s = '';
-  for (let i = 0; i < nodes.length; i++) {
-    s += nodes[i].token + ','
-  }
-  return s;
+  return format ? RiTa.untokenize(nodes.map(n => n.token)) :
+    nodes.reduce((acc, n) => acc += nodes[i].token + ',', '');
 }
 
 function isSubArray(find, arr) {
@@ -617,8 +700,7 @@ function isSubArray(find, arr) {
       if (find[find.length - j - 1] !== arr[i - j]) {
         continue OUT;
       }
-      if (j === find.length - 1)
-        return true;
+      if (j === find.length - 1) return true;
     }
   }
   return false;
@@ -626,8 +708,9 @@ function isSubArray(find, arr) {
 
 function err() {
   let msg = "[RiTa] " + arguments[0];
-  for (let i = 1; i < arguments.length; i++)
+  for (let i = 1; i < arguments.length; i++) {
     msg += '\n' + arguments[i];
+  }
   throw Error(msg);
 }
 
