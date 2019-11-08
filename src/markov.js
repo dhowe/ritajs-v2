@@ -46,46 +46,6 @@ class Markov {
     this._treeify(tokens);
     this.input.push(...tokens.filter(t => t !== SSDLM));
   }
-  //
-  // generateTokens(num, { startTokens, maxLengthMatch } = {}) {
-  //   console.log('generateTokens');
-  //   let tries = 0, tokens;
-  //
-  //   let fail = () => {
-  //     tokens = null;
-  //     tries++;
-  //     return 1;
-  //   }
-  //
-  //   if (typeof startTokens === 'string') {
-  //     startTokens = RiTa.tokenize(startTokens);
-  //   }
-  //
-  //   while (tries < MAX_GENERATION_ATTEMPTS) {
-  //
-  //     if (!tokens) tokens = this._initTokens(startTokens);
-  //     let parent = this.n > 1 ? this._search(tokens) : this.root;
-  //
-  //     // if we don't have a parent, give up
-  //     if ((!parent || parent.isLeaf()) && fail()) continue;
-  //
-  //     console.log("PAR",parent.token);
-  //
-  //     let node = this._chooseChild(parent, tokens, maxLengthMatch);
-  //
-  //     // if we don't find a valid child, give up
-  //     if (!node && fail()) continue;
-  //
-  //     // if we have anough tokens, we're done
-  //     if (tokens.push(node) >= num) {
-  //       return tokens.map(n => n.token);
-  //     }
-  //   }
-  //
-  //   throw Error('\n\nFailed after ' + tries + ' tries; you may' +
-  //     ' need to add more text to the model' + (maxLengthMatch ?
-  //       ' or reduce the maxLengthMatch parameter' : ''));
-  // }
 
   _initTokens(startTokens) {
     let tokens;
@@ -103,31 +63,10 @@ class Markov {
     return tokens;
   }
 
-
-  //
-  // _initSentenceC(startTokens) {
-  //   let tokens;
-  //   if (!startTokens) {
-  //     //this.root.child(SSDLM).child(startTokens)
-  //     tokens = [this.root.child(SSDLM).pselect()];
-  //   }
-  //   else {
-  //     //this.root.child(SSDLM).child(startTokens)
-  //     tokens = [];
-  //     let st = this._searchSentenceStart(startTokens);
-  //     while (!st.isRoot() && st.token !== SSDLM) {
-  //       tokens.unshift(st);
-  //       st = st.parent;
-  //     }
-  //
-  //   }
-  //   return tokens;
-  // }
-
   generateTokens(num, { startTokens, maxLengthMatch } = {}) {
-
+    let dbug = 0;
     let tokens, tries = 0, fail = () => {
-      console.log('FAIL');
+      dbug && console.log('FAIL');
       tokens = null;
       tries++;
       return 1;
@@ -138,26 +77,26 @@ class Markov {
     }
 
     while (tries < MAX_GENERATION_ATTEMPTS) {
-console.log('===================');
+
+      dbug&&console.log('===================');
       if (!tokens) tokens = this._initTokens(startTokens);
-console.log("TOK",this._flatten(tokens));
+      dbug&&console.log("TOKS", this._flatten(tokens));
 
       let parent = this.n > 1 ? this._search(tokens) : this.root;
 
       // if we don't have a parent, give up
       if ((!parent || parent.isLeaf()) && fail()) continue;
-console.log("PAR",parent.token);
 
-      let next = this._chooseChild(parent, tokens, maxLengthMatch);
-console.log("NODE",next.token);
+      let next = parent.chooseChild(tokens, maxLengthMatch, this.input);
+      dbug&&console.log("NEXT", next.token);
 
       // if we don't find a valid child, give up
       if (!next && fail()) continue;
 
       // if we have anough tokens, we're done
       if (tokens.push(next) >= num) {
-        console.log('===================');
-        console.log("DONE",this._flatten(tokens));
+        dbug&&console.log('===================');
+        dbug&&console.log("DONE", this._flatten(tokens));
 
         return tokens.map(n => n.token);
       }
@@ -201,7 +140,7 @@ console.log("NODE",next.token);
 
       if (!tokens) tokens = this._initSentence(startTokens);
       console.log("FLAT1: ", this.root.child(SSDLM).token, this._flatten(tokens));
-      let node = this._chooseChild(this.root.child(SSDLM), tokens, maxLengthMatch);
+      let node = this.root.child(SSDLM).chooseChild(tokens, maxLengthMatch, this.input);
       console.log("FLAT2: ", this._flatten(node));
 
       break;
@@ -425,8 +364,8 @@ console.log("NODE",next.token);
   /*
    * Follows 'path' (using the last n-1 tokens) from root and returns
    * the node for the last element if it exists, otherwise undefined
-   * @param  {String[]} path
-   * @return {Node}
+   * @param  {string[]} path
+   * @return {Node} or undefined
    */
   _search(path) {
 
@@ -455,59 +394,6 @@ console.log("NODE",next.token);
 
     return node; // can be null
   }
-
-
-  _chooseChild(parent, path, mlms) {
-
-    // bail if we don't have maxLengthMatchingSequence
-    if (!mlms || path.length < (mlms - 1)) return parent.pselect();
-
-    let dbug = false, start;
-
-    if (dbug) console.log('\nSo far: ', path.map(n => n.token)
-      + ' with ' + parent.childNodes().length + ' nexts = ['
-      + nodeStr(parent.childNodes()) + "]\n");
-
-
-    if (dbug) {
-      start = nodeStr(path, true);
-      console.log("start: " + start);
-    }
-
-    let child, nodes = path.slice(-(mlms - 1)),
-      excludes = [];
-
-    if (dbug) console.log('path: ', nodeStr(nodes));
-
-    while (!child) {
-
-      if (dbug) console.log('select: ', excludes, nodes.length);
-      let candidate = parent.pselect({ filter: excludes });
-
-      if (!candidate) {
-
-        if (dbug) console.log('FAIL with excludes = [' + excludes + '], str="' + start + '"');
-        return false // if no candidates left, return false;
-      }
-
-      //let check = nodes.slice(0).push(candidate)
-      let check = nodes.slice().map(n => n.token);
-      check.push(candidate.token);
-
-      if (dbug) console.log('isSubArray?', check);
-
-      if (isSubArray(check, this.input)) {
-        if (dbug) console.log("Yes, excluding '" + candidate.token + "'");
-        excludes.push(candidate.token);
-        continue; // try again
-      }
-
-      if (dbug) console.log('No, done: ', candidate.token);
-      child = candidate; // found a good one
-    }
-
-    return child;
-  }
 }
 
 /////////////////////////////// Node //////////////////////////////////////////
@@ -522,6 +408,54 @@ class Node {
     this.count = 0;
   }
 
+  chooseChild(path, mlms, input) {
+
+    // bail if we don't have maxLengthMatchingSequence
+    if (!mlms || path.length < (mlms - 1)) return this.pselect();
+
+    let dbug = 0, start, child, nodes = path.slice(-(mlms - 1));
+    let excludes = [];
+
+    if (dbug) console.log('\nSo far: ', path.map(n => n.token)
+      + ' with ' + this.childNodes().length + ' nexts = ['
+      + nodeStr(this.childNodes()) + "]\n");
+
+    if (dbug) {
+      start = nodeStr(path, true);
+      console.log("start: " + start);
+    }
+
+    if (dbug) console.log('path: ', nodeStr(nodes));
+
+    while (!child) {
+
+      if (dbug) console.log('select: ', excludes, nodes.length);
+      let candidate = this.pselect({ filter: excludes });
+
+      if (!candidate) {
+
+        if (dbug) console.log('FAIL with excludes = [' + excludes + '], str="' + start + '"');
+        return false // if no candidates left, return false;
+      }
+
+      //let check = nodes.slice(0).push(candidate)
+      let check = nodes.slice().map(n => n.token);
+      check.push(candidate.token);
+
+      if (dbug) console.log('isSubArray?', check);
+
+      if (isSubArray(check, input)) {
+        if (dbug) console.log("Yes, excluding '" + candidate.token + "'");
+        excludes.push(candidate.token);
+        continue; // try again
+      }
+
+      if (dbug) console.log('No, done: ', candidate.token);
+      child = candidate; // found a good one
+    }
+
+    return child;
+  }
   /*
    * Find a (direct) child node with matching token, given a word or node
    */
