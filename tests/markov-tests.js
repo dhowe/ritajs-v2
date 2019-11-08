@@ -114,15 +114,26 @@ describe('RiTa.Markov', () => {
     }
   });
 
-  0&& it('should correctly call generateTokens.mlm', () => {
+  it('should correctly call generateTokens.mlm', () => {
+    let rm = new Markov(2), mlms = 3;
+    rm.loadTokens(Array.from("abcabdfbe"));
+    rm.print();
+    for (let i = 0; i < 5; i++) {
+      let toks = rm.generateTokens(3, { maxLengthMatch: 2 });
+      console.log(i, toks.join(''));
+      eql(toks, Array.from("abe"))
+    }
+  });
+
+  it('should correctly call generateTokens.mlm2', () => {
     let rm = new Markov(2), mlms = 4;
     let txt = "The young boy ate it! A young girl gave up? The young girl lept in.";
     // example: The young girl ate,
     rm.loadTokens(RiTa.tokenize(txt));
-
+    console.log(rm.toString());
     for (let i = 0; i < 5; i++) {
 
-      let toks = rm.generateTokens(4, { maxLengthMatch: 3, startTokens: 'The'});
+      let toks = rm.generateTokens(4, { maxLengthMatch: 3, startTokens: 'The' });
       console.log(i, RiTa.untokenize(toks));
       continue;
 
@@ -315,19 +326,19 @@ describe('RiTa.Markov', () => {
 
   ////////////////////////////////////////////////////////////////////////
   if (false) {
-  it('should correctly call generateSentence', () => {
+    it('should correctly call generateSentence', () => {
 
-    let rm = new Markov(4);
-    rm.loadSentences(RiTa.sentences(sample));
-    for (let i = 0; i < 5; i++) {
-      let s = rm.generateSentence();
-      //console.log(i+") "+s);
-      ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
-      ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
-      let num = RiTa.tokenize(s).length;
-      ok(num >= 5 && num <= 35 + i);
-    }
-  });
+      let rm = new Markov(4);
+      rm.loadSentences(RiTa.sentences(sample));
+      for (let i = 0; i < 5; i++) {
+        let s = rm.generateSentence();
+        //console.log(i+") "+s);
+        ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
+        ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
+        let num = RiTa.tokenize(s).length;
+        ok(num >= 5 && num <= 35 + i);
+      }
+    });
 
 
     it('should correctly call generateSentence.start', () => {

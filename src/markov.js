@@ -22,7 +22,9 @@ class Markov {
   }
 
   loadTokens(tokens) {
-
+    if (!Array.isArray(tokens)) {
+      throw Error('RiMarkov.loadTokens() expects an array of tokens');
+    }
     this._treeify(tokens);
     this.input.push(...tokens);
   }
@@ -69,10 +71,10 @@ class Markov {
     return !isSubArray(check, this.input);
   }
 
-  generateTokens(num, { startTokens, maxLengthMatch } = {}) {
+  generateTokensOrig(num, { startTokens, maxLengthMatch } = {}) {
 
     let tokens, tries = 0, fail = (toks) => {
-      if (toks) console.log('FAIL: '+this._flatten(tokens));
+      if (toks) console.log('FAIL: ' + this._flatten(tokens));
       tokens = undefined;
       tries++;
       return 1;
@@ -103,10 +105,10 @@ class Markov {
         ' or increase the maxLengthMatch parameter' : ''));
   }
 
-  generateTokensLast(num, { startTokens, maxLengthMatch } = {}) {
+  generateTokens(num, { startTokens, maxLengthMatch } = {}) {
 
     let tokens, tries = 0, excludes = [], fail = (toks) => {
-      if (toks) console.log('FAIL: '+this._flatten(tokens));
+      if (toks) console.log('FAIL: ' + this._flatten(tokens));
       tokens = undefined;
       tries++;
       return 1;
@@ -128,31 +130,30 @@ class Markov {
       //let next = parent.chooseChild(tokens);//, maxLengthMatch, this.input);
       let next;
       while (!next) {
-        next = parent.pselect(excludes);
-        console.log('GOT '+this._flatten(tokens)+' -> '+(next ? next.token : 'NULL'));
+        next = parent.pselectWithout(excludes);
+        //console.log('GOT '+this._flatten(tokens)+' -> '+(next ? next.token : 'NULL'));
         if (!next) {
-          fail();
+          console.log('No ok children for: ' + this._flatten(tokens));
+          fail(); // No children are ok
           continue OUT;
         }
-        if (maxLengthMatch && (maxLengthMatch <= tokens.length)) {
 
+        if (maxLengthMatch && (maxLengthMatch <= tokens.length)) {
           if (!this.validateMlms(next, tokens)) {
-            console.log('MLMS-FAIL: '+this._flatten(tokens)+' -> '+next.token);
+            console.log('MLMS-FAIL: ' + this._flatten(tokens) + ' -> ' + next.token);
             excludes.push(next.token);
             next = undefined;
           }
           else {
-            console.log('MLMS-OK: '+this._flatten(tokens)+' -> '+next.token);
+            console.log('MLMS-OK: ' + this._flatten(tokens) + ' -> ' + next.token);
           }
         }
       }
-
 
       // if we have enough tokens, we're done
       if (tokens.push(next) >= num) {
         return tokens.map(n => n.token);
       }
-
     }
 
     throw Error('\n\nFailed after ' + tries + ' tries; you may' +
@@ -359,6 +360,10 @@ class Markov {
     return this.root.childCount();
   }
 
+  print() {
+    console.log(this.root.asTree(false).replace(/{}/g, ''));
+  }
+
   ////////////////////////////// end API ////////////////////////////////
 
   /*
@@ -499,7 +504,7 @@ class Node {
   /*
    * Return a (direct) child node according to probability
    */
-  pselectLast(excludes) {
+  pselectWithout(excludes) {
 
     let selector, sum = 1, pTotal = 0;
     let nodes = this.childNodes();
@@ -517,18 +522,17 @@ class Node {
       if (selector < pTotal) {
 
         // make sure we don't return a sentence start (<s/>) node
-        //if (node.token === SSDLM) node = node.pselect(); // TODO: restart here? HUH?
+        if (node.token === SSDLM) node = node.pselect();
 
         // make sure we don't return something explicitly excluded
-        if (excludes && excludes.includes(nodes[i].token)) {
-          console.log((i+1)+"/"+nodes.length+") HIT EXCLUDED: " + node.token);
-          node = null;
+        if (!excludes || !excludes.includes(nodes[i].token)) {
+          return node;
         }
-        return node;
+        console.log((i + 1) + "/" + nodes.length + ") HIT EXCLUDED: " + node.token);
       }
     }
 
-    //throw Error('pselect failed for: ' + this.token, 'with children', Object.keys(this.children));
+    throw Error('pselect failed for "' + this.token + '" with children: ' + Object.keys(this.children));
   }
 
   /*
@@ -634,7 +638,7 @@ class Node {
   }
 
   childNodes() {
-    return  Object.values(this.children);
+    return Object.values(this.children);
   }
 
   childNodesExcluding(excludes) {
@@ -675,39 +679,57 @@ class Node {
       '/' + this.nodeProb().toFixed(3) + '%)' : 'Root'
   }
 
-  stringify(theNode, str, depth, sort) {
+  stringify(mn, str, depth, sort) {
+
+    let l = [], indent = '\n';
 
     sort = sort || false;
 
-    let l = []; // TODO: use map
-    for (let k in theNode.children) l.push(theNode.children[k]);
+    for (let k in mn.children) {
+      l.push(mn.children[k]);
+    }
 
     if (!l.length) return str;
 
     if (sort) l.sort();
 
-    let indent = '\n';
-    for (let j = 0; j < depth; j++) indent += '    ';
+    for (let j = 0; j < depth; j++) indent += "  ";
 
     for (let i = 0; i < l.length; i++) {
 
       let node = l[i];
-      if (!node) break;
-      let tok = this._encode(node.token);
-      str += indent + tok;
 
-      if (!node.count) {
-        err("ILLEGAL FREQ: " + node.count + " " + mn.token + "," + node.token);
+      if (!node) break;
+
+      let tok = node.token;
+      if (tok) {
+        (tok == "\n") && (tok = "\\n");
+        (tok == "\r") && (tok = "\\r");
+        (tok == "\t") && (tok = "\\t");
+        (tok == "\r\n") && (tok = "\\r\\n");
       }
 
-      if (node.parent) str += " [" + node.count + ",p=" +
-        (node.nodeProb().toFixed(3)) + "] {";
+      str += indent + "'" + tok + "'";
 
-      str = !this.childCount() ? this.stringify(node, str, depth + 1, sort) : str + '}';
+      if (!node.count) err("ILLEGAL FREQ: " + node.count + " -> " + mn.token + "," + node.token);
+
+      if (!node.isRoot()) str += " [" + node.count + ",p=" +node.nodeProb().toFixed(3) + "]";
+      if (!node.isLeaf()) str += '  {';
+
+      //if (this.childCount()) str += '-> {';
+
+      if (this.childCount()) {
+        str = this.stringify(node, str, depth + 1, sort)
+      }
+      else {
+        str = str + "}";
+      }
     }
 
-    indent = '\n'; // TODO: use reduce() -- why are we doing this twice?
-    for (let j = 0; j < depth - 1; j++) indent += "    ";
+    indent = '\n';
+    for (let j = 0; j < depth - 1; j++) {
+      indent += "  ";
+    }
 
     return str + indent + "}";
   }
