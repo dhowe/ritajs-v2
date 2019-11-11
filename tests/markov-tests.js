@@ -116,26 +116,14 @@ describe('RiTa.Markov', () => {
 
   it('should correctly call generateTokens.mlm', () => {
     let rm = new Markov(2), mlms = 3;
-    rm.loadTokens(Array.from("abcabdfbe"));
-    rm.print();
-    for (let i = 0; i < 5; i++) {
-      let toks = rm.generateTokens(3, { maxLengthMatch: 2 });
-      console.log(i, toks.join(''));
-      eql(toks, Array.from("abe"))
-    }
-  });
-
-  it('should correctly call generateTokens.mlm2', () => {
-    let rm = new Markov(2), mlms = 4;
-    let txt = "The young boy ate it! A young girl gave up? The young girl lept in.";
+    let txt = "The young boy ate it! The old boy ran away.";
     // example: The young girl ate,
     rm.loadTokens(RiTa.tokenize(txt));
-    console.log(rm.toString());
+    //console.log(rm.toString());
     for (let i = 0; i < 5; i++) {
 
-      let toks = rm.generateTokens(4, { maxLengthMatch: 3, startTokens: 'The' });
-      console.log(i, RiTa.untokenize(toks));
-      continue;
+      let toks = rm.generateTokens(4, { maxLengthMatch: mlms, startTokens: 'The' });
+      //console.log(i, RiTa.untokenize(toks));
 
       // All sequences of len=N must be in text
       for (let j = 0; j <= toks.length - rm.n; j++) {
@@ -144,13 +132,15 @@ describe('RiTa.Markov', () => {
         ok(txt.indexOf(res) > -1);
       }
 
-      // All sequences of len=mlms must NOT  be in text
-      for (let j = 0; j <= toks.length - mlms; j++) {
-        let part = toks.slice(j, j + mlms);
+      // All sequences of len=mlms+1 must NOT  be in text
+      for (let j = 0; j <= toks.length - (mlms + 1); j++) {
+        let part = toks.slice(j, j + (mlms + 1));
         let res = RiTa.untokenize(part);
-        ok(txt.indexOf(res) < 0);
+        ok(txt.indexOf(res) < 0, '"' + res + '" found in text!');
       }
     }
+
+    // TODO: add more
   });
 
   it('should correctly call generateTokens.start', () => {
@@ -264,7 +254,7 @@ describe('RiTa.Markov', () => {
     }
   });
 
-  0 && it('should correctly call generateTokens.mlm.start', () => {
+  it('should correctly call generateTokens.mlm.start', () => {
     let rm = new Markov(2);
     let mlms = 4, start = "The";
     let txt = "The young boy ate it. The fat boy gave up.";
@@ -283,9 +273,9 @@ describe('RiTa.Markov', () => {
         ok(txt.indexOf(res) > -1);
       }
 
-      // All sequences of len=mlms must NOT  be in text
-      for (let j = 0; j <= toks.length - mlms; j++) {
-        part = toks.slice(j, j + mlms);
+      // All sequences of len=mlms+1 must NOT  be in text
+      for (let j = 0; j <= toks.length - (mlms + 1); j++) {
+        part = toks.slice(j, j + (mlms + 1));
         res = RiTa.untokenize(part);
         ok(txt.indexOf(res) < 0);
         ok(res.startsWith("The fat boy ate") || res.startsWith("The young boy gave"));
@@ -294,7 +284,7 @@ describe('RiTa.Markov', () => {
   });
 
 
-  0 && it('should correctly call generateTokens.mlm.startArray', () => {
+  it('should correctly call generateTokens.mlm.startArray', () => {
     let rm = new Markov(3);
     let mlms = 4, start = ["The", "young"];
     let txt = "The young boy ate it. A young boy gave up.";
@@ -314,8 +304,8 @@ describe('RiTa.Markov', () => {
       }
 
       // All sequences of len=mlms must NOT  be in text
-      for (let j = 0; j <= toks.length - mlms; j++) {
-        part = toks.slice(j, j + mlms);
+      for (let j = 0; j <= toks.length - (mlms + 1); j++) {
+        part = toks.slice(j, j + (mlms + 1));
         res = RiTa.untokenize(part);
         //console.log(j,res);
         ok(txt.indexOf(res) < 0);
@@ -346,7 +336,7 @@ describe('RiTa.Markov', () => {
       rm.loadSentences(RiTa.sentences(sample));
       for (let i = 0; i < 5; i++) {
         s = rm.generateSentence({ startTokens: 'One' });
-        console.log(i + ") " + s);
+        //onsole.log(i + ") " + s);
         ok(s.startsWith('One'));
       }
 
@@ -440,7 +430,50 @@ describe('RiTa.Markov', () => {
       }
     });
   }
+
   it('should correctly call generateUntil', () => {
+
+    let rm = new Markov(3);
+    rm.loadTokens(RiTa.tokenize(sample));
+
+    for (let i = 0; i < 10; i++) {
+      let arr = rm.generateUntil(/[.?!]/);
+      let res = RiTa.untokenize(arr);
+
+      //console.log(i+") "+res);
+      ok(/[.?!]$/.test(res));
+      let n = rm.n;
+      for (let j = 0; j < arr.length - n; j++) {
+        partial = arr.slice(j, j + n);
+        //console.log(partial);
+        partial = RiTa.untokenize(partial);
+        ok(sample.indexOf(partial) > -1, partial)
+      }
+    }
+  });
+
+  it('should correctly call generateUntil.start', () => {
+
+    let rm = new Markov(3), startTokens = "The";
+    rm.loadTokens(RiTa.tokenize(sample));
+
+    for (let i = 0; i < 10; i++) {
+      let arr = rm.generateUntil('[\.\?!]', { startTokens: startTokens });
+      let res = RiTa.untokenize(arr);
+
+      //console.log(i+") "+res);
+
+      let n = rm.n;
+      for (let j = 0; j < arr.length - n; j++) {
+        partial = arr.slice(j, j + n);
+        //console.log(partial);
+        partial = RiTa.untokenize(partial);
+        ok(sample.indexOf(partial) > -1, partial)
+      }
+    }
+  });
+
+  it('should correctly call generateUntil.minMaxLength', () => {
 
     let rm = new Markov(3);
     rm.loadTokens(RiTa.tokenize(sample));
@@ -449,7 +482,7 @@ describe('RiTa.Markov', () => {
       let arr = rm.generateUntil('[\.\?!]', { minLength: 4, maxLength: 20 });
       let res = RiTa.untokenize(arr);
 
-      //console.log(i+","+res);
+      //console.log(i + ") " + res);
       ok(arr.length >= 4 && arr.length <= 20, res +
         '  (length=' + arr.length + ")");
 
@@ -464,7 +497,6 @@ describe('RiTa.Markov', () => {
   });
 
   it('should correctly call completions', () => {
-    //TODO:
 
     let rm = new Markov(4);
     rm.loadTokens(RiTa.tokenize(sample));
@@ -689,9 +721,10 @@ describe('RiTa.Markov', () => {
 
   it('should correctly call toString', () => {
 
-    let rm = new Markov(4);
-    let exp = "ROOT { The [1,p=0.200] dog [1,p=0.200] ate [1,p=0.200] the [1,p=0.200] cat [1,p=0.200] }";
+    let rm = new Markov(2);
+    let exp = "ROOT { 'The' [1,p=0.200] { 'dog' [1,p=1.000] } 'dog' [1,p=0.200] { 'ate' [1,p=1.000] } 'ate' [1,p=0.200] { 'the' [1,p=1.000] } 'the' [1,p=0.200] { 'cat' [1,p=1.000] } 'cat' [1,p=0.200] }";
     rm.loadTokens('The dog ate the cat'.split(' '));
+    //console.log(rm.toString().replace(/\n/g, " ").replace(/\s+/g, " "));
     eq(exp, rm.toString().replace(/\n/g, " ").replace(/\s+/g, " "));
   });
 

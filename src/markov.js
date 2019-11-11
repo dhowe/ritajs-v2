@@ -71,6 +71,68 @@ class Markov {
     return !isSubArray(check, this.input);
   }
 
+  generateTokens(num, { startTokens, maxLengthMatch } = {}) {
+
+    let tokens, tries = 0, fail = (toks) => {
+      if (toks) console.log('FAIL: ' + this._flatten(tokens));
+      tokens = undefined;
+      tries++;
+      return 1;
+    }
+
+    if (typeof startTokens === 'string') {
+      startTokens = RiTa.tokenize(startTokens);
+    }
+
+    while (tries < MAX_GENERATION_ATTEMPTS) {
+
+      if (!tokens) tokens = this._initTokens(startTokens);
+
+      let parent = this._search(tokens);
+      if ((!parent || parent.isLeaf()) && fail()) continue;
+
+      //let next = parent.chooseChild(tokens, maxLengthMatch, this.input);
+      let next = this.selectNext(parent, tokens, maxLengthMatch);
+      if (!next && fail()) continue; // possible if all children excluded
+
+      // if we have enough tokens, we're done
+      if (tokens.push(next) >= num) return tokens.map(n => n.token);
+    }
+
+    throw Error('\n\nFailed after ' + tries + ' tries; you may' +
+      ' need to add more text to the model' + (maxLengthMatch ?
+        ' or increase the maxLengthMatch parameter' : ''));
+  }
+
+  selectNext(parent, tokens, maxLengthMatch) {
+    let nodes = parent.childNodes();
+    let sum = 1, pTotal = 0, selector = Math.random() * sum;
+
+    if (!nodes || !nodes.length) throw Error
+      ("Invalid arg to pselect(no children) " + this);
+
+    // we loop twice here in case we skip earlier nodes based on probability
+    for (let i = 0; i < nodes.length * 2; i++) {
+      let next = nodes[i % nodes.length];
+      pTotal += next.nodeProb();
+      if (selector < pTotal) { // should always be true 2nd time through
+
+        // make sure we don't return a sentence start (<s/>) node
+        if (next.token === SSDLM) next = next.pselect();
+
+        if (maxLengthMatch && maxLengthMatch <= tokens.length) {
+          if (!this.validateMlms(next, tokens)) {
+            //console.log('FAIL: ' + this._flatten(tokens) + ' -> ' + next.token);
+            continue;
+          }
+        }
+        return next;
+      }
+    }
+    //console.warn("\n" + this + "\nselectNext() failed for\n  node '"
+      //+ parent.token +"' with children: "+nodes.map(n=>n.token+','));
+  }
+
   generateTokensOrig(num, { startTokens, maxLengthMatch } = {}) {
 
     let tokens, tries = 0, fail = (toks) => {
@@ -91,13 +153,11 @@ class Markov {
       let parent = this._search(tokens);
       if ((!parent || parent.isLeaf()) && fail()) continue;
 
-      //let next = parent.chooseChild(tokens);//, maxLengthMatch, this.input);
+      //let next = parent.chooseChild(tokens, maxLengthMatch, this.input);
       let next = parent.pselect();
 
       // if we have enough tokens, we're done
-      if (tokens.push(next) >= num) {
-        return tokens.map(n => n.token);
-      }
+      if (tokens.push(next) >= num) return tokens.map(n => n.token);
     }
 
     throw Error('\n\nFailed after ' + tries + ' tries; you may' +
@@ -105,7 +165,7 @@ class Markov {
         ' or increase the maxLengthMatch parameter' : ''));
   }
 
-  generateTokens(num, { startTokens, maxLengthMatch } = {}) {
+  generateTokensNew(num, { startTokens, maxLengthMatch } = {}) {
 
     let tokens, tries = 0, excludes = [], fail = (toks) => {
       if (toks) console.log('FAIL: ' + this._flatten(tokens));
@@ -267,12 +327,12 @@ class Markov {
   }
 
   // TODO: add-arg: startTokens
-  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE } = {}) {
+  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE, startTokens, maxLengthMatch } = {}) {
     let tries = 0;
     OUT: while (++tries < MAX_GENERATION_ATTEMPTS) {
 
       // generate the min number of tokens
-      let tokens = this.generateTokens(minLength);
+      let tokens = this.generateTokens(minLength, startTokens);
 
       // keep adding one and checking until we pass the max
       while (tokens.length < maxLength) {
@@ -287,7 +347,6 @@ class Markov {
         if (mn.token.search(regex) > -1) return tokens;
       }
     }
-
     throw Error('\n' + "RiMarkov failed to complete after " + tries + " attempts." +
       "You may need to add more text to your model..." + '\n');
   }
@@ -361,7 +420,7 @@ class Markov {
   }
 
   print() {
-    console.log(this.root.asTree(false).replace(/{}/g, ''));
+    console && console.log(this.root.asTree().replace(/{}/g, ''));
   }
 
   ////////////////////////////// end API ////////////////////////////////
@@ -712,8 +771,7 @@ class Node {
       str += indent + "'" + tok + "'";
 
       if (!node.count) err("ILLEGAL FREQ: " + node.count + " -> " + mn.token + "," + node.token);
-
-      if (!node.isRoot()) str += " [" + node.count + ",p=" +node.nodeProb().toFixed(3) + "]";
+      if (!node.isRoot()) str += " [" + node.count + ",p=" + node.nodeProb().toFixed(3) + "]";
       if (!node.isLeaf()) str += '  {';
 
       //if (this.childCount()) str += '-> {';
