@@ -54,6 +54,7 @@ class Markov {
     if (startTokens) {
       tokens = [];
       let st = this._search(startTokens);
+      if (!st) throw Error("Cannot find startToken(s): "+startTokens);
       while (!st.isRoot()) {
         tokens.unshift(st);
         st = st.parent;
@@ -130,7 +131,35 @@ class Markov {
       }
     }
     //console.warn("\n" + this + "\nselectNext() failed for\n  node '"
-      //+ parent.token +"' with children: "+nodes.map(n=>n.token+','));
+    //+ parent.token +"' with children: "+nodes.map(n=>n.token+','));
+  }
+
+  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE, startTokens, maxLengthMatch } = {}) {
+
+    let tries = 0;
+    OUT: while (++tries < MAX_GENERATION_ATTEMPTS) {
+
+      // generate the min number of tokens
+      let tokens = this.generateTokens(minLength, {startTokens});
+
+      // keep adding one and checking until we pass the max
+      while (tokens.length < maxLength) {
+
+        let mn = this._search(tokens);
+        if (!mn || mn.isLeaf()) continue OUT; // hit a leaf, restart
+
+        //mn = mn.pselect();
+        mn = this.selectNext(mn, tokens, maxLengthMatch);
+        if (mn) {
+          tokens.push(mn.token);
+
+          // check against our regex
+          if (mn.token.search(regex) > -1) return tokens;
+        }
+      }
+    }
+    throw Error('\n' + "RiMarkov failed to complete after " + tries + " attempts." +
+      "You may need to add more text to your model..." + '\n');
   }
 
   generateTokensOrig(num, { startTokens, maxLengthMatch } = {}) {
@@ -165,7 +194,7 @@ class Markov {
         ' or increase the maxLengthMatch parameter' : ''));
   }
 
-  generateTokensNew(num, { startTokens, maxLengthMatch } = {}) {
+  /*generateTokensNew(num, { startTokens, maxLengthMatch } = {}) {
 
     let tokens, tries = 0, excludes = [], fail = (toks) => {
       if (toks) console.log('FAIL: ' + this._flatten(tokens));
@@ -219,7 +248,7 @@ class Markov {
     throw Error('\n\nFailed after ' + tries + ' tries; you may' +
       ' need to add more text to the model' + (maxLengthMatch ?
         ' or increase the maxLengthMatch parameter' : ''));
-  }
+  }*/
 
   _initSentence(startTokens) {
     let tokens;
@@ -324,31 +353,6 @@ class Markov {
 
   generateSentence() {
     return this.generateSentences(1, ...arguments)[0];
-  }
-
-  // TODO: add-arg: startTokens
-  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE, startTokens, maxLengthMatch } = {}) {
-    let tries = 0;
-    OUT: while (++tries < MAX_GENERATION_ATTEMPTS) {
-
-      // generate the min number of tokens
-      let tokens = this.generateTokens(minLength, startTokens);
-
-      // keep adding one and checking until we pass the max
-      while (tokens.length < maxLength) {
-
-        let mn = this._search(tokens);
-        if (!mn || mn.isLeaf()) continue OUT; // hit a leaf, restart
-
-        mn = mn.pselect();
-        tokens.push(mn.token);
-
-        // check against our regex
-        if (mn.token.search(regex) > -1) return tokens;
-      }
-    }
-    throw Error('\n' + "RiMarkov failed to complete after " + tries + " attempts." +
-      "You may need to add more text to your model..." + '\n');
   }
 
   completions(pre, post) {

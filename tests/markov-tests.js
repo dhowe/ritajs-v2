@@ -436,7 +436,7 @@ describe('RiTa.Markov', () => {
     let rm = new Markov(3);
     rm.loadTokens(RiTa.tokenize(sample));
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       let arr = rm.generateUntil(/[.?!]/);
       let res = RiTa.untokenize(arr);
 
@@ -454,14 +454,35 @@ describe('RiTa.Markov', () => {
 
   it('should correctly call generateUntil.start', () => {
 
-    let rm = new Markov(3), startTokens = "The";
+    let rm = new Markov(3), startTokens = "Achieving";
     rm.loadTokens(RiTa.tokenize(sample));
 
     for (let i = 0; i < 10; i++) {
-      let arr = rm.generateUntil('[\.\?!]', { startTokens: startTokens });
+      let arr = rm.generateUntil(/[.?!]/, { startTokens: startTokens });
       let res = RiTa.untokenize(arr);
-
       //console.log(i+") "+res);
+      ok(/Achieving.*[.?!]$/.test(res));
+
+      let n = rm.n;
+      for (let j = 0; j < arr.length - n; j++) {
+        partial = arr.slice(j, j + n);
+        //console.log(partial);
+        partial = RiTa.untokenize(partial);
+        ok(sample.indexOf(partial) > -1, partial)
+      }
+    }
+  });
+
+  it('should correctly call generateUntil.startArray', () => {
+
+    let rm = new Markov(3), startTokens = ["Achieving"];
+    rm.loadTokens(RiTa.tokenize(sample));
+
+    for (let i = 0; i < 5; i++) {
+      let arr = rm.generateUntil(/[.?!]/, { startTokens: startTokens });
+      let res = RiTa.untokenize(arr);
+      //console.log(i+") "+res);
+      ok(/Achieving.*[.?!]$/.test(res));
 
       let n = rm.n;
       for (let j = 0; j < arr.length - n; j++) {
@@ -478,23 +499,73 @@ describe('RiTa.Markov', () => {
     let rm = new Markov(3);
     rm.loadTokens(RiTa.tokenize(sample));
 
-    for (let i = 0; i < 10; i++) {
-      let arr = rm.generateUntil('[\.\?!]', { minLength: 4, maxLength: 20 });
+    for (let i = 0; i < 5; i++) {
+      let arr = rm.generateUntil(/[.?!]/, { minLength: 6, maxLength: 20 });
       let res = RiTa.untokenize(arr);
 
       //console.log(i + ") " + res);
-      ok(arr.length >= 4 && arr.length <= 20, res +
+      ok(arr.length >= 6 && arr.length <= 20, res +
         '  (length=' + arr.length + ")");
+      ok(/[.?!]$/.test(res));
 
       let n = rm.n;
       for (let j = 0; j < arr.length - n; j++) {
         partial = arr.slice(j, j + n);
         //console.log(partial);
         partial = RiTa.untokenize(partial);
-        ok(sample.indexOf(partial) > -1, partial)
+        ok(sample.indexOf(partial) > -1, partial);
       }
     }
   });
+
+  it('should correctly call generateUntil.start.minMaxLength', () => {
+
+    let rm = new Markov(3);
+    rm.loadTokens(RiTa.tokenize(sample));
+
+    for (let i = 0; i < 5; i++) {
+      let arr = rm.generateUntil(/[.?!]/, { minLength: 4, maxLength: 20, startTokens: 'Achieving'});
+      let res = RiTa.untokenize(arr);
+
+      //console.log(i + ") " + res);
+      ok(arr.length >= 4 && arr.length <= 20, res +
+        '  (length=' + arr.length + ")");
+      ok(/Achieving.*[.?!]$/.test(res));
+
+      let n = rm.n;
+      for (let j = 0; j < arr.length - n; j++) {
+        partial = arr.slice(j, j + n);
+        //console.log(partial);
+        partial = RiTa.untokenize(partial);
+        ok(sample.indexOf(partial) > -1, partial);
+      }
+    }
+  });
+
+  it('should correctly call generateUntil.startArray.minMaxLength', () => {
+
+    let rm = new Markov(3);
+    rm.loadTokens(RiTa.tokenize(sample));
+
+    for (let i = 0; i < 5; i++) {
+      let arr = rm.generateUntil(/[.?!]/, { minLength: 4, maxLength: 20, startTokens: ['Achieving']});
+      let res = RiTa.untokenize(arr);
+
+      //console.log(i + ") " + res);
+      ok(arr.length >= 4 && arr.length <= 20, res +
+        '  (length=' + arr.length + ")");
+      ok(/Achieving.*[.?!]$/.test(res));
+
+      let n = rm.n;
+      for (let j = 0; j < arr.length - n; j++) {
+        partial = arr.slice(j, j + n);
+        //console.log(partial);
+        partial = RiTa.untokenize(partial);
+        ok(sample.indexOf(partial) > -1, partial);
+      }
+    }
+  });
+
 
   it('should correctly call completions', () => {
 
