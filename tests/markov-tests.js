@@ -315,22 +315,53 @@ describe('RiTa.Markov', () => {
   });
 
   ////////////////////////////////////////////////////////////////////////
+
+  it('should correctly call generateSentence', () => {
+
+    let rm = new Markov(4);
+    rm.loadSentences(RiTa.sentences(sample));
+    for (let i = 0; i < 5; i++) {
+      let s = rm.generateSentence();
+      //console.log(i + ") " + s);
+      ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
+      ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
+      let num = RiTa.tokenize(s).length;
+      ok(num >= 5 && num <= 35 + i);
+    }
+  });
+
+
+  it('should correctly call generateSentences.minmax', () => {
+
+    let rm = new Markov(4), minLength = 7, maxLength = 20;
+
+    rm.loadSentences(RiTa.sentences(sample));
+
+    let sents = rm.generateSentences(5, { minLength: minLength, maxLength: maxLength });
+    eq(sents.length, 5);
+    for (i = 0; i < sents.length; i++) {
+      let s = sents[i];
+      eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
+      ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
+      let num = RiTa.tokenize(s).length;
+      ok(num >= minLength && num <= maxLength);
+    }
+
+    rm = new Markov(4);
+    rm.loadSentences(RiTa.sentences(sample));
+    for (let i = 0; i < 5; i++) {
+      minLength = (3 + i), maxLength = (10 + i);
+      let s = rm.generateSentence({ minLength: minLength, maxLength: maxLength });
+      //console.log(i+") "+s);
+      ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
+      ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
+      let num = RiTa.tokenize(s).length;
+      ok(num >= minLength && num <= maxLength);
+    }
+  });
+
+
   if (false) {
-    it('should correctly call generateSentence', () => {
-
-      let rm = new Markov(4);
-      rm.loadSentences(RiTa.sentences(sample));
-      for (let i = 0; i < 5; i++) {
-        let s = rm.generateSentence();
-        //console.log(i+") "+s);
-        ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
-        ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
-        let num = RiTa.tokenize(s).length;
-        ok(num >= 5 && num <= 35 + i);
-      }
-    });
-
-
     it('should correctly call generateSentence.start', () => {
       let rm = new Markov(4);
       rm.loadSentences(RiTa.sentences(sample));
@@ -401,34 +432,6 @@ describe('RiTa.Markov', () => {
         ok(arr[0].startsWith(start.join(' ')));
       }
     });
-
-    it('should correctly call generateSentences.min.max', () => {
-
-      let rm = new Markov(4), minToks = 7, maxToks = 15;
-
-      rm.loadSentences(RiTa.sentences(sample));
-
-      let sents = rm.generateSentences(5, { minTokens: minToks, maxTokens: maxToks });
-      eq(sents.length, 5);
-      for (i = 0; i < sents.length; i++) {
-        let s = sents[i];
-        eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
-        ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
-        let num = RiTa.tokenize(s).length;
-        ok(num >= minToks && num <= maxToks);
-      }
-
-      rm = new Markov(4);
-      rm.loadSentences(RiTa.sentences(sample));
-      for (let i = 0; i < 5; i++) {
-        let s = rm.generateSentence({ minTokens: (3 + i), maxTokens: (10 + i) });
-        //console.log(i+") "+s);
-        ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
-        ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
-        let num = RiTa.tokenize(s).length;
-        ok(num >= i && num <= 10 + i);
-      }
-    });
   }
 
   it('should correctly call generateUntil', () => {
@@ -494,17 +497,39 @@ describe('RiTa.Markov', () => {
     }
   });
 
+  it('should correctly call generateUntil.maxLength', () => {
+
+    let rm = new Markov(3), maxLength = 3;
+    rm.loadTokens(RiTa.tokenize(sample));
+
+    let arr = rm.generateUntil(/[.?!]/, { maxLength: maxLength });
+    let res = RiTa.untokenize(arr);
+
+    //console.log(i + ") " + res);
+    ok(arr.length <= maxLength, res + '  (length=' + arr.length + ")");
+    ok(/[.?!]$/.test(res));
+
+    let n = rm.n;
+    for (let j = 0; j < arr.length - n; j++) {
+      partial = arr.slice(j, j + n);
+      //console.log(partial);
+      partial = RiTa.untokenize(partial);
+      ok(sample.indexOf(partial) > -1, partial);
+    }
+
+  });
+
   it('should correctly call generateUntil.minMaxLength', () => {
 
-    let rm = new Markov(3);
+    let rm = new Markov(3), minLength = 6, maxLength = 10;
     rm.loadTokens(RiTa.tokenize(sample));
 
     for (let i = 0; i < 5; i++) {
-      let arr = rm.generateUntil(/[.?!]/, { minLength: 6, maxLength: 20 });
+      let arr = rm.generateUntil(/[.?!]/, { minLength: minLength, maxLength: maxLength });
       let res = RiTa.untokenize(arr);
 
       //console.log(i + ") " + res);
-      ok(arr.length >= 6 && arr.length <= 20, res +
+      ok(arr.length >= minLength && arr.length <= maxLength, res +
         '  (length=' + arr.length + ")");
       ok(/[.?!]$/.test(res));
 
@@ -520,16 +545,15 @@ describe('RiTa.Markov', () => {
 
   it('should correctly call generateUntil.start.minMaxLength', () => {
 
-    let rm = new Markov(3);
+    let rm = new Markov(3), minLength = 6, maxLength = 10;
     rm.loadTokens(RiTa.tokenize(sample));
 
     for (let i = 0; i < 5; i++) {
-      let arr = rm.generateUntil(/[.?!]/, { minLength: 4, maxLength: 20, startTokens: 'Achieving'});
+      let arr = rm.generateUntil(/[.?!]/, { minLength: minLength, maxLength: maxLength, startTokens: 'Achieving' });
       let res = RiTa.untokenize(arr);
 
       //console.log(i + ") " + res);
-      ok(arr.length >= 4 && arr.length <= 20, res +
-        '  (length=' + arr.length + ")");
+      ok(arr.length >= minLength && arr.length <= maxLength, res + '  (length=' + arr.length + ")");
       ok(/Achieving.*[.?!]$/.test(res));
 
       let n = rm.n;
@@ -544,16 +568,15 @@ describe('RiTa.Markov', () => {
 
   it('should correctly call generateUntil.startArray.minMaxLength', () => {
 
-    let rm = new Markov(3);
+    let rm = new Markov(3), minLength = 6, maxLength = 10;
     rm.loadTokens(RiTa.tokenize(sample));
 
     for (let i = 0; i < 5; i++) {
-      let arr = rm.generateUntil(/[.?!]/, { minLength: 4, maxLength: 20, startTokens: ['Achieving']});
+      let arr = rm.generateUntil(/[.?!]/, { minLength: minLength, maxLength: maxLength, startTokens: ['Achieving'] });
       let res = RiTa.untokenize(arr);
 
       //console.log(i + ") " + res);
-      ok(arr.length >= 4 && arr.length <= 20, res +
-        '  (length=' + arr.length + ")");
+      ok(arr.length >= minLength && arr.length <= maxLength, res + '  (length=' + arr.length + ")");
       ok(/Achieving.*[.?!]$/.test(res));
 
       let n = rm.n;

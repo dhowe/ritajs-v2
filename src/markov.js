@@ -6,11 +6,11 @@ const RiTa = require('./rita_api');
     P[k] = lerp(P[k], [Pn-k], temp);
     P[k] = P[int(k+t*n)%n], then interpolate between 2 steps
 */
-// allow for real-time weighting ala memo
+// allow for real-time weighting ala atken
 
 //next: generateSentences with start tokens, then temp
 
-const MAX_GENERATION_ATTEMPTS = 20;
+const MAX_GENERATION_ATTEMPTS = 999;
 const SSDLM = '<s/>';
 class Markov {
 
@@ -54,7 +54,7 @@ class Markov {
     if (startTokens) {
       tokens = [];
       let st = this._search(startTokens);
-      if (!st) throw Error("Cannot find startToken(s): "+startTokens);
+      if (!st) throw Error("Cannot find startToken(s): " + startTokens);
       while (!st.isRoot()) {
         tokens.unshift(st);
         st = st.parent;
@@ -74,8 +74,8 @@ class Markov {
 
   generateTokens(num, { startTokens, maxLengthMatch } = {}) {
 
-    let tokens, tries = 0, fail = (toks) => {
-      if (toks) console.log('FAIL: ' + this._flatten(tokens));
+    let tokens, tries = 0, fail = () => {
+      //console.log('FAIL: ' + this._flatten(tokens));
       tokens = undefined;
       tries++;
       return 1;
@@ -100,9 +100,73 @@ class Markov {
       if (tokens.push(next) >= num) return tokens.map(n => n.token);
     }
 
-    throw Error('\n\nFailed after ' + tries + ' tries; you may' +
+    this._error('\n\nFailed after ' + tries + ' tries; you may' +
       ' need to add more text to the model' + (maxLengthMatch ?
         ' or increase the maxLengthMatch parameter' : ''));
+  }
+
+  generateSentences(num, { minLength = 5, maxLength = 35, startTokens, maxLengthMatch } = {}) {
+    let result = [], tokens, tries = 0, fail = () => {
+      //console.log('FAIL('+tries+'): ' + this._flatten(tokens));
+      tokens = undefined;
+      if (++tries >= MAX_GENERATION_ATTEMPTS) {
+        console.log("FOUND(" + result.length + ")", result);
+        throwError(tries);
+      }
+      return 1;
+    }
+
+    while (result.length < num) {
+      if (!tokens) {
+        tokens = this._initSentence(startTokens);
+        if (!tokens) console.log('init failed:',startTokens);
+      }
+
+      while (tokens && tokens.length < maxLength) {
+
+        let parent = this._search(tokens);
+        if ((!parent || parent.isLeaf()) && fail(tokens)) continue;
+
+        let next = this.selectNext(parent, tokens, maxLengthMatch);
+        if (!next && fail(tokens)) continue; // possible if all children excluded
+
+        tokens.push(next);
+        if (tokens.length >= minLength) {
+          let sent = this._validateSentence(result, tokens);
+          if (sent) result.push(sent);
+        }
+      }
+      //console.log("FAIL(" + result.length + ")", (tokens ? +tokens.length + "" : "0") + " words", tries + " tries");
+      fail(tokens);
+    }
+    return result;
+  }
+
+  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE, startTokens, maxLengthMatch } = {}) {
+
+    let tries = 0;
+    OUT: while (++tries < MAX_GENERATION_ATTEMPTS) {
+
+      // generate the min number of tokens
+      let tokens = this.generateTokens(minLength, { startTokens });
+
+      // keep adding one and checking until we pass the max
+      while (tokens.length < maxLength) {
+
+        let mn = this._search(tokens);
+        if (!mn || mn.isLeaf()) continue OUT; // hit a leaf, restart
+
+        mn = this.selectNext(mn, tokens, maxLengthMatch);
+        if (!mn) continue OUT; // can't find next, restart
+
+        tokens.push(mn.token); // add the token
+
+        // if it matches our regex, then we're done
+        if (mn.token.search(regex) > -1) return tokens;
+      }
+      // we've hit max-length here (try again)
+    }
+    throwError(tries);
   }
 
   selectNext(parent, tokens, maxLengthMatch) {
@@ -110,7 +174,7 @@ class Markov {
     let sum = 1, pTotal = 0, selector = Math.random() * sum;
 
     if (!nodes || !nodes.length) throw Error
-      ("Invalid arg to pselect(no children) " + this);
+      ("Invalid arg to selectNext(no children) " + this);
 
     // we loop twice here in case we skip earlier nodes based on probability
     for (let i = 0; i < nodes.length * 2; i++) {
@@ -130,36 +194,6 @@ class Markov {
         return next;
       }
     }
-    //console.warn("\n" + this + "\nselectNext() failed for\n  node '"
-    //+ parent.token +"' with children: "+nodes.map(n=>n.token+','));
-  }
-
-  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE, startTokens, maxLengthMatch } = {}) {
-
-    let tries = 0;
-    OUT: while (++tries < MAX_GENERATION_ATTEMPTS) {
-
-      // generate the min number of tokens
-      let tokens = this.generateTokens(minLength, {startTokens});
-
-      // keep adding one and checking until we pass the max
-      while (tokens.length < maxLength) {
-
-        let mn = this._search(tokens);
-        if (!mn || mn.isLeaf()) continue OUT; // hit a leaf, restart
-
-        //mn = mn.pselect();
-        mn = this.selectNext(mn, tokens, maxLengthMatch);
-        if (mn) {
-          tokens.push(mn.token);
-
-          // check against our regex
-          if (mn.token.search(regex) > -1) return tokens;
-        }
-      }
-    }
-    throw Error('\n' + "RiMarkov failed to complete after " + tries + " attempts." +
-      "You may need to add more text to your model..." + '\n');
   }
 
   generateTokensOrig(num, { startTokens, maxLengthMatch } = {}) {
@@ -194,62 +228,6 @@ class Markov {
         ' or increase the maxLengthMatch parameter' : ''));
   }
 
-  /*generateTokensNew(num, { startTokens, maxLengthMatch } = {}) {
-
-    let tokens, tries = 0, excludes = [], fail = (toks) => {
-      if (toks) console.log('FAIL: ' + this._flatten(tokens));
-      tokens = undefined;
-      tries++;
-      return 1;
-    }
-
-    if (typeof startTokens === 'string') {
-      startTokens = RiTa.tokenize(startTokens);
-    }
-
-    OUT: while (tries < MAX_GENERATION_ATTEMPTS) {
-
-      if (!tokens) tokens = this._initTokens(startTokens);
-
-      let parent = this._search(tokens);
-
-      // if we don't have a parent, try again
-      if ((!parent || parent.isLeaf()) && fail()) continue;
-
-      //let next = parent.chooseChild(tokens);//, maxLengthMatch, this.input);
-      let next;
-      while (!next) {
-        next = parent.pselectWithout(excludes);
-        //console.log('GOT '+this._flatten(tokens)+' -> '+(next ? next.token : 'NULL'));
-        if (!next) {
-          console.log('No ok children for: ' + this._flatten(tokens));
-          fail(); // No children are ok
-          continue OUT;
-        }
-
-        if (maxLengthMatch && (maxLengthMatch <= tokens.length)) {
-          if (!this.validateMlms(next, tokens)) {
-            console.log('MLMS-FAIL: ' + this._flatten(tokens) + ' -> ' + next.token);
-            excludes.push(next.token);
-            next = undefined;
-          }
-          else {
-            console.log('MLMS-OK: ' + this._flatten(tokens) + ' -> ' + next.token);
-          }
-        }
-      }
-
-      // if we have enough tokens, we're done
-      if (tokens.push(next) >= num) {
-        return tokens.map(n => n.token);
-      }
-    }
-
-    throw Error('\n\nFailed after ' + tries + ' tries; you may' +
-      ' need to add more text to the model' + (maxLengthMatch ?
-        ' or increase the maxLengthMatch parameter' : ''));
-  }*/
-
   _initSentence(startTokens) {
     let tokens;
     if (startTokens) { // TODO:
@@ -262,33 +240,10 @@ class Markov {
     }
     else { // no start-tokens
       //tokens = [ this.root.pselect() ];
-      let start = this.root.child(SSDLM);
-      tokens = [start.pselect()];
+      tokens = [this.root.child(SSDLM).pselect()];
     }
     return tokens;
   }
-
-  /*generateSentences(num, { minWords = 5, maxWords = 35, startTokens, maxLengthMatch } = {}) {
-    let tokens, tries = 0, fail = () => {
-      tokens = null;
-      tries++;
-      return 1;
-    };
-
-    if (typeof startTokens === 'string') {
-      startTokens = RiTa.tokenize(startTokens);
-    }
-
-    while (tries < MAX_GENERATION_ATTEMPTS) {
-
-      if (!tokens) tokens = this._initSentence(startTokens);
-      console.log("FLAT1: ", this.root.child(SSDLM).token, this._flatten(tokens));
-      let node = this.root.child(SSDLM).chooseChild(tokens, maxLengthMatch, this.input);
-      console.log("FLAT2: ", this._flatten(node));
-
-      break;
-    }
-  }*/
 
   // generateSentencesX(num, { minWords = 5, maxWords = 35, startTokens, maxLengthMatch } = {}) {
   //
@@ -351,6 +306,29 @@ class Markov {
   //     ' - you may need to add more text to the model\n');
   // }
 
+  // generateSentences(num, { minWords = 5, maxWords = 35, startTokens, maxLengthMatch } = {}) {
+  //   let tokens, tries = 0, fail = () => {
+  //     tokens = null;
+  //     tries++;
+  //     return 0;
+  //   };
+  //
+  //   if (typeof startTokens === 'string') {
+  //     startTokens = RiTa.tokenize(startTokens);
+  //   }
+  //
+  //   while (tries < MAX_GENERATION_ATTEMPTS) {
+  //
+  //     if (!tokens) tokens = this._initSentence(startTokens);
+  //     console.log("1: ", this._flatten(tokens));
+  //
+  //     let parent = this._search(tokens);
+  //     if ((!parent || parent.isLeaf()) && fail()) continue;
+  //     console.log("2: '"+parent.token+"'");
+  //
+  //     break;
+  //   }
+  // }
   generateSentence() {
     return this.generateSentences(1, ...arguments)[0];
   }
@@ -490,13 +468,11 @@ class Markov {
     }
 
     if (result.indexOf(sent) > -1) {
-      //console.log("Skipping: duplicate sentence: '" + sent + "'");
+      console.log("Skipping: duplicate sentence: '" + sent + "'");
       return false;
     }
 
-    result.push(sent);
-
-    return true;
+    return sent;
   }
 
   _nodesToTokens(nodes) {
@@ -814,7 +790,7 @@ class Node {
 
 // --------------------------------------------------------------
 
-function nodeStr(nodes, format) {
+function nodeStr(nodes, format) { // replaces _flatten?
   return format ? RiTa.untokenize(nodes.map(n => n.token)) :
     nodes.reduce((acc, n) => acc += n.token + ',', '');
 }
@@ -822,26 +798,16 @@ function nodeStr(nodes, format) {
 function isSubArray(find, arr) {
   OUT: for (let i = find.length - 1; i < arr.length; i++) {
     for (let j = 0; j < find.length; j++) {
-      //console.log('check:', find[find.length - j -1] +' =? '+arr[i-j]);
-      if (find[find.length - j - 1] !== arr[i - j]) {
-        continue OUT;
-      }
+      if (find[find.length - j - 1] !== arr[i - j]) continue OUT;
       if (j === find.length - 1) return true;
     }
   }
   return false;
 }
 
-function err() {
-  let msg = "[RiTa] " + arguments[0];
-  for (let i = 1; i < arguments.length; i++) {
-    msg += '\n' + arguments[i];
-  }
-  throw Error(msg);
-}
-
-function isFunction(obj) {
-  return !!(obj && obj.constructor && obj.call && obj.apply);
+function throwError(tries) {
+  throw Error('\n\nFailed after ' + tries + ' tries; you may'
+    + ' need to add more text to the model or adjust options');
 }
 
 RiTa.Markov = Markov;
