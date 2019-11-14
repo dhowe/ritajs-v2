@@ -8,7 +8,7 @@ const RiTa = require('./rita_api');
 */
 // allow for real-time weighting ala atken
 
-//next: generateSentences with start tokens, then temp
+//next: generateSentences with start tokens and mlm, then temp
 
 const MAX_GENERATION_ATTEMPTS = 999;
 const SSDLM = '<s/>';
@@ -49,30 +49,7 @@ class Markov {
     this.input.push(...tokens.filter(t => t !== SSDLM));
   }
 
-  _initTokens(startTokens) {
-    let tokens;
-    if (startTokens) {
-      tokens = [];
-      let st = this._search(startTokens);
-      if (!st) throw Error("Cannot find startToken(s): " + startTokens);
-      while (!st.isRoot()) {
-        tokens.unshift(st);
-        st = st.parent;
-      }
-    }
-    else { // start-tokens supplies
-      tokens = [this.root.pselect()];
-    }
-    return tokens;
-  }
-
-  validateMlms(candidate, nodes) {
-    let check = nodes.slice().map(n => n.token);
-    check.push(candidate.token);
-    return !isSubArray(check, this.input);
-  }
-
-  generateTokens(num, { startTokens, maxLengthMatch } = {}) {
+  generateTokens(num, { startTokens, maxLengthMatch, temperature = 1 } = {}) {
 
     let tokens, tries = 0, fail = () => {
       //console.log('FAIL: ' + this._flatten(tokens));
@@ -105,7 +82,7 @@ class Markov {
         ' or increase the maxLengthMatch parameter' : ''));
   }
 
-  generateSentences(num, { minLength = 5, maxLength = 35, startTokens, maxLengthMatch } = {}) {
+  generateSentences(num, { minLength = 5, maxLength = 35, startTokens, maxLengthMatch, temperature = 1 } = {}) {
     let result = [], tokens, tries = 0, fail = () => {
       //console.log('FAIL('+tries+'): ' + this._flatten(tokens));
       tokens = undefined;
@@ -119,7 +96,7 @@ class Markov {
     while (result.length < num) {
       if (!tokens) {
         tokens = this._initSentence(startTokens);
-        if (!tokens) console.log('init failed:',startTokens);
+        if (!tokens) console.log('init failed:', startTokens);
       }
 
       while (tokens && tokens.length < maxLength) {
@@ -142,7 +119,7 @@ class Markov {
     return result;
   }
 
-  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE, startTokens, maxLengthMatch } = {}) {
+  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE, startTokens, maxLengthMatch, temperature = 1 } = {}) {
 
     let tries = 0;
     OUT: while (++tries < MAX_GENERATION_ATTEMPTS) {
@@ -169,12 +146,16 @@ class Markov {
     throwError(tries);
   }
 
-  selectNext(parent, tokens, maxLengthMatch) {
+  selectNext(parent, tokens, maxLengthMatch, temp) {
     let nodes = parent.childNodes();
     let sum = 1, pTotal = 0, selector = Math.random() * sum;
 
     if (!nodes || !nodes.length) throw Error
       ("Invalid arg to selectNext(no children) " + this);
+
+    if (temp && temp !== 1) {
+      // reorder probabilities here
+    }
 
     // we loop twice here in case we skip earlier nodes based on probability
     for (let i = 0; i < nodes.length * 2; i++) {
@@ -186,7 +167,7 @@ class Markov {
         if (next.token === SSDLM) next = next.pselect();
 
         if (maxLengthMatch && maxLengthMatch <= tokens.length) {
-          if (!this.validateMlms(next, tokens)) {
+          if (!this._validateMlms(next, tokens)) {
             //console.log('FAIL: ' + this._flatten(tokens) + ' -> ' + next.token);
             continue;
           }
@@ -360,25 +341,24 @@ class Markov {
 
     } else { // fill the end
 
-      let hash = this.probabilities(pre);
-      return Object.keys(hash).sort(function(a, b) {
-        return hash[b] - hash[a];
-      });
+      let pr = this.probabilities(pre);
+      return Object.keys(pr).sort((a, b) => pr[b] - pr[a]);
     }
   }
 
   probabilities(path) {
-    // TODO: tokenize to handle multiple words/tokens in path
+
+    //if (!Array.isArray(path)) path = [path];
     path = (typeof path === 'string') ? [path] : path;
     if (path.length > this.n) {
       path = path.slice(Math.max(0, path.length - (this.n - 1)), path.length);
     }
+
     let tn, probs = {};
-    if (!(tn = this._search(path))) return {};
-    let nexts = tn.childNodes();
-    for (let i = 0; i < nexts.length; i++) {
-      if (nexts[i]) {
-        probs[nexts[i].token] = nexts[i].nodeProb();
+    if (tn = this._search(path)) {
+      let nexts = tn.childNodes();
+      for (let i = 0; i < nexts.length; i++) {
+        if (nexts[i]) probs[nexts[i].token] = nexts[i].nodeProb();
       }
     }
     return probs;
@@ -406,6 +386,29 @@ class Markov {
   }
 
   ////////////////////////////// end API ////////////////////////////////
+
+  _initTokens(startTokens) {
+    let tokens;
+    if (startTokens) {
+      tokens = [];
+      let st = this._search(startTokens);
+      if (!st) throw Error("Cannot find startToken(s): " + startTokens);
+      while (!st.isRoot()) {
+        tokens.unshift(st);
+        st = st.parent;
+      }
+    }
+    else { // start-tokens supplies
+      tokens = [this.root.pselect()];
+    }
+    return tokens;
+  }
+
+  _validateMlms(candidate, nodes) {
+    let check = nodes.slice().map(n => n.token);
+    check.push(candidate.token);
+    return !isSubArray(check, this.input);
+  }
 
   /*
    * Follows 'path' (using only the last n-1 tokens) from root and returns

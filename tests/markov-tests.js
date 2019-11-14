@@ -56,11 +56,11 @@ describe('RiTa.Markov', () => {
   });
 
   // TODO:
-  0 && it('should correctly call generateTokens.temp', () => {
+  0&&it('should correctly call generateTokens.temp', () => {
     let rm, txt;
     rm = new Markov(1);
     txt = "aaaabbbccd";
-    rm.loadTokens(txt);
+    rm.loadTokens(Array.from(txt));
     //console.log(rm.toString());
     let res = rm.generateTokens(10000, { temp: 0 });
     let dist = {};
@@ -69,7 +69,7 @@ describe('RiTa.Markov', () => {
       dist[res[i]]++;
     }
     let keys = Object.keys(dist).sort(function(a, b) { return dist[b] - dist[a] });
-    //keys.forEach(k => console.log(k, dist[k] / 10000));
+    keys.forEach(k => console.log(k, dist[k] / 10000));
   });
 
   it('should correctly call generateTokens', () => {
