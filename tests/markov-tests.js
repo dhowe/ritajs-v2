@@ -317,7 +317,8 @@ describe('RiTa.Markov', () => {
   ////////////////////////////////////////////////////////////////////////
 
   it('should correctly call generateSentence', () => {
-
+    let silent = RiTa.SILENT;
+    RiTa.SILENT = true;// supress duplicate messages
     let rm = new Markov(4);
     rm.loadSentences(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
@@ -328,11 +329,13 @@ describe('RiTa.Markov', () => {
       let num = RiTa.tokenize(s).length;
       ok(num >= 5 && num <= 35 + i);
     }
+    RiTa.SILENT = silent;
   });
 
 
   it('should correctly call generateSentences.minmax', () => {
-
+    let silent = RiTa.SILENT;
+    RiTa.SILENT = true;// supress duplicate messages
     let rm = new Markov(4), minLength = 7, maxLength = 20;
 
     rm.loadSentences(RiTa.sentences(sample));
@@ -358,6 +361,7 @@ describe('RiTa.Markov', () => {
       let num = RiTa.tokenize(s).length;
       ok(num >= minLength && num <= maxLength);
     }
+    RiTa.SILENT = silent;
   });
 
 

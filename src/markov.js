@@ -348,8 +348,8 @@ class Markov {
 
   probabilities(path) {
 
-    //if (!Array.isArray(path)) path = [path];
-    path = (typeof path === 'string') ? [path] : path;
+    if (!Array.isArray(path)) path = [path];
+
     if (path.length > this.n) {
       path = path.slice(Math.max(0, path.length - (this.n - 1)), path.length);
     }
@@ -471,7 +471,7 @@ class Markov {
     }
 
     if (result.indexOf(sent) > -1) {
-      console.log("Skipping: duplicate sentence: '" + sent + "'");
+      if (!RiTa.SILENT) console.log("Skipping: duplicate sentence: '" + sent + "'");
       return false;
     }
 
