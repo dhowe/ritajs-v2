@@ -54,26 +54,20 @@ class SeededRandom {
   // API ////////////////////////////////////////////////////////////////////
 
   randomOrdering(num) {
-    let o = [];
-    if (num) {
-      for (let z = 0; z < num; z++) o.push(z);
-      // Array shuffle, from http://jsfromhell.com/array/shuffle
-      for (let j, x, i = o.length; i; j = parseInt(this.randomFloat() * i),
-        x = o[--i], o[i] = o[j], o[j] = x) { /* no-op */ }
-    }
+    let o = Array.from(Array(num).keys());
+    for (let j, x, i = o.length; i; j = parseInt(Math.random() * i),
+      x = o[--i], o[i] = o[j], o[j] = x) { /* shuffle */ }
     return o;
   }
 
   random() {
     let crand = this.randomFloat();
+    if (!arguments.length) return crand;
     if (Array.isArray(arguments[0])) {
       return arguments[0][Math.floor(crand * arguments[0].length)];
     }
-    if (arguments.length) {
-      return arguments.length === 1 ? crand * arguments[0] :
-        crand * (arguments[1] - arguments[0]) + arguments[0];
-    }
-    return crand;
+    return arguments.length === 1 ? crand * arguments[0] :
+      crand * (arguments[1] - arguments[0]) + arguments[0];
   }
 }
 

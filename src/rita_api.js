@@ -1,7 +1,6 @@
-const Util = require("./utils");
+const Util = require("./util");
 const RandGen = require('./random');
 const Parser = require('./parser');
-const Markov = require('./markov');
 const Stemmer = require('./stemmer');
 const Lexicon = require('./lexicon');
 const Tokenizer = require('./tokenizer');
@@ -21,8 +20,8 @@ class RiTa {
     throw Error('Invalid instantiation');
   }
 
-  static analyze() {
-    return RiTa._analyzer().analyze(...arguments);
+  static analyze(text) {
+    return RiTa._analyzer().analyze(text);
   }
 
   static alliterations() {
@@ -37,6 +36,14 @@ class RiTa {
     return RiTa.conjugator.conjugate(...arguments);
   }
 
+  /*static createGrammar(opts) {
+    return new RiMarkov(n, opts);
+  }*/
+
+  static createMarkov(n, opts) {
+    return new RiMarkov(n, opts);
+  }
+
   static env() {
     return Util.isNode() ? RiTa.NODE : RiTa.JS;
   }
@@ -45,21 +52,14 @@ class RiTa {
     return RiTa._lexicon().hasWord(...arguments);
   }
 
-  static isAbbreviation(input, caseSensitive) {
+  static isAbbreviation(input, { caseSensitive = false } = {}) {
 
-    let titleCase = function(input) {
-      if (!input || !input.length) return input;
-      return input.substring(0, 1).toUpperCase() + input.substring(1);
-    };
-
-    caseSensitive = caseSensitive || false;
-    input = caseSensitive ? input : titleCase(input);
-
-    return RiTa.ABBREVIATIONS.includes(input);
+    return RiTa.ABBREVIATIONS.includes
+      (caseSensitive ? input : Util.titleCase(input));
   }
 
   static isAdjective(word) {
-    return RiTa.tagger.isAdjective(...arguments);
+    return RiTa.tagger.isAdjective(word);
   }
 
   static isAdverb(word) {
@@ -95,6 +95,10 @@ class RiTa {
     return RiTa.concorder.kwic(...arguments);
   }
 
+  static markov() {
+    return RiTa.Markov || (RiTa.Markov = require('./markov'));
+  }
+
   static pastParticiple(verb) {
     return RiTa.conjugator.pastParticiple(verb);
   }
@@ -103,10 +107,12 @@ class RiTa {
     return RiTa._analyzer().analyze(text).phonemes;
   }
 
-  static posTags(words, opts) {
-    return (opts && opts.simple) ? RiTa.tagger.tagSimple(words)
-      : (opts && opts.inline) ? RiTa.tagger.tagInline(words)
-        : RiTa.tagger.tag(words);
+  static posTags(words, { simple = false, inline = false } = {}) {
+    return RiTa.tagger.tag(words, simple, inline);
+  }
+
+  static posTagsInline(words, { simple = false } = {}) {
+    return RiTa.tagger.tag(words, simple, true);
   }
 
   static pluralize(word) {
@@ -207,7 +213,7 @@ RiTa.conjugator = new Conjugator(RiTa);
 RiTa.syllabifier = new Syllabifier(RiTa);
 
 // CLASSES
-RiTa.RiMarkov = Markov;
+//RiTa.RiMarkov = Markov;
 
 // LAZY-LOADS
 RiTa.analyzer = undefined;

@@ -1,4 +1,4 @@
-const RE = require("./utils").RE;
+const RE = require("./util").RE;
 
 const CONS = "[bcdfghjklmnpqrstvwxyz]";
 const ANY_STEM = "^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$";

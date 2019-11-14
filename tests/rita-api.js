@@ -12,9 +12,11 @@ describe('RiTa.API', () => {
   });
 
   it('Should access member classes', () => {
-    let rm = new RiTa.RiMarkov(3);
+    let rm = new RiTa.Markov(3);
     expect(rm.n).eq(3);
   });
+
+  ///////////////////////////////// API //////////////////////////////////////
 
   it('Should call alliterations', () => {
     expect(RiTa.alliterations).to.be.a('function');
@@ -30,6 +32,14 @@ describe('RiTa.API', () => {
 
   it('Should call conjugate', () => {
     expect(RiTa.conjugate).to.be.a('function');
+  });
+
+  it('Should call createMarkov', () => {
+    expect(RiTa.createMarkov).to.be.a('function');
+  });
+
+  0 && it('Should call createGrammar', () => {
+    expect(RiTa.createGrammar).to.be.a('function');
   });
 
   it('Should call hasWord', () => {

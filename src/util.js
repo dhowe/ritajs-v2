@@ -5,6 +5,11 @@ class Utils {
     return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
   }
 
+  static titleCase(input) {
+    if (!input || !input.length) return input;
+    return input.substring(0, 1).toUpperCase() + input.substring(1);
+  }
+
   static equalsIgnoreCase(str1, str2) { // remove?
     return (str1 && str2 && str1.toLowerCase() === str2.toLowerCase());
   }

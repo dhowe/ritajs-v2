@@ -3,7 +3,7 @@ const RiTa = require('../src/rita_api');
 
 describe('RiTa.Core', () => {
 
-  it('Should correctly call isQuestion()', () => {
+  it('Should correctly call isQuestion', () => {
     ok(RiTa.isQuestion("what"));
     ok(RiTa.isQuestion("what"));
     ok(RiTa.isQuestion("what is this"));
@@ -20,7 +20,7 @@ describe('RiTa.Core', () => {
     ok(!RiTa.isQuestion(""));
   });
 
-  it('Should correctly call isAbbreviation()', () => {
+  it('Should correctly call isAbbreviation', () => {
 
     ok(RiTa.isAbbreviation("Dr."));
     ok(RiTa.isAbbreviation("dr."));
@@ -64,7 +64,7 @@ describe('RiTa.Core', () => {
     ok(!RiTa.isAbbreviation(1));
   });
 
-  it('Should correctly call isPunctuation()', () => {
+  it('Should correctly call isPunctuation', () => {
 
     ok(!RiTa.isPunctuation("What the"));
     ok(!RiTa.isPunctuation("What ! the"));
@@ -123,7 +123,7 @@ describe('RiTa.Core', () => {
     ok(!RiTa.isPunctuation(""));
   });
 
-  it('Should correctly call singularize()', () => {
+  it('Should correctly call singularize', () => {
 
     let tests = [
       "media", "medium",
@@ -263,7 +263,7 @@ describe('RiTa.Core', () => {
     equal("quarter", RiTa.singularize("quarters"));
   });
 
-  it('Should correctly call pluralize()', () => {
+  it('Should correctly call pluralize', () => {
 
     let tests = [
       "media", "medium",
