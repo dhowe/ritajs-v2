@@ -49,7 +49,7 @@ class Markov {
     this.input.push(...tokens.filter(t => t !== SSDLM));
   }
 
-  generateTokens(num, { startTokens, maxLengthMatch, temperature = 1 } = {}) {
+  generateTokens(num, { startTokens, maxLengthMatch, temperature = 0 } = {}) {
 
     let tokens, tries = 0, fail = () => {
       //console.log('FAIL: ' + this._flatten(tokens));
@@ -70,7 +70,7 @@ class Markov {
       if ((!parent || parent.isLeaf()) && fail()) continue;
 
       //let next = parent.chooseChild(tokens, maxLengthMatch, this.input);
-      let next = this.selectNext(parent, tokens, maxLengthMatch);
+      let next = this.selectNext(parent, tokens, maxLengthMatch, temperature);
       if (!next && fail()) continue; // possible if all children excluded
 
       // if we have enough tokens, we're done
@@ -147,15 +147,12 @@ class Markov {
   }
 
   selectNext(parent, tokens, maxLengthMatch, temp) {
+
     let nodes = parent.childNodes();
-    let sum = 1, pTotal = 0, selector = Math.random() * sum;
+    let pTotal = 0, selector = Math.random();
 
     if (!nodes || !nodes.length) throw Error
       ("Invalid arg to selectNext(no children) " + this);
-
-    if (temp && temp !== 1) {
-      // reorder probabilities here
-    }
 
     // we loop twice here in case we skip earlier nodes based on probability
     for (let i = 0; i < nodes.length * 2; i++) {
@@ -164,7 +161,7 @@ class Markov {
       if (selector < pTotal) { // should always be true 2nd time through
 
         // make sure we don't return a sentence start (<s/>) node
-        if (next.token === SSDLM) next = next.pselect();
+        //if (next.token === SSDLM) next = next.pselect();
 
         if (maxLengthMatch && maxLengthMatch <= tokens.length) {
           if (!this._validateMlms(next, tokens)) {
@@ -175,6 +172,54 @@ class Markov {
         return next;
       }
     }
+  }
+
+  selectNextX(parent, tokens, maxLengthMatch, temp) {
+
+    console.log(nodes);
+    let pTotal = 0, selector = Math.random();
+    let nodes = parent.probabilities();
+    if (!nodes) throw Error("Invalid arg to selectNext(no children) " + this);
+
+    let words = Object.keys(nodes);
+
+    // we loop twice here in case we skip earlier nodes based on probability
+    for (let i = 0; i < words.length * 2; i++) {
+      let word = words[i];
+      let prob = words[word];
+      pTotal += prob;
+      if (selector < pTotal) { // should always be true 2nd time through
+
+        // make sure we don't return a sentence start (<s/>) node
+        //if (word === SSDLM) next = next.pselect();
+
+        if (maxLengthMatch && maxLengthMatch <= tokens.length) {
+          if (!this._validateMlms(next, tokens)) {
+            //console.log('FAIL: ' + this._flatten(tokens) + ' -> ' + next.token);
+            continue;
+          }
+        }
+        return next;
+      }
+    }
+  }
+
+  probabilities(path) {
+
+    if (!Array.isArray(path)) path = [path];
+
+    if (path.length > this.n) {
+      path = path.slice(Math.max(0, path.length - (this.n - 1)), path.length);
+    }
+
+    let tn, probs = {};
+    if (tn = this._search(path)) {
+      let nexts = tn.childNodes();
+      for (let i = 0; i < nexts.length; i++) {
+        if (nexts[i]) probs[nexts[i].token] = nexts[i].nodeProb();
+      }
+    }
+    return probs;
   }
 
   generateTokensOrig(num, { startTokens, maxLengthMatch } = {}) {
@@ -226,90 +271,6 @@ class Markov {
     return tokens;
   }
 
-  // generateSentencesX(num, { minWords = 5, maxWords = 35, startTokens, maxLengthMatch } = {}) {
-  //
-  //   //console.log(num + " {" + minWords + "," + maxWords + "," + startTokens + "}");
-  //
-  //   let node, sent, tries = 0, result = [];
-  //
-  //   if (typeof startTokens === 'string') {
-  //     startTokens = RiTa.tokenize(startTokens);
-  //   }
-  //
-  //   while (tries < MAX_GENERATION_ATTEMPTS) {
-  //
-  //     if (result.length >= num) return result;
-  //
-  //     if (!sent) {
-  //       //sent = [ node = this._initSentence(startTokens) ];
-  //       sent = sent || [node = this.root.child(SSDLM).pselect()];
-  //     }
-  //
-  //     if (node.isLeaf()) {
-  //       node = this._search(sent);
-  //       // we ended up at a another leaf
-  //       if (!node || node.isLeaf()) {
-  //         if (sent.length < minWords || !this._validateSentence(result, sent)) {
-  //           tries++;
-  //         }
-  //         sent = null;
-  //         continue;
-  //       }
-  //     }
-  //
-  //     // select the next child, according to probabilities
-  //     node = node.pselect();
-  //
-  //     // do we have a candidate for the next start?
-  //     if (node.token === SSDLM) {
-  //
-  //       // its a sentence, or we restart and try again
-  //       if (sent.length < minWords || !this._validateSentence(result, sent)) {
-  //         tries++;
-  //       }
-  //       sent = null;
-  //       continue;
-  //     }
-  //
-  //     // add new node to the sentence
-  //     sent.push(node);
-  //
-  //     // check if we've exceeded max-length
-  //     if (sent.length > maxWords) {
-  //       sent = null;
-  //       tries++;
-  //     }
-  //     //console.log("tries="+tries);
-  //   }
-  //
-  //   throw Error('\nRiMarkov failed to complete after ' + tries +
-  //     ' tries and ' + result.length + ' successful generation(s)' +
-  //     ' - you may need to add more text to the model\n');
-  // }
-
-  // generateSentences(num, { minWords = 5, maxWords = 35, startTokens, maxLengthMatch } = {}) {
-  //   let tokens, tries = 0, fail = () => {
-  //     tokens = null;
-  //     tries++;
-  //     return 0;
-  //   };
-  //
-  //   if (typeof startTokens === 'string') {
-  //     startTokens = RiTa.tokenize(startTokens);
-  //   }
-  //
-  //   while (tries < MAX_GENERATION_ATTEMPTS) {
-  //
-  //     if (!tokens) tokens = this._initSentence(startTokens);
-  //     console.log("1: ", this._flatten(tokens));
-  //
-  //     let parent = this._search(tokens);
-  //     if ((!parent || parent.isLeaf()) && fail()) continue;
-  //     console.log("2: '"+parent.token+"'");
-  //
-  //     break;
-  //   }
-  // }
   generateSentence() {
     return this.generateSentences(1, ...arguments)[0];
   }
@@ -344,24 +305,6 @@ class Markov {
       let pr = this.probabilities(pre);
       return Object.keys(pr).sort((a, b) => pr[b] - pr[a]);
     }
-  }
-
-  probabilities(path) {
-
-    if (!Array.isArray(path)) path = [path];
-
-    if (path.length > this.n) {
-      path = path.slice(Math.max(0, path.length - (this.n - 1)), path.length);
-    }
-
-    let tn, probs = {};
-    if (tn = this._search(path)) {
-      let nexts = tn.childNodes();
-      for (let i = 0; i < nexts.length; i++) {
-        if (nexts[i]) probs[nexts[i].token] = nexts[i].nodeProb();
-      }
-    }
-    return probs;
   }
 
   probability(data) {
@@ -482,19 +425,6 @@ class Markov {
     return nodes.map(n => n.token);
   }
 
-  // _searchSentenceStart(path) {
-  //
-  //   if (!path || !path.length || this.n < 2) return this.root;
-  //
-  //   let idx = Math.max(0, path.length - (this.n - 1));
-  //   let node = this.root.child(SSDLM).child(path[idx++]);
-  //
-  //   for (let i = idx; i < path.length; i++) {
-  //     if (node) node = node.child(path[i]);
-  //   }
-  //
-  //   return node; // can be null
-  // }
 }
 
 /////////////////////////////// Node //////////////////////////////////////////
@@ -532,8 +462,8 @@ class Node {
       if (selector < pTotal) {
 
         // make sure we don't return a sentence start (<s/>) node
-        let result = nodes[i].token === SSDLM ? nodes[i].pselect() : nodes[i];
-
+        ///let result = nodes[i].token === SSDLM ? nodes[i].pselect() : nodes[i];
+        let result = nodes[i];
         if (!result) throw Error('Unexpected state');
 
         return result;
@@ -541,134 +471,6 @@ class Node {
     }
 
     throw Error(this + "\npselect() fail\nnodes(" + nodes.length + ") -> " + nodes);
-  }
-
-  /*
-   * Return a (direct) child node according to probability
-   */
-  pselectWithout(excludes) {
-
-    let selector, sum = 1, pTotal = 0;
-    let nodes = this.childNodes();
-
-    if (!nodes || !nodes.length) {
-      throw Error("Invalid arg to pselect(no children) " + this);
-    }
-
-    selector = Math.random() * sum;
-
-    for (let i = 0; i < nodes.length; i++) {
-
-      let node = nodes[i];
-      pTotal += node.nodeProb();
-      if (selector < pTotal) {
-
-        // make sure we don't return a sentence start (<s/>) node
-        if (node.token === SSDLM) node = node.pselect();
-
-        // make sure we don't return something explicitly excluded
-        if (!excludes || !excludes.includes(nodes[i].token)) {
-          return node;
-        }
-        console.log((i + 1) + "/" + nodes.length + ") HIT EXCLUDED: " + node.token);
-      }
-    }
-
-    throw Error('pselect failed for "' + this.token + '" with children: ' + Object.keys(this.children));
-  }
-
-  /*
-   * Return a (direct) child node according to probability, filter on excludes
-   */
-  pselectExcluding(excludes) {
-    //if (excludes && excludes.length) console.log(this.token+'.pselect('+excludes+')');
-    let selector, sum = 1, pTotal = 0;
-    let nodes = this.childNodes(excludes);
-
-    if (!nodes || !nodes.length) {
-      throw Error("Invalid arg to pselect(no children) " + this);
-    }
-
-    if (excludes && excludes.length) {
-
-      nodes = nodes.filter(n => !excludes.includes(n));
-
-      if (!nodes.length) return; // nothing left after filtering
-
-      sum = nodes.reduce(function(total, n) {
-        return total + n.nodeProb();
-      }, 0);
-    }
-
-    selector = Math.random() * sum;
-
-    for (let i = 0; i < nodes.length; i++) {
-
-      pTotal += nodes[i].nodeProb();
-      if (selector < pTotal) {
-
-        // make sure we don't return a sentence start (<s/>) node
-        let result = nodes[i].token === SSDLM ? nodes[i].pselect() : nodes[i];
-
-        if (!result) throw Error('Unexpected state');
-
-        return result;
-      }
-    }
-
-    throw Error(this + '\nno hit for pselect() with filter: ' + filter +
-      "\nnodes(" + nodes.length + ") -> " + nodes);
-  }
-
-  chooseChild(path, mlms, input) {
-
-    // bail if we don't have maxLengthMatchingSequence
-    if (!mlms || path.length < (mlms - 1) || !input || !input.length) {
-      return this.pselect();
-    }
-
-    let dbug = 0, start, nodes = path.slice(-(mlms - 1));
-
-    if (dbug) console.log('\nSo far: ', path.map(n => n.token)
-      + ' with ' + this.childNodes().length + ' nexts = ['
-      + nodeStr(this.childNodes()) + "]\n");
-
-    if (dbug) {
-      start = nodeStr(path, true);
-      console.log("start: " + start);
-    }
-
-    if (dbug) console.log('path: ', nodeStr(nodes));
-
-    let excludes = [], child;
-    while (!child) {
-
-      if (dbug) console.log('select: ', excludes, nodes.length);
-      let candidate = this.pselect(excludes);
-
-      if (!candidate) {
-
-        if (dbug) console.log('FAIL with excludes = [' + excludes + '], str="' + start + '"');
-        return false // if no candidates left, return false;
-      }
-
-      //let check = nodes.slice(0).push(candidate)
-      let check = nodes.slice().map(n => n.token);
-      check.push(candidate.token);
-
-      if (dbug) console.log('isSubArray?', check);
-
-      if (isSubArray(check, input)) {
-        if (dbug) console.log("Yes, excluding '" + candidate.token + "'");
-        excludes.push(candidate.token);
-        continue; // try again
-      }
-
-      if (dbug) console.log('No, done: ', candidate.token);
-      child = candidate; // found a good one
-    }
-
-    return child;
   }
 
   isLeaf() {
@@ -681,12 +483,6 @@ class Node {
 
   childNodes() {
     return Object.values(this.children);
-  }
-
-  childNodesExcluding(excludes) {
-    let kids = Object.values(this.children);
-    return (!excludes || !excludes.length) ? kids :
-      kids.filter(n => !excludes.includes(n.token));
   }
 
   childCount() {
@@ -792,11 +588,6 @@ class Node {
 } // end Node
 
 // --------------------------------------------------------------
-
-function nodeStr(nodes, format) { // replaces _flatten?
-  return format ? RiTa.untokenize(nodes.map(n => n.token)) :
-    nodes.reduce((acc, n) => acc += n.token + ',', '');
-}
 
 function isSubArray(find, arr) {
   OUT: for (let i = find.length - 1; i < arr.length; i++) {
