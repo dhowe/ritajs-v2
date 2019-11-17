@@ -146,7 +146,7 @@ class Markov {
 
   selectNext(parent, tokens, maxLengthMatch, temp) {
 
-    let nodes = parent.childNodes();
+    let nodes = parent.childNodes(true);
     let pTotal = 0, selector = Math.random();
 
     if (!nodes || !nodes.length) throw Error
@@ -167,6 +167,25 @@ class Markov {
         return next;
       }
     }
+  }
+
+  handleTemperature() {
+  //
+    //let nodes = [ new Node(this.root, "a", 3), new Node(this.root, "b", 4), new Node(this.root, "c", 2), new Node(this.root, "d", 1)];
+    // nodes.forEach(n => {
+    //   this.root.children[n.word] = n;
+    // });
+    this.root.addChild("a", 3);
+    this.root.addChild("b", 4);
+    this.root.addChild("c", 2);
+    this.root.addChild("d", 1);
+    let nodes = this.root.childNodes(true);
+    nodes.forEach(n => {
+      console.log(n.token + ' -> ' + n.nodeProb());
+    });
+
+
+//    console.log(this.root);
   }
 
   selectNextWithTemp(parent, tokens, maxLengthMatch, temp) {
@@ -209,7 +228,7 @@ class Markov {
       if (selector < pTotal) { // should always be true 2nd time through
 
         if (maxLengthMatch && maxLengthMatch <= tokens.length) {
-          if (!this._validateMlms(next.token, tokens)) {
+          if (!this._validateMlms(word, tokens)) {
             //console.log('FAIL: ' + this._flatten(tokens) + ' -> ' + next.token);
             continue;
           }
@@ -447,12 +466,12 @@ class Markov {
 
 class Node {
 
-  constructor(parent, word) {
+  constructor(parent, word, count) {
 
     this.children = {};
     this.parent = parent;
     this.token = word;
-    this.count = 0;
+    this.count = count || 0;
   }
 
   /*
@@ -497,8 +516,10 @@ class Node {
     return this.parent === null;
   }
 
-  childNodes() {
-    return Object.values(this.children);
+  childNodes(sorted) {
+    let kids = Object.values(this.children);
+    sorted && kids.sort((a, b) => b.count - a.count);
+    return kids;
   }
 
   childCount() {
@@ -515,7 +536,7 @@ class Node {
   }
 
   /*
-   * increments count for a child node and returns it
+   * Increments count for a child node and returns it
    */
   addChild(word, count) {
     count = count || 1;

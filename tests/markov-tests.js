@@ -61,22 +61,26 @@ describe('RiTa.Markov', () => {
       if (!dist[res[i]]) dist[res[i]] = 0;
       dist[res[i]]++;
     }
-    let keys = Object.keys(dist).sort(function(a, b) { return dist[b] - dist[a] });
-    keys.forEach(k => console.log(k, dist[k] / 10000));
+    let keys = Object.keys(dist);//.sort(function(a, b) { return dist[b] - dist[a] });
+    keys.forEach(k => console.log(k, dist[k] / res.length));
     console.log();
     return dist;
   }
 
-  // TODO:
-  it('should correctly call generateTokens.temp', () => {
+  // TODO: //////////////////////////////////////////////////////////////////
+  it('temperature', () => {
+    new Markov(2).handleTemperature();
+  });
+
+  0&& it('should correctly call generateTokens.temp', () => {
     let rm, txt;
     rm = new Markov(1);
-    txt = "aaaabbbccd";
+    txt = "aaabbbbccd";
     rm.loadTokens(Array.from(txt));
     //console.log(rm.toString());
-    let res = rm.generateTokens(10);
+    let res = rm.generateTokens(10000);
     logDistribution(res);
-    res = rm.generateTokens(10, { temperature: 1 });
+    res = rm.generateTokens(10000, { temperature: 1 });
     logDistribution(res);
   });
 
