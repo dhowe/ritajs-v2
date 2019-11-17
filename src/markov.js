@@ -102,7 +102,7 @@ class Markov {
         let parent = this._search(tokens);
         if ((!parent || parent.isLeaf()) && fail(tokens)) continue;
 
-        let next = this.selectNext(parent, tokens, maxLengthMatch);
+        let next = this.selectNext(parent, tokens, maxLengthMatch, temperature);
         if (!next && fail(tokens)) continue; // possible if all children excluded
 
         tokens.push(next);
@@ -131,7 +131,7 @@ class Markov {
         let mn = this._search(tokens);
         if (!mn || mn.isLeaf()) continue OUT; // hit a leaf, restart
 
-        mn = this.selectNext(mn, tokens, maxLengthMatch);
+        mn = this.selectNext(mn, tokens, maxLengthMatch, temperature);
         if (!mn) continue OUT; // can't find next, restart
 
         tokens.push(mn.token); // add the token
@@ -148,14 +148,14 @@ class Markov {
 
     let nodes = parent.childNodes(true);
     let pTotal = 0, selector = Math.random();
-
-    if (!nodes || !nodes.length) throw Error
-      ("Invalid arg to selectNext(no children) " + this);
+    let rprobs = nodes.map(n => n.nodeProb()).slice().reverse();
 
     // we loop twice here in case we skip earlier nodes based on probability
     for (let i = 0; i < nodes.length * 2; i++) {
-      let next = nodes[i % nodes.length];
-      pTotal += next.nodeProb();
+      let idx = i % nodes.length;
+      let next = nodes[idx];
+      let prob = lerp(next.nodeProb(), rprobs[idx], temp);
+      pTotal += prob;//next.nodeProb();
       if (selector < pTotal) { // should always be true 2nd time through
 
         if (maxLengthMatch && maxLengthMatch <= tokens.length) {
@@ -170,22 +170,20 @@ class Markov {
   }
 
   handleTemperature() {
-  //
-    //let nodes = [ new Node(this.root, "a", 3), new Node(this.root, "b", 4), new Node(this.root, "c", 2), new Node(this.root, "d", 1)];
-    // nodes.forEach(n => {
-    //   this.root.children[n.word] = n;
-    // });
     this.root.addChild("a", 3);
     this.root.addChild("b", 4);
     this.root.addChild("c", 2);
     this.root.addChild("d", 1);
     let nodes = this.root.childNodes(true);
-    nodes.forEach(n => {
-      console.log(n.token + ' -> ' + n.nodeProb());
-    });
-
-
-//    console.log(this.root);
+    let rprobs = nodes.map(n => n.nodeProb()).slice().reverse();
+    for (var i = 0; i <= 10; i++) {
+      let t = (i / 10);
+      console.log(t+")");
+      for (var j = 0; j < nodes.length; j++) {
+        let n = nodes[j]
+        console.log("  "+n.token + ' -> ' + n.nodeProb(), rprobs[j], lerp(n.nodeProb(), rprobs[j], t));
+      }
+    }
   }
 
   selectNextWithTemp(parent, tokens, maxLengthMatch, temp) {
@@ -625,6 +623,10 @@ class Node {
 } // end Node
 
 // --------------------------------------------------------------
+
+function lerp(start, stop, amt) {
+  return amt * (stop - start) + start;
+}
 
 function shiftArray(arr, num) {
   num = num || 1;

@@ -55,33 +55,38 @@ describe('RiTa.Markov', () => {
     eq(toks[0].token, 'The');
   });
 
-  function logDistribution(res) {
+  function distribution(res, dump) {
     let dist = {};
     for (var i = 0; i < res.length; i++) {
       if (!dist[res[i]]) dist[res[i]] = 0;
       dist[res[i]]++;
     }
     let keys = Object.keys(dist);//.sort(function(a, b) { return dist[b] - dist[a] });
-    keys.forEach(k => console.log(k, dist[k] / res.length));
-    console.log();
+    keys.forEach(k => {
+      dist[k] = dist[k] / res.length
+      dump && console.log(k,dist[k]);
+    });
+    dump && console.log();
     return dist;
   }
 
   // TODO: //////////////////////////////////////////////////////////////////
-  it('temperature', () => {
-    new Markov(2).handleTemperature();
-  });
+  // it('temperature', () => {
+  //   new Markov(2).handleTemperature();
+  // });
 
-  0&& it('should correctly call generateTokens.temp', () => {
-    let rm, txt;
+  it('should correctly call generateTokens.temp', () => {
+    let rm, txt, pd;
     rm = new Markov(1);
     txt = "aaabbbbccd";
     rm.loadTokens(Array.from(txt));
     //console.log(rm.toString());
     let res = rm.generateTokens(10000);
-    logDistribution(res);
+    pd = distribution(res,1);
+    ok(pd['b'] > .35, 'got '+pd['b'] );
     res = rm.generateTokens(10000, { temperature: 1 });
-    logDistribution(res);
+    pd = distribution(res,1);
+    ok(pd['b'] < .15, 'got '+pd['b']);
   });
 
   it('should correctly call generateTokens', () => {
