@@ -68,15 +68,15 @@ describe('RiTa.Markov', () => {
   }
 
   // TODO:
-  0 &&it('should correctly call generateTokens.temp', () => {
+  it('should correctly call generateTokens.temp', () => {
     let rm, txt;
     rm = new Markov(1);
     txt = "aaaabbbccd";
     rm.loadTokens(Array.from(txt));
     //console.log(rm.toString());
-    let res = rm.generateTokens(10000);
+    let res = rm.generateTokens(10);
     logDistribution(res);
-    res = rm.generateTokens(10000, { temperature: 1 });
+    res = rm.generateTokens(10, { temperature: 1 });
     logDistribution(res);
   });
 

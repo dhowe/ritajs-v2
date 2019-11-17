@@ -77,9 +77,7 @@ class Markov {
       if (tokens.push(next) >= num) return tokens.map(n => n.token);
     }
 
-    this._error('\n\nFailed after ' + tries + ' tries; you may' +
-      ' need to add more text to the model' + (maxLengthMatch ?
-        ' or increase the maxLengthMatch parameter' : ''));
+    throwError(tries);
   }
 
   generateSentences(num, { minLength = 5, maxLength = 35, startTokens, maxLengthMatch, temperature = 1 } = {}) {
@@ -160,11 +158,8 @@ class Markov {
       pTotal += next.nodeProb();
       if (selector < pTotal) { // should always be true 2nd time through
 
-        // make sure we don't return a sentence start (<s/>) node
-        //if (next.token === SSDLM) next = next.pselect();
-
         if (maxLengthMatch && maxLengthMatch <= tokens.length) {
-          if (!this._validateMlms(next, tokens)) {
+          if (!this._validateMlms(next.token, tokens)) {
             //console.log('FAIL: ' + this._flatten(tokens) + ' -> ' + next.token);
             continue;
           }
@@ -174,27 +169,47 @@ class Markov {
     }
   }
 
-  selectNextX(parent, tokens, maxLengthMatch, temp) {
+  selectNextWithTemp(parent, tokens, maxLengthMatch, temp) {
 
-    console.log(nodes);
+    let nodes = parent.childNodes();
     let pTotal = 0, selector = Math.random();
-    let nodes = parent.probabilities();
-    if (!nodes) throw Error("Invalid arg to selectNext(no children) " + this);
 
-    let words = Object.keys(nodes);
+    if (!nodes || !nodes.length) throw Error
+      ("Invalid arg to selectNext(no children) " + this);
 
-    // we loop twice here in case we skip earlier nodes based on probability
+    let words = nodes.map(n => n.token);
+    let probs = nodes.map(n => n.nodeProb());
+
+    // if (temp && temp > 0) {
+    //   shiftArray(probs);
+    // }
+
+    // WORKING HERE
+
+    // 1 2 3 4
+    // 4 1 2 3
+    // 3 4 1 2
+    // 2 3 4 1
+    // 1 2 3 4
+
+    // 1 2 3 4
+    // 4 3 2 1
+
+
+    //console.log(words, probs);
+
+    // note: we loop twice here in case
+    // we skip earlier nodes based on probability
+    // and end up with only excluded nodes
     for (let i = 0; i < words.length * 2; i++) {
-      let word = words[i];
-      let prob = words[word];
+      let word = words[i % nodes.length];
+      let next = nodes[i % nodes.length];
+      let prob = probs[i % nodes.length];
       pTotal += prob;
       if (selector < pTotal) { // should always be true 2nd time through
 
-        // make sure we don't return a sentence start (<s/>) node
-        //if (word === SSDLM) next = next.pselect();
-
         if (maxLengthMatch && maxLengthMatch <= tokens.length) {
-          if (!this._validateMlms(next, tokens)) {
+          if (!this._validateMlms(next.token, tokens)) {
             //console.log('FAIL: ' + this._flatten(tokens) + ' -> ' + next.token);
             continue;
           }
@@ -347,9 +362,10 @@ class Markov {
     return tokens;
   }
 
-  _validateMlms(candidate, nodes) {
+  _validateMlms(word, nodes) {
     let check = nodes.slice().map(n => n.token);
-    check.push(candidate.token);
+    //check.push(typeof word.token === 'string' ? word.token : word);
+    check.push(word); // string
     return !isSubArray(check, this.input);
   }
 
@@ -588,6 +604,13 @@ class Node {
 } // end Node
 
 // --------------------------------------------------------------
+
+function shiftArray(arr, num) {
+  num = num || 1;
+  for (var i = 0; i < num; i++) {
+    arr.push(arr.shift());
+  }
+}
 
 function isSubArray(find, arr) {
   OUT: for (let i = find.length - 1; i < arr.length; i++) {
