@@ -179,7 +179,7 @@ describe('RiTa.Grammar', () => {
       ok(res === "hawk" || res === 'crow');
     }
 
-    expect(function () {
+    expect(function() {
       try {
         rg.expandFrom("wrongName")
       } catch (e) {
@@ -187,6 +187,29 @@ describe('RiTa.Grammar', () => {
       }
     }).to.throw();
 
+  });
+
+  it("should correctly call expandFrom.weights", () => {
+
+    let rg = new RiGrammar();
+
+    rg.reset();
+    rg.addRule("<start>", "<pet>");
+    rg.addRule("<pet>", "<bird> [9] | <mammal>");
+    rg.addRule("<bird>", "hawk");
+    rg.addRule("<mammal>", "dog [2]");
+
+    eq(rg.expandFrom("<mammal>"), "dog");
+
+    let hawks = 0,
+      dogs = 0;
+    for (let i = 0; i < 100; i++) {
+      let res = rg.expandFrom("<pet>");
+      ok(res === "hawk" || res === 'dog');
+      if (res == "dog") dogs++;
+      if (res == "hawk") hawks++;
+    }
+    ok(hawks > dogs * 2);
   });
 
   function eql(a, b, c) { expect(a).eql(b, c); }
