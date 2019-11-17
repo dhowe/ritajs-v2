@@ -8,7 +8,7 @@ const RiTa = require('./rita_api');
 */
 // allow for real-time weighting ala atken
 
-//next: generateSentences with start tokens and mlm, then temp
+//next: generateSentences with start tokens and mlm
 
 const MAX_GENERATION_ATTEMPTS = 999;
 const SSDLM = '<s/>';
@@ -23,7 +23,7 @@ class Markov {
 
   loadTokens(tokens) {
     if (!Array.isArray(tokens)) {
-      throw Error('RiMarkov.loadTokens() expects an array of tokens');
+      throw Error('loadTokens() expects an array of tokens');
     }
     this._treeify(tokens);
     this.input.push(...tokens);
@@ -80,7 +80,7 @@ class Markov {
     throwError(tries);
   }
 
-  generateSentences(num, { minLength = 5, maxLength = 35, startTokens, maxLengthMatch, temperature = 1 } = {}) {
+  generateSentences(num, { minLength = 5, maxLength = 35, startTokens, maxLengthMatch, temperature = 0 } = {}) {
     let result = [], tokens, tries = 0, fail = () => {
       //console.log('FAIL('+tries+'): ' + this._flatten(tokens));
       tokens = undefined;
@@ -117,7 +117,7 @@ class Markov {
     return result;
   }
 
-  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE, startTokens, maxLengthMatch, temperature = 1 } = {}) {
+  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE, startTokens, maxLengthMatch, temperature = 0 } = {}) {
 
     let tries = 0;
     OUT: while (++tries < MAX_GENERATION_ATTEMPTS) {
@@ -169,72 +169,72 @@ class Markov {
     }
   }
 
-  handleTemperature() {
-    this.root.addChild("a", 3);
-    this.root.addChild("b", 4);
-    this.root.addChild("c", 2);
-    this.root.addChild("d", 1);
-    let nodes = this.root.childNodes(true);
-    let rprobs = nodes.map(n => n.nodeProb()).slice().reverse();
-    for (var i = 0; i <= 10; i++) {
-      let t = (i / 10);
-      console.log(t+")");
-      for (var j = 0; j < nodes.length; j++) {
-        let n = nodes[j]
-        console.log("  "+n.token + ' -> ' + n.nodeProb(), rprobs[j], lerp(n.nodeProb(), rprobs[j], t));
-      }
-    }
-  }
-
-  selectNextWithTemp(parent, tokens, maxLengthMatch, temp) {
-
-    let nodes = parent.childNodes();
-    let pTotal = 0, selector = Math.random();
-
-    if (!nodes || !nodes.length) throw Error
-      ("Invalid arg to selectNext(no children) " + this);
-
-    let words = nodes.map(n => n.token);
-    let probs = nodes.map(n => n.nodeProb());
-
-    // if (temp && temp > 0) {
-    //   shiftArray(probs);
-    // }
-
-    // WORKING HERE
-
-    // 1 2 3 4
-    // 4 1 2 3
-    // 3 4 1 2
-    // 2 3 4 1
-    // 1 2 3 4
-
-    // 1 2 3 4
-    // 4 3 2 1
-
-
-    //console.log(words, probs);
-
-    // note: we loop twice here in case
-    // we skip earlier nodes based on probability
-    // and end up with only excluded nodes
-    for (let i = 0; i < words.length * 2; i++) {
-      let word = words[i % nodes.length];
-      let next = nodes[i % nodes.length];
-      let prob = probs[i % nodes.length];
-      pTotal += prob;
-      if (selector < pTotal) { // should always be true 2nd time through
-
-        if (maxLengthMatch && maxLengthMatch <= tokens.length) {
-          if (!this._validateMlms(word, tokens)) {
-            //console.log('FAIL: ' + this._flatten(tokens) + ' -> ' + next.token);
-            continue;
-          }
-        }
-        return next;
-      }
-    }
-  }
+  // handleTemperature() {
+  //   this.root.addChild("a", 3);
+  //   this.root.addChild("b", 4);
+  //   this.root.addChild("c", 2);
+  //   this.root.addChild("d", 1);
+  //   let nodes = this.root.childNodes(true);
+  //   let rprobs = nodes.map(n => n.nodeProb()).slice().reverse();
+  //   for (var i = 0; i <= 10; i++) {
+  //     let t = (i / 10);
+  //     console.log(t+")");
+  //     for (var j = 0; j < nodes.length; j++) {
+  //       let n = nodes[j]
+  //       console.log("  "+n.token + ' -> ' + n.nodeProb(), rprobs[j], lerp(n.nodeProb(), rprobs[j], t));
+  //     }
+  //   }
+  // }
+  //
+  // selectNextWithTemp(parent, tokens, maxLengthMatch, temp) {
+  //
+  //   let nodes = parent.childNodes();
+  //   let pTotal = 0, selector = Math.random();
+  //
+  //   if (!nodes || !nodes.length) throw Error
+  //     ("Invalid arg to selectNext(no children) " + this);
+  //
+  //   let words = nodes.map(n => n.token);
+  //   let probs = nodes.map(n => n.nodeProb());
+  //
+  //   // if (temp && temp > 0) {
+  //   //   shiftArray(probs);
+  //   // }
+  //
+  //   // WORKING HERE
+  //
+  //   // 1 2 3 4
+  //   // 4 1 2 3
+  //   // 3 4 1 2
+  //   // 2 3 4 1
+  //   // 1 2 3 4
+  //
+  //   // 1 2 3 4
+  //   // 4 3 2 1
+  //
+  //
+  //   //console.log(words, probs);
+  //
+  //   // note: we loop twice here in case
+  //   // we skip earlier nodes based on probability
+  //   // and end up with only excluded nodes
+  //   for (let i = 0; i < words.length * 2; i++) {
+  //     let word = words[i % nodes.length];
+  //     let next = nodes[i % nodes.length];
+  //     let prob = probs[i % nodes.length];
+  //     pTotal += prob;
+  //     if (selector < pTotal) { // should always be true 2nd time through
+  //
+  //       if (maxLengthMatch && maxLengthMatch <= tokens.length) {
+  //         if (!this._validateMlms(word, tokens)) {
+  //           //console.log('FAIL: ' + this._flatten(tokens) + ' -> ' + next.token);
+  //           continue;
+  //         }
+  //       }
+  //       return next;
+  //     }
+  //   }
+  // }
 
   probabilities(path) {
 
@@ -650,5 +650,4 @@ function throwError(tries) {
     + ' need to add more text to the model or adjust options');
 }
 
-RiTa.Markov = Markov;
 module && (module.exports = Markov);
