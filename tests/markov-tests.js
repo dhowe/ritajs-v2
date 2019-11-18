@@ -6,14 +6,18 @@ const Markov = require('../src/markov');
 
 describe('RiTa.Markov', () => {
 
-  sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
+  let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
 
-  sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my nodesfriends threw a party at his house last month. He asked me to " + "come to his party and bring a date. However, I did not have a " + "girlfriend. One of my other friends, who had a date to go to the " + "party with, asked me about my date. I did not want to be embarrassed, " + "so I claimed that I had a lot of work to do. I said I could easily find" + " a date even better than his if I wanted to. I also told him that his " + "date was ugly. I achieved power to help me feel confident; however, I " + "embarrassed my friend and his date. Although this lie helped me at the " + "time, since then it has made me look down on myself. After all, I did " + "occasionally want to be embarrassed.";
+  let sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my nodesfriends threw a party at his house last month. He asked me to " + "come to his party and bring a date. However, I did not have a " + "girlfriend. One of my other friends, who had a date to go to the " + "party with, asked me about my date. I did not want to be embarrassed, " + "so I claimed that I had a lot of work to do. I said I could easily find" + " a date even better than his if I wanted to. I also told him that his " + "date was ugly. I achieved power to help me feel confident; however, I " + "embarrassed my friend and his date. Although this lie helped me at the " + "time, since then it has made me look down on myself. After all, I did " + "occasionally want to be embarrassed.";
 
-  sample3 = "One reason people lie is to achieve personal power. One reason people fly is wings. One reason people lie was for fun. One reason people lie is for sport. One ton people lie for the sport. One reason people lie could be for games. One reason people lie would be for games.";
+  let sample3 = "One reason people lie is to achieve personal power. One reason people fly is wings. One reason people lie was for fun. One reason people lie is for sport. One ton people lie for the sport. One reason people lie could be for games. One reason people lie would be for games.";
 
   it('should correctly call Markov', () => {
     ok(typeof new Markov(3) !== 'undefined');
+  });
+
+  it('should correctly call createMarkov', () => {
+    ok(typeof RiTa.createMarkov(3) !== 'undefined');
   });
 
   it('should correctly call loadTokens', () => {
@@ -55,21 +59,33 @@ describe('RiTa.Markov', () => {
     eq(toks[0].token, 'The');
   });
 
-  // TODO:
-  0 && it('should correctly call generateTokens.temp', () => {
-    let rm, txt;
-    rm = new Markov(1);
-    txt = "aaaabbbccd";
-    rm.loadTokens(txt);
-    //console.log(rm.toString());
-    let res = rm.generateTokens(10000, { temp: 0 });
+  function distribution(res, dump) {
     let dist = {};
     for (var i = 0; i < res.length; i++) {
       if (!dist[res[i]]) dist[res[i]] = 0;
       dist[res[i]]++;
     }
-    let keys = Object.keys(dist).sort(function(a, b) { return dist[b] - dist[a] });
-    //keys.forEach(k => console.log(k, dist[k] / 10000));
+    let keys = Object.keys(dist);//.sort(function(a, b) { return dist[b] - dist[a] });
+    keys.forEach(k => {
+      dist[k] = dist[k] / res.length
+      dump && console.log(k,dist[k]);
+    });
+    dump && console.log();
+    return dist;
+  }
+
+  it('should correctly call generateTokens.temp', () => {
+    let rm, txt, pd;
+    rm = new Markov(1);
+    txt = "aaabbbbccd";
+    rm.loadTokens(Array.from(txt));
+    //console.log(rm.toString());
+    let res = rm.generateTokens(10000);
+    pd = distribution(res);
+    ok(pd['b'] > .35, 'got '+pd['b'] );
+    res = rm.generateTokens(10000, { temperature: 1 });
+    pd = distribution(res);
+    ok(pd['b'] < .15, 'got '+pd['b']);
   });
 
   it('should correctly call generateTokens', () => {
@@ -317,7 +333,8 @@ describe('RiTa.Markov', () => {
   ////////////////////////////////////////////////////////////////////////
 
   it('should correctly call generateSentence', () => {
-
+    let silent = RiTa.SILENT;
+    RiTa.SILENT = true;// supress duplicate messages
     let rm = new Markov(4);
     rm.loadSentences(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
@@ -328,11 +345,13 @@ describe('RiTa.Markov', () => {
       let num = RiTa.tokenize(s).length;
       ok(num >= 5 && num <= 35 + i);
     }
+    RiTa.SILENT = silent;
   });
 
 
   it('should correctly call generateSentences.minmax', () => {
-
+    let silent = RiTa.SILENT;
+    RiTa.SILENT = true;// supress duplicate messages
     let rm = new Markov(4), minLength = 7, maxLength = 20;
 
     rm.loadSentences(RiTa.sentences(sample));
@@ -358,6 +377,7 @@ describe('RiTa.Markov', () => {
       let num = RiTa.tokenize(s).length;
       ok(num >= minLength && num <= maxLength);
     }
+    RiTa.SILENT = silent;
   });
 
 

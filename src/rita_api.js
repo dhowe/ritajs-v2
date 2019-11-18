@@ -36,12 +36,12 @@ class RiTa {
     return RiTa.conjugator.conjugate(...arguments);
   }
 
-  /*static createGrammar(opts) {
-    return new RiMarkov(n, opts);
-  }*/
+  static createGrammar() {
+    return new (RiTa._grammar())(...arguments);
+  }
 
   static createMarkov(n, opts) {
-    return new RiMarkov(n, opts);
+    return new (RiTa._markov())(...arguments);
   }
 
   static env() {
@@ -93,10 +93,6 @@ class RiTa {
 
   static kwic() {
     return RiTa.concorder.kwic(...arguments);
-  }
-
-  static markov() {
-    return RiTa.Markov || (RiTa.Markov = require('./markov'));
   }
 
   static pastParticiple(verb) {
@@ -185,6 +181,20 @@ class RiTa {
 
   /////////////////////////////////////////////////////////////////
 
+  static _markov() {
+    if (typeof RiTa.Markov === 'undefined') {
+      RiTa.Markov = require('./markov');
+    }
+    return RiTa.Markov;
+  }
+
+  static _grammar() {
+    if (typeof RiTa.Grammar === 'undefined') {
+      RiTa.Grammar = require('./grammar');
+    }
+    return RiTa.Grammar;
+  }
+
   static _lexicon() {
     if (typeof RiTa.lexicon === 'undefined') {
       RiTa.lts = new LetterToSound(RiTa);
@@ -211,9 +221,6 @@ RiTa.tokenizer = new Tokenizer(RiTa);
 RiTa.pluralizer = new Pluralizer(RiTa);
 RiTa.conjugator = new Conjugator(RiTa);
 RiTa.syllabifier = new Syllabifier(RiTa);
-
-// CLASSES
-//RiTa.RiMarkov = Markov;
 
 // LAZY-LOADS
 RiTa.analyzer = undefined;

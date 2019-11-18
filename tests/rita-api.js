@@ -38,7 +38,7 @@ describe('RiTa.API', () => {
     expect(RiTa.createMarkov).to.be.a('function');
   });
 
-  0 && it('Should call createGrammar', () => {
+  it('Should call createGrammar', () => {
     expect(RiTa.createGrammar).to.be.a('function');
   });
 
