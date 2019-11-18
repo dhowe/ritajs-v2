@@ -1,6 +1,7 @@
 const RiTa = require('./rita_api');
 
 const OR_PATT = /\s*\|\s*/;
+const STRIP_TICKS = /`([^`]*)`/g;
 const PROB_PATT = /(.*[^\s])\s*\[([0-9.]+)\](.*)/;
 
 class Grammar {
@@ -10,90 +11,136 @@ class Grammar {
     rules && this.load(rules);
   }
 
+  load(rules) {
+    if (typeof rules === 'string') {
+      try {
+        // first try with rita-script?
+        //console.log('trying JSON');
+        rules = JSON.parse(rules);
+      } catch (e) {
+        err('Grammar appears to be invalid JSON, please check'
+          + ' it at http://jsonlint.com/', grammar);
+        return;
+      }
+    }
+
+    Object.keys(rules).forEach(r => this.addRule(r, rules[r]))
+
+    return this;
+  }
+
   expand(context) {
     return this.expandFrom(Grammar.START_RULE, context);
   }
 
+  _expandRule(g, prod) {
+
+    let entry, idx, pre, expanded, post, dbug = 0;
+
+    for (let name in g.rules) {
+
+      entry = g.rules[name];
+      idx = prod.indexOf(name);
+
+      if (idx >= 0) { // got a match, split into 3 parts
+
+        if (dbug) console.log('matched: ' + name);
+        pre = prod.substring(0, idx) || '';
+        expanded = g.doRule(name) || '';
+        post = prod.substring(idx + name.length) || '';
+
+        return pre + expanded + post;
+      }
+    }
+    // no rules matched
+  }
+
   expandFrom(rule, context) {
 
-    let expandRule = (g, prod) => {
+    if (!Object.keys(this.rules).length) err("No grammar rules found!");
 
-      let entry, idx, pre, expanded, post, dbug = 0;
-      if (dbug) console.log("expandRule(" + prod + ")");
-
-      for (let name in g.rules) {
-
-        entry = g.rules[name];
-        if (dbug) {
-          console.log("  name=" + name + "  entry=" +
-            JSON.stringify(entry) + "  prod=" + prod + (idx ? "  idx=" + idx : ''));
-        }
-        idx = prod.indexOf(name);
-
-        if (idx >= 0) { // got a match, split into 3 parts
-
-          if (dbug) console.log('matched: ' + name);
-          pre = prod.substring(0, idx) || '';
-          expanded = g.doRule(name) || '';
-          post = prod.substring(idx + name.length) || '';
-
-          if (dbug) console.log("  pre=" + pre + "  expanded=" + expanded +
-            "  post=" + post + "  result=" + pre + expanded + post);
-          return pre + expanded + post;
-        }
-      }
-      // no rules matched
-    };
-
-    if (!Object.keys(this.rules).length) {
-      err("(RiGrammar) No grammar rules found!");
-    }
-
-    if (!this.hasRule(rule)) {
-      err("Rule not found: " + rule + BN + "Rules:" + BN + JSON.stringify(this.rules));
-    }
+    if (!this.hasRule(rule)) err("Rule not found: " + rule
+      + "\nRules:\n" + JSON.stringify(this.rules));
 
     let parts, theCall, callResult, tries = 0, maxIterations = 1000;
 
+    var countTicks = (theCall) => {
+      var count = 0;
+      for (var i = 0; i < theCall.length; i++) {
+        if (theCall.charAt(i) == '`')
+          count++;
+      }
+      return count;
+    }
+
+    var handleExec = (input, context) => {
+
+      //console.log('handleExec('+input+", ",context+')');
+      if (!input || !input.length) return null;
+
+      // strip backticks and eval
+      var res, exec = input.replace(STRIP_TICKS, '$1');
+
+      try {
+
+        res = eval(exec); // try in global context
+        return res ? res + E : null;
+
+      } catch (e) {
+
+        if (context) { // create sandbox for context args
+
+          try {
+            res = new Scope(context).eval(exec);
+            return res ? res + '' : null;
+          }
+          catch (e) { /* fall through */ }
+        }
+      }
+      return input;
+    }
+
     while (++tries < maxIterations) {
 
-      let next = expandRule(this, rule);
+      let next = this._expandRule(this, rule);
       if (next && next.length) { // matched a rule
         rule = next;
         continue;
       }
-      //
-      // // finished rules, check for back-ticked exec calls
-      // parts = RiGrammar.EXEC_PATT.exec(rule);
-      //
-      // if (!parts || !parts.length) break; // return, no evals
-      //
-      // if (parts.length > 2) {
-      //
-      //   theCall = parts[2];
-      //
-      //   if (countTicks(theCall) != 2) {
-      //     warn("Unable to parse recursive exec: " + theCall + "...");
-      //     return null;
-      //   }
-      //
-      //   callResult = handleExec(theCall, context);
-      //   if (!callResult) {
-      //
-      //     if (0) log("[WARN] (RiGrammar.expandFrom) Unexpected" +
-      //       " state: eval(" + theCall + ") :: returning '" + rule + "'");
-      //     break; // return
-      //   }
-      //
-      //   rule = parts[1] + callResult;
-      //   if (parts.length > 3) rule += parts[3];
-      // }
+
+      // finished rules, check for back-ticked exec calls
+      parts = Grammar.EXEC_PATT.exec(rule);
+
+      //if (!parts || !parts.length) break // return, no evals (removed 11/18/19)
+
+      if (parts && parts.length > 2) {
+
+        theCall = parts[2];
+
+        if (countTicks(theCall) != 2) {
+          warn("Unable to parse recursive exec: " + theCall + "...");
+          return null;
+        }
+
+        callResult = handleExec(theCall, context);
+        if (!callResult) {
+
+          if (0) log("[WARN] (Grammar.expandFrom) Unexpected" +
+            " state: eval(" + theCall + ") :: returning '" + rule + "'");
+          break; // return
+        }
+
+        rule = parts[1] + callResult;
+        if (parts.length > 3) rule += parts[3];
+      }
 
       if (tries >= maxIterations) {
         console.log("[WARN] max number of iterations reached: " + maxIterations);
       }
+
       return unescapeHTML(rule);
     }
+
   }
 
   doRule(pre) {
@@ -138,34 +185,6 @@ class Grammar {
   reset() { // remove
 
     this.rules = {};
-    return this;
-  }
-
-  load(rules) {
-
-    if (typeof rules === 'string') {
-
-      try {
-        // first try with rita-script?
-
-        //console.log('trying JSON');
-        rules = JSON.parse(rules);
-
-      } catch (e) {
-
-        err('Grammar appears to be invalid JSON, please check it at ' +
-          'http://jsonlint.com/. If you are using YAML, be sure to ' +
-          verb + ' yamljs (https://github.com/jeremyfa/yaml.js), e.g. ' +
-          syntax, grammar);
-
-        return;
-      }
-    }
-
-    for (let rule in rules) {
-      this.addRule(rule, rules[rule]);
-    }
-
     return this;
   }
 
@@ -248,7 +267,6 @@ class Scope {
   }
 }
 
-
 function unescapeHTML(input) {
 
   if (!input || !input.length) return input;
@@ -288,5 +306,6 @@ function err() {
 }
 
 Grammar.START_RULE = "<start>";
+Grammar.EXEC_PATT = /(.*?)(`[^`]+?\(.*?\);?`)(.*)/;
 
 module && (module.exports = Grammar);

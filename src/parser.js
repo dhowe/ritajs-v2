@@ -43,15 +43,13 @@ class LexParser {
   }
 
   tokenToString(t) {
-    let txt = (t.text && t.text.length) ?
-      t.text.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t") :
-      "<no text>";
+    let txt = "<no text>";
+    if (t.text && t.text.length) {
+      txt = t.text.replace(/\n/g, "\\n")
+        .replace(/\r/g, "\\r").replace(/\t/g, "\\t");
+    }
     let type = (t.type > -1 ? this.lexer.symbolicNames[t.type] : 'EOF');
     return "[" + t.line + "." + t.column + ": '" + txt + "' -> " + type + "]";
-    // return "[" + t.start + ":" + t.stop + "='" +
-    //   txt + "',<" +t.type + ">" +
-    //   (t.channel > 0 ? ",channel=" + t.channel : "") + "," +
-    //   t.line + ":" + t.column + "]";
   }
 
   parse(tokens, input, context, showParse) {
@@ -95,6 +93,63 @@ class LexParser {
     context = context || {};
     context._silent = true;
     return this.lexParseVisit(input, context, showParse);
+  }
+
+  /* converts a JSON object to a rita-script string */
+  lexParseVisitJSON(input) {
+    let parseVal = (v, syms) => {
+      for (var i = 0; i < syms.length; i++) {
+        v = v.replace('<'+syms[i]+'>', syms[i]);
+        v = v.replace(new RegExp('\\$*' + syms[i], 'g'), '\$' + syms[i]);
+      }
+      //console.log('  ',u,v);
+      return v;
+    }
+
+    let throwError = (g) => {
+      throw Error('Grammar appears to be invalid JSON '
+        + 'please check it at http://jsonlint.com/\n' + g);
+    }
+
+    if (typeof input === 'string') {
+      try {
+        input = JSON.parse(rules);
+      } catch (e) {
+        throwError(input);
+      }
+    }
+
+    if (typeof input !== 'object') throwError(input);
+
+    // convert json object to symbol: definition object
+    let result = {};
+    Object.keys(input).forEach(key => {
+      let k = key, v = input[key];
+      if (k.startsWith('<') && k.endsWith('>')) {
+        k = k.substring(1, k.length-1);
+      }
+      result[k] = Array.isArray(v) ? v : [v];
+    });
+
+    // convert symbol: definition object to script string
+    let script = '';
+    let syms = Object.keys(result);
+    syms.forEach(s => {
+      script += '$' + s + ' = ';
+      let def = '';
+      for (var i = 0; i < result[s].length; i++) {
+        def += parseVal(result[s][i], syms);
+        if (i < result[s].length - 1) def += ' | ';
+      }
+      if (result[s].length > 1) def = '(' + def + ')';
+      script += def + '\n';
+    });
+
+    script += '$start';
+
+    console.log(script);
+
+    return this.lexParseVisit(script);
   }
 }
 
