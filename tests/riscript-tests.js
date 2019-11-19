@@ -4,6 +4,15 @@ const Parser = require('../src/parser');
 const expect = require('chai').expect;
 const parser = new Parser();
 
+// SOLUTION 1:
+// unenclosed variables on a line, include the whole line and can have nothing else
+// other you need to use {} or []
+
+// TODO:
+// lazy evaluation of variables in script (to support cf-grammars)
+// add variable declarations ***
+// handle multipliers
+
 describe('RiTa.RiScript', function() {
 
   describe('Parse Symbols', function() {
@@ -164,6 +173,24 @@ describe('RiTa.RiScript', function() {
   });
 
   describe('Parse Assignments', function() {
+
+    it('Should eval previous assignments', function() {
+      expect(parser.lexParseVisit('$foo=a\n$foo', null, 0)).eq('a');
+      expect(parser.lexParseVisit('$foo=(hi | hi) $foo there', null, 0)).eq('hi there');
+      expect(parser.lexParseVisit('$foo=(hi | hi) $foo there', null, 0)).eq('hi there');
+
+      expect(parser.lexParseVisit('$foo=dog\n$bar=$foo\n$baz=$foo\n$baz', null, 0)).eq('dog');
+      expect(parser.lexParseVisit('$foo=hi $foo there', null, 0)).eq('hi there');
+    });
+
+    it('Should eval pre-defined variables', function() {
+      let script = [
+        '$noun=(woman | woman)',
+        '$start=$noun',
+        '$start'
+      ].join('\n');
+      expect(parser.lexParseVisit(script, null, 0)).eq('woman');
+    });
 
     it('Should parse assignments', function() {
       let ctx = {};
@@ -353,6 +380,9 @@ describe('RiTa.RiScript', function() {
   });*/
 
   describe('Failing Tests', function() {
+
+    return; // remove to work
+    
     it('Should be fixed to pass', function() {
       //return;
 
@@ -363,6 +393,32 @@ describe('RiTa.RiScript', function() {
       // *** WORKING HERE: transform should not be applied to silent assign
       0 && expect(parser.lexParseVisit('How many (tooth | tooth).pluralize() do you have?')).eq('How many teeth do you have?');
     });
+
+    it('Fix: Should eval post-defined variables', function() {
+
+      expect(parser.lexParseVisit('$start=$foo\n$foo=hello\n$foo', null, 0)).eq('a');
+
+      let script = [
+        '$start = $noun',
+        '$noun = hello',
+        '$start'
+      ];
+      expect(parser.lexParseVisit(script, null, 0)).eq('hello');
+    });
+
+    it('Fix: Should eval converted grammar', function() {
+      let script = [
+        '$start = $nounp $verbp.',
+        '$nounp = $determiner $noun',
+        '$determiner = the | the',
+        '$verbp = $verb $nounp',
+        '$noun = (woman | woman)',
+        '$verb = shoots',
+        '$start'
+      ].join('\n');
+      expect(parser.lexParseVisit(script, null, 0)).eq('the woman shoots the woman');
+    });
+
   });
 
 });

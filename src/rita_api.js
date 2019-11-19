@@ -40,7 +40,7 @@ class RiTa {
     return new (RiTa._grammar())(...arguments);
   }
 
-  static createMarkov(n, opts) {
+  static createMarkov() {
     return new (RiTa._markov())(...arguments);
   }
 
@@ -189,10 +189,10 @@ class RiTa {
   }
 
   static _grammar() {
-    if (typeof RiTa.Grammar === 'undefined') {
-      RiTa.Grammar = require('./grammar');
+    if (typeof RiTa.LegacyGrammar === 'undefined') {
+      RiTa.LegacyGrammar = require('./grammar');
     }
-    return RiTa.Grammar;
+    return RiTa.LegacyGrammar;
   }
 
   static _lexicon() {
