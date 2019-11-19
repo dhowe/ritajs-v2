@@ -1,12 +1,14 @@
 require('../src/transforms');
 
-const Parser = require('../src/parser');
+const Parser = require('../src/riscript');
 const expect = require('chai').expect;
 const parser = new Parser();
 
 // SOLUTION 1:
 // unenclosed variables on a line, include the whole line and can have nothing else
 // other you need to use {} or []
+
+// SOLUTION 2: implement distinct compile/execute phases to support grammars
 
 // TODO:
 // lazy evaluation of variables in script (to support cf-grammars)
@@ -382,7 +384,7 @@ describe('RiTa.RiScript', function() {
   describe('Failing Tests', function() {
 
     return; // remove to work
-    
+
     it('Should be fixed to pass', function() {
       //return;
 

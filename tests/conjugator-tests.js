@@ -76,7 +76,7 @@ describe('RiTa.Conjugator', () => {
     let args, s, a;
 
     equal("swum", RiTa.pastParticiple("swim"));
-    
+
     equal(RiTa.conjugate("be", { form: RiTa.GERUND, }), "being");
 
     s = ["swim", "need", "open"];
@@ -229,15 +229,8 @@ describe('RiTa.Conjugator', () => {
     };
     equal(RiTa.conjugate("barter", args), "bartered");
     equal(RiTa.conjugate("run", args), "ran");
-
-    s = ["compete", "complete", "eject"];
-    a = ["competed", "completed", "ejected"];
-    ok(a.length === s.length);
-    for (let i = 0; i < s.length; i++) {
-      c = RiTa.conjugate(s[i], args);
-      equal(c, a[i]);
-    }
   });
+
   function ok(res) { expect(res).eq(true); }
   function equal(a, b) { expect(a).eq(b); }
 });

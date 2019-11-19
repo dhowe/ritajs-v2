@@ -1,6 +1,6 @@
 const Util = require("./util");
 const RandGen = require('./random');
-const Parser = require('./parser');
+const Parser = require('./riscript');
 const Stemmer = require('./stemmer');
 const Lexicon = require('./lexicon');
 const Tokenizer = require('./tokenizer');
