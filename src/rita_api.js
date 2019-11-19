@@ -1,8 +1,8 @@
 const Util = require("./util");
 const RandGen = require('./random');
-const Parser = require('./riscript');
 const Stemmer = require('./stemmer');
 const Lexicon = require('./lexicon');
+const RiScript = require('./riscript');
 const Tokenizer = require('./tokenizer');
 const PosTagger = require('./tagger');
 const Analyzer = require('./analyzer');
@@ -46,6 +46,10 @@ class RiTa {
 
   static env() {
     return Util.isNode() ? RiTa.NODE : RiTa.JS;
+  }
+
+  static evaluate() { // runScript ? evalScript?
+    return RiScript.evaluate(...arguments);
   }
 
   static hasWord() {
@@ -139,10 +143,6 @@ class RiTa {
     return RiTa._lexicon().rhymes(...arguments);
   }
 
-  static evaluate() {
-    return RiTa.parser.lexParseVisit(...arguments);
-  }
-
   static stresses(text) {
     return RiTa._analyzer().analyze(text).stresses;
   }
@@ -213,7 +213,6 @@ class RiTa {
 }
 
 // COMPONENTS
-RiTa.parser = new Parser(RiTa);
 RiTa.stemmer = new Stemmer(RiTa);
 RiTa.tagger = new PosTagger(RiTa);
 RiTa.concorder = new Concorder(RiTa);

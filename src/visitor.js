@@ -17,7 +17,7 @@ class Symbol {
   }
   getText() { return this.text; }
   accept() {
-    this.text = this.parent.context[this.text] || this.text;
+    this.text = this.parent.context[this.text] || ('$' + this.text);
     return this.parent.visitTerminal(this);
   }
 }
@@ -80,10 +80,9 @@ class Visitor extends SuperClass {
   }
 
   visitSymbol(ctx) {
-    let id = ctx.ident().getText();
-    id = id.replace(/[}{]/g,''); // strip {}
-    id = this.symbolName(id);
-    let symbol = new Symbol(this, id);
+    let id = ctx.ident().getText().replace(/[}{]/g,''); // strip {}
+    let sname = this.symbolName(id);
+    let symbol = new Symbol(this, sname);
     symbol.transforms = this.inheritTransforms(symbol, ctx);
     this.trace && console.log('visitSymbol: $' + symbol.text + ' ' + (symbol.transforms || "[]"));
     return this.visit(symbol);

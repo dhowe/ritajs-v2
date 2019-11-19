@@ -169,8 +169,12 @@ class Lexicon {
     let targetPos = opts && opts.pos;
     let targetSyls = opts && opts.syllableCount || 0;
 
-    let isNNWithoutNNS = (w, pos) => (w.endsWith("ness") ||
-      w.endsWith("ism") || pos.indexOf("vbg") > 0);
+    let massNouns = ['dive'];
+    let isMassNoun = (w, pos) => (w.endsWith("ness") ||
+      w.endsWith("ism") || pos.indexOf("vbg") > 0 ||
+      massNouns.includes(w));
+
+    let invalidNNS = ['dives'];
 
     if (targetPos && targetPos.length) {
       targetPos = targetPos.trim().toLowerCase();
@@ -197,7 +201,7 @@ class Lexicon {
           if (!pluralize) return words[j];
 
           // match plural noun
-          if (!isNNWithoutNNS(words[j], rdata[1])) {
+          if (!isMassNoun(words[j], rdata[1])) {
             return RiTa.pluralize(words[j]);
           }
         }
