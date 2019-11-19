@@ -169,7 +169,7 @@ class Lexicon {
     let targetPos = opts && opts.pos;
     let targetSyls = opts && opts.syllableCount || 0;
 
-    let massNouns = ['dive'];
+    let massNouns = ['dive', 'people', 'salespeople'];
     let isMassNoun = (w, pos) => (w.endsWith("ness") ||
       w.endsWith("ism") || pos.indexOf("vbg") > 0 ||
       massNouns.includes(w));

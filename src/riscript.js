@@ -116,8 +116,7 @@ class Scripting {
   }
 
   lexParseVisitQuiet(input, context, showParse) {
-    context = context || {};
-    context._silent = true;
+    Object.assign((context = context || {}), { _silent: true });
     return this.lexParseVisit(input, context, showParse);
   }
 }

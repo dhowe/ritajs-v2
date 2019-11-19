@@ -100,8 +100,9 @@ class Pluralizer {
 
     let rules = PLURAL_RULES;
     for (let i = 0; i < rules.length; i++) {
-      if (rules[i].applies(word.toLowerCase())) {
-        return rules[i].fire(word);
+      let rule = rules[i];
+      if (rule.applies(word.toLowerCase())) {
+        return rule.fire(word);
       }
     }
 

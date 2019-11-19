@@ -135,8 +135,8 @@ class RiTa {
     return RandGen.seed(theSeed);
   }
 
-  static randomWord(opts) {
-    return RiTa._lexicon().randomWord(opts);
+  static randomWord() {
+    return RiTa._lexicon().randomWord(...arguments);
   }
 
   static rhymes() {

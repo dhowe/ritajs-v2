@@ -54,6 +54,7 @@ describe('RiTa.KnownIssues', () => {
 
   it('0: pluralization failures', () => {
     expect(RiTa.pluralize('dive')).eq('dives'); // dif
+    expect(RiTa.pluralize('hive')).eq('hives'); // dif
   });
 
   it('1: must do de-pluralization before features ', () => {

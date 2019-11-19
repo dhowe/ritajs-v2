@@ -35,6 +35,9 @@ describe('RiTa.RiScript', function() {
       expect(RiScript.compile('I ate the $dog.').run({ dog: 'lab' })).eq('I ate the lab.');
       expect(RiScript.compile('$foo', 0).run({ foo: 'bar' })).eq('bar');
       expect(RiScript.compile('$foo', 0).run()).eq('$foo'); // no-op
+
+      // compile-time vars override runtime vars ?
+      expect(RiScript.compile('$foo=a $foo', 0).run({ foo: 'bar' })).eq('a');
     });
   });
 

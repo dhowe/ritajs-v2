@@ -14,11 +14,11 @@ const MAX_GENERATION_ATTEMPTS = 999;
 const SSDLM = '<s/>';
 class Markov {
 
-  constructor(n) {
-
+  constructor(n, opts) {
     this.n = n;
     this.input = [];
     this.root = new Node(null, 'ROOT');
+    this.mlm = opts && opts.maxLengthMatch || 0;
   }
 
   loadTokens(tokens) {
@@ -26,7 +26,7 @@ class Markov {
       throw Error('loadTokens() expects an array of tokens');
     }
     this._treeify(tokens);
-    this.input.push(...tokens);
+    this.mlm && this.input.push(...tokens);
   }
 
   loadSentences(sentences) {
@@ -46,10 +46,10 @@ class Markov {
     }
 
     this._treeify(tokens);
-    this.input.push(...tokens.filter(t => t !== SSDLM));
+    this.mlm && this.input.push(...tokens.filter(t => t !== SSDLM));
   }
 
-  generateTokens(num, { startTokens, maxLengthMatch, temperature = 0 } = {}) {
+  generateTokens(num, { startTokens, temperature = 0 } = {}) {
 
     let tokens, tries = 0, fail = () => {
       //console.log('FAIL: ' + this._flatten(tokens));
@@ -69,8 +69,8 @@ class Markov {
       let parent = this._search(tokens);
       if ((!parent || parent.isLeaf()) && fail()) continue;
 
-      //let next = parent.chooseChild(tokens, maxLengthMatch, this.input);
-      let next = this.selectNext(parent, tokens, maxLengthMatch, temperature);
+      //let next = parent.chooseChild(tokens, this.input);
+      let next = this.selectNext(parent, tokens, temperature);
       if (!next && fail()) continue; // possible if all children excluded
 
       // if we have enough tokens, we're done
@@ -80,7 +80,7 @@ class Markov {
     throwError(tries);
   }
 
-  generateSentences(num, { minLength = 5, maxLength = 35, startTokens, maxLengthMatch, temperature = 0 } = {}) {
+  generateSentences(num, { minLength = 5, maxLength = 35, startTokens, temperature = 0 } = {}) {
     let result = [], tokens, tries = 0, fail = () => {
       //console.log('FAIL('+tries+'): ' + this._flatten(tokens));
       tokens = undefined;
@@ -102,7 +102,7 @@ class Markov {
         let parent = this._search(tokens);
         if ((!parent || parent.isLeaf()) && fail(tokens)) continue;
 
-        let next = this.selectNext(parent, tokens, maxLengthMatch, temperature);
+        let next = this.selectNext(parent, tokens, temperature);
         if (!next && fail(tokens)) continue; // possible if all children excluded
 
         tokens.push(next);
@@ -117,7 +117,7 @@ class Markov {
     return result;
   }
 
-  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE, startTokens, maxLengthMatch, temperature = 0 } = {}) {
+  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE, startTokens, temperature = 0 } = {}) {
 
     let tries = 0;
     OUT: while (++tries < MAX_GENERATION_ATTEMPTS) {
@@ -131,7 +131,7 @@ class Markov {
         let mn = this._search(tokens);
         if (!mn || mn.isLeaf()) continue OUT; // hit a leaf, restart
 
-        mn = this.selectNext(mn, tokens, maxLengthMatch, temperature);
+        mn = this.selectNext(mn, tokens, temperature);
         if (!mn) continue OUT; // can't find next, restart
 
         tokens.push(mn.token); // add the token
@@ -144,7 +144,7 @@ class Markov {
     throwError(tries);
   }
 
-  selectNext(parent, tokens, maxLengthMatch, temp) {
+  selectNext(parent, tokens, temp) {
 
     let nodes = parent.childNodes(true);
     let pTotal = 0, selector = Math.random();
@@ -158,7 +158,7 @@ class Markov {
       pTotal += prob;//next.nodeProb();
       if (selector < pTotal) { // should always be true 2nd time through
 
-        if (maxLengthMatch && maxLengthMatch <= tokens.length) {
+        if (this.mlm && this.mlm <= tokens.length) {
           if (!this._validateMlms(next.token, tokens)) {
             //console.log('FAIL: ' + this._flatten(tokens) + ' -> ' + next.token);
             continue;
@@ -186,7 +186,7 @@ class Markov {
   //   }
   // }
   //
-  // selectNextWithTemp(parent, tokens, maxLengthMatch, temp) {
+  // selectNextWithTemp(parent, tokens, temp) {
   //
   //   let nodes = parent.childNodes();
   //   let pTotal = 0, selector = Math.random();
@@ -225,7 +225,7 @@ class Markov {
   //     pTotal += prob;
   //     if (selector < pTotal) { // should always be true 2nd time through
   //
-  //       if (maxLengthMatch && maxLengthMatch <= tokens.length) {
+  //       if (this.mlm && this.mlm <= tokens.length) {
   //         if (!this._validateMlms(word, tokens)) {
   //           //console.log('FAIL: ' + this._flatten(tokens) + ' -> ' + next.token);
   //           continue;
@@ -254,7 +254,7 @@ class Markov {
     return probs;
   }
 
-  generateTokensOrig(num, { startTokens, maxLengthMatch } = {}) {
+  generateTokensOrig(num, { startTokens } = {}) {
 
     let tokens, tries = 0, fail = (toks) => {
       if (toks) console.log('FAIL: ' + this._flatten(tokens));
@@ -274,7 +274,7 @@ class Markov {
       let parent = this._search(tokens);
       if ((!parent || parent.isLeaf()) && fail()) continue;
 
-      //let next = parent.chooseChild(tokens, maxLengthMatch, this.input);
+      //let next = parent.chooseChild(tokens, this.mlm, this.input);
       let next = parent.pselect();
 
       // if we have enough tokens, we're done
@@ -282,8 +282,8 @@ class Markov {
     }
 
     throw Error('\n\nFailed after ' + tries + ' tries; you may' +
-      ' need to add more text to the model' + (maxLengthMatch ?
-        ' or increase the maxLengthMatch parameter' : ''));
+      ' need to add more text to the model' + (this.mlm ?
+        ' or increase the this.mlm parameter' : ''));
   }
 
   _initSentence(startTokens) {

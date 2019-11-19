@@ -24,8 +24,9 @@ describe('RiTa.Markov', () => {
     let rm, txt;
     rm = new Markov(4);
     txt = "The young boy ate it. The fat boy gave up.";
-    rm.loadTokens(RiTa.tokenize(txt));
-    eq(txt, RiTa.untokenize(rm.input));
+    let tokens = RiTa.tokenize(txt);
+    rm.loadTokens(tokens);
+    eq(rm.size(), tokens.length);
   });
 
   it('should correctly call initSentence', () => {
@@ -68,7 +69,7 @@ describe('RiTa.Markov', () => {
     let keys = Object.keys(dist);//.sort(function(a, b) { return dist[b] - dist[a] });
     keys.forEach(k => {
       dist[k] = dist[k] / res.length
-      dump && console.log(k,dist[k]);
+      dump && console.log(k, dist[k]);
     });
     dump && console.log();
     return dist;
@@ -82,10 +83,10 @@ describe('RiTa.Markov', () => {
     //console.log(rm.toString());
     let res = rm.generateTokens(10000);
     pd = distribution(res);
-    ok(pd['b'] > .35, 'got '+pd['b'] );
+    ok(pd['b'] > .35, 'got ' + pd['b']);
     res = rm.generateTokens(10000, { temperature: 1 });
     pd = distribution(res);
-    ok(pd['b'] < .15, 'got '+pd['b']);
+    ok(pd['b'] < .15, 'got ' + pd['b']);
   });
 
   it('should correctly call generateTokens', () => {
@@ -131,14 +132,14 @@ describe('RiTa.Markov', () => {
   });
 
   it('should correctly call generateTokens.mlm', () => {
-    let rm = new Markov(2), mlms = 3;
+    let mlms = 3, rm = new Markov(2, { maxLengthMatch: mlms });
     let txt = "The young boy ate it! The old boy ran away.";
     // example: The young girl ate,
     rm.loadTokens(RiTa.tokenize(txt));
     //console.log(rm.toString());
     for (let i = 0; i < 5; i++) {
 
-      let toks = rm.generateTokens(4, { maxLengthMatch: mlms, startTokens: 'The' });
+      let toks = rm.generateTokens(4, { startTokens: 'The' });
       //console.log(i, RiTa.untokenize(toks));
 
       // All sequences of len=N must be in text
@@ -271,15 +272,15 @@ describe('RiTa.Markov', () => {
   });
 
   it('should correctly call generateTokens.mlm.start', () => {
-    let rm = new Markov(2);
-    let mlms = 4, start = "The";
+    let mlms = 4, rm = new Markov(2, { maxLengthMatch: mlms });
+    let start = "The";
     let txt = "The young boy ate it. The fat boy gave up.";
 
     rm.loadTokens(RiTa.tokenize(txt));
 
     for (let i = 0; i < 5; i++) {
 
-      toks = rm.generateTokens(4, { startTokens: start, maxLengthMatch: mlms });
+      toks = rm.generateTokens(4, { startTokens: start });
       if (!toks || !toks.length) throw Error('no tokens');
 
       // All sequences of len=N must be in text
@@ -301,15 +302,16 @@ describe('RiTa.Markov', () => {
 
 
   it('should correctly call generateTokens.mlm.startArray', () => {
-    let rm = new Markov(3);
-    let mlms = 4, start = ["The", "young"];
+    let mlms = 4;
+    let rm = new Markov(3, { maxLengthMatch: mlms });
+    let start = ["The", "young"];
     let txt = "The young boy ate it. A young boy gave up.";
 
     rm.loadTokens(RiTa.tokenize(txt));
 
     for (let i = 0; i < 5; i++) {
 
-      toks = rm.generateTokens(4, { startTokens: start, maxLengthMatch: mlms });
+      toks = rm.generateTokens(4, { startTokens: start});
       if (!toks || !toks.length) throw Error('no tokens');
 
       // All sequences of len=N must be in text
