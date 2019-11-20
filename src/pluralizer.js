@@ -1,10 +1,8 @@
 const RE = require("./util").RE;
-
-const NULL_PLURALS = RE( // these don't change for plural/singular
-  "^(bantu|bengalese|bengali|beninese|boche|bonsai|booze|cellulose|digitalis|mess|moose|" + "burmese|chinese|colossus|congolese|discus|electrolysis|emphasis|expertise|finess|flu|fructose|gabonese|gauze|glucose|grease|guyanese|haze|incense|japanese|javanese|journalese|" + "lebanese|malaise|manganese|mayonnaise|maltese|menopause|merchandise|nitrocellulose|olympics|overuse|paradise|poise|polymerase|portuguese|prose|recompense|remorse|repose|senegalese|siamese|singhalese|innings|" + "sleaze|sinhalese|sioux|sudanese|suspense|swiss|taiwanese|togolese|vietnamese|unease|aircraft|anise|antifreeze|applause|archdiocese|" + "anopheles|apparatus|asparagus|barracks|bellows|bison|bluefish|bob|bourgeois|" + "bream|brill|butterfingers|cargo|carp|catfish|chassis|clothes|chub|cod|codfish|" + "coley|contretemps|corps|crawfish|crayfish|crossroads|cuttlefish|dace|deer|dice|" + "dogfish|doings|dory|downstairs|eldest|earnings|economics|electronics|" + "firstborn|fish|flatfish|flounder|fowl|fry|fries|works|globefish|goldfish|golf|" + "grand|grief|gudgeon|gulden|haddock|hake|halibut|headquarters|herring|hertz|horsepower|" + "goods|hovercraft|hundredweight|ironworks|jackanapes|kilohertz|kurus|kwacha|ling|lungfish|" + "mackerel|macaroni|means|megahertz|moorfowl|moorgame|mullet|nepalese|offspring|pampas|parr|pants|" + "patois|pekinese|penn'orth|perch|pickerel|pike|pince-nez|plaice|potpourri|precis|quid|rand|" + "rendezvous|revers|roach|roux|salmon|samurai|series|seychelles|seychellois|shad|" + "sheep|shellfish|smelt|spaghetti|spacecraft|species|starfish|stockfish|sunfish|superficies|" + "sweepstakes|swordfish|tench|tennis|[a-z]+osis|[a-z]+itis|[a-z]+ness|" + "tobacco|tope|triceps|trout|tuna|tunafish|tunny|turbot|trousers|turf|dibs|" + "undersigned|veg|waterfowl|waterworks|waxworks|whiting|wildfowl|woodworm|" + "yen|aries|pisces|forceps|lieder|jeans|physics|mathematics|news|odds|politics|remains|" + "acoustics|aesthetics|aquatics|basics|ceramics|classics|cosmetics|dialectics|dynamics|ethics|harmonics|heroics|mechanics|metrics|optics|physics|polemics|pyrotechnics|" + "surroundings|thanks|statistics|goods|aids|wildlife)$", 0);
+const MODALS = require("./util").MODALS;
 
 const SINGULAR_RULES = [
-  NULL_PLURALS,
+  RE("([a-z]+osis|[a-z]+itis|[a-z]+ness)$", 0),
   RE("ves$", 3, "f"),
   RE("(men|women)$", 2, "an"),
   RE("(houses|horses|cases)$", 1), //End with: e -> es
@@ -19,7 +17,7 @@ const SINGULAR_RULES = [
 
 const PLURAL_RULES = [
   RE("prognosis", 2, "es"),
-  NULL_PLURALS,
+  RE("([a-z]+osis|[a-z]+itis|[a-z]+ness)$", 0),
   RE("(human|german|roman)$", 0, "s"),
   RE("^(monarch|loch|stomach)$", 0, "s"),
   RE("^(piano|photo|solo|ego|tobacco|cargo|taxi)$", 0, "s"),
@@ -33,8 +31,9 @@ const PLURAL_RULES = [
   RE("^(stimul|alumn|termin)us$", 2, "i"),
   RE("^corpus$", 2, "ora"),
   RE("(xis|sis)$", 2, "es"),
+  RE("(ness)$", 0, "es"),
   RE("whiz$", 0, "zes"),
-  RE("([zsx]|ch|sh)$", 0, "es"),
+  RE("([zsx]|ch|sh)$", 0, "es"), // words ending in 's' hit here
   RE("[lraeiou]fe$", 2, "ves"),
   RE("[lraeiou]f$", 1, "ves"),
   RE("(eu|eau)$", 0, "x"),
@@ -59,16 +58,15 @@ const PLURAL_RULES = [
   RE("^(co|no)$", 0, "'s"),
   RE("^blond$", 0, "es"),
   RE("^(medi|millenni|consorti|sept|memorabili)um$", 2, "a"),
-  // Latin stems
-  RE("^(memorandum|bacterium|curriculum|minimum|" + "maximum|referendum|spectrum|phenomenon|criterion)$", 2, "a")
+  RE("^(memorandum|bacterium|curriculum|minimum|" + "maximum|referendum|spectrum|phenomenon|criterion)$", 2, "a") // Latin stems
 ];
 
 const DEFAULT_PLURAL_RULE = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s");
 
-const MODALS = ["shall", "would", "may", "might", "ought", "should"];
+//const MODALS = ["shall", "would", "may", "might", "ought", "should"];
 
 let RiTa;
-
+let x = 0;
 class Pluralizer {
 
   constructor(parent) {
@@ -94,6 +92,7 @@ class Pluralizer {
   }
 
   pluralize(word) {
+
     if (!word || !word.length) return '';
 
     if (MODALS.includes(word.toLowerCase())) return word;
@@ -102,6 +101,7 @@ class Pluralizer {
     for (let i = 0; i < rules.length; i++) {
       let rule = rules[i];
       if (rule.applies(word.toLowerCase())) {
+        //console.log(i,rule);
         return rule.fire(word);
       }
     }
@@ -111,7 +111,7 @@ class Pluralizer {
 
   isPlural(word) {
 
-    if (NULL_PLURALS.applies(word)) return true;
+    if (MODALS.includes(word)) return true;
 
     if (RiTa.stem(word) === word) return false;
 

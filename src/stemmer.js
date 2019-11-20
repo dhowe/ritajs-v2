@@ -1,7 +1,7 @@
-// TODO: Much of this info is duplicated in pluralizer.js
+const MODALS = require("./util").MODALS;
 
-/* Words that are both singular and plural */
-const categorySP = ['acoustics', 'aesthetics', 'aquatics', 'basics', 'ceramics', 'classics', 'cosmetics', 'dialectics', 'deer', 'dynamics', 'ethics', 'harmonics', 'heroics', 'mechanics', 'metrics', 'optics', 'people', 'physics', 'polemics', 'pyrotechnics', 'quadratics', 'quarters', 'salespeople', 'statistics', 'tactics', 'tropics'];
+/* Words that are both singular and plural (now taken from Util)*/
+//['acoustics', 'aesthetics', 'aquatics', 'basics', 'ceramics', 'classics', 'cosmetics', 'dialectics', 'deer', 'dynamics', 'ethics', 'harmonics', 'heroics', 'mechanics', 'metrics', 'optics', 'people', 'physics', 'polemics', 'pyrotechnics', 'quadratics', 'quarters', 'salespeople', 'statistics', 'tactics', 'tropics'];
 
 /* Words that end in '-se' in their plural forms (like 'nurse' etc.) */
 const categorySE_SES = ['abuses', 'apocalypses', 'blouses', 'bruises', 'chaises', 'cheeses', 'chemises', 'clauses', 'corpses', 'courses', 'crazes', 'creases', 'cruises', 'curses', 'databases', 'dazes', 'dives', 'defenses', 'demises', 'discourses', 'diseases', 'doses', 'eclipses', 'enterprises', 'expenses', 'friezes', 'fuses', 'glimpses', 'guises', 'hearses', 'horses', 'houses', 'impasses', 'impulses', 'kamikazes', 'mazes', 'mousses', 'noises', 'nooses', 'noses', 'nurses', 'obverses', 'offenses', 'oozes', 'overdoses', 'phrases', 'posses', 'premises', 'pretenses', 'proteases', 'pulses', 'purposes', 'purses', 'racehorses', 'recluses', 'recourses', 'relapses', 'responses', 'roses', 'ruses', 'spouses', 'stripteases', 'subleases', 'sunrises', 'tortoises', 'trapezes', 'treatises', 'toes', 'universes', 'uses', 'vases', 'verses', 'vises', 'wheelbases', 'wheezes'];
@@ -53,22 +53,6 @@ const categoryIRR = ['blondes', 'blonde', 'teeth', 'tooth', 'beefs', 'beef', 'br
 
 class PlingStemmer {
 
-  constructor() {
-  }
-
-  isPlural(s) {
-    return s !== this.stem(s);
-  }
-
-  // Note that a word can be both plural and singular
-  isSingular(s) {
-    return (categorySP.includes(s.toLowerCase()) || !isPlural(s));
-  }
-
-  isSingularAndPlural(s) {
-    return (categorySP.includes(s.toLowerCase()));
-  }
-
   // Cuts a suffix from a string (that is the number of chars given by the
   cut(s, suffix) {
     return (s.substring(0, s.length - suffix.length));
@@ -95,84 +79,71 @@ class PlingStemmer {
       }
     }
     // -on to -a
-    if (categoryON_A.includes(s))
-      return (this.cut(s, "a") + "on");
+    if (categoryON_A.includes(s)) return (this.cut(s, "a") + "on");
 
     // -um to -a
-    if (categoryUM_A.includes(s))
-      return (this.cut(s, "a") + "um");
+    if (categoryUM_A.includes(s)) return (this.cut(s, "a") + "um");
 
     // -x to -ices
-    if (categoryIX_ICES.includes(s))
-      return (this.cut(s, "ices") + "ix");
+    if (categoryIX_ICES.includes(s)) return (this.cut(s, "ices") + "ix");
 
     // -o to -i
-    if (categoryO_I.includes(s))
-      return (this.cut(s, "i") + "o");
+    if (categoryO_I.includes(s)) return (this.cut(s, "i") + "o");
 
     // -se to ses
-    if (categorySE_SES.includes(s))
-      return (this.cut(s, "s"));
+    if (categorySE_SES.includes(s)) return (this.cut(s, "s"));
 
     // -is to -es
-    if (categoryIS_ES.includes(s) || s.endsWith("theses"))
-      return (this.cut(s, "es") + "is");
+    if (categoryIS_ES.includes(s) || s.endsWith("theses")) return (this.cut(s, "es") + "is");
 
     // -us to -i
-    if (categoryUS_I.includes(s))
-      return (this.cut(s, "i") + "us");
+    if (categoryUS_I.includes(s)) return (this.cut(s, "i") + "us");
 
     //Wrong plural
-    if (s.endsWith("uses") && (categoryUS_I.includes(this.cut(s, "uses") + "i") || s === ("genuses") || s === ("corpuses")))
+    if (s.endsWith("uses") && (categoryUS_I.includes(this.cut(s, "uses") + "i") || s === ("genuses") || s === ("corpuses"))) {
       return (this.cut(s, "es"));
+    }
 
     // -ex to -ices
-    if (categoryEX_ICES.includes(s))
-      return (this.cut(s, "ices") + "ex");
+    if (categoryEX_ICES.includes(s)) return (this.cut(s, "ices") + "ex");
 
     // Words that do not inflect in the plural
-    if (s.endsWith("ois") || s.endsWith("itis") || category00.includes(s) || categoryICS.includes(s))
-      return (s);
+    if (s.endsWith("ois") || s.endsWith("itis") || category00.includes(s) || categoryICS.includes(s) || MODALS.includes(s)) {
+      return s;
+    }
 
     // -en to -ina
     // No other common words end in -ina
-    if (s.endsWith("ina"))
-      return (this.cut(s, "en"));
+    if (s.endsWith("ina")) return (this.cut(s, "en"));
 
     // -a to -ae
     // No other common words end in -ae
-    if (s.endsWith("ae") && s !== 'pleae') // special case
-      return (this.cut(s, "e"));
+    if (s.endsWith("ae") && s !== 'pleae') return (this.cut(s, "e")); // special case
 
     // -a to -ata
     // No other common words end in -ata
-    if (s.endsWith("ata"))
-      return (this.cut(s, "ta"));
+    if (s.endsWith("ata")) return (this.cut(s, "ta"));
 
     // trix to -trices
     // No common word ends with -trice(s)
-    if (s.endsWith("trices"))
-      return (this.cut(s, "trices") + "trix");
+    if (s.endsWith("trices")) return (this.cut(s, "trices") + "trix");
 
     // -us to -us
     //No other common word ends in -us, except for false plurals of French words
     //Catch words that are not latin or known to end in -u
-    if (s.endsWith("us") && !s.endsWith("eaus") && !s.endsWith("ieus") && !this.noLatin(s) && !categoryU_US.includes(s))
+    if (s.endsWith("us") && !s.endsWith("eaus") && !s.endsWith("ieus") && !this.noLatin(s) && !categoryU_US.includes(s)) {
       return (s);
+    }
 
     // -tooth to -teeth
     // -goose to -geese
     // -foot to -feet
     // -zoon to -zoa
     //No other common words end with the indicated suffixes
-    if (s.endsWith("teeth"))
-      return (this.cut(s, "teeth") + "tooth");
-    if (s.endsWith("geese"))
-      return (this.cut(s, "geese") + "goose");
-    if (s.endsWith("feet"))
-      return (this.cut(s, "feet") + "foot");
-    if (s.endsWith("zoa"))
-      return (this.cut(s, "zoa") + "zoon");
+    if (s.endsWith("teeth")) return (this.cut(s, "teeth") + "tooth");
+    if (s.endsWith("geese")) return (this.cut(s, "geese") + "goose");
+    if (s.endsWith("feet")) return (this.cut(s, "feet") + "foot");
+    if (s.endsWith("zoa")) return (this.cut(s, "zoa") + "zoon");
 
     // -men to -man
     // -firemen to -fireman
@@ -188,73 +159,69 @@ class PlingStemmer {
 
     // -eau to -eaux
     //No other common words end in eaux
-    if (s.endsWith("eaux"))
-      return (this.cut(s, "x"));
+    if (s.endsWith("eaux")) return (this.cut(s, "x"));
 
     // -ieu to -ieux
     //No other common words end in ieux
-    if (s.endsWith("ieux"))
-      return (this.cut(s, "x"));
+    if (s.endsWith("ieux")) return (this.cut(s, "x"));
 
     // -nx to -nges
     // Pay attention not to kill words ending in -nge with plural -nges
     // Take only Greek words (works fine, only a handfull of exceptions)
-    if (s.endsWith("nges") && this.greek(s))
-      return (this.cut(s, "nges") + "nx");
+    if (s.endsWith("nges") && this.greek(s)) return (this.cut(s, "nges") + "nx");
 
     // -[sc]h to -[sc]hes
     //No other common word ends with "shes", "ches" or "she(s)"
     //Quite a lot end with "che(s)", filter them out
-    if (s.endsWith("shes") || s.endsWith("ches") && !categoryCHE_CHES.includes(s))
+    if (s.endsWith("shes") || s.endsWith("ches") && !categoryCHE_CHES.includes(s)) {
       return (this.cut(s, "es"));
+    }
 
     // -ss to -sses
     // No other common singular word ends with "sses"
     // Filter out those ending in "sse(s)"
-    if (s.endsWith("sses") && !categorySSE_SSES.includes(s) && !s.endsWith("mousses"))
+    if (s.endsWith("sses") && !categorySSE_SSES.includes(s) && !s.endsWith("mousses")) {
       return (this.cut(s, "es"));
+    }
 
     // -x to -xes
     // No other common word ends with "xe(s)" except for "axe"
-    if (s.endsWith("xes") && s !== "axes")
-      return (this.cut(s, "es"));
+    if (s.endsWith("xes") && s !== "axes") return (this.cut(s, "es"));
 
     // -[nlw]ife to -[nlw]ives
     //No other common word ends with "[nlw]ive(s)" except for olive
-    if (s.endsWith("nives") || s.endsWith("lives") && !s.endsWith("olives") || s.endsWith("wives"))
+    if (s.endsWith("nives") || s.endsWith("lives") && !s.endsWith("olives") || s.endsWith("wives")) {
       return (this.cut(s, "ves") + "fe");
+    }
 
     // -[aeo]lf to -ves  exceptions: valve, solve
     // -[^d]eaf to -ves  exceptions: heave, weave
     // -arf to -ves      no exception
-    if (s.endsWith("alves") && !s.endsWith("valves") || s.endsWith("olves") && !s.endsWith("solves") || s.endsWith("eaves") && !s.endsWith("heaves") && !s.endsWith("weaves") || s.endsWith("arves") || s.endsWith("shelves") || s.endsWith("selves"))
+    if (s.endsWith("alves") && !s.endsWith("valves") || s.endsWith("olves") && !s.endsWith("solves") || s.endsWith("eaves") && !s.endsWith("heaves") && !s.endsWith("weaves") || s.endsWith("arves") || s.endsWith("shelves") || s.endsWith("selves")) {
       return (this.cut(s, "ves") + "f");
+    }
 
     // -y to -ies
     // -ies is very uncommon as a singular suffix
     // but -ie is quite common, filter them out
-    if (s.endsWith("ies") && !categoryIE_IES.includes(s))
-      return (this.cut(s, "ies") + "y");
+    if (s.endsWith("ies") && !categoryIE_IES.includes(s)) return (this.cut(s, "ies") + "y");
 
     // -o to -oes
     // Some words end with -oe, so don't kill the "e"
-    if (s.endsWith("oes") && !categoryOE_OES.includes(s))
-      return (this.cut(s, "es"));
+    if (s.endsWith("oes") && !categoryOE_OES.includes(s)) return (this.cut(s, "es"));
 
     // -s to -ses
     // -z to -zes
     // no words end with "-ses" or "-zes" in singular
-    if (s.endsWith("ses") || s.endsWith("zes"))
-      return (this.cut(s, "es"));
+    if (s.endsWith("ses") || s.endsWith("zes")) return (this.cut(s, "es"));
 
     // - to -s
-    if (s.endsWith("s") && !s.endsWith("ss") && !s.endsWith("is"))
-      return (this.cut(s, "s"));
+    if (s.endsWith("s") && !s.endsWith("ss") && !s.endsWith("is")) return (this.cut(s, "s"));
 
     return (s);
   }
 
-  _checkPluralNoLex(s) {
+  checkPluralWithoutLexicon(s) {
     let cats = [
       categoryUM_A,
       categoryON_A,

@@ -1,3 +1,5 @@
+const MODALS = require("./util").MODALS;
+
 const ADJ = ['jj', 'jjr', 'jjs'];
 const ADV = ['rb', 'rbr', 'rbs', 'rp'];
 const NOUNS = ['nn', 'nns', 'nnp', 'nnps'];
@@ -171,7 +173,7 @@ class PosTagger {
           if (this._lexHas("n", sing)) {
             choices2d.push("nns");
             tag = 'nns';
-          } else if (RiTa.stemmer._checkPluralNoLex(words[i])) {
+          } else if (RiTa.stemmer.checkPluralWithoutLexicon(words[i])) {
             tag = 'nns';
             //common plurals
           }
@@ -264,8 +266,9 @@ class PosTagger {
           // transform 7: if a word has been categorized as a
           // common noun and it ends with "s", then set its type to plural common noun (NNS)
           if (word.match(/^.*[^s]s$/)) {
-            if (!NULL_PLURALS.applies(word))
+            if (!MODALS.includes(word)) {
               tag = "nns";
+            }
           }
 
           this._logCustom("1a", word, tag);

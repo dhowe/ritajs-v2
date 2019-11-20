@@ -3,6 +3,37 @@ const RiTa = require('../src/rita_api');
 
 describe('RiTa.Core', () => {
 
+  it('Should correctly call stem', () => {
+
+    eq(RiTa.stem("cakes"), "cake");
+
+    eq(RiTa.stem("run"), "run");
+    eq(RiTa.stem("runs"), "run");
+    eq(RiTa.stem("running"), "running");
+
+    eq(RiTa.stem("take"), "take");
+    eq(RiTa.stem("takes"), "take");
+    eq(RiTa.stem("taking"), "taking");
+
+    eq(RiTa.stem("hide"), "hide");
+    eq(RiTa.stem("hides"), "hide");
+    eq(RiTa.stem("hiding"), "hiding");
+
+    eq(RiTa.stem("become"), "become");
+    eq(RiTa.stem("becomes"), "become");
+    eq(RiTa.stem("becoming"), "becoming");
+
+    eq(RiTa.stem("gases"), "gas");
+    eq(RiTa.stem("buses"), "bus");
+    eq(RiTa.stem("happiness"), "happiness");
+    eq(RiTa.stem("terrible"), "terrible");
+
+    var test = "Stemming is funnier than a bummer";
+    var result = "Stemming is funnier than a bummer";
+    // TODO: RiTa.stem(pling) JS decapitalizes input whereas the java version does not
+    eq(RiTa.stem(test), result);
+  });
+
   it('Should correctly call isQuestion', () => {
     ok(RiTa.isQuestion("what"));
     ok(RiTa.isQuestion("what"));
@@ -147,120 +178,120 @@ describe('RiTa.Core', () => {
       "hankies", "hanky"
     ];
     for (let i = 0; i < tests.length; i += 2) {
-      equal(RiTa.singularize(tests[i]), tests[i + 1]);
+      eq(RiTa.singularize(tests[i]), tests[i + 1]);
     }
 
-    equal(RiTa.singularize("pleae"), "pleae"); // special-cased in code
-    equal(RiTa.singularize("whizzes"), "whiz");
-    equal(RiTa.singularize("selves"), "self");
-    equal(RiTa.singularize("bookshelves"), "bookshelf");
-    equal(RiTa.singularize("wheezes"), "wheeze");
-    equal(RiTa.singularize("diagnoses"), "diagnosis");
+    eq(RiTa.singularize("pleae"), "pleae"); // special-cased in code
+    eq(RiTa.singularize("whizzes"), "whiz");
+    eq(RiTa.singularize("selves"), "self");
+    eq(RiTa.singularize("bookshelves"), "bookshelf");
+    eq(RiTa.singularize("wheezes"), "wheeze");
+    eq(RiTa.singularize("diagnoses"), "diagnosis");
 
-    equal("minutia", RiTa.singularize("minutia"));
-    equal("blonde", RiTa.singularize("blondes"));
-    equal("eye", RiTa.singularize("eyes"));
-    equal(RiTa.singularize("swine"), "swine");
-    equal(RiTa.singularize("cognoscenti"), "cognoscenti");
-    equal(RiTa.singularize("bonsai"), "bonsai");
-    equal(RiTa.singularize("taxis"), "taxi");
-    equal(RiTa.singularize("chiefs"), "chief");
-    equal(RiTa.singularize("monarchs"), "monarch");
-    equal(RiTa.singularize("lochs"), "loch");
-    equal(RiTa.singularize("stomachs"), "stomach");
+    eq("minutia", RiTa.singularize("minutia"));
+    eq("blonde", RiTa.singularize("blondes"));
+    eq("eye", RiTa.singularize("eyes"));
+    eq(RiTa.singularize("swine"), "swine");
+    eq(RiTa.singularize("cognoscenti"), "cognoscenti");
+    eq(RiTa.singularize("bonsai"), "bonsai");
+    eq(RiTa.singularize("taxis"), "taxi");
+    eq(RiTa.singularize("chiefs"), "chief");
+    eq(RiTa.singularize("monarchs"), "monarch");
+    eq(RiTa.singularize("lochs"), "loch");
+    eq(RiTa.singularize("stomachs"), "stomach");
 
-    equal(RiTa.singularize("Chinese"), "Chinese");
+    eq(RiTa.singularize("Chinese"), "Chinese");
 
-    equal(RiTa.singularize("people"), "person");
-    equal(RiTa.singularize("monies"), "money");
-    equal(RiTa.singularize("vertebrae"), "vertebra");
-    equal(RiTa.singularize("humans"), "human");
-    equal(RiTa.singularize("germans"), "german");
-    equal(RiTa.singularize("romans"), "roman");
+    eq(RiTa.singularize("people"), "person");
+    eq(RiTa.singularize("monies"), "money");
+    eq(RiTa.singularize("vertebrae"), "vertebra");
+    eq(RiTa.singularize("humans"), "human");
+    eq(RiTa.singularize("germans"), "german");
+    eq(RiTa.singularize("romans"), "roman");
 
-    equal(RiTa.singularize("memoranda"), "memorandum");
-    equal(RiTa.singularize("data"), "datum");
-    equal(RiTa.singularize("appendices"), "appendix");
-    equal(RiTa.singularize("theses"), "thesis");
-    equal(RiTa.singularize("alumni"), "alumnus");
+    eq(RiTa.singularize("memoranda"), "memorandum");
+    eq(RiTa.singularize("data"), "datum");
+    eq(RiTa.singularize("appendices"), "appendix");
+    eq(RiTa.singularize("theses"), "thesis");
+    eq(RiTa.singularize("alumni"), "alumnus");
 
-    equal(RiTa.singularize("solos"), "solo");
-    equal(RiTa.singularize("music"), "music");
+    eq(RiTa.singularize("solos"), "solo");
+    eq(RiTa.singularize("music"), "music");
 
-    equal(RiTa.singularize("oxen"), "ox");
-    equal(RiTa.singularize("solos"), "solo");
-    equal(RiTa.singularize("music"), "music");
-    equal(RiTa.singularize("money"), "money");
-    equal(RiTa.singularize("beef"), "beef");
+    eq(RiTa.singularize("oxen"), "ox");
+    eq(RiTa.singularize("solos"), "solo");
+    eq(RiTa.singularize("music"), "music");
+    eq(RiTa.singularize("money"), "money");
+    eq(RiTa.singularize("beef"), "beef");
 
-    equal(RiTa.singularize("tobacco"), "tobacco");
-    equal(RiTa.singularize("cargo"), "cargo");
-    equal(RiTa.singularize("golf"), "golf");
-    equal(RiTa.singularize("grief"), "grief");
+    eq(RiTa.singularize("tobacco"), "tobacco");
+    eq(RiTa.singularize("cargo"), "cargo");
+    eq(RiTa.singularize("golf"), "golf");
+    eq(RiTa.singularize("grief"), "grief");
 
-    equal(RiTa.singularize("cakes"), "cake");
+    eq(RiTa.singularize("cakes"), "cake");
 
-    equal("dog", RiTa.singularize("dogs"));
-    equal("foot", RiTa.singularize("feet"));
-    equal("tooth", RiTa.singularize("teeth"));
-    equal("kiss", RiTa.singularize("kisses"));
-    equal("child", RiTa.singularize("children"));
-    equal("randomword", RiTa.singularize("randomwords"));
-    equal("deer", RiTa.singularize("deer"));
-    equal("sheep", RiTa.singularize("sheep"));
-    equal("shrimp", RiTa.singularize("shrimps"));
+    eq("dog", RiTa.singularize("dogs"));
+    eq("foot", RiTa.singularize("feet"));
+    eq("tooth", RiTa.singularize("teeth"));
+    eq("kiss", RiTa.singularize("kisses"));
+    eq("child", RiTa.singularize("children"));
+    eq("randomword", RiTa.singularize("randomwords"));
+    eq("deer", RiTa.singularize("deer"));
+    eq("sheep", RiTa.singularize("sheep"));
+    eq("shrimp", RiTa.singularize("shrimps"));
 
-    equal(RiTa.singularize("tomatoes"), "tomato");
-    equal(RiTa.singularize("photos"), "photo");
+    eq(RiTa.singularize("tomatoes"), "tomato");
+    eq(RiTa.singularize("photos"), "photo");
 
-    equal(RiTa.singularize("toes"), "toe");
+    eq(RiTa.singularize("toes"), "toe");
 
-    equal(RiTa.singularize("series"), "series");
-    equal(RiTa.singularize("oxen"), "ox");
-    equal(RiTa.singularize("men"), "man");
-    equal(RiTa.singularize("mice"), "mouse");
-    equal(RiTa.singularize("lice"), "louse");
-    equal(RiTa.singularize("children"), "child");
+    eq(RiTa.singularize("series"), "series");
+    eq(RiTa.singularize("oxen"), "ox");
+    eq(RiTa.singularize("men"), "man");
+    eq(RiTa.singularize("mice"), "mouse");
+    eq(RiTa.singularize("lice"), "louse");
+    eq(RiTa.singularize("children"), "child");
 
-    equal(RiTa.singularize("gases"), "gas");
-    equal(RiTa.singularize("buses"), "bus");
-    equal(RiTa.singularize("happiness"), "happiness");
+    eq(RiTa.singularize("gases"), "gas");
+    eq(RiTa.singularize("buses"), "bus");
+    eq(RiTa.singularize("happiness"), "happiness");
 
-    equal(RiTa.singularize("crises"), "crisis");
-    equal(RiTa.singularize("theses"), "thesis");
-    equal(RiTa.singularize("apotheses"), "apothesis");
-    equal(RiTa.singularize("stimuli"), "stimulus");
-    equal(RiTa.singularize("alumni"), "alumnus");
-    equal(RiTa.singularize("corpora"), "corpus");
+    eq(RiTa.singularize("crises"), "crisis");
+    eq(RiTa.singularize("theses"), "thesis");
+    eq(RiTa.singularize("apotheses"), "apothesis");
+    eq(RiTa.singularize("stimuli"), "stimulus");
+    eq(RiTa.singularize("alumni"), "alumnus");
+    eq(RiTa.singularize("corpora"), "corpus");
 
-    equal("man", RiTa.singularize("men"));
-    equal("woman", RiTa.singularize("women"));
-    equal("congressman", RiTa.singularize("congressmen"));
-    equal("alderman", RiTa.singularize("aldermen"));
-    equal("freshman", RiTa.singularize("freshmen"));
-    equal("fireman", RiTa.singularize("firemen"));
-    equal("grandchild", RiTa.singularize("grandchildren"));
-    equal("menu", RiTa.singularize("menus"));
-    equal("guru", RiTa.singularize("gurus"));
+    eq("man", RiTa.singularize("men"));
+    eq("woman", RiTa.singularize("women"));
+    eq("congressman", RiTa.singularize("congressmen"));
+    eq("alderman", RiTa.singularize("aldermen"));
+    eq("freshman", RiTa.singularize("freshmen"));
+    eq("fireman", RiTa.singularize("firemen"));
+    eq("grandchild", RiTa.singularize("grandchildren"));
+    eq("menu", RiTa.singularize("menus"));
+    eq("guru", RiTa.singularize("gurus"));
 
-    equal("", RiTa.singularize(""));
-    equal("hardness", RiTa.singularize("hardness"));
-    equal("shortness", RiTa.singularize("shortness"));
-    equal("dreariness", RiTa.singularize("dreariness"));
-    equal("unwillingness", RiTa.singularize("unwillingness"));
-    equal("deer", RiTa.singularize("deer"));
-    equal("fish", RiTa.singularize("fish"));
-    equal("ooze", RiTa.singularize("ooze"));
+    eq("", RiTa.singularize(""));
+    eq("hardness", RiTa.singularize("hardness"));
+    eq("shortness", RiTa.singularize("shortness"));
+    eq("dreariness", RiTa.singularize("dreariness"));
+    eq("unwillingness", RiTa.singularize("unwillingness"));
+    eq("deer", RiTa.singularize("deer"));
+    eq("fish", RiTa.singularize("fish"));
+    eq("ooze", RiTa.singularize("ooze"));
 
-    equal("ooze", RiTa.singularize("ooze"));
-    equal("enterprise", RiTa.singularize("enterprises"));
-    equal("treatise", RiTa.singularize("treatises"));
-    equal("house", RiTa.singularize("houses"));
-    equal("chemise", RiTa.singularize("chemises"));
+    eq("ooze", RiTa.singularize("ooze"));
+    eq("enterprise", RiTa.singularize("enterprises"));
+    eq("treatise", RiTa.singularize("treatises"));
+    eq("house", RiTa.singularize("houses"));
+    eq("chemise", RiTa.singularize("chemises"));
 
-    equal("aquatics", RiTa.singularize("aquatics"));
-    equal("mechanics", RiTa.singularize("mechanics"));
-    equal("quarter", RiTa.singularize("quarters"));
+    eq("aquatics", RiTa.singularize("aquatics"));
+    eq("mechanics", RiTa.singularize("mechanics"));
+    eq("quarter", RiTa.singularize("quarters"));
   });
 
   it('Should correctly call pluralize', () => {
@@ -288,7 +319,7 @@ describe('RiTa.Core', () => {
     ];
     for (let i = 0; i < tests.length; i += 2) {
       //console.log(tests[i], RiTa.pluralize(tests[i + 1]),tests[i + 1]);
-      equal(tests[i], RiTa.pluralize(tests[i + 1]));
+      eq(tests[i], RiTa.pluralize(tests[i + 1]));
     }
 
     // uncountable
@@ -296,75 +327,75 @@ describe('RiTa.Core', () => {
       "turf", "macaroni", "spaghetti", "potpourri", "electrolysis"
     ];
     for (let i = 0; i < tests.length; i++) {
-      equal(tests[i], RiTa.pluralize(tests[i]));
+      eq(tests[i], RiTa.pluralize(tests[i]));
     }
 
-    equal("blondes", RiTa.pluralize("blonde"));
-    equal("eyes", RiTa.pluralize("eye"));
-    equal("blondes", RiTa.pluralize("blond"));
+    eq("blondes", RiTa.pluralize("blonde"));
+    eq("eyes", RiTa.pluralize("eye"));
+    eq("blondes", RiTa.pluralize("blond"));
 
-    equal("dogs", RiTa.pluralize("dog"));
-    equal("feet", RiTa.pluralize("foot"));
-    equal("men", RiTa.pluralize("man"));
+    eq("dogs", RiTa.pluralize("dog"));
+    eq("feet", RiTa.pluralize("foot"));
+    eq("men", RiTa.pluralize("man"));
 
-    equal("beautifuls", RiTa.pluralize("beautiful"));
-    equal("teeth", RiTa.pluralize("tooth"));
-    equal("cakes", RiTa.pluralize("cake"));
-    equal("kisses", RiTa.pluralize("kiss"));
-    equal("children", RiTa.pluralize("child"));
+    eq("beautifuls", RiTa.pluralize("beautiful"));
+    eq("teeth", RiTa.pluralize("tooth"));
+    eq("cakes", RiTa.pluralize("cake"));
+    eq("kisses", RiTa.pluralize("kiss"));
+    eq("children", RiTa.pluralize("child"));
 
-    equal("randomwords", RiTa.pluralize("randomword"));
-    equal("lice", RiTa.pluralize("louse"));
+    eq("randomwords", RiTa.pluralize("randomword"));
+    eq("lice", RiTa.pluralize("louse"));
 
-    equal("sheep", RiTa.pluralize("sheep"));
-    equal("shrimps", RiTa.pluralize("shrimp"));
-    equal("series", RiTa.pluralize("series"));
-    equal("mice", RiTa.pluralize("mouse"));
+    eq("sheep", RiTa.pluralize("sheep"));
+    eq("shrimps", RiTa.pluralize("shrimp"));
+    eq("series", RiTa.pluralize("series"));
+    eq("mice", RiTa.pluralize("mouse"));
 
-    equal("", RiTa.pluralize(""));
+    eq("", RiTa.pluralize(""));
 
-    equal(RiTa.pluralize("tomato"), "tomatoes");
-    equal(RiTa.pluralize("toe"), "toes");
+    eq(RiTa.pluralize("tomato"), "tomatoes");
+    eq(RiTa.pluralize("toe"), "toes");
 
-    equal(RiTa.pluralize("deer"), "deer");
-    equal(RiTa.pluralize("ox"), "oxen");
+    eq(RiTa.pluralize("deer"), "deer");
+    eq(RiTa.pluralize("ox"), "oxen");
 
-    equal(RiTa.pluralize("tobacco"), "tobacco");
-    equal(RiTa.pluralize("cargo"), "cargo");
-    equal(RiTa.pluralize("golf"), "golf");
-    equal(RiTa.pluralize("grief"), "grief");
-    equal(RiTa.pluralize("wildlife"), "wildlife");
-    equal(RiTa.pluralize("taxi"), "taxis");
-    equal(RiTa.pluralize("Chinese"), "Chinese");
-    equal(RiTa.pluralize("bonsai"), "bonsai");
+    eq(RiTa.pluralize("tobacco"), "tobacco");
+    eq(RiTa.pluralize("cargo"), "cargo");
+    eq(RiTa.pluralize("golf"), "golf");
+    eq(RiTa.pluralize("grief"), "grief");
+    eq(RiTa.pluralize("wildlife"), "wildlife");
+    eq(RiTa.pluralize("taxi"), "taxis");
+    eq(RiTa.pluralize("Chinese"), "Chinese");
+    eq(RiTa.pluralize("bonsai"), "bonsai");
 
-    equal(RiTa.pluralize("whiz"), "whizzes");
-    equal(RiTa.pluralize("prognosis"), "prognoses");
-    equal(RiTa.pluralize("gas"), "gases");
-    equal(RiTa.pluralize("bus"), "buses");
+    eq(RiTa.pluralize("whiz"), "whizzes");
+    eq(RiTa.pluralize("prognosis"), "prognoses");
+    eq(RiTa.pluralize("gas"), "gases");
+    eq(RiTa.pluralize("bus"), "buses");
 
-    equal("crises", RiTa.pluralize("crisis"));
-    equal("theses", RiTa.pluralize("thesis"));
-    equal("apotheses", RiTa.pluralize("apothesis"));
-    equal("stimuli", RiTa.pluralize("stimulus"));
-    equal("alumni", RiTa.pluralize("alumnus"));
-    equal("corpora", RiTa.pluralize("corpus"));
-    equal("menus", RiTa.pluralize("menu"));
+    eq("crises", RiTa.pluralize("crisis"));
+    eq("theses", RiTa.pluralize("thesis"));
+    eq("apotheses", RiTa.pluralize("apothesis"));
+    eq("stimuli", RiTa.pluralize("stimulus"));
+    eq("alumni", RiTa.pluralize("alumnus"));
+    eq("corpora", RiTa.pluralize("corpus"));
+    eq("menus", RiTa.pluralize("menu"));
 
-    equal("hardness", RiTa.pluralize("hardness"));
-    equal("shortness", RiTa.pluralize("shortness"));
-    equal("dreariness", RiTa.pluralize("dreariness"));
-    equal("unwillingness", RiTa.pluralize("unwillingness"));
-    equal("deer", RiTa.pluralize("deer"));
-    equal("fish", RiTa.pluralize("fish"));
-    equal("moose", RiTa.pluralize("moose"));
+    eq("hardness", RiTa.pluralize("hardness"));
+    eq("shortness", RiTa.pluralize("shortness"));
+    eq("dreariness", RiTa.pluralize("dreariness"));
+    eq("unwillingness", RiTa.pluralize("unwillingness"));
+    eq("deer", RiTa.pluralize("deer"));
+    eq("fish", RiTa.pluralize("fish"));
+    eq("moose", RiTa.pluralize("moose"));
 
-    equal("aquatics", RiTa.pluralize("aquatics"));
-    equal("mechanics", RiTa.pluralize("mechanics"));
+    eq("aquatics", RiTa.pluralize("aquatics"));
+    eq("mechanics", RiTa.pluralize("mechanics"));
   });
 
   function ok(res) { expect(res).eq(true); }
-  function equal(a, b) { expect(a).eq(b); }
+  function eq(a, b) { expect(a).eq(b); }
 
   // TODO: remainder of rita functions
 });
