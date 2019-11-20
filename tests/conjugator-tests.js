@@ -229,8 +229,19 @@ describe('RiTa.Conjugator', () => {
     };
     equal(RiTa.conjugate("barter", args), "bartered");
     equal(RiTa.conjugate("run", args), "ran");
+
+    args = {
+      number: RiTa.PLURAL,
+      person: RiTa.SECOND_PERSON,
+      tense: RiTa.PAST_TENSE
+    };
+    s = ["compete", "complete", "eject"];
+    a = ["competed", "completed", "ejected"];
+    for (let i = 0; i < s.length; i++) {
+      equal(RiTa.conjugate(s[i], args), a[i], 'failed on ' + s[i]);
+    }
   });
 
-  function ok(res) { expect(res).eq(true); }
-  function equal(a, b) { expect(a).eq(b); }
+  function ok(res, m) { expect(res).eq(true, m); }
+  function equal(a, b, m) { expect(a).eq(b, m); }
 });

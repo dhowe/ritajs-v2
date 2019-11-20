@@ -22,7 +22,6 @@ const PLURAL_RULES = [
   RE("^(monarch|loch|stomach)$", 0, "s"),
   RE("^(piano|photo|solo|ego|tobacco|cargo|taxi)$", 0, "s"),
   RE("(chief|proof|ref|relief|roof|belief|sheaf|spoof|golf|grief)$", 0, "s"),
-  RE("^(wildlife)$", 0, "s"),
   RE("^(appendix|index|matrix|apex|cortex)", 2, "ices"),
   RE("^concerto$", 1, "i"),
   RE("[bcdfghjklmnpqrstvwxyz]o$", 0, "es"),
@@ -95,17 +94,23 @@ class Pluralizer {
 
     if (!word || !word.length) return '';
 
-    if (MODALS.includes(word.toLowerCase())) return word;
+    let dbug = 0;
+
+    if (MODALS.includes(word.toLowerCase())) {
+      dbug && console.log('Hit Modals');
+      return word;
+    }
 
     let rules = PLURAL_RULES;
     for (let i = 0; i < rules.length; i++) {
       let rule = rules[i];
       if (rule.applies(word.toLowerCase())) {
-        //console.log(i,rule);
+        dbug && console.log(word+' hit', rule);
         return rule.fire(word);
       }
     }
 
+    dbug && console.log('Hit Default');
     return DEFAULT_PLURAL_RULE.fire(word);
   }
 

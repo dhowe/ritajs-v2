@@ -297,9 +297,10 @@ describe('RiTa.Core', () => {
   it('Should correctly call pluralize', () => {
 
     let tests = [
-      // "daze", "dazes",
-      // "hive", "hives",
-      // "dive", "dives",
+      "dazes", "daze",
+      "hives", "hive",
+      "dives", "dive",
+      "wildlife", "wildlife",
       "media", "medium",
       "millennia", "millennium",
       "consortia", "consortium",

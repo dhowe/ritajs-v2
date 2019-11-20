@@ -33,7 +33,6 @@ describe('RiScript.KnownIssues', () => {
     0 && expect(RiScript.evaluate('How many (tooth | tooth).pluralize() do you have?')).eq('How many teeth do you have?');
   });
 
-
   it('Fix: Should eval converted grammar', function() {
     let script = [
       '$start = $nounp $verbp.',
@@ -52,10 +51,6 @@ describe('RiScript.KnownIssues', () => {
 
 describe('RiTa.KnownIssues', () => {
 
-  it('0: pluralization failures', () => {
-    expect(RiTa.pluralize('dive')).eq('dives'); // dif
-    expect(RiTa.pluralize('hive')).eq('hives'); // dif
-  });
 
   it('1: must do de-pluralization before features ', () => {
 
@@ -65,22 +60,6 @@ describe('RiTa.KnownIssues', () => {
 
   it('2: conjugation fails', () => {
 
-    let args = {
-      number: RiTa.PLURAL,
-      person: RiTa.SECOND_PERSON,
-      tense: RiTa.PAST_TENSE
-    };
-    s = ["compete", "complete", "eject"];
-    a = ["competed", "completed", "ejected"];
-    expect(a.length).eq(s.length);
-    for (let i = 0; i < s.length; i++) {
-      expect(RiTa.conjugate(s[i])).eq(a[i]);
-    }
-  });
-
-  it('3: isRhyme fails', () => {
-
-    ok(!RiTa.isRhyme("yoyo", "jojo"));
   });
 
   function eql(output, expected, msg) { expect(output).eql(expected, msg); }

@@ -400,7 +400,6 @@ class PosTagger {
         let tags = RiTa.lexicon._posArr(words[i]);
 
         for (let j = 0; j < tags.length; j++) {
-
           if (pos === 'n' && this.isNounTag(tags[j]) ||
             pos === 'v' && this.isVerbTag(tags[j]) ||
             pos === 'r' && this.isAdverbTag(tags[j]) ||

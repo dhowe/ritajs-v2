@@ -756,7 +756,7 @@ class Conjugator {
 
     // !@# test this
     let s = conjs.reduce((acc, cur) => cur +  ' ' + acc);
-    if (s.endsWith("peted")) throw Error("Unexpected output: ", this);
+    //if (s.endsWith("peted")) throw Error("Unexpected output: ", this);
 
     return s.trim();
   }
