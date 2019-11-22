@@ -14,20 +14,22 @@ class RiScript {
     this.scripting = new Scripting();
   }
 
-  run(context, showParse) {
-    let vis = this.scripting.createVisitor(context, showParse);
-    return vis.start(this.parseTree);
+  run(context, showParse, silent) {
+    let vis = this.scripting.createVisitor(context, showParse, silent);
+    let result = vis.start(this.parseTree);
+    //console.log('RESULT: '+result+'==============Symbols===============\n', vis.context);
+    return result;
   }
 
   static evaluate(input, context, showParse, silent) {
-
+    let rs = RiScript.compile(input, showParse, silent);
     Object.assign((context = context || {}), silent ? { _silent: silent } : {});
-    return new Scripting().lexParseVisit(input, context, showParse);
+    return rs.run(context, showParse, silent);
   }
 
-  static compile(input, showParse) {
+  static compile(input, showParse, silent) {
     let rs = new RiScript();
-    rs.parseTree = rs.scripting.lexParse(input, context || {}, showParse);
+    rs.parseTree = rs.scripting.lexParse(input, showParse, silent);
     return rs;
   }
 }
@@ -40,14 +42,14 @@ class Scripting {
     this.visitor = undefined;
   }
 
-  lex(input, context, showTokens) {
+  lex(input, showTokens, silent) {
 
     // create the lexer
     let stream = new antlr4.InputStream(input);
     this.lexer = new Lexer.RiScriptLexer(stream);
     this.lexer.removeErrorListeners();
     this.lexer.addErrorListener(new LexerErrors());
-    this.lexer.strictMode = false;
+    //this.lexer.strictMode = false;
 
     // try the lexing
     let tokens;
@@ -55,11 +57,11 @@ class Scripting {
       tokens = new antlr4.CommonTokenStream(this.lexer);
       if (showTokens) {
         tokens.fill();
-        tokens.tokens.forEach(t => console.log(this.tokenToString(t))); //, lexer.rulesNames[t.type]));
+        tokens.tokens.forEach(t => console.log(this.tokenToString(t)));
         console.log();
       }
     } catch (e) {
-      if (!context || !context._silent) {
+      if (!silent) {
         console.error(colors.red("LEXER: " + input + '\n' + e.message + "\n"));
       }
       throw e;
@@ -77,7 +79,7 @@ class Scripting {
     return "[" + t.line + "." + t.column + ": '" + txt + "' -> " + type + "]";
   }
 
-  parse(tokens, input, context, showParse) {
+  parse(tokens, input, showParse, silent) {
 
     // create the parser
     this.parser = new Parser.RiScriptParser(tokens);
@@ -91,33 +93,29 @@ class Scripting {
     try {
       tree = this.parser.script();
     } catch (e) {
-      if (!context || !context._silent) {
-        console.error(colors.red("PARSER: " + input + '\n' + e.message + "\n"));
+      if (!silent) {
+        console.error(colors.red("PARSER: " + input + '\n' + e.message + '\n'));
       }
       throw e;
     }
-    if (showParse) console.log(tree.toStringTree(this.parser.ruleNames));
+    if (showParse) console.log(tree.toStringTree(this.parser.ruleNames),'\n');
 
     return tree;
   }
 
-  lexParse(input, context, showParse) {
-    let tokens = this.lex(input, context, showParse);
-    return this.parse(tokens, input, context, showParse);
+  lexParse(input, showParse, silent) {
+    let tokens = this.lex(input, showParse, silent);
+    return this.parse(tokens, input, showParse, silent);
   }
 
-  createVisitor(context, showParse) {
-    return new Visitor(context, this.lexer.symbolicNames, this.parser.ruleNames, showParse);
-  }
-
-  lexParseVisit(input, context, showParse) {
-    let tree = this.lexParse(input, context, showParse);
+  lexParseVisit(input, context, showParse, silent) { // not used...
+    let tree = this.lexParse(input, showParse, silent);
     return this.createVisitor(context, showParse).start(tree);
   }
 
-  lexParseVisitQuiet(input, context, showParse) {
-    Object.assign((context = context || {}), { _silent: true });
-    return this.lexParseVisit(input, context, showParse);
+  createVisitor(context, showParse, silent) {
+    Object.assign((context = context || {}), silent ? { _silent: silent } : {});
+    return new Visitor(context, this.lexer.symbolicNames, this.parser.ruleNames, showParse);
   }
 }
 

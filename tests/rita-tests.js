@@ -28,10 +28,17 @@ describe('RiTa.Core', () => {
     eq(RiTa.stem("happiness"), "happiness");
     eq(RiTa.stem("terrible"), "terrible");
 
-    var test = "Stemming is funnier than a bummer";
-    var result = "Stemming is funnier than a bummer";
+    let test = "Stemming is funnier than a bummer";
+    let result = "Stemming is funnier than a bummer";
     // TODO: RiTa.stem(pling) JS decapitalizes input whereas the java version does not
     eq(RiTa.stem(test), result);
+  });
+
+  it('Should call randomOrdering', () => {
+    expect(RiTa.randomOrdering(1)).eql([0]);
+    expect(RiTa.randomOrdering(2)).to.have.members([0, 1])
+    expect(RiTa.randomOrdering(['a'])).eql(['a']);
+    expect(RiTa.randomOrdering(['a', 'b'])).to.have.members(['a', 'b']);
   });
 
   it('Should correctly call isQuestion', () => {

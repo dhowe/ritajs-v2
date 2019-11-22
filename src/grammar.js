@@ -64,22 +64,22 @@ class Grammar {
 
     let parts, theCall, callResult, tries = 0, maxIterations = 1000;
 
-    var countTicks = (theCall) => {
-      var count = 0;
-      for (var i = 0; i < theCall.length; i++) {
+    let countTicks = (theCall) => {
+      let count = 0;
+      for (let i = 0; i < theCall.length; i++) {
         if (theCall.charAt(i) == '`')
           count++;
       }
       return count;
     }
 
-    var handleExec = (input, context) => {
+    let handleExec = (input, context) => {
 
       //console.log('handleExec('+input+", ",context+')');
       if (!input || !input.length) return null;
 
       // strip backticks and eval
-      var res, exec = input.replace(STRIP_TICKS, '$1');
+      let res, exec = input.replace(STRIP_TICKS, '$1');
 
       try {
 
@@ -147,7 +147,7 @@ class Grammar {
 
     let stochasticRule = temp => { // map
 
-      var name, dbug = false, p = Math.random(), result, total = 0;
+      let name, dbug = false, p = Math.random(), result, total = 0;
       if (dbug) log("getStochasticRule(" + temp + ")");
       for (name in temp) {
         total += parseFloat(temp[name]);
@@ -156,7 +156,7 @@ class Grammar {
       if (dbug) log("total=" + total + "p=" + p);
       for (name in temp) {
         if (dbug) log("  name=" + name);
-        var amt = temp[name] / total;
+        let amt = temp[name] / total;
         if (dbug) log("amt=" + amt);
         if (p < amt) {
           result = name;
@@ -169,7 +169,7 @@ class Grammar {
       return result;
     };
 
-    var cnt = 0;
+    let cnt = 0;
     let name = '';
     let rules = this.rules[pre];
 
@@ -271,13 +271,13 @@ function unescapeHTML(input) {
 
   if (!input || !input.length) return input;
 
-  var answer = input.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+  let answer = input.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
     .replace(/&amp;/g, "&").replace(/&quot;/g, "\"");
 
   String.fromCharCodePoint = function() { // uggh
-    var codeunits = [];
-    for (var i = 0; i < arguments.length; i++) {
-      var c = arguments[i];
+    let codeunits = [];
+    for (let i = 0; i < arguments.length; i++) {
+      let c = arguments[i];
       if (arguments[i] < 0x10000) {
         codeunits.push(arguments[i]);
       } else if (arguments[i] < 0x110000) {
@@ -299,8 +299,8 @@ function unescapeHTML(input) {
 }
 
 function err() {
-  var msg = "[RiTa] " + arguments[0];
-  for (var i = 1; i < arguments.length; i++)
+  let msg = "[RiTa] " + arguments[0];
+  for (let i = 1; i < arguments.length; i++)
     msg += '\n' + arguments[i];
   throw Error(msg);
 }

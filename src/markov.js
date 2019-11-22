@@ -176,10 +176,10 @@ class Markov {
   //   this.root.addChild("d", 1);
   //   let nodes = this.root.childNodes(true);
   //   let rprobs = nodes.map(n => n.nodeProb()).slice().reverse();
-  //   for (var i = 0; i <= 10; i++) {
+  //   for (let i = 0; i <= 10; i++) {
   //     let t = (i / 10);
   //     console.log(t+")");
-  //     for (var j = 0; j < nodes.length; j++) {
+  //     for (let j = 0; j < nodes.length; j++) {
   //       let n = nodes[j]
   //       console.log("  "+n.token + ' -> ' + n.nodeProb(), rprobs[j], lerp(n.nodeProb(), rprobs[j], t));
   //     }
@@ -630,7 +630,7 @@ function lerp(start, stop, amt) {
 
 function shiftArray(arr, num) {
   num = num || 1;
-  for (var i = 0; i < num; i++) {
+  for (let i = 0; i < num; i++) {
     arr.push(arr.shift());
   }
 }

@@ -229,7 +229,7 @@ class PlingStemmer {
       categoryUS_I,
       categoryIX_ICES
     ];
-    for (var i = 0; i < cats.length; i++) {
+    for (let i = 0; i < cats.length; i++) {
       if (cats[i].indexOf(s) > -1)
         return true;
     }

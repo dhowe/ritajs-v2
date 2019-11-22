@@ -127,7 +127,7 @@ describe('RiTa.API', () => {
   });
 
   it('Should call randomOrdering', () => {
-    expect(RiTa.randomOrdering(1)).eql([0]);
+    expect(RiTa.randomOrdering).is.a('function');
   });
 
   it('Should call randomSeed', () => {

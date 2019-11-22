@@ -6,11 +6,11 @@ const RiScript = require('../src/riscript');
 
 describe('RiScript.KnownIssues', () => {
 
-  it('Fix: Should eval post-defined variables', function() {
+  it('Should eval post-defined variables', function() {
 
     let rc = RiScript.compile('$start=$foo\n$foo=hello\n$start', 1);
     let res = rc.run();
-    expect(res).eq('a');
+    expect(res).eq('hello');
 
     let script = [
       '$start = $noun',
@@ -33,7 +33,7 @@ describe('RiScript.KnownIssues', () => {
     0 && expect(RiScript.evaluate('How many (tooth | tooth).pluralize() do you have?')).eq('How many teeth do you have?');
   });
 
-  it('Fix: Should eval converted grammar', function() {
+  it('Should eval converted grammar', function() {
     let script = [
       '$start = $nounp $verbp.',
       '$nounp = $determiner $noun',

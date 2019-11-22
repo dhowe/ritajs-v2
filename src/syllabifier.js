@@ -43,7 +43,7 @@ class Syllabifier { // move to analyzer?
   //   if (!input || !input.length) return '';
   //   let wordArr = RiTa.tokenize(input);
   //   let raw = wordArr.map(w => RiTa.lexicon._getRawPhones(w).replace(/\s/g, '/'));
-  //   // for (var i = 0; i < wordArr.length; i++)
+  //   // for (let i = 0; i < wordArr.length; i++)
   //   //   raw[i] = this._getRawPhones(wordArr[i]).replace(/\s/g, '/');
   //   // console.log("[RiTa] syllables" + " " + word + " " + raw);
   //   return RiTa.untokenize(raw).replace(/1/g, '').trim();

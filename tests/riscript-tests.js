@@ -18,6 +18,31 @@ describe('RiTa.RiScript', function() {
 
   describe('Compile Various', function() {
 
+    // WORKING HERE: why is the grammar output all wrong?
+
+    /*it('Should eval converted grammar', function() {
+      let script = [
+        '$start = $nounp $verbp.',
+        '$nounp = $determiner $noun',
+        '$determiner = (the | the)',
+        '$verbp = $verb $nounp',
+        '$noun = (woman | woman)',
+        '$verb = shoots',
+        '$start'
+      ].join(' ');
+      let rc = RiScript.compile(script, 1);
+      let res = rc.run();
+      expect().eq('the woman shoots the woman');
+    });
+
+    it('Should eval post-defined variables', function() {
+      let rc = RiScript.compile('$start=$foo $foo=hello $start', 1);
+      console.log("--------------------------------------------------\n");
+      //console.log(rc.parseTree.toStringTree(rc.scripting.parser.ruleNames));
+      let res = rc.run();
+      expect(res).eq('hello');
+    });*/
+
     it('Should compile choices', function() {
       expect(RiScript.compile('(a)').run()).eq('a');
       expect(RiScript.compile('(a | a)').run()).eq('a');
@@ -60,7 +85,6 @@ describe('RiTa.RiScript', function() {
   describe('Evaluate Choices', function() {
 
     it('Should throw on bad choices', function() {
-
       expect(() => RiScript.evaluate('|', 0, 0, 1)).to.throw();
       expect(() => RiScript.evaluate('a |', 0, 0, 1)).to.throw();
       expect(() => RiScript.evaluate('a | b', 0, 0, 1)).to.throw();
