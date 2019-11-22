@@ -161,249 +161,179 @@ describe('RiTa.Core', () => {
     ok(!RiTa.isPunctuation(""));
   });
 
-  it('Should correctly call singularize', () => {
+  let pluralSingularPairs = [
+    '', '',
+    "dazes", "daze",
+    "hives", "hive",
+    "dives", "dive",
+    "octopuses", "octopus",
+    "wildlife", "wildlife",
+    "media", "medium",
+    "millennia", "millennium",
+    "consortia", "consortium",
+    "concerti", "concerto",
+    "septa", "septum",
+    "termini", "terminus",
+    "larvas", "larva",
+    "vertebras", "vertebra",
+    "hooves", "hoof",
+    "thieves", "thief",
+    "rabbis", "rabbi",
+    "flu", "flu",
+    "safaris", "safari",
+    "sheaves", "sheaf",
+    "uses", "use",
+    "pinches", "pinch",
+    "hankies", "hanky",
+    "spoofs", "spoof",
+    "proofs", "proof",
+    "roofs", "roof",
+    "disbeliefs", "disbelief",
+    "beliefs", "belief",
+    "indices", "index",
+    "accomplices", "accomplice",
+    "catharses", 'catharsis',
+    "prognoses", 'prognosis',
+    'whizzes', 'whiz',
+    'selves', 'self',
+    'bookshelves', 'bookshelf',
+    'wheezes', 'wheeze',
+    'diagnoses', 'diagnosis',
+    'minutia', 'minutiae',
+    'blondes', 'blonde',
+    'eyes', 'eye',
+    'swine', 'swine',
+    'cognoscenti', 'cognoscenti',
+    'bonsai', 'bonsai',
+    'taxis', 'taxi',
+    'chiefs', 'chief',
+    'monarchs', 'monarch',
+    'lochs', 'loch',
+    'stomachs', 'stomach',
+    'Chinese', 'Chinese',
+    'people', 'person',
+    'humans', 'human',
+    'germans', 'german',
+    'romans', 'roman',
+    'memoranda', 'memorandum',
+    'data', 'datum',
+    'appendices', 'appendix',
+    'theses', 'thesis',
+    'alumni', 'alumnus',
+    'solos', 'solo',
+    'music', 'music',
+    'oxen', 'ox',
+    'solos', 'solo',
+    'music', 'music',
+    'money', 'money',
+    'beef', 'beef',
+    'tobacco', 'tobacco',
+    'cargo', 'cargo',
+    'golf', 'golf',
+    'grief', 'grief',
+    'cakes', 'cake',
+    'tomatoes', 'tomato',
+    'photos', 'photo',
+    'smallpox', 'smallpox',
+    'toes', 'toe',
+    'series', 'series',
+    'oxen', 'ox',
+    'men', 'man',
+    'mice', 'mouse',
+    'lice', 'louse',
+    'children', 'child',
+    'gases', 'gas',
+    'buses', 'bus',
+    'happiness', 'happiness',
+    'crises', 'crisis',
+    'theses', 'thesis',
+    'apotheses', 'apothesis',
+    'stimuli', 'stimulus',
+    'alumni', 'alumnus',
+    'corpora', 'corpus',
+    'dogs', 'dog',
+    'feet', 'foot',
+    'teeth', 'tooth',
+    'kisses', 'kiss',
+    'deer', 'deer',
+    'sheep', 'sheep',
+    'shrimp', 'shrimp',
+    'men', 'man',
+    'women', 'woman',
+    'congressmen', 'congressman',
+    'aldermen', 'alderman',
+    'freshmen', 'freshman',
+    'firemen', 'fireman',
+    'grandchildren', 'grandchild',
+    'menus', 'menu',
+    'gurus', 'guru',
+    'hardness', 'hardness',
+    'shortness', 'shortness',
+    'dreariness', 'dreariness',
+    'unwillingness', 'unwillingness',
+    'fish', 'fish',
+    'ooze', 'ooze',
+    'enterprises', 'enterprise',
+    'treatises', 'treatise',
+    'houses', 'house',
+    'chemises', 'chemise',
+    'aquatics', 'aquatics',
+    'mechanics', 'mechanics',
+    'quarters', 'quarter',
+    'motifs', 'motif',
+    'alumni', 'alumnus',
+    "turf", "turf",
+    "macaroni", "macaroni",
+    "spaghetti", "spaghetti",
+    "potpourri", "potpourri",
+    "electrolysis", "electrolysis",
+    "eyes", "eye",
+    "teeth", "tooth",
+    "cakes", "cake",
+    "kisses", "kiss",
+    "lice", "louse",
+    "series", "series",
+    "crises", "crisis",
+    "theses", "thesis",
+    "apotheses", "apothesis",
+    "stimuli", "stimulus",
+    "alumni", "alumnus",
+    "corpora", "corpus",
+    "menus", "menu",
+    "hardness", "hardness",
+    "shortness", "shortness",
+    "dreariness", "dreariness",
+    "unwillingness", "unwillingness",
+    "moose", "moose",
+    "toes", "toe",
+    "tobacco", "tobacco",
+    "cargo", "cargo",
+    "golf", "golf",
+    "grief", "grief",
+    "taxis", "taxi",
+    "bonsai", "bonsai",
+  ];
+  //pluralSingularPairs =    ['minutia', 'minutiae'];
 
-    let tests = [
-      "media", "medium",
-      "millennia", "millennium",
-      "consortia", "consortium",
-      "concerti", "concerto",
-      "septa", "septum",
-      "termini", "terminus",
-      "larvae", "larva",
-      "vertebrae", "vertebra",
-      "memorabilia", "memorabilium",
-      "hooves", "hoof",
-      "thieves", "thief",
-      "rabbis", "rabbi",
-      "flu", "flu",
-      "safaris", "safari",
-      "sheaves", "sheaf",
-      "uses", "use",
-      "pinches", "pinch",
-      "catharses", "catharsis",
-      "hankies", "hanky"
-    ];
-    for (let i = 0; i < tests.length; i += 2) {
-      eq(RiTa.singularize(tests[i]), tests[i + 1]);
+  it('Should correctly singularize and pluralize', () => {
+    let res1, res2, dbug = false;
+    for (let i = 0; i < pluralSingularPairs.length; i += 2) {
+
+      // singularize
+      res1 = RiTa.singularize(pluralSingularPairs[i], { dbug: dbug });
+      res2 = RiTa.pluralize(pluralSingularPairs[i + 1], { dbug: dbug });
+
+      eq(res1, pluralSingularPairs[i + 1], 'FAIL: singularize(' + pluralSingularPairs[i]
+        + ') was ' + res1 + ', but expected ' + pluralSingularPairs[i + 1] + '\n        '
+        + 'pluralize(' + pluralSingularPairs[i + 1] + ') was ' + res2 + '\n\n');
+
+      // pluralize
+      eq(res2, pluralSingularPairs[i], 'FAIL: pluralize(' + pluralSingularPairs[i + 1]
+        + ') was ' + res2 + ', but expected ' + pluralSingularPairs[i] + '\n        '
+        + 'singularize(' + pluralSingularPairs[i] + ') was ' + res1 + '\n\n');
     }
-
-    eq(RiTa.singularize("pleae"), "pleae"); // special-cased in code
-    eq(RiTa.singularize("whizzes"), "whiz");
-    eq(RiTa.singularize("selves"), "self");
-    eq(RiTa.singularize("bookshelves"), "bookshelf");
-    eq(RiTa.singularize("wheezes"), "wheeze");
-    eq(RiTa.singularize("diagnoses"), "diagnosis");
-
-    eq("minutia", RiTa.singularize("minutia"));
-    eq("blonde", RiTa.singularize("blondes"));
-    eq("eye", RiTa.singularize("eyes"));
-    eq(RiTa.singularize("swine"), "swine");
-    eq(RiTa.singularize("cognoscenti"), "cognoscenti");
-    eq(RiTa.singularize("bonsai"), "bonsai");
-    eq(RiTa.singularize("taxis"), "taxi");
-    eq(RiTa.singularize("chiefs"), "chief");
-    eq(RiTa.singularize("monarchs"), "monarch");
-    eq(RiTa.singularize("lochs"), "loch");
-    eq(RiTa.singularize("stomachs"), "stomach");
-
-    eq(RiTa.singularize("Chinese"), "Chinese");
-
-    eq(RiTa.singularize("people"), "person");
-    eq(RiTa.singularize("monies"), "money");
-    eq(RiTa.singularize("vertebrae"), "vertebra");
-    eq(RiTa.singularize("humans"), "human");
-    eq(RiTa.singularize("germans"), "german");
-    eq(RiTa.singularize("romans"), "roman");
-
-    eq(RiTa.singularize("memoranda"), "memorandum");
-    eq(RiTa.singularize("data"), "datum");
-    eq(RiTa.singularize("appendices"), "appendix");
-    eq(RiTa.singularize("theses"), "thesis");
-    eq(RiTa.singularize("alumni"), "alumnus");
-
-    eq(RiTa.singularize("solos"), "solo");
-    eq(RiTa.singularize("music"), "music");
-
-    eq(RiTa.singularize("oxen"), "ox");
-    eq(RiTa.singularize("solos"), "solo");
-    eq(RiTa.singularize("music"), "music");
-    eq(RiTa.singularize("money"), "money");
-    eq(RiTa.singularize("beef"), "beef");
-
-    eq(RiTa.singularize("tobacco"), "tobacco");
-    eq(RiTa.singularize("cargo"), "cargo");
-    eq(RiTa.singularize("golf"), "golf");
-    eq(RiTa.singularize("grief"), "grief");
-
-    eq(RiTa.singularize("cakes"), "cake");
-
-    eq("dog", RiTa.singularize("dogs"));
-    eq("foot", RiTa.singularize("feet"));
-    eq("tooth", RiTa.singularize("teeth"));
-    eq("kiss", RiTa.singularize("kisses"));
-    eq("child", RiTa.singularize("children"));
-    eq("randomword", RiTa.singularize("randomwords"));
-    eq("deer", RiTa.singularize("deer"));
-    eq("sheep", RiTa.singularize("sheep"));
-    eq("shrimp", RiTa.singularize("shrimps"));
-
-    eq(RiTa.singularize("tomatoes"), "tomato");
-    eq(RiTa.singularize("photos"), "photo");
-
-    eq(RiTa.singularize("toes"), "toe");
-
-    eq(RiTa.singularize("series"), "series");
-    eq(RiTa.singularize("oxen"), "ox");
-    eq(RiTa.singularize("men"), "man");
-    eq(RiTa.singularize("mice"), "mouse");
-    eq(RiTa.singularize("lice"), "louse");
-    eq(RiTa.singularize("children"), "child");
-
-    eq(RiTa.singularize("gases"), "gas");
-    eq(RiTa.singularize("buses"), "bus");
-    eq(RiTa.singularize("happiness"), "happiness");
-
-    eq(RiTa.singularize("crises"), "crisis");
-    eq(RiTa.singularize("theses"), "thesis");
-    eq(RiTa.singularize("apotheses"), "apothesis");
-    eq(RiTa.singularize("stimuli"), "stimulus");
-    eq(RiTa.singularize("alumni"), "alumnus");
-    eq(RiTa.singularize("corpora"), "corpus");
-
-    eq("man", RiTa.singularize("men"));
-    eq("woman", RiTa.singularize("women"));
-    eq("congressman", RiTa.singularize("congressmen"));
-    eq("alderman", RiTa.singularize("aldermen"));
-    eq("freshman", RiTa.singularize("freshmen"));
-    eq("fireman", RiTa.singularize("firemen"));
-    eq("grandchild", RiTa.singularize("grandchildren"));
-    eq("menu", RiTa.singularize("menus"));
-    eq("guru", RiTa.singularize("gurus"));
-
-    eq("", RiTa.singularize(""));
-    eq("hardness", RiTa.singularize("hardness"));
-    eq("shortness", RiTa.singularize("shortness"));
-    eq("dreariness", RiTa.singularize("dreariness"));
-    eq("unwillingness", RiTa.singularize("unwillingness"));
-    eq("deer", RiTa.singularize("deer"));
-    eq("fish", RiTa.singularize("fish"));
-    eq("ooze", RiTa.singularize("ooze"));
-
-    eq("ooze", RiTa.singularize("ooze"));
-    eq("enterprise", RiTa.singularize("enterprises"));
-    eq("treatise", RiTa.singularize("treatises"));
-    eq("house", RiTa.singularize("houses"));
-    eq("chemise", RiTa.singularize("chemises"));
-
-    eq("aquatics", RiTa.singularize("aquatics"));
-    eq("mechanics", RiTa.singularize("mechanics"));
-    eq("quarter", RiTa.singularize("quarters"));
   });
 
-  it('Should correctly call pluralize', () => {
-
-    let tests = [
-      "dazes", "daze",
-      "hives", "hive",
-      "dives", "dive",
-      "wildlife", "wildlife",
-      "media", "medium",
-      "millennia", "millennium",
-      "consortia", "consortium",
-      "concerti", "concerto",
-      "septa", "septum",
-      "termini", "terminus",
-      "larvae", "larva",
-      "vertebrae", "vertebra",
-      "memorabilia", "memorabilium",
-      "sheafs", "sheaf",
-      "spoofs", "spoof",
-      "proofs", "proof",
-      "roofs", "roof",
-      "disbeliefs", "disbelief",
-      "indices", "index",
-      "accomplices", "accomplice"
-    ];
-    for (let i = 0; i < tests.length; i += 2) {
-      //console.log(tests[i], RiTa.pluralize(tests[i + 1]),tests[i + 1]);
-      eq(tests[i], RiTa.pluralize(tests[i + 1]));
-    }
-
-    // uncountable
-    tests = [
-      "turf", "macaroni", "spaghetti", "potpourri", "electrolysis"
-    ];
-    for (let i = 0; i < tests.length; i++) {
-      eq(tests[i], RiTa.pluralize(tests[i]));
-    }
-
-    eq("blondes", RiTa.pluralize("blonde"));
-    eq("eyes", RiTa.pluralize("eye"));
-    eq("blondes", RiTa.pluralize("blond"));
-
-    eq("dogs", RiTa.pluralize("dog"));
-    eq("feet", RiTa.pluralize("foot"));
-    eq("men", RiTa.pluralize("man"));
-
-    eq("beautifuls", RiTa.pluralize("beautiful"));
-    eq("teeth", RiTa.pluralize("tooth"));
-    eq("cakes", RiTa.pluralize("cake"));
-    eq("kisses", RiTa.pluralize("kiss"));
-    eq("children", RiTa.pluralize("child"));
-
-    eq("randomwords", RiTa.pluralize("randomword"));
-    eq("lice", RiTa.pluralize("louse"));
-
-    eq("sheep", RiTa.pluralize("sheep"));
-    eq("shrimps", RiTa.pluralize("shrimp"));
-    eq("series", RiTa.pluralize("series"));
-    eq("mice", RiTa.pluralize("mouse"));
-
-    eq("", RiTa.pluralize(""));
-
-    eq(RiTa.pluralize("tomato"), "tomatoes");
-    eq(RiTa.pluralize("toe"), "toes");
-
-    eq(RiTa.pluralize("deer"), "deer");
-    eq(RiTa.pluralize("ox"), "oxen");
-
-    eq(RiTa.pluralize("tobacco"), "tobacco");
-    eq(RiTa.pluralize("cargo"), "cargo");
-    eq(RiTa.pluralize("golf"), "golf");
-    eq(RiTa.pluralize("grief"), "grief");
-    eq(RiTa.pluralize("wildlife"), "wildlife");
-    eq(RiTa.pluralize("taxi"), "taxis");
-    eq(RiTa.pluralize("Chinese"), "Chinese");
-    eq(RiTa.pluralize("bonsai"), "bonsai");
-
-    eq(RiTa.pluralize("whiz"), "whizzes");
-    eq(RiTa.pluralize("prognosis"), "prognoses");
-    eq(RiTa.pluralize("gas"), "gases");
-    eq(RiTa.pluralize("bus"), "buses");
-
-    eq("crises", RiTa.pluralize("crisis"));
-    eq("theses", RiTa.pluralize("thesis"));
-    eq("apotheses", RiTa.pluralize("apothesis"));
-    eq("stimuli", RiTa.pluralize("stimulus"));
-    eq("alumni", RiTa.pluralize("alumnus"));
-    eq("corpora", RiTa.pluralize("corpus"));
-    eq("menus", RiTa.pluralize("menu"));
-
-    eq("hardness", RiTa.pluralize("hardness"));
-    eq("shortness", RiTa.pluralize("shortness"));
-    eq("dreariness", RiTa.pluralize("dreariness"));
-    eq("unwillingness", RiTa.pluralize("unwillingness"));
-    eq("deer", RiTa.pluralize("deer"));
-    eq("fish", RiTa.pluralize("fish"));
-    eq("moose", RiTa.pluralize("moose"));
-
-    eq("aquatics", RiTa.pluralize("aquatics"));
-    eq("mechanics", RiTa.pluralize("mechanics"));
-  });
-
-  function ok(res) { expect(res).eq(true); }
-  function eq(a, b) { expect(a).eq(b); }
-
-  // TODO: remainder of rita functions
+  function ok(res, m) { expect(res).eq(true, m); }
+  function eq(a, b, m) { expect(a).eq(b, m); }
 });

@@ -21,9 +21,7 @@ describe('RiTa.LegacyGrammar', () => {
     "<noun>": ["woman", "man"],
     "<verb>": "shoots"
   };
-
-  let sentenceGrammars = [sentenceGrammarJSON, sentenceGrammarJSON2];
-
+  
   it('should correctly call constructor', () => {
     ok(typeof new RiGrammar() !== 'undefined');
   });

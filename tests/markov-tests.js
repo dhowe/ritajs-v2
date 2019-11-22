@@ -39,27 +39,6 @@ describe('RiTa.Markov', () => {
     eq(toks[0].token, 'The');
   });
 
-  0 && it('should correctly call initSentence.start', () => {
-    let rm, txt;
-    rm = new Markov(4);
-    txt = "The young boy ate it. The fat boy gave up.";
-    rm.loadSentences(txt);
-    let toks = rm._initSentence();
-    eq(toks.length, 1);
-    eq(toks[0].token, 'The');
-  });
-
-
-  0 && it('should correctly call initSentence.startArray', () => {
-    let rm, txt;
-    rm = new Markov(4);
-    txt = "The young boy ate it. The fat boy gave up.";
-    rm.loadSentences(txt);
-    let toks = rm._initSentence();
-    eq(toks.length, 1);
-    eq(toks[0].token, 'The');
-  });
-
   function distribution(res, dump) {
     let dist = {};
     for (var i = 0; i < res.length; i++) {

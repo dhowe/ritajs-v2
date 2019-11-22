@@ -1,5 +1,3 @@
-const RiTa = require('./rita_api');
-
 const OR_PATT = /\s*\|\s*/;
 const STRIP_TICKS = /`([^`]*)`/g;
 const PROB_PATT = /(.*[^\s])\s*\[([0-9.]+)\](.*)/;

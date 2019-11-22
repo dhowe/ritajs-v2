@@ -115,8 +115,8 @@ class RiTa {
     return RiTa.tagger.tag(words, simple, true);
   }
 
-  static pluralize(word) {
-    return RiTa.pluralizer.pluralize(word);
+  static pluralize() {
+    return RiTa.pluralizer.pluralize(...arguments);
   }
 
   static presentParticiple(verb) {
@@ -155,8 +155,8 @@ class RiTa {
     return RiTa._lexicon().similarBy(...arguments);
   }
 
-  static singularize(word) {
-    return RiTa.pluralizer.singularize(word);
+  static singularize() {
+    return RiTa.pluralizer.singularize(...arguments);
   }
 
   static sentences(text) {
