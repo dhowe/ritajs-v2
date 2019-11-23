@@ -313,10 +313,16 @@ describe('RiTa.Core', () => {
     "bonsai", "bonsai",
     "lives", "life",
     "additives", "additive",
+    'epochs', 'epoch',
+    'ranchs', 'ranch',
+    'alcoves', 'alcove',
+    'goddesses', 'goddess',
+    'tresses', 'tress',
+    'murderesses', 'murderess',
   ];
 
   it('Should correctly handle number (singular/plural)', () => {
-    let res1, res2, dbug = false;
+    let res1, res2, dbug = 0;
 
     for (let i = 0; i < pluralSingularPairs.length; i += 2) {
 

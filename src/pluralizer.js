@@ -10,8 +10,8 @@ const SINGULAR_RULES = [
   RE("^(octopus|pinch)es$", 2),
   RE("^(whizzes)$", 3),
   RE("^(tomatoes|kisses)$", 2),
-  RE("^(toes|wheezes|oozes|uses|enterprises)$", 1),
-  RE("(hous|hors|cas|daz|hiv|div|additiv)es$", 1), //End with: es -> e
+  RE("^(to|wheez|ooz|us|enterpris|alcov|hous|hors|cas|daz|hiv|div|additiv)es$", 1), //End with: es -> e
+  //RE("(hous|hors|cas|daz|hiv|div|additiv)es$", 1), //End with: es -> e
   RE("(l|w)ives$", 3, "fe"),
   RE("(men|women)$", 2, "an"),
   RE("ves$", 3, "f"),
@@ -34,6 +34,7 @@ const SINGULAR_RULES = [
   //RE("^(minuti)a$", 0, 'e'),
   RE("^(minuti)ae$", 1),
   RE("^oxen", 2),
+  RE("esses$", 2),
   RE("(treatises|chemises)$", 1),
   RE("(ses)$", 2, "is"), // catharses, prognoses
   //  RE("([a-z]+osis|[a-z]+itis|[a-z]+ness)$", 0),
@@ -43,12 +44,12 @@ const SINGULAR_RULES = [
 const DEFAULT_PLURAL_RULE = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s");
 const PLURAL_RULES = [
   RE("(human|german|roman)$", 0, "s"),
-  RE("^(monarch|loch|stomach)$", 0, "s"),
+  RE("^(monarch|loch|stomach|epoch|ranch)$", 0, "s"),
   RE("^(piano|photo|solo|ego|tobacco|cargo|taxi)$", 0, "s"),
   RE("(chief|proof|ref|relief|roof|belief|spoof|golf|grief)$", 0, "s"),
   RE("^(appendix|index|matrix|apex|cortex)$", 2, "ices"),
   RE("^concerto$", 1, "i"),
-  RE("prognosis", 2, "es"),
+  RE("^prognosis", 2, "es"),
   RE("[bcdfghjklmnpqrstvwxyz]o$", 0, "es"),
   RE("[bcdfghjklmnpqrstvwxyz]y$", 1, "ies"),
   RE("^ox$", 0, "en"),
@@ -82,7 +83,7 @@ const PLURAL_RULES = [
   RE("^blond$", 0, "es"),
   RE("^datum", 2, "a"),
   RE("([a-z]+osis|[a-z]+itis|[a-z]+ness)$", 0),
-  RE("([zsx]|ch|sh)$", 0, "es"), // words ending in 's' hit here
+  RE("([zsx]|ch|sh)$", 0, "es"), // note: words ending in 's' otfen hit here, add 'es'
   RE("^(medi|millenni|consorti|sept|memorabili)um$", 2, "a"),
   RE("^(memorandum|bacterium|curriculum|minimum|maximum|referendum|spectrum|phenomenon|criterion)$", 2, "a"), // Latin stems
   DEFAULT_PLURAL_RULE
@@ -121,11 +122,11 @@ class Pluralizer {
   }
 
   singularize(word, opts) {
-    return this.adjustNumber(word, 'singularize', (opts && opts.debug));
+    return this.adjustNumber(word, 'singularize', (opts && opts.dbug));
   }
 
   pluralize(word, opts) {
-    return this.adjustNumber(word, 'pluralize', (opts && opts.debug));
+    return this.adjustNumber(word, 'pluralize', (opts && opts.dbug));
   }
 
   isPlural(word, opts) {
