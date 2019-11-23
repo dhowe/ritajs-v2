@@ -21,10 +21,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/antlr4": "^4.7.0",
-    "antlr4": "^4.7.2",
     "he": "^1.2.0",
-    "js-levenshtein": "^1.1.6"
+    "antlr4": "^4.7.2",
+    "@types/antlr4": "^4.7.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",

@@ -1,5 +1,5 @@
 const SuperClass = require('../lib/RiScriptVisitor').RiScriptVisitor;
-const Entities = require('he');
+const Entities = require('he'); // provides decode()
 
 String.prototype.uc = function() {
   return this.toUpperCase();
