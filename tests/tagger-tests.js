@@ -316,7 +316,6 @@ describe('RiTa.Tagger', () => {
     eq(result, answer);
   });
 
-
   it('Should correctly call isAdverb', () => {
 
     ok(!RiTa.isAdverb(""));
@@ -368,14 +367,13 @@ describe('RiTa.Tagger', () => {
   it('Should correctly call isNoun', () => {
 
     ok(!RiTa.isNoun(""), );
-
+    ok(RiTa.isNoun("boxes"));
     ok(RiTa.isNoun("swim"));
     ok(RiTa.isNoun("walk"));
     ok(RiTa.isNoun("walker"));
     ok(RiTa.isNoun("dance"));
     ok(RiTa.isNoun("dancer"));
     ok(RiTa.isNoun("cats"));
-    // ok(RiTa.isNoun("boxes")); KI
     ok(RiTa.isNoun("teeth"));
     ok(RiTa.isNoun("apples"));
     ok(RiTa.isNoun("buses"));
@@ -386,11 +384,13 @@ describe('RiTa.Tagger', () => {
     ok(RiTa.isNoun("crises"));
 
     //verb
-    ok(RiTa.isNoun("wash")); //"TODO:also false in processing -> nn" shoulbe be both Verb and Noun  ??
+    ok(RiTa.isNoun("wash"));
     ok(RiTa.isNoun("walk"));
     ok(RiTa.isNoun("play"));
     ok(RiTa.isNoun("throw"));
-    ok(RiTa.isNoun("drink")); //TODO:"also false in processing -> nn" shoulbe be both Verb and Noun ??
+    ok(RiTa.isNoun("duck"));
+    ok(RiTa.isNoun("dog"));
+    ok(RiTa.isNoun("drink"));
 
     ok(!RiTa.isNoun("eat"));
     ok(!RiTa.isNoun("chew"));
@@ -416,6 +416,7 @@ describe('RiTa.Tagger', () => {
     ok(RiTa.isNoun("flower"));
     ok(RiTa.isNoun("fish"));
     ok(RiTa.isNoun("wet")); //+v/adj
+    ok(RiTa.isNoun("ducks"));
 
     //adv
     ok(!RiTa.isNoun("truthfully"));
@@ -447,9 +448,7 @@ describe('RiTa.Tagger', () => {
     ok(RiTa.isVerb("wash")); // +n
     ok(RiTa.isVerb("drink")); // +n
 
-    // ok(RiTa.isVerb("ducks")); // +n -> Known Issues
     ok(RiTa.isVerb("fish")); // +n
-    // ok(RiTa.isVerb("dogs")); // +n -> Known Issues
 
     ok(RiTa.isVerb("wind")); // +n
     ok(RiTa.isVerb("wet")); // +adj
@@ -522,8 +521,8 @@ describe('RiTa.Tagger', () => {
     ok(!RiTa.isAdjective("energetically"));
   });
 
-  function eql(a, b) { expect(a).eql(b); }
-  function eq(a, b) { expect(a).eq(b); }
-  function ok(res) { expect(res).eq(true); }
+  function eql(a, b,m) { expect(a).eql(b,m); }
+  function eq(a, b,m) { expect(a).eq(b,m); }
+  function ok(res,m) { expect(res).eq(true,m); }
 
 });

@@ -162,7 +162,6 @@ describe('RiTa.Core', () => {
   });
 
   let pluralSingularPairs = [
-    '', '',
     "dazes", "daze",
     "hives", "hive",
     "dives", "dive",
@@ -199,7 +198,7 @@ describe('RiTa.Core', () => {
     'bookshelves', 'bookshelf',
     'wheezes', 'wheeze',
     'diagnoses', 'diagnosis',
-    'minutia', 'minutiae',
+    'minutiae', 'minutia',
     'blondes', 'blonde',
     'eyes', 'eye',
     'swine', 'swine',
@@ -313,15 +312,18 @@ describe('RiTa.Core', () => {
     "taxis", "taxi",
     "bonsai", "bonsai",
   ];
-  //pluralSingularPairs =    ['minutia', 'minutiae'];
 
-  it('Should correctly singularize and pluralize', () => {
+  it('Should correctly handle number', () => {
     let res1, res2, dbug = false;
+
     for (let i = 0; i < pluralSingularPairs.length; i += 2) {
 
-      // singularize
+      dbug && console.log(pluralSingularPairs[i] + '/' + pluralSingularPairs[i + 1]);
+      //it('Should handle '+pluralSingularPairs[i]+'/'+pluralSingularPairs[i+1], () => {
+
       res1 = RiTa.singularize(pluralSingularPairs[i], { dbug: dbug });
       res2 = RiTa.pluralize(pluralSingularPairs[i + 1], { dbug: dbug });
+      res3 = RiTa.pluralizer.isPlural(pluralSingularPairs[i], { dbug: dbug });
 
       eq(res1, pluralSingularPairs[i + 1], 'FAIL: singularize(' + pluralSingularPairs[i]
         + ') was ' + res1 + ', but expected ' + pluralSingularPairs[i + 1] + '\n        '
@@ -331,9 +333,13 @@ describe('RiTa.Core', () => {
       eq(res2, pluralSingularPairs[i], 'FAIL: pluralize(' + pluralSingularPairs[i + 1]
         + ') was ' + res2 + ', but expected ' + pluralSingularPairs[i] + '\n        '
         + 'singularize(' + pluralSingularPairs[i] + ') was ' + res1 + '\n\n');
+
+      ok(res3, 'FAIL: isPlural(' + pluralSingularPairs[i] + ') was false\n\n');
+
+      //});
     }
   });
 
-  function ok(res, m) { expect(res).eq(true, m); }
-  function eq(a, b, m) { expect(a).eq(b, m); }
+  function ok(res, m) { expect(res).eq(true, m); return 1; }
+  function eq(a, b, m) { expect(a).eq(b, m); return 1; }
 });

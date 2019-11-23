@@ -227,12 +227,15 @@ RiTa.lexicon = undefined;
 RiTa.dict = undefined;
 RiTa.lts = undefined;
 
+// MESSAGES
+RiTa.SILENT = false;
+RiTa.SILENCE_LTS = true;
+RiTa.LEX_WARN = true;
+
 // CONSTANTS
 RiTa.VERSION = 2;
 RiTa.NODE = 'node';
 RiTa.BROWSER = 'browser';
-RiTa.SILENT = false;
-RiTa.SILENCE_LTS = true;
 RiTa.FIRST_PERSON = 1;
 RiTa.SECOND_PERSON = 2;
 RiTa.THIRD_PERSON = 3;

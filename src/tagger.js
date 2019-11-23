@@ -83,25 +83,6 @@ class PosTagger {
 
     return sb.trim();
   }
-  //
-  // tagSimple(words) {
-  //
-  //   let tags = this.tag(words);
-  //
-  //   if (words && tags.length) {
-  //
-  //     for (let i = 0; i < tags.length; i++) {
-  //       if (NOUNS.includes(tags[i])) tags[i] = 'n';
-  //       else if (VERBS.includes(tags[i])) tags[i] = 'v';
-  //       else if (ADJ.includes(tags[i])) tags[i] = 'a';
-  //       else if (ADV.includes(tags[i])) tags[i] = 'r';
-  //       else tags[i] = '-'; // default: other
-  //     }
-  //
-  //     return tags;
-  //   }
-  //   return [];
-  // }
 
   // Returns an array of parts-of-speech from the Penn tagset,
   // each corresponding to one word of input
@@ -212,14 +193,18 @@ class PosTagger {
 
       if (word.indexOf(' ') < 0) {
 
-        let psa = RiTa._lexicon()._posArr(word);
+        let lex = RiTa._lexicon();
+        let psa = lex._posArr(word); // try dictionary
 
-        if (RiTa.LEX_WARN && psa.length < 1 && this.size() <= 1000) {
-          warn(RiTa.LEX_WARN);
-          RiTa.LEX_WARN = 0; // only once
+        if (!psa.length) {
+          if (RiTa.LEX_WARN && lex.size() <= 1000) {
+            console.warn(RiTa.LEX_WARN);
+            RiTa.LEX_WARN = 0; // only once
+          }
+          psa = RiTa.posTags(word); // try lts-engine
         }
 
-        return psa.filter(p => tagArray.indexOf(p) > -1).length > 0;
+        return psa.filter(p => tagArray.includes(p)).length > 0;
       }
 
       throw Error("checkType() expects single word, found: '" + word + "'");

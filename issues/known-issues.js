@@ -40,10 +40,6 @@ describe('RiTa.KnownIssues', () => {
     }
   });
 
-  it('3: isNoun fails', () => {
-    ok(RiTa.isNoun("boxes"));
-  });
-
   //it('2: conjugation fails', () => { });
 
   function eql(output, expected, msg) { expect(output).eql(expected, msg); }
