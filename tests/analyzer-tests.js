@@ -117,6 +117,8 @@ describe('RiTa.Analyzer', () => {
 
   it('Should correctly call syllables', () => {
 
+    expect(RiTa.syllables('deforestations')).eq('d-ih/f-ao/r-ih/s-t-ey/sh-ah-n-z');
+
     expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
 
     expect(RiTa.syllables('')).eq('');

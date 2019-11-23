@@ -13,31 +13,25 @@ describe('RiTa.KnownIssues', () => {
 
   });
 
-  it('2: pluralize or sungularize fails', () => {
-    let pluralSingularPairs = [
-      'epochs', 'epoch',
-      'ranchs', 'ranch',
-      'alcoves', 'alcove',
-      'goddesses', 'goddess',
-      'tresses', 'tress',
-      'murderesses', 'murderess',
-    ];
-    let res1, res2, dbug = true;
-    for (let i = 0; i < pluralSingularPairs.length; i += 2) {
+  it('2: pluralize or singularize fails', () => {
+    let testPairs = [ ]; // FAILING ITEMS HERE
+    let res1, res2, res3, dbug = true;
+    dbug && console.log(testPairs[i] + '/' + testPairs[i + 1]);
 
-      // singularize
-      res1 = RiTa.singularize(pluralSingularPairs[i], { dbug: dbug });
-      res2 = RiTa.pluralize(pluralSingularPairs[i + 1], { dbug: dbug });
+    res1 = RiTa.singularize(testPairs[i], { dbug: dbug });
+    res2 = RiTa.pluralize(testPairs[i + 1], { dbug: dbug });
+    res3 = RiTa.pluralizer.isPlural(testPairs[i], { dbug: dbug });
 
-      eq(res1, pluralSingularPairs[i + 1], 'FAIL: singularize(' + pluralSingularPairs[i]
-        + ') was ' + res1 + ', but expected ' + pluralSingularPairs[i + 1] + '\n        '
-        + 'pluralize(' + pluralSingularPairs[i + 1] + ') was ' + res2 + '\n\n');
+    eq(res1, testPairs[i + 1], 'FAIL: singularize(' + testPairs[i]
+      + ') was ' + res1 + ', but expected ' + testPairs[i + 1] + '\n        '
+      + 'pluralize(' + testPairs[i + 1] + ') was ' + res2 + '\n\n');
 
-      // pluralize
-      eq(res2, pluralSingularPairs[i], 'FAIL: pluralize(' + pluralSingularPairs[i + 1]
-        + ') was ' + res2 + ', but expected ' + pluralSingularPairs[i] + '\n        '
-        + 'singularize(' + pluralSingularPairs[i] + ') was ' + res1 + '\n\n');
-    }
+    // pluralize
+    eq(res2, testPairs[i], 'FAIL: pluralize(' + testPairs[i + 1]
+      + ') was ' + res2 + ', but expected ' + testPairs[i] + '\n        '
+      + 'singularize(' + testPairs[i] + ') was ' + res1 + '\n\n');
+
+    ok(res3, 'FAIL: isPlural(' + testPairs[i] + ') was false\n\n');
   });
 
   //it('2: conjugation fails', () => { });
