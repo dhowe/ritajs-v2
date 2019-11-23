@@ -6,16 +6,10 @@ const RiScript = require('../src/riscript');
 
 describe('RiTa.KnownIssues', () => {
 
-
-  it('1: must do de-pluralization before features ', () => {
-
-    expect(RiTa.syllables('deforestations')).eq(RiTa.syllables('deforestation') + '-z');
-
-  });
-
-  it('2: pluralize or singularize fails', () => {
+  it('1: pluralize or singularize fails', () => {
     let testPairs = [ ]; // FAILING ITEMS HERE
-    let res1, res2, res3, dbug = true;
+    let res1, res2, res3, i = 0, dbug = true;
+    if (!testPairs.length) return;
     dbug && console.log(testPairs[i] + '/' + testPairs[i + 1]);
 
     res1 = RiTa.singularize(testPairs[i], { dbug: dbug });
@@ -34,7 +28,9 @@ describe('RiTa.KnownIssues', () => {
     ok(res3, 'FAIL: isPlural(' + testPairs[i] + ') was false\n\n');
   });
 
-  //it('2: conjugation fails', () => { });
+  it('2: conjugation fails', () => {
+
+  });
 
   function eql(output, expected, msg) { expect(output).eql(expected, msg); }
   function ok(res, msg) { expect(res).eq(true, msg); }
