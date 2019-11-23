@@ -1,6 +1,7 @@
 const RE = require("./util").RE;
 const MODALS = require("./util").MODALS;
 
+const DEFAULT_IS_PLURAL = /(ae|ia|s)$/;
 const DEFAULT_SINGULAR_RULE = RE("^.*s$", 1);
 
 const SINGULAR_RULES = [
@@ -10,7 +11,8 @@ const SINGULAR_RULES = [
   RE("^(whizzes)$", 3),
   RE("^(tomatoes|kisses)$", 2),
   RE("^(toes|wheezes|oozes|uses|enterprises)$", 1),
-  RE("(houses|horses|cases|dazes|hives|dives)$", 1), //End with: es -> e
+  RE("(hous|hors|cas|daz|hiv|div|additiv)es$", 1), //End with: es -> e
+  RE("(l|w)ives$", 3, "fe"),
   RE("(men|women)$", 2, "an"),
   RE("ves$", 3, "f"),
   RE("^(appendices|matrices)$", 3, "x"),
@@ -168,7 +170,7 @@ class Pluralizer {
       }
     }
 
-    if (/(ae|ia|s)$/.test(word)) return true;
+    if (DEFAULT_IS_PLURAL.test(word)) return true;
 
     dbug && console.log('isPlural: no rules hit for ' + word);
 

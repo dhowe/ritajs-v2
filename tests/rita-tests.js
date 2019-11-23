@@ -311,15 +311,16 @@ describe('RiTa.Core', () => {
     "grief", "grief",
     "taxis", "taxi",
     "bonsai", "bonsai",
+    "lives", "life",
+    "additives", "additive",
   ];
 
-  it('Should correctly handle number', () => {
+  it('Should correctly handle number (singular/plural)', () => {
     let res1, res2, dbug = false;
 
     for (let i = 0; i < pluralSingularPairs.length; i += 2) {
 
       dbug && console.log(pluralSingularPairs[i] + '/' + pluralSingularPairs[i + 1]);
-      //it('Should handle '+pluralSingularPairs[i]+'/'+pluralSingularPairs[i+1], () => {
 
       res1 = RiTa.singularize(pluralSingularPairs[i], { dbug: dbug });
       res2 = RiTa.pluralize(pluralSingularPairs[i + 1], { dbug: dbug });
@@ -335,8 +336,6 @@ describe('RiTa.Core', () => {
         + 'singularize(' + pluralSingularPairs[i] + ') was ' + res1 + '\n\n');
 
       ok(res3, 'FAIL: isPlural(' + pluralSingularPairs[i] + ') was false\n\n');
-
-      //});
     }
   });
 
