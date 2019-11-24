@@ -4,15 +4,14 @@ const RiScript = require('../src/riscript');
 const expect = require('chai').expect;
 
 // SOLUTION 1:
-// unenclosed variables on a line, include the whole line and can have nothing else
-// other you need to use {} or []
-
-// SOLUTION 2: implement distinct compile/execute phases to support grammars
+// Unenclosed variables on a line, include the whole line and can have nothing else
+// other you need to use {} or [] or ()
 
 // TODO:
 // lazy evaluation of variables in script (to support cf-grammars)
 // add variable declarations ***
-// handle multipliers
+// handle multipliers in cfg-s
+// allow json format?
 
 describe('RiTa.RiScript', function() {
 

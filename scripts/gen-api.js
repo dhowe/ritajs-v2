@@ -3,8 +3,11 @@ let API = {
     'alliterations',
     'concordance',
     'conjugate',
+    'createGrammar',
+    'createMarkov',
     'hasWord',
     'env',
+    'evaluate',
     'pastParticiple',
     'phonemes',
     'posTags',
@@ -46,5 +49,6 @@ let API = {
 
 // Tests
 1 && API.RiTa.forEach((f) => {
-  console.log("it('Should correctly call "+f+"', () => {\n  expect(RiTa."+f+"()).eq('');\n});\n");
+  console.log("it('Should correctly call " + f + "', () =>"
+    + " {\n  expect(RiTa." + f + "()).eq('');\n});\n");
 })

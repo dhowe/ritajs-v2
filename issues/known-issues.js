@@ -2,8 +2,6 @@ const expect = require('chai').expect;
 const RiTa = require('../src/rita_api');
 const RiScript = require('../src/riscript');
 
-// See also 'Failing Tests' in riscript-tests.js
-
 describe('RiTa.KnownIssues', () => {
 
   it('1: pluralize or singularize fails', () => {
