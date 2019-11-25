@@ -23,8 +23,7 @@ describe('RiTa.Core', () => {
   it('Should correctly call isAbbreviation', () => {
 
     ok(RiTa.isAbbreviation("Dr."));
-    ok(RiTa.isAbbreviation("dr."));
-    //T in java
+    ok(!RiTa.isAbbreviation("dr."));
 
     ok(!RiTa.isAbbreviation("DR."));
     // F in Processing.lowercase is true but uppercase is false
@@ -45,8 +44,8 @@ describe('RiTa.Core', () => {
     ok(!RiTa.isAbbreviation("Doctor."));
 
     ok(RiTa.isAbbreviation("Prof."));
-    ok(RiTa.isAbbreviation("prof."));
-    //T in java
+    ok(!RiTa.isAbbreviation("prof."));
+
     ok(!RiTa.isAbbreviation("PRFO."));
     //  F in Processing. lowercase is true but uppercase is false
     ok(!RiTa.isAbbreviation("PrFo."));
