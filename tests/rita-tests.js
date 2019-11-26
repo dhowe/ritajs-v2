@@ -4,34 +4,33 @@ const RiTa = require('../src/rita_api');
 describe('RiTa.Core', () => {
 
   it('Should correctly call stem', () => {
+    let data = [
+      "boy", "boy",
+      "boys", "boy",
+      "biophysics", "biophysics",
+      "automata", "automaton",
+      "genus", "genus",
+      "emus", "emu",
+      "cakes", "cake",
+      "run", "run",
+      "runs", "run",
+      "running", "running",
+      "take", "take",
+      "takes", "take",
+      "taking", "taking",
+      "hide", "hide",
+      "hides", "hide",
+      "hiding", "hiding",
+      "become", "become",
+      "becomes", "become",
+      "becoming", "becoming",
+      "gases", "gas",
+      "buses", "bus",
+      "happiness", "happiness",
+      "terrible", "terrible",
+    ];
 
     eq(RiTa.stem("cakes"), "cake");
-
-    eq(RiTa.stem("run"), "run");
-    eq(RiTa.stem("runs"), "run");
-    eq(RiTa.stem("running"), "running");
-
-    eq(RiTa.stem("take"), "take");
-    eq(RiTa.stem("takes"), "take");
-    eq(RiTa.stem("taking"), "taking");
-
-    eq(RiTa.stem("hide"), "hide");
-    eq(RiTa.stem("hides"), "hide");
-    eq(RiTa.stem("hiding"), "hiding");
-
-    eq(RiTa.stem("become"), "become");
-    eq(RiTa.stem("becomes"), "become");
-    eq(RiTa.stem("becoming"), "becoming");
-
-    eq(RiTa.stem("gases"), "gas");
-    eq(RiTa.stem("buses"), "bus");
-    eq(RiTa.stem("happiness"), "happiness");
-    eq(RiTa.stem("terrible"), "terrible");
-
-    let test = "Stemming is funnier than a bummer";
-    let result = "Stemming is funnier than a bummer";
-    // TODO: RiTa.stem(pling) JS decapitalizes input whereas the java version does not
-    eq(RiTa.stem(test), result);
   });
 
   it('Should call randomOrdering', () => {
@@ -321,6 +320,10 @@ describe('RiTa.Core', () => {
       'goddesses', 'goddess',
       'tresses', 'tress',
       'murderesses', 'murderess',
+      'memories','memory',
+      'corpora','corpus',
+      'stimuli', 'stimulus',
+      'theses', 'thesis'
     ];
 
     let res1, res2, dbug = 0;

@@ -35,6 +35,7 @@ describe('RiTa.Conjugator', () => {
 
   it('Should correctly call presentParticiple', () => {
 
+    equal(RiTa.presentParticiple(""), "");
     equal(RiTa.presentParticiple("sleep"), "sleeping");
     equal(RiTa.presentParticiple("withhold"), "withholding");
 
@@ -57,19 +58,8 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.presentParticiple("bring"), "bringing");
     equal(RiTa.presentParticiple("speak"), "speaking");
 
-    equal(RiTa.presentParticiple("study "), "studying");
-    //space
-    equal(RiTa.presentParticiple(" study"), "studying");
-    //space
-    equal(RiTa.presentParticiple("study  "), "studying");
-    //double space
-    equal(RiTa.presentParticiple("  study"), "studying");
-    //double space
-    equal(RiTa.presentParticiple("study    "), "studying");
-    //tab space
-    equal(RiTa.presentParticiple(" study"), "studying");
-    //tab space
-    equal(RiTa.presentParticiple(""), "");
+    equal(RiTa.presentParticiple("study "), "studying"); // trim
+    equal(RiTa.presentParticiple(" study"), "studying"); // trim
   });
 
   it('Should correctly call conjugate', () => {

@@ -143,6 +143,10 @@ class RiTa {
     return RiTa._lexicon().rhymes(...arguments);
   }
 
+  static stem(word) {
+    return RiTa.stem(word);
+  }
+
   static stresses(text) {
     return RiTa._analyzer().analyze(text).stresses;
   }

@@ -116,7 +116,6 @@ class RE {
   }
 
   fire(word) {
-    //return this.truncate(Utils.trim(word)) + this.suffix;
     return this.truncate(word) + this.suffix;
   }
 

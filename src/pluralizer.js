@@ -1,6 +1,6 @@
+
 const RE = require("./util").RE;
 const MODALS = require("./util").MODALS;
-
 const DEFAULT_IS_PLURAL = /(ae|ia|s)$/;
 const DEFAULT_SINGULAR_RULE = RE("^.*s$", 1);
 
@@ -11,7 +11,6 @@ const SINGULAR_RULES = [
   RE("^(whizzes)$", 3),
   RE("^(tomatoes|kisses)$", 2),
   RE("^(to|wheez|ooz|us|enterpris|alcov|hous|hors|cas|daz|hiv|div|additiv)es$", 1), //End with: es -> e
-  //RE("(hous|hors|cas|daz|hiv|div|additiv)es$", 1), //End with: es -> e
   RE("(l|w)ives$", 3, "fe"),
   RE("(men|women)$", 2, "an"),
   RE("ves$", 3, "f"),
@@ -118,15 +117,17 @@ class Pluralizer {
       }
     }
 
-    return word;//throw Error(type+': no rules hit for "'+word+'"');
+    return word;
   }
 
   singularize(word, opts) {
-    return this.adjustNumber(word, 'singularize', (opts && opts.dbug));
+    return this.adjustNumber(word,
+      this.singularize.name, (opts && opts.dbug));
   }
 
   pluralize(word, opts) {
-    return this.adjustNumber(word, 'pluralize', (opts && opts.dbug));
+    return this.adjustNumber(word,
+      this.pluralize.name, (opts && opts.dbug));
   }
 
   isPlural(word, opts) {
@@ -138,8 +139,7 @@ class Pluralizer {
 
     if (MODALS.includes(word)) return true;
 
-    /*if (RiTa.stem(word) === word) {
-      console.log(word + ' failed stem test: ' + RiTa.stem(word) + ' === ' + word);
+    /*if (RiTa.stem(word) === word) { // removed Nov 1
       return false;
     }*/
 

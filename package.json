@@ -2,8 +2,9 @@
   "name": "rita-script",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
+    "build": "webpack",
     "test": "NODE_ENV=test mocha ./tests/*.js",
     "test-api": "NODE_ENV=test mocha ./tests/rita-api.js",
     "test-rita": "NODE_ENV=test mocha ./tests/rita-tests.js",
@@ -27,10 +28,12 @@
     "@types/antlr4": "^4.7.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.4",
+    "chai": "^4.2.0",
     "colors": "^1.3.3",
     "mocha": "^6.1.4",
     "npm-watch": "^0.6.0",
-    "chai": "^4.2.0",
-    "@types/chai": "^4.2.4"
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   }
 }
