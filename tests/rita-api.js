@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 const API = require('../api');
-const RiTa = require('../src/rita_api');
+const RiTa = require('../src/rita');
 
 describe('RiTa.API', () => {
 

@@ -1,10 +1,18 @@
-const expect = require('chai').expect;
-const RiTa = require('../src/rita_api');
-const Markov = require('../src/markov');
+// const expect = require('chai').expect;
+// const RiTa = require('../src/rita_api');
+// const Markov = require('../src/markov');
 
 //next: generateSentences with start tokens, then temp
 
+const Markov = RiTa.Markov;
+
 describe('RiTa.Markov', () => {
+
+  if (typeof module !== 'undefined') {
+    RiTa = require('../src/rita');
+    chai = require('chai');
+    expect = chai.expect;
+  }
 
   let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
 
@@ -69,7 +77,7 @@ describe('RiTa.Markov', () => {
   });
 
   it('should correctly call generateTokens', () => {
-    let toks, res, rm, txt;
+    let toks, res, rm, txt,part
 
     rm = new Markov(4);
     txt = "The young boy ate it. The fat boy gave up.";
@@ -78,7 +86,7 @@ describe('RiTa.Markov', () => {
 
     for (let i = 0; i < 5; i++) {
 
-      toks = rm.generateTokens(4);
+      let toks = rm.generateTokens(4);
       if (!toks || !toks.length) throw Error('no tokens');
 
       // All sequences of len=N must be in text
@@ -151,7 +159,7 @@ describe('RiTa.Markov', () => {
 
     for (let i = 0; i < 1; i++) {
 
-      toks = rm.generateTokens(4, { startTokens: start });
+      let toks = rm.generateTokens(4, { startTokens: start });
       //console.log(i, toks);
       if (!toks || !toks.length) throw Error('no tokens');
 
@@ -162,7 +170,7 @@ describe('RiTa.Markov', () => {
 
   it('should correctly call generateTokens.startArray', () => {
 
-    let rm, start, txt;
+    let rm, start, txt, part, res;
 
     rm = new Markov(2);
     start = ["The"];
@@ -172,7 +180,7 @@ describe('RiTa.Markov', () => {
 
     for (let i = 0; i < 5; i++) {
 
-      toks = rm.generateTokens(4, { startTokens: start });
+      let toks = rm.generateTokens(4, { startTokens: start });
       //console.log(i, toks);
       if (!toks || !toks.length) throw Error('no tokens');
 
@@ -195,7 +203,7 @@ describe('RiTa.Markov', () => {
 
     for (let i = 0; i < 5; i++) {
 
-      toks = rm.generateTokens(4, { startTokens: start });
+      let toks = rm.generateTokens(4, { startTokens: start });
       //console.log(i, toks);
       if (!toks || !toks.length) throw Error('no tokens');
 
@@ -213,7 +221,7 @@ describe('RiTa.Markov', () => {
 
   it('should correctly call generateTokens.start', () => {
 
-    let toks, res;
+    let toks, res, part;
 
     let rm = new Markov(2);
     let start = "The";
@@ -239,7 +247,7 @@ describe('RiTa.Markov', () => {
 
     rm = new Markov(4);
     rm.loadTokens(RiTa.tokenize(sample));
-    for (i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) {
       toks = rm.generateTokens(4, { startTokens: "I" });
       eq(toks.length, 4);
       eq(toks[0], "I");
@@ -251,7 +259,7 @@ describe('RiTa.Markov', () => {
   });
 
   it('should correctly call generateTokens.mlm.start', () => {
-    let mlms = 4, rm = new Markov(2, { maxLengthMatch: mlms });
+    let  toks, part, res, mlms = 4, rm = new Markov(2, { maxLengthMatch: mlms });
     let start = "The";
     let txt = "The young boy ate it. The fat boy gave up.";
 
@@ -259,7 +267,7 @@ describe('RiTa.Markov', () => {
 
     for (let i = 0; i < 5; i++) {
 
-      toks = rm.generateTokens(4, { startTokens: start });
+      let toks = rm.generateTokens(4, { startTokens: start });
       if (!toks || !toks.length) throw Error('no tokens');
 
       // All sequences of len=N must be in text
@@ -281,7 +289,7 @@ describe('RiTa.Markov', () => {
 
 
   it('should correctly call generateTokens.mlm.startArray', () => {
-    let mlms = 4;
+    let part, toks, res, mlms = 4;
     let rm = new Markov(3, { maxLengthMatch: mlms });
     let start = ["The", "young"];
     let txt = "The young boy ate it. A young boy gave up.";
@@ -290,7 +298,7 @@ describe('RiTa.Markov', () => {
 
     for (let i = 0; i < 5; i++) {
 
-      toks = rm.generateTokens(4, { startTokens: start});
+      toks = rm.generateTokens(4, { startTokens: start });
       if (!toks || !toks.length) throw Error('no tokens');
 
       // All sequences of len=N must be in text
@@ -339,7 +347,7 @@ describe('RiTa.Markov', () => {
 
     let sents = rm.generateSentences(5, { minLength: minLength, maxLength: maxLength });
     eq(sents.length, 5);
-    for (i = 0; i < sents.length; i++) {
+    for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
@@ -448,7 +456,7 @@ describe('RiTa.Markov', () => {
       ok(/[.?!]$/.test(res));
       let n = rm.n;
       for (let j = 0; j < arr.length - n; j++) {
-        partial = arr.slice(j, j + n);
+        let partial = arr.slice(j, j + n);
         //console.log(partial);
         partial = RiTa.untokenize(partial);
         ok(sample.indexOf(partial) > -1, partial)
@@ -469,7 +477,7 @@ describe('RiTa.Markov', () => {
 
       let n = rm.n;
       for (let j = 0; j < arr.length - n; j++) {
-        partial = arr.slice(j, j + n);
+        let partial = arr.slice(j, j + n);
         //console.log(partial);
         partial = RiTa.untokenize(partial);
         ok(sample.indexOf(partial) > -1, partial)
@@ -490,7 +498,7 @@ describe('RiTa.Markov', () => {
 
       let n = rm.n;
       for (let j = 0; j < arr.length - n; j++) {
-        partial = arr.slice(j, j + n);
+        let partial = arr.slice(j, j + n);
         //console.log(partial);
         partial = RiTa.untokenize(partial);
         ok(sample.indexOf(partial) > -1, partial)
@@ -536,7 +544,7 @@ describe('RiTa.Markov', () => {
 
       let n = rm.n;
       for (let j = 0; j < arr.length - n; j++) {
-        partial = arr.slice(j, j + n);
+        let partial = arr.slice(j, j + n);
         //console.log(partial);
         partial = RiTa.untokenize(partial);
         ok(sample.indexOf(partial) > -1, partial);
@@ -559,7 +567,7 @@ describe('RiTa.Markov', () => {
 
       let n = rm.n;
       for (let j = 0; j < arr.length - n; j++) {
-        partial = arr.slice(j, j + n);
+        let partial = arr.slice(j, j + n);
         //console.log(partial);
         partial = RiTa.untokenize(partial);
         ok(sample.indexOf(partial) > -1, partial);
@@ -582,7 +590,7 @@ describe('RiTa.Markov', () => {
 
       let n = rm.n;
       for (let j = 0; j < arr.length - n; j++) {
-        partial = arr.slice(j, j + n);
+        let partial = arr.slice(j, j + n);
         //console.log(partial);
         partial = RiTa.untokenize(partial);
         ok(sample.indexOf(partial) > -1, partial);
@@ -609,7 +617,7 @@ describe('RiTa.Markov', () => {
     eql(res, ['confident']);
 
     res = rm.completions("I"); // testing the sort
-    expec = ["did", "claimed", "had", "said", "could",
+    let expec = ["did", "claimed", "had", "said", "could",
       "wanted", "also", "achieved", "embarrassed"
     ];
     eql(res, expec);
@@ -664,7 +672,7 @@ describe('RiTa.Markov', () => {
 
     for (let i = 0; i < checks.length; i++) {
 
-      res = rm.probabilities(checks[i]);
+      let res = rm.probabilities(checks[i]);
       //console.log(checks[i] + ":", res, expected[i]);
       eql(res, expected[i]);
     }
@@ -809,7 +817,7 @@ describe('RiTa.Markov', () => {
     rm.loadTokens(words);
     eq(rm.probability(" "), 0);
 
-    rm2 = new Markov(3);
+    let rm2 = new Markov(3);
     rm2.loadTokens(RiTa.tokenize(sample));
     ok(rm2.probability("One") !== rm.probability("one"));
   });

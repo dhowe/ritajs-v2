@@ -1,7 +1,13 @@
-const expect = require('chai').expect;
-const RiTa = require('../src/rita_api');
+// const expect = require('chai').expect;
+// const RiTa = require('../src/rita_api');
 
 describe('RiTa.Lexicon', () => {
+  
+  if (typeof module !== 'undefined') {
+    RiTa = require('../src/rita');
+    chai = require('chai');
+    expect = chai.expect;
+  }
 
   it('Should correctly call randomWord', () => {
 
@@ -37,7 +43,7 @@ describe('RiTa.Lexicon', () => {
   });
 
   it('Should correctly call randomWord.nns', () => {
-    for (i = 0; i < 20; i++) {
+    for (let i = 0; i < 20; i++) {
       let result = RiTa.randomWord({ pos: "nns" });
       if (!RiTa.pluralizer.isPlural(result)) {
 
@@ -59,8 +65,8 @@ describe('RiTa.Lexicon', () => {
   it('Should correctly call randomWord.pos', () => {
 
     let pos = ["nn", "jj", "jjr", "wp"];
-    for (j = 0; j < pos.length; j++) {
-      for (i = 0; i < 5; i++) {
+    for (let j = 0; j < pos.length; j++) {
+      for (let i = 0; i < 5; i++) {
         let result = RiTa.randomWord({ pos: pos[j] });
         let best = RiTa.lexicon._bestPos(result);
         //console.log(result+": "+pos[j]+" ?= "+best);
@@ -71,7 +77,7 @@ describe('RiTa.Lexicon', () => {
 
 
   it('Should correctly call randomWord.syls', () => {
-    let i, result, result2, syllables, num;
+    let i, result, syllables, num;
     for (i = 0; i < 10; i++) {
       result = RiTa.randomWord({ syllableCount: 3 });
       syllables = RiTa.syllables(result);
@@ -91,8 +97,7 @@ describe('RiTa.Lexicon', () => {
 
   it('Should correctly call randomWord.pos.syls', () => {
     let result, syllables;
-
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       result = RiTa.randomWord({ syllableCount: 3, pos: "vbz" });
       ok(result.length > 0, "randomWord vbz: " + result);
       syllables = RiTa.syllables(result);
@@ -109,6 +114,7 @@ describe('RiTa.Lexicon', () => {
   });
 
   it('Should correctly call randomWord.pos.syls', () => {
+    let result, syllables;
     result = RiTa.randomWord({ syllableCount: 5, pos: "nns" });
     ok(result.length > 0, "randomWord nns: " + result);
     syllables = RiTa.syllables(result);
@@ -143,25 +149,25 @@ describe('RiTa.Lexicon', () => {
 
     result = RiTa.alliterations("cat");
     ok(result.length > 2000);
-    for (i = 0; i < result.length; i++) {
+    for (let i = 0; i < result.length; i++) {
       ok(RiTa.isAlliteration(result[i], "cat"));
     }
 
     result = RiTa.alliterations("dog");
     ok(result.length > 1000);
-    for (i = 0; i < result.length; i++) {
+    for (let i = 0; i < result.length; i++) {
       ok(RiTa.isAlliteration(result[i], "dog"));
     }
 
     result = RiTa.alliterations("dog", { matchMinLength: 15 });
     ok(result.length < 5, "got length=" + result.length);
-    for (i = 0; i < result.length; i++) {
+    for (let i = 0; i < result.length; i++) {
       ok(RiTa.isAlliteration(result[i], "dog"), 'FAIL1: ' + result[i]);
     }
 
     result = RiTa.alliterations("cat", { matchMinLength: 16 });
     ok(result.length < 15);
-    for (i = 0; i < result.length; i++) {
+    for (let i = 0; i < result.length; i++) {
       ok(RiTa.isAlliteration(result[i], "cat"), 'FAIL2: ' + result[i]);
     }
   });

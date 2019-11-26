@@ -1,7 +1,13 @@
-const expect = require('chai').expect;
-const RiTa = require('../src/rita_api');
+// const expect = require('chai').expect;
+// const RiTa = require('../src/rita_api');
 
 describe('RiTa.Tokenizer', () => {
+
+  if (typeof module !== 'undefined') {
+    RiTa = require('../src/rita');
+    chai = require('chai');
+    expect = chai.expect;
+  }
 
   it('Should correctly call tokenize', () => {
 
@@ -218,7 +224,7 @@ describe('RiTa.Tokenizer', () => {
     ];
 
     expect(inputs.length).eq(outputs.length);
-    for (i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
       expect(RiTa.untokenize(inputs[i])).eq(outputs[i]);
     }
   });

@@ -1,4 +1,6 @@
 const Util = require("./util");
+const Markov = require('./markov');
+const Grammar = require('./grammar');
 const RandGen = require('./random');
 const Stemmer = require('./stemmer');
 const Lexicon = require('./lexicon');
@@ -11,6 +13,7 @@ const Conjugator = require('./conjugator');
 const Pluralizer = require('./pluralizer');
 const LetterToSound = require("./rita_lts");
 const Syllabifier = require('./syllabifier');
+
 
 const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
 
@@ -37,11 +40,11 @@ class RiTa {
   }
 
   static createGrammar() {
-    return new (RiTa._grammar())(...arguments);
+    return new RiTa.Grammar(...arguments);
   }
 
   static createMarkov() {
-    return new (RiTa._markov())(...arguments);
+    return new RiTa.Markov(...arguments);
   }
 
   static env() {
@@ -185,21 +188,7 @@ class RiTa {
 
   /////////////////////////////////////////////////////////////////
 
-  static _markov() {
-    if (typeof RiTa.Markov === 'undefined') {
-      RiTa.Markov = require('./markov');
-    }
-    return RiTa.Markov;
-  }
-
-  static _grammar() {
-    if (typeof RiTa.LegacyGrammar === 'undefined') {
-      RiTa.LegacyGrammar = require('./grammar');
-    }
-    return RiTa.LegacyGrammar;
-  }
-
-  static _lexicon() {
+  static _lexicon() { // lazy load
     if (typeof RiTa.lexicon === 'undefined') {
       RiTa.lts = new LetterToSound(RiTa);
       RiTa.lexicon = new Lexicon(RiTa, require('./rita_dict'));
@@ -207,7 +196,7 @@ class RiTa {
     return RiTa.lexicon;
   }
 
-  static _analyzer() {
+  static _analyzer() { // lazy load
     if (typeof RiTa.analyzer === 'undefined') {
       RiTa._lexicon();
       RiTa.analyzer = new Analyzer(RiTa);
@@ -215,6 +204,11 @@ class RiTa {
     return RiTa.analyzer;
   }
 }
+
+
+// CLASSES
+RiTa.Markov = Markov;
+RiTa.Grammar = Grammar;
 
 // COMPONENTS
 RiTa.stemmer = new Stemmer(RiTa);

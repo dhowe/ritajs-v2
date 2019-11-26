@@ -1,4 +1,4 @@
-const RiTa = require('./rita_api');
+//const RiTa = require('./rita_api');
 
 // TODO:
 /* invertProbabilities arg (or add temperature arg)
@@ -12,6 +12,7 @@ const RiTa = require('./rita_api');
 
 const MAX_GENERATION_ATTEMPTS = 999;
 const SSDLM = '<s/>';
+
 class Markov {
 
   constructor(n, opts) {

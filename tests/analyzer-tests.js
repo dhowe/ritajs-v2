@@ -1,7 +1,13 @@
-const expect = require('chai').expect;
-const RiTa = require('../src/rita_api');
+// const expect = require('chai').expect;
+// const RiTa = require('../src/rita_api');
 
 describe('RiTa.Analyzer', () => {
+  
+  if (typeof module !== 'undefined') {
+    RiTa = require('../src/rita');
+    chai = require('chai');
+    expect = chai.expect;
+  }
 
   it('Should correctly call analyze', () => {
 

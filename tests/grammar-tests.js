@@ -1,8 +1,16 @@
-const expect = require('chai').expect;
-const RiTa = require('../src/rita_api');
-const RiGrammar = require('../src/grammar');
+// const expect = require('chai').expect;
+// const RiTa = require('../src/rita_api');
+// const Grammar = require('../src/grammar');
 
-describe('RiTa.LegacyGrammar', () => {
+const Grammar = RiTa.Grammar;
+
+describe('RiTa.Grammar', () => {
+  
+  if (typeof module !== 'undefined') {
+    RiTa = require('../src/rita');
+    chai = require('chai');
+    expect = chai.expect;
+  }
 
   let sentenceGrammarJSON = {
     "<start>": "<noun_phrase> <verb_phrase>.",
@@ -21,14 +29,14 @@ describe('RiTa.LegacyGrammar', () => {
     "<noun>": ["woman", "man"],
     "<verb>": "shoots"
   };
-  
+
   it('should correctly call constructor', () => {
-    ok(typeof new RiGrammar() !== 'undefined');
+    ok(typeof new Grammar() !== 'undefined');
   });
 
   it("should correctly call load", () => {
 
-    let rg = new RiGrammar();
+    let rg = new Grammar();
     ok(typeof rg.rules !== 'undefined');
     ok(typeof rg.rules['<start>'] === 'undefined');
     ok(typeof rg.rules['<noun_phrase>'] === 'undefined');
@@ -45,7 +53,7 @@ describe('RiTa.LegacyGrammar', () => {
   });
 
   it("should correctly call addRule", () => {
-    let rg = new RiGrammar();
+    let rg = new Grammar();
     rg.addRule("<start>", "<pet>");
     ok(typeof rg.rules["<start>"] !== 'undefined');
     ok(rg.hasRule("<start>"));
@@ -57,8 +65,8 @@ describe('RiTa.LegacyGrammar', () => {
   it("should correctly call hasRule", () => {
 
     let g = [
-      new RiGrammar(sentenceGrammarJSON),
-      new RiGrammar(sentenceGrammarJSON2)
+      new Grammar(sentenceGrammarJSON),
+      new Grammar(sentenceGrammarJSON2)
     ];
 
     for (let i = 0; i < g.length; i++) {
@@ -96,7 +104,7 @@ describe('RiTa.LegacyGrammar', () => {
   });
 
   it("should correctly call removeRule", () => {
-    let rg1 = new RiGrammar(sentenceGrammarJSON);
+    let rg1 = new Grammar(sentenceGrammarJSON);
 
     ok(rg1.rules['<start>']);
     ok(rg1.rules['<noun_phrase>']);
@@ -112,7 +120,7 @@ describe('RiTa.LegacyGrammar', () => {
     rg1.removeRule(null);
     rg1.removeRule(undefined);
 
-    rg1 = new RiGrammar(sentenceGrammarJSON2);
+    rg1 = new Grammar(sentenceGrammarJSON2);
 
     ok(rg1.rules['<start>']);
     ok(rg1.rules['<noun_phrase>']);
@@ -131,7 +139,7 @@ describe('RiTa.LegacyGrammar', () => {
 
   it("should correctly call expand", () => {
 
-    let rg = new RiGrammar();
+    let rg = new Grammar();
     rg.addRule("<start>", "pet");
     eq(rg.expand(), "pet");
 
@@ -231,7 +239,7 @@ describe('RiTa.LegacyGrammar', () => {
 
   it("should correctly call evaluate", () => {
 
-    let rg = new RiGrammar();
+    let rg = new Grammar();
     rg.addRule("<start>", "pet");
     eq(rg.expand(), "pet");
 
@@ -330,7 +338,7 @@ describe('RiTa.LegacyGrammar', () => {
 
   it("should correctly call expandFrom", () => {
 
-    let rg = new RiGrammar();
+    let rg = new Grammar();
 
     rg.reset();
     rg.addRule("<start>", "<pet>");
@@ -357,7 +365,7 @@ describe('RiTa.LegacyGrammar', () => {
 
   it("should correctly call expandFrom.weights", () => {
 
-    let rg = new RiGrammar();
+    let rg = new Grammar();
 
     rg.reset();
     rg.addRule("<start>", "<pet>");
@@ -382,38 +390,38 @@ describe('RiTa.LegacyGrammar', () => {
     let rg, res, s;
 
     s = "{ \"<start>\": \"hello &#124; name\" }";
-    rg = new RiGrammar(s);
+    rg = new Grammar(s);
     res = rg.expand();
     //console.log(res);
     ok(res === "hello | name");
 
     s = "{ \"<start>\": \"hello: name\" }";
-    rg = new RiGrammar(s);
+    rg = new Grammar(s);
     res = rg.expand();
     ok(res === "hello: name");
 
     s = "{ \"<start>\": \"&#8220;hello!&#8221;\" }";
-    rg = new RiGrammar(s);
+    rg = new Grammar(s);
 
     s = "{ \"<start>\": \"&lt;start&gt;\" }";
-    rg = new RiGrammar(s);
+    rg = new Grammar(s);
     res = rg.expand();
     //console.log(res);
     ok(res === "<start>");
 
     s = "{ \"<start>\": \"I don&#96;t want it.\" }";
-    rg = new RiGrammar(s);
+    rg = new Grammar(s);
     res = rg.expand();
     //console.log(res);
     ok(res === "I don`t want it.");
 
     s = "{ \"<start>\": \"&#39;I really don&#39;t&#39;\" }";
-    rg = new RiGrammar(s);
+    rg = new Grammar(s);
     res = rg.expand();
     ok(res === "'I really don't'");
 
     s = "{ \"<start>\": \"hello | name\" }";
-    rg = new RiGrammar(s);
+    rg = new Grammar(s);
     for (let i = 0; i < 10; i++) {
       res = rg.expand();
       ok(res === "hello" || res === "name");
@@ -424,7 +432,7 @@ describe('RiTa.LegacyGrammar', () => {
     let temp = function() {
       return Math.random() < 0.5 ? 'hot' : 'cold';
     }
-    let rg = new RiGrammar();
+    let rg = new Grammar();
     rg.addRule("<start>", "<first> | <second>");
     rg.addRule("<first>", "the <pet> <action> were `temp()`");
     rg.addRule("<second>", "the <action> of the `temp()` <pet>");
@@ -445,11 +453,11 @@ describe('RiTa.LegacyGrammar', () => {
       '<verb>': 'rhino'
     };
 
-    newrule = function(n) { // global: for exec testing
+    let newrule = function(n) { // global: for exec testing
       return '<verb>';
     }
 
-    rg = new RiGrammar(newruleg);
+    rg = new Grammar(newruleg);
 
     for (let i = 0; i < 10; i++) {
       let res = rg.expand();
@@ -466,7 +474,7 @@ describe('RiTa.LegacyGrammar', () => {
       return "rhino";
     }
 
-    rg = new RiGrammar(newruleg2);
+    rg = new Grammar(newruleg2);
     for (let i = 0; i < 10; i++) {
       let res = rg.expand(staticFun);
       //console.log(res);
@@ -478,7 +486,7 @@ describe('RiTa.LegacyGrammar', () => {
       '<noun>': 'dog | cat | mouse',
     };
 
-    rg = new RiGrammar(newruleg2);
+    rg = new Grammar(newruleg2);
     for (let i = 0; i < 10; i++) {
       let res = rg.expand();
       //console.log(res);
@@ -495,11 +503,10 @@ describe('RiTa.LegacyGrammar', () => {
       return !isNaN(parseFloat(n)) && isFinite(n);
     }
 
-    let res, i;
-    rg = new RiGrammar();
+    let res, rg = new Grammar();
 
     rg.addRule("<start>", "`getFloat()`");
-    for (i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
 
       res = rg.expandFrom("<start>", this);
       //console.log(res);
@@ -508,7 +515,7 @@ describe('RiTa.LegacyGrammar', () => {
 
     rg.reset();
     rg.addRule("<start>", "`adj(2)`");
-    for (i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
 
       res = rg.expandFrom("<start>", this);
       //console.log(res);

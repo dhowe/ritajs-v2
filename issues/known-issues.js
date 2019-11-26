@@ -4,6 +4,11 @@ const RiScript = require('../src/riscript');
 
 describe('RiTa.KnownIssues', () => {
 
+  it('0: Should correctly handle transforms on literals', function() {
+    expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many "teeth" do you have?');
+    expect(RiTa.evaluate('That is (ant).articlize().')).eq('That is an ant.');
+  });
+
   it('1: pluralize or singularize fails', () => {
     let testPairs = [ ]; // FAILING ITEMS HERE
     let res1, res2, res3, i = 0, dbug = true;
