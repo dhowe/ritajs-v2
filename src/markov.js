@@ -1,14 +1,13 @@
-//const RiTa = require('./rita_api');
-
 // TODO:
-/* invertProbabilities arg (or add temperature arg)
+/* add 'temperature' arg
   2 methods (n = number of elements):
     P[k] = lerp(P[k], [Pn-k], temp);
     P[k] = P[int(k+t*n)%n], then interpolate between 2 steps
 */
 // allow for real-time weighting ala atken
 
-//next: generateSentences with start tokens and mlm
+// NEXT: generateSentences with mlm
+// NEXT: generateWith (inverse-tree) - postpone
 
 const MAX_GENERATION_ATTEMPTS = 999;
 const SSDLM = '<s/>';
@@ -20,8 +19,8 @@ class Markov {
     this.input = [];
     this.root = new Node(null, 'ROOT');
     this.mlm = opts && opts.maxLengthMatch || 0;
-    this.optimizeMemory = opts && opts.optimizeMemory || 0;
-    if (!this.optimizeMemory) this.inverse = new Node(null, 'REVR');
+    //this.optimizeMemory = opts && opts.optimizeMemory || 0;
+    //if (!this.optimizeMemory) this.inverse = new Node(null, 'REV');
   }
 
   loadTokens(tokens) {
