@@ -313,7 +313,7 @@ class Markov {
     if (post) { // fill the center
 
       if (pre.length + post.length > this.n) {
-        err('Sum of pre.length && post.length must be < N, was ' +
+        err('Sum of pre.length && post.length must be <= N, was ' +
           (pre.length + post.length));
       }
 
