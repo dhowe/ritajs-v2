@@ -2,15 +2,15 @@
 // const RiTa = require('../src/rita_api');
 // const Grammar = require('../src/grammar');
 
-const Grammar = RiTa.Grammar;
 
 describe('RiTa.Grammar', () => {
-  
+
   if (typeof module !== 'undefined') {
     RiTa = require('../src/rita');
     chai = require('chai');
     expect = chai.expect;
   }
+  const Grammar = RiTa.Grammar;
 
   let sentenceGrammarJSON = {
     "<start>": "<noun_phrase> <verb_phrase>.",

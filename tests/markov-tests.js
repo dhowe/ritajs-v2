@@ -4,21 +4,17 @@
 
 //next: generateSentences with start tokens, then temp
 
-const Markov = RiTa.Markov;
-
 describe('RiTa.Markov', () => {
-
   if (typeof module !== 'undefined') {
     RiTa = require('../src/rita');
     chai = require('chai');
     expect = chai.expect;
   }
+  const Markov = RiTa.Markov;
 
   let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
 
   let sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my nodesfriends threw a party at his house last month. He asked me to " + "come to his party and bring a date. However, I did not have a " + "girlfriend. One of my other friends, who had a date to go to the " + "party with, asked me about my date. I did not want to be embarrassed, " + "so I claimed that I had a lot of work to do. I said I could easily find" + " a date even better than his if I wanted to. I also told him that his " + "date was ugly. I achieved power to help me feel confident; however, I " + "embarrassed my friend and his date. Although this lie helped me at the " + "time, since then it has made me look down on myself. After all, I did " + "occasionally want to be embarrassed.";
-
-  let sample3 = "One reason people lie is to achieve personal power. One reason people fly is wings. One reason people lie was for fun. One reason people lie is for sport. One ton people lie for the sport. One reason people lie could be for games. One reason people lie would be for games.";
 
   it('should correctly call Markov', () => {
     ok(typeof new Markov(3) !== 'undefined');
@@ -45,6 +41,10 @@ describe('RiTa.Markov', () => {
     let toks = rm._initSentence();
     eq(toks.length, 1);
     eq(toks[0].token, 'The');
+
+    rm = new Markov(4);
+    rm.loadSentences(RiTa.sentences(sample));
+    eq(rm._flatten(rm._initSentence(['I', 'also'])), "I also");
   });
 
   function distribution(res, dump) {
@@ -77,7 +77,7 @@ describe('RiTa.Markov', () => {
   });
 
   it('should correctly call generateTokens', () => {
-    let toks, res, rm, txt,part
+    let toks, res, rm, txt, part
 
     rm = new Markov(4);
     txt = "The young boy ate it. The fat boy gave up.";
@@ -259,7 +259,7 @@ describe('RiTa.Markov', () => {
   });
 
   it('should correctly call generateTokens.mlm.start', () => {
-    let  toks, part, res, mlms = 4, rm = new Markov(2, { maxLengthMatch: mlms });
+    let toks, part, res, mlms = 4, rm = new Markov(2, { maxLengthMatch: mlms });
     let start = "The";
     let txt = "The young boy ate it. The fat boy gave up.";
 
@@ -337,6 +337,31 @@ describe('RiTa.Markov', () => {
     RiTa.SILENT = silent;
   });
 
+  // it('should correctly call generateSentence.start', () => {
+  //   // let silent = RiTa.SILENT;
+  //   RiTa.SILENT = false;// supress duplicate messages
+  //   let rm = new Markov(4);
+  //   let start = "I";
+  //   rm.loadSentences(RiTa.sentences(sample));
+  //   for (let i = 0; i < 5; i++) {
+  //     let s = rm.generateSentence({ startTokens: start });
+  //     console.log(i + ") " + s);
+  //     ok(s.startsWith(start), "FAIL: bad start word in '" + s + "'");
+  //     ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
+  //     let num = RiTa.tokenize(s).length;
+  //     ok(num >= 5 && num <= 35 + i);
+  //   }
+  //   //RiTa.SILENT = silent;
+  // });
+  //
+  // it('should correctly call _search', () => {
+  //   let rm = new Markov(4);
+  //   rm.loadSentences(RiTa.sentences(sample));
+  //   console.log('out1',rm._flatten(rm._search(['One', 'reason'])));
+  //   // console.log(rm._search(['Achieving']).token);
+  //   // console.log(rm._search(['I']).token);
+  // });
+
 
   it('should correctly call generateSentences.minmax', () => {
     let silent = RiTa.SILENT;
@@ -369,79 +394,85 @@ describe('RiTa.Markov', () => {
     RiTa.SILENT = silent;
   });
 
+  it('should correctly call generateSentence.start', () => {
+    let silent = RiTa.SILENT;
+    RiTa.SILENT = true;// supress duplicate messages
+    let rm = new Markov(4);
+    let start = 'One';
+    rm.loadSentences(RiTa.sentences(sample));
+    for (let i = 0; i < 5; i++) {
+      s = rm.generateSentence({ startTokens: start });
+      //console.log(i + ") " + s);
+      ok(s.startsWith(start));
+    }
 
-  if (false) {
-    it('should correctly call generateSentence.start', () => {
-      let rm = new Markov(4);
-      rm.loadSentences(RiTa.sentences(sample));
-      for (let i = 0; i < 5; i++) {
-        s = rm.generateSentence({ startTokens: 'One' });
-        //onsole.log(i + ") " + s);
-        ok(s.startsWith('One'));
-      }
+    start = 'Achieving';
+    for (i = 0; i < 5; i++) {
+      arr = rm.generateSentences(1, { startTokens: start });
+      eq(arr.length, 1);
+      ok(arr[0].startsWith(start));
+    }
 
-      start = 'Achieving';
-      for (i = 0; i < 5; i++) {
-        arr = rm.generateSentences(1, { startTokens: start });
-        eq(arr.length, 1);
-        ok(arr[0].startsWith(start));
-      }
+    start = 'I';
+    for (i = 0; i < 5; i++) {
+      arr = rm.generateSentences(2, { startTokens: start });
+      eq(arr.length, 2);
+      ok(arr[0].startsWith(start));
+    }
+    RiTa.SILENT = silent;
+  });
 
-      start = 'I';
-      for (i = 0; i < 5; i++) {
-        arr = rm.generateSentences(2, { startTokens: start });
-        eq(arr.length, 2);
-        ok(arr[0].startsWith(start));
-      }
-    });
+  it('should correctly call generateSentence.startArray', () => {
+    let silent = RiTa.SILENT;
+    RiTa.SILENT = true;// supress duplicate messages
 
-    it('should correctly call generateSentence.startArray', () => {
+    let rm = new Markov(4);
+    let start = ['One'];
+    rm.loadSentences(RiTa.sentences(sample));
+    for (let i = 0; i < 5; i++) {
+      s = rm.generateSentence({ startTokens: start });
+      //console.log(i + ") " + s);
+      ok(s.startsWith(start));
+    }
 
-      // start: one word
-      let rm = new Markov(4);
-      rm.loadSentences(RiTa.sentences(sample));
-      start = ['One'];
-      for (let i = 0; i < 5; i++) {
-        s = rm.generateSentence({ startTokens: start });
-        ok(s.startsWith(start[0]));
-      }
-      start = ['Achieving'];
-      for (i = 0; i < 5; i++) {
-        arr = rm.generateSentences(1, { startTokens: start });
-        eq(arr.length, 1);
-        ok(arr[0].startsWith(start[0]));
-      }
+    start = ['Achieving'];
+    for (i = 0; i < 5; i++) {
+      arr = rm.generateSentences(1, { startTokens: start });
+      eq(arr.length, 1);
+      ok(arr[0].startsWith(start));
+    }
 
-      start = ['I'];
-      for (i = 0; i < 5; i++) {
-        arr = rm.generateSentences(2, { startTokens: start });
-        eq(arr.length, 2);
-        ok(arr[0].startsWith(start[0]));
-      }
+    start = ['I'];
+    for (i = 0; i < 5; i++) {
+      arr = rm.generateSentences(2, { startTokens: start });
+      eq(arr.length, 2);
+      ok(arr[0].startsWith(start));
+    }
 
-      // start: two words
-      rm = new Markov(4);
-      rm.loadSentences(RiTa.sentences(sample));
-      start = ['One', 'reason'];
-      for (let i = 0; i < 5; i++) {
-        s = rm.generateSentence({ startTokens: start });
-        ok(s.startsWith(start.join(' ')));
-      }
-      start = ['Achieving', 'personal'];
-      for (i = 0; i < 5; i++) {
-        arr = rm.generateSentences(1, { startTokens: start });
-        eq(arr.length, 1);
-        ok(arr[0].startsWith(start.join(' ')));
-      }
+    rm = new Markov(4);
+    rm.loadSentences(RiTa.sentences(sample));
+    start = ['One', 'reason'];
+    for (let i = 0; i < 1; i++) {
+      s = rm.generateSentence({ startTokens: start });
+      ok(s.startsWith(start.join(' ')));
+    }
 
-      start = ['I', 'also'];
-      for (i = 0; i < 5; i++) {
-        arr = rm.generateSentences(2, { startTokens: start });
-        eq(arr.length, 2);
-        ok(arr[0].startsWith(start.join(' ')));
-      }
-    });
-  }
+    start = ['Achieving', 'personal'];
+    for (i = 0; i < 5; i++) {
+      arr = rm.generateSentences(1, { startTokens: start });
+      eq(arr.length, 1);
+      ok(arr[0].startsWith(start.join(' ')));
+    }
+
+    start = ['I', 'also'];
+    for (i = 0; i < 5; i++) {
+      arr = rm.generateSentences(1, { startTokens: start });
+      eq(arr.length, 1);
+      ok(arr[0].startsWith(start.join(' ')));
+    }
+
+    RiTa.SILENT = silent;
+  });
 
   it('should correctly call generateUntil', () => {
 
