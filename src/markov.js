@@ -280,9 +280,8 @@ class Markov {
       includeTokens = RiTa.tokenize(includeTokens);
     }
 
-    // find the first half, then call generate sentence with last few as
-    // startTokens, then validate.
-
+    // find the first half (sentence start through includeTokens)
+    // then call generateSentence with these as startTokens.
     while (result.length < num) {
 
       if (!tokens) {
@@ -300,22 +299,18 @@ class Markov {
         if (!next && fail(tokens)) continue; // possible if all children excluded
 
         tokens.push(next);
-        //console.log('add ', next.token + ' -> ' + this._flatten(tokens).split(' '), next.children);
+
         if (next.child(ST)) {
           let start = tokens.reverse().map(t => t.token);
           //console.log('HIT!', start);
+
           // now generate the rest of the sentence
           let sent = this.generateSentence({ startTokens: start, minLength: start.length });
-          if (!sent || result.includes(sent)) {
-            fail(tokens);
-            continue;
-          }
+          if (!sent || result.includes(sent) && fail(tokens)) continue;
+
           result.push(sent); // got one
         }
       }
-
-      //console.log("FAIL(" + result.length + ")", (tokens ? tokens.length + "" : "0") + " words",
-      //tries + " tries\n------------------------------------------");
 
       fail(tokens);
     }
