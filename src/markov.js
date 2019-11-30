@@ -135,16 +135,15 @@ class Markov {
         if ((!parent || parent.isLeaf()) && fail(tokens)) continue;
 
         let next = this.selectNext(parent, tokens, temperature);
-        if (!next) {
-          //console.log("NEXT IS NULL: ", this._flatten(tokens));
-          fail(tokens);
-          continue; // possible if all children excluded
-        }
+        if (!next && fail(tokens)) continue; // possible if all children excluded
 
         tokens.push(next);
         if (tokens.length >= minLength) {
           let sent = this._validateSentence(result, tokens, allowDuplicates);
-          if (sent) result.push(sent);
+          if (sent) {
+            result.push(sent);
+            break;
+          }
         }
       }
 
@@ -153,6 +152,7 @@ class Markov {
 
       fail(tokens);
     }
+
     return result;
   }
 
