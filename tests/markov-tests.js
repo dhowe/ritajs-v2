@@ -4,6 +4,8 @@
 
 //next: generateSentences with start tokens, then temp
 
+// TODO: validate case where startTokens is longer than n
+
 describe('RiTa.Markov', () => {
   if (typeof module !== 'undefined') {
     RiTa = require('../src/rita');
@@ -14,8 +16,11 @@ describe('RiTa.Markov', () => {
 
   let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
 
-  let sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my nodesfriends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself. After all, I did occasionally want to be embarrassed.";
+  let sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself. After all, I did occasionally want to be embarrassed.";
 
+  let sample3 = sample + ' One reason people are dishonest is to achieve power.';
+
+  //console.log(sample+'\n\n'+sample2);
   it('should correctly call Markov', () => {
     ok(typeof new Markov(3) !== 'undefined');
   });
@@ -86,7 +91,7 @@ describe('RiTa.Markov', () => {
 
     for (let i = 0; i < 5; i++) {
 
-      let toks = rm.generateTokens(4);
+      toks = rm.generateTokens(4);
       if (!toks || !toks.length) throw Error('no tokens');
 
       // All sequences of len=N must be in text
@@ -259,7 +264,7 @@ describe('RiTa.Markov', () => {
   });
 
   it('should correctly call generateTokens.mlm.start', () => {
-    let toks, part, res, mlms = 4, rm = new Markov(2, { maxLengthMatch: mlms });
+    let part, res, mlms = 4, rm = new Markov(2, { maxLengthMatch: mlms });
     let start = "The";
     let txt = "The young boy ate it. The fat boy gave up.";
 
@@ -337,31 +342,60 @@ describe('RiTa.Markov', () => {
     RiTa.SILENT = silent;
   });
 
-  // it('should correctly call generateSentence.start', () => {
-  //   // let silent = RiTa.SILENT;
-  //   RiTa.SILENT = false;// supress duplicate messages
-  //   let rm = new Markov(4);
-  //   let start = "I";
-  //   rm.loadSentences(RiTa.sentences(sample));
-  //   for (let i = 0; i < 5; i++) {
-  //     let s = rm.generateSentence({ startTokens: start });
-  //     console.log(i + ") " + s);
-  //     ok(s.startsWith(start), "FAIL: bad start word in '" + s + "'");
-  //     ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
-  //     let num = RiTa.tokenize(s).length;
-  //     ok(num >= 5 && num <= 35 + i);
-  //   }
-  //   //RiTa.SILENT = silent;
-  // });
-  //
-  // it('should correctly call _search', () => {
-  //   let rm = new Markov(4);
-  //   rm.loadSentences(RiTa.sentences(sample));
-  //   console.log('out1',rm._flatten(rm._search(['One', 'reason'])));
-  //   // console.log(rm._search(['Achieving']).token);
-  //   // console.log(rm._search(['I']).token);
+  it('should correctly call generateSentences', () => {
+    let silent = RiTa.SILENT;
+    RiTa.SILENT = true;// supress duplicate messages
+    let rm = new Markov(4);
+
+    rm.loadSentences(RiTa.sentences(sample));
+
+    let sents = rm.generateSentences(5);
+    eq(sents.length, 5);
+    for (let i = 0; i < sents.length; i++) {
+      let s = sents[i];
+      eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
+      ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
+    }
+    RiTa.SILENT = silent;
+  });
+
+  // it('should correctly call _initSentenceWith', () => {
+  //   let rm = new Markov(3);
+  //   let include = ['power'];
+  //   rm.loadSentences("You have power.");
+  //   rm.print(rm.inverse);
+  //   let toks = rm._initSentenceWith(include);
+  //   console.log(rm._flatten(toks));
   // });
 
+  it('should correctly call generateSentencesWith', () => {
+
+    let rm = new Markov(4);
+    let include = 'power';
+    rm.loadSentences("You have power.");
+    let s = rm.generateSentencesWith(1, include)[0];
+    //eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
+    ok(/^[A-Z].*[!?.]$/.test(s), "FAIL: invalid sentence: '" + s + "'");
+    ok(s.includes(include), "FAIL: include='" + include + "' not found in '" + s + "'");
+  });
+
+  it('should correctly call next-generateSentences With', () => {
+
+    let rm = new Markov(4);
+    let include = 'power';
+    rm.loadSentences(RiTa.sentences(sample));
+    // /rm.print(rm.inverse);
+    //console.log(rm.inverse.children);
+    let sents = rm.generateSentencesWith(5, include);
+    eq(sents.length, 5);
+    for (let i = 0; i < sents.length; i++) {
+      let s = sents[i];
+      console.log(i, s);
+      eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
+      ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
+      ok(s.includes(include), "FAIL: include='" + include + "' not found in '" + s + "'");
+    }
+  });
 
   it('should correctly call generateSentences.minmax', () => {
     let silent = RiTa.SILENT;
@@ -474,6 +508,71 @@ describe('RiTa.Markov', () => {
 
     RiTa.SILENT = silent;
   });
+
+  it('should correctly call generateSentence.mlm', () => {
+    let silent = RiTa.SILENT;
+    RiTa.SILENT = true;// supress duplicate messages
+    let mlms = 6, rm = new Markov(3, { maxLengthMatch: mlms });
+    rm.loadSentences(RiTa.sentences(sample3));
+    //console.log(rm.toString());
+    for (let i = 0; i < 5; i++) {
+
+      let sent = rm.generateSentence();
+      let toks = RiTa.tokenize(sent);
+      //console.log(i, sent);
+
+      // All sequences of len=N must be in text
+      for (let j = 0; j <= toks.length - rm.n; j++) {
+        let part = toks.slice(j, j + rm.n);
+        let res = RiTa.untokenize(part);
+        ok(sample3.indexOf(res) > -1, 'output not found in text: "' + res + '"');
+      }
+
+      // All sequences of len=mlms+1 must NOT  be in text
+      for (let j = 0; j <= toks.length - (mlms + 1); j++) {
+        let part = toks.slice(j, j + (mlms + 1));
+        let res = RiTa.untokenize(part);
+        ok(sample3.indexOf(res) < 0, 'Output: "' + sent
+          + '"\nBut "' + res + '" was found in input:\n' + sample + '\n\n' + rm.input);
+      }
+    }
+    // TODO: add more
+
+    RiTa.SILENT = silent;
+  });
+
+  it('should correctly call generateSentences.mlm', () => {
+    let silent = RiTa.SILENT;
+    RiTa.SILENT = true;// supress duplicate messages
+    let mlms = 10, rm = new Markov(3, { maxLengthMatch: mlms });
+    rm.loadSentences(RiTa.sentences(sample3));
+    let sents = rm.generateSentences(5);
+    for (let i = 0; i < sents.length; i++) {
+      let sent = sents[i];
+      let toks = RiTa.tokenize(sent);
+      //console.log(i, sent);
+
+      // All sequences of len=N must be in text
+      for (let j = 0; j <= toks.length - rm.n; j++) {
+        let part = toks.slice(j, j + rm.n);
+        let res = RiTa.untokenize(part);
+        ok(sample3.indexOf(res) > -1, 'output not found in text: "' + res + '"');
+      }
+
+      // All sequences of len=mlms+1 must NOT  be in text
+      for (let j = 0; j <= toks.length - (mlms + 1); j++) {
+        let part = toks.slice(j, j + (mlms + 1));
+        let res = RiTa.untokenize(part);
+        ok(sample3.indexOf(res) < 0, 'Output: "' + sent
+          + '"\nBut "' + res + '" was found in input:\n' + sample + '\n\n' + rm.input);
+      }
+    }
+    // TODO: add more
+
+    RiTa.SILENT = silent;
+  });
+
+  ////////////////////////////////////////////////////////////////////////
 
   it('should correctly call generateUntil', () => {
 
