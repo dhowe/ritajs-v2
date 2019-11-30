@@ -369,28 +369,23 @@ describe('RiTa.Markov', () => {
   // });
 
   it('should correctly call generateSentencesWith', () => {
-
-    let rm = new Markov(4);
-    let include = 'power';
+    let rm, include, s;
+    rm = new Markov(4);
+    include = 'power';
     rm.loadSentences("You have power.");
-    let s = rm.generateSentencesWith(1, include)[0];
+    s = rm.generateSentencesWith(1, include)[0];
     //eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
     ok(/^[A-Z].*[!?.]$/.test(s), "FAIL: invalid sentence: '" + s + "'");
     ok(s.includes(include), "FAIL: include='" + include + "' not found in '" + s + "'");
-  });
 
-  it('should correctly call next-generateSentences With', () => {
-
-    let rm = new Markov(4);
-    let include = 'power';
+    rm = new Markov(4);
+    include = 'power';
     rm.loadSentences(RiTa.sentences(sample));
-    // /rm.print(rm.inverse);
-    //console.log(rm.inverse.children);
-    let sents = rm.generateSentencesWith(5, include);
-    eq(sents.length, 5);
+    let sents = rm.generateSentencesWith(2, include);
+    eq(sents.length, 2);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
-      console.log(i, s);
+      // /console.log(i, s);
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
       ok(s.includes(include), "FAIL: include='" + include + "' not found in '" + s + "'");

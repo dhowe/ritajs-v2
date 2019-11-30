@@ -114,7 +114,7 @@ class Markov {
   generateSentencesWith(num, includeTokens, { minLength = 5, maxLength = 35, allowDuplicates, temperature = 0 } = {}) {
     let result = [], tokens, tries = 0, fail = () => {
       tokens = undefined;
-      if (++tries >= Markov.MAX_GENERATION_ATTEMPTS) throwError(tries);
+      if (++tries >= Markov.MAX_GENERATION_ATTEMPTS) throwError(tries, result);
       return 1;
     }
 
@@ -150,9 +150,13 @@ class Markov {
         if (next.child(ST)) {
           let start = tokens.reverse().map(t => t.token);
           //console.log('HIT!', start);
+          // now generate the rest of the sentence
           let sent = this.generateSentence({ startTokens: start, minLength: start.length });
-          if (!sent || result.includes(sent)) fail();
-          result.push(sent);
+          if (!sent || result.includes(sent)) {
+            fail(tokens);
+            continue;
+          }
+          result.push(sent); // got one
         }
       }
 
@@ -281,38 +285,6 @@ class Markov {
     return probs;
   }
 
-  generateTokensOrig(num, { startTokens } = {}) {
-
-    let tokens, tries = 0, fail = (toks) => {
-      if (toks) console.log('FAIL: ' + this._flatten(tokens));
-      tokens = undefined;
-      tries++;
-      return 1;
-    }
-
-    if (typeof startTokens === 'string') {
-      startTokens = RiTa.tokenize(startTokens);
-    }
-
-    while (tries < Markov.MAX_GENERATION_ATTEMPTS) {
-
-      if (!tokens) tokens = this._initTokens(startTokens);
-
-      let parent = this._search(tokens);
-      if ((!parent || parent.isLeaf()) && fail()) continue;
-
-      //let next = parent.chooseChild(tokens, this.mlm, this.input);
-      let next = parent.pselect();
-
-      // if we have enough tokens, we're done
-      if (tokens.push(next) >= num) return tokens.map(n => n.token);
-    }
-
-    throw Error('\n\nFailed after ' + tries + ' tries; you may' +
-      ' need to add more text to the model' + (this.mlm ?
-        ' or increase the this.mlm parameter' : ''));
-  }
-
   generateSentence() {
     return this.generateSentences(1, ...arguments)[0];
   }
@@ -322,21 +294,17 @@ class Markov {
     if (post) { // fill the center
 
       if (pre.length + post.length > this.n) {
-        err('Sum of pre.length && post.length must be <= N, was ' +
+        throw Error('Sum of pre.length && post.length must be <= N, was ' +
           (pre.length + post.length));
       }
 
-      if (!(tn = this._search(pre))) return;
+      if (!(tn = this._search(pre))) return; // TODO: add warning
 
       let nexts = tn.childNodes();
       for (let i = 0; i < nexts.length; i++) {
 
         let atest = pre.slice(0);
-        atest.push(nexts[i].token);
-        post.map(function(p) {
-          atest.push(p);
-        });
-
+        atest.push(nexts[i].token, ...post);
         if (this._search(atest)) result.push(nexts[i].token);
       }
 
@@ -387,16 +355,7 @@ class Markov {
         st = st.parent;
       }
     }
-    else if (startTokens) { // TODO:
-      tokens = [];
-      let st = this._search(startTokens);//, root.child(ST));
-      if (!st) return false; // fail
-      while (!st.isRoot()) {
-        tokens.unshift(st);
-        st = st.parent;
-      }
-    }
-    else { // no start-tokens
+    else { // no includes
       //tokens = [ this.root.pselect() ];
       tokens = [root.child(ST).pselect()];
     }
@@ -517,7 +476,7 @@ class Markov {
   }
 }
 
-Markov.MAX_GENERATION_ATTEMPTS = 100;
+Markov.MAX_GENERATION_ATTEMPTS = 999;
 
 /////////////////////////////// Node //////////////////////////////////////////
 
@@ -551,13 +510,7 @@ class Node {
     for (let i = 0; i < nodes.length; i++) {
 
       pTotal += nodes[i].nodeProb();
-      if (selector < pTotal) {
-
-        let result = nodes[i];
-        if (!result) throw Error('Unexpected state');
-
-        return result;
-      }
+      if (selector < pTotal) return nodes[i];
     }
 
     throw Error(this + "\npselect() fail\nnodes(" + nodes.length + ") -> " + nodes);
@@ -613,50 +566,25 @@ class Node {
 
     let l = [], indent = '\n';
 
-    sort = sort || false;
-
-    for (let k in mn.children) {
-      l.push(mn.children[k]);
-    }
+    Object.keys(mn.children).map(k => l.push(mn.children[k]));
 
     if (!l.length) return str;
 
     if (sort) l.sort();
 
-    for (let j = 0; j < depth; j++) indent += "  ";
-
     for (let i = 0; i < l.length; i++) {
 
       let node = l[i];
-
-      if (!node) break;
-
-      let tok = node.token;
-      if (tok) {
-        (tok == "\n") && (tok = "\\n");
-        (tok == "\r") && (tok = "\\r");
-        (tok == "\t") && (tok = "\\t");
-        (tok == "\r\n") && (tok = "\\r\\n");
-      }
-
+      let tok = this._encode(node.token);
       str += indent + "'" + tok + "'";
 
-      if (!node.count) err("ILLEGAL FREQ: " + node.count + " -> " + mn.token + "," + node.token);
       if (!node.isRoot()) str += " [" + node.count + ",p=" + node.nodeProb().toFixed(3) + "]";
       if (!node.isLeaf()) str += '  {';
-      //else str += '*';
 
       str = this.childCount() ? this.stringify(node, str, depth + 1, sort) : str + '}';
-      // }
-      // else {
-      //   str = str + "}";
-      // }
     }
 
-    indent = '\n';
-    for (let j = 0; j < depth - 1; j++) {
-      indent += "  ";
-    }
+    for (let j = 0; j < depth - 1; j++) indent += "  ";
 
     return str + indent + "}";
   }
@@ -700,9 +628,10 @@ function isSubArray(find, arr) {
   return false;
 }
 
-function throwError(tries) {
-  throw Error('\n\nFailed after ' + tries + ' tries; you may'
-    + ' need to add more text to the model or adjust options');
+function throwError(tries, oks) {
+  throw Error('\n\nFailed after ' + tries + ' tries'
+    + (oks ? ' and ' + oks.length + ' successes;' : ';')
+    + ' you may need to adjust options or add more text');
 }
 
 module && (module.exports = Markov);
