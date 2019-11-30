@@ -392,7 +392,7 @@ describe('RiTa.Markov', () => {
     }
   });
 
-  it('should correctly call generateSentences.minmax', () => {
+  it('should correctly call generateSentences.minMaxLength', () => {
     let silent = RiTa.SILENT;
     RiTa.SILENT = true;// supress duplicate messages
     let rm = new Markov(4), minLength = 7, maxLength = 20;

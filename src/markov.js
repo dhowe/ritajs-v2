@@ -111,63 +111,6 @@ class Markov {
     throwError(tries);
   }
 
-  generateSentencesWith(num, includeTokens, { minLength = 5, maxLength = 35, allowDuplicates, temperature = 0 } = {}) {
-    let result = [], tokens, tries = 0, fail = () => {
-      tokens = undefined;
-      if (++tries >= Markov.MAX_GENERATION_ATTEMPTS) throwError(tries, result);
-      return 1;
-    }
-
-    if (typeof includeTokens === 'string') {
-      includeTokens = RiTa.tokenize(includeTokens);
-    }
-
-    // find the first half, then call generate sentence with last few as
-    // startTokens, then validate.
-
-    while (result.length < num) {
-
-      if (!tokens) {
-        tokens = this._initSentenceWith(includeTokens);
-        //console.log('got',tokens);
-        if (!tokens) throw Error('No sentence including: "' + includeTokens + '"');
-      }
-
-      while (tokens && tokens.length < maxLength) {
-
-        let parent = this._search(tokens, this.inverse);
-        if ((!parent || parent.isLeaf()) && fail(tokens)) continue;
-
-        let next = this.selectNext(parent, tokens, temperature);
-        if (!next) {
-          console.log("NEXT IS NULL: ", this._flatten(tokens));
-          fail(tokens);
-          continue; // possible if all children excluded
-        }
-
-        tokens.push(next);
-        //console.log('add ', next.token + ' -> ' + this._flatten(tokens).split(' '), next.children);
-        if (next.child(ST)) {
-          let start = tokens.reverse().map(t => t.token);
-          //console.log('HIT!', start);
-          // now generate the rest of the sentence
-          let sent = this.generateSentence({ startTokens: start, minLength: start.length });
-          if (!sent || result.includes(sent)) {
-            fail(tokens);
-            continue;
-          }
-          result.push(sent); // got one
-        }
-      }
-
-      //console.log("FAIL(" + result.length + ")", (tokens ? tokens.length + "" : "0") + " words",
-      //tries + " tries\n------------------------------------------");
-
-      fail(tokens);
-    }
-    return result;
-  }
-
   generateSentences(num, { minLength = 5, maxLength = 35, startTokens, allowDuplicates, temperature = 0 } = {}) {
     let result = [], tokens, tries = 0, fail = () => {
       tokens = undefined;
@@ -337,6 +280,59 @@ class Markov {
   print(root) {
     root = root || this.root;
     console && console.log(root.asTree().replace(/{}/g, ''));
+  }
+
+  generateSentencesWith(num, includeTokens, { minLength = 5, maxLength = 35, allowDuplicates, temperature = 0 } = {}) {
+    let result = [], tokens, tries = 0, fail = () => {
+      tokens = undefined;
+      if (++tries >= Markov.MAX_GENERATION_ATTEMPTS) throwError(tries, result);
+      return 1;
+    }
+
+    if (typeof includeTokens === 'string') {
+      includeTokens = RiTa.tokenize(includeTokens);
+    }
+
+    // find the first half, then call generate sentence with last few as
+    // startTokens, then validate.
+
+    while (result.length < num) {
+
+      if (!tokens) {
+        tokens = this._initSentenceWith(includeTokens);
+        //console.log('got',tokens);
+        if (!tokens) throw Error('No sentence including: "' + includeTokens + '"');
+      }
+
+      while (tokens && tokens.length < maxLength) {
+
+        let parent = this._search(tokens, this.inverse);
+        if ((!parent || parent.isLeaf()) && fail(tokens)) continue;
+
+        let next = this.selectNext(parent, tokens, temperature);
+        if (!next && fail(tokens)) continue; // possible if all children excluded
+
+        tokens.push(next);
+        //console.log('add ', next.token + ' -> ' + this._flatten(tokens).split(' '), next.children);
+        if (next.child(ST)) {
+          let start = tokens.reverse().map(t => t.token);
+          //console.log('HIT!', start);
+          // now generate the rest of the sentence
+          let sent = this.generateSentence({ startTokens: start, minLength: start.length });
+          if (!sent || result.includes(sent)) {
+            fail(tokens);
+            continue;
+          }
+          result.push(sent); // got one
+        }
+      }
+
+      //console.log("FAIL(" + result.length + ")", (tokens ? tokens.length + "" : "0") + " words",
+      //tries + " tries\n------------------------------------------");
+
+      fail(tokens);
+    }
+    return result;
   }
 
   ////////////////////////////// end API ////////////////////////////////
