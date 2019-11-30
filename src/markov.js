@@ -49,19 +49,6 @@ class Markov {
       sentences = RiTa.sentences(sentences);
     }
 
-    if (this.inverse) { // before adding start-tokens
-      //let itoks = RiTa.tokenize(sentence);
-      for (let i = 0; i < sentences.length; i++) {
-        let sentence = sentences[i].replace(/\s+/, ' ').trim();
-        let words = RiTa.tokenize(sentence);
-        tokens.push(...words);
-      }
-      let inv = tokens.slice().reverse();
-      this._treeify(inv, this.inverse);
-    }
-
-    //return;
-
     // add a new token for each sentence start
     for (let i = 0; i < sentences.length; i++) {
       let sentence = sentences[i].replace(/\s+/, ' ').trim();
@@ -71,12 +58,12 @@ class Markov {
 
     this._treeify(tokens);
 
-    if (this.inverse) {
-      let inv = tokens.slice().reverse();
-      this._treeify(inv, this.inverse);
-    }
+    // create the reverse lookup tree
+    // be nice to avoid this if not needed
+    if (this.inverse) this._treeify
+      (tokens.slice().reverse(), this.inverse);
 
-    this.mlm && this.input.push(...tokens.filter(t => t !== ST));
+    this.mlm && this.input.push(...tokens);
   }
 
   generateTokens(num, { startTokens, temperature = 0 } = {}) {
