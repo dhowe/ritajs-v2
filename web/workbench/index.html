@@ -5,12 +5,44 @@
 <link rel="stylesheet" href="css/style.css">
 <script src="js/jquery-3.4.1.min.js"></script>
 <script src="js/jquery.knob.min.js"></script>
+
 <head>
   <title>Markov Workbench</title>
 </head>
 
 <script type="text/javascript">
   $(document).ready(function() {
+
+
+
+    $('.custom-file-upload').bind("click", function() {
+      console.log();
+      $('#fileToLoad').click();
+    });
+
+
+    $("#fileToLoad").replaceWith($("#fileToLoad").val('').clone(true));
+
+
+    if (document.getElementById("fileToLoad").files.length == 0) {
+      console.log("no files selected");
+      $('#load-btn').prop('disabled', true);
+    } else {
+      console.log("files selected");
+      $('#load-btn').prop('disabled', false);
+    }
+
+
+    $('input:file').change(
+      function() {
+        if ($(this).val()) {
+          $('load-btn').attr('disabled', false);
+          console.log("files selected");
+          $('#load-btn').prop('disabled', false);
+        }
+      }
+    );
+
 
     /* text area */
     $('#exe-btn').prop('disabled', true);
@@ -59,7 +91,11 @@
     var fileReader = new FileReader();
     fileReader.onload = function(fileLoadedEvent) {
       var textFromFileLoaded = fileLoadedEvent.target.result;
-      $('#grammar-box').html(textFromFileLoaded);
+    //  $('#grammar-box').html(textFromFileLoaded);
+
+    //  var textArea = document.getElementById("myTextArea");
+    var textArea = document.getElementById("field");
+    textArea.value = textFromFileLoaded;
     };
 
     fileReader.readAsText(fileToLoad, "UTF-8");
@@ -67,36 +103,45 @@
 </script>
 
 <body>
-<h1>Markov Workbench</h1>
-  <div id="grammar-box">
-    <textarea id="field">
+  <div class="content">
+
+    <h1>Markov Workbench</h1>
+    <div id="grammar-box">
+      <textarea id="field">
   </textarea>
-  </div>
-  <div id="panel">
-    <div class="btn">
-      <input type="file" id="fileToLoad">
-      <button type="button" onclick="loadFileAsText()">Load</button>
-      <button type="button" id="exe-btn" onclick="alert('Hello world!')">Execute</button>
     </div>
-    <div class="knobs">
-      <div>
-        <h3>Temperature</h3>
-        <input class="tempKnob" data-width="100" data-displayInput=true value="0">
+    <div id="panel">
+      <div class="btn">
+        <label for="file-upload" class="custom-file-upload">
+          <i class="fa fa-cloud-upload"></i>Upload
+        </label>
+        <input id="fileToLoad" type="file" />
+        <button type="button" id="load-btn" onclick="loadFileAsText()">Load</button>
+        <button type="button" id="exe-btn" onclick="alert('Hello world!')">Execute</button>
       </div>
-      <div>
-        <h3>Speed</h3>
-        <input class="speedKnob" data-width="100" data-displayInput=true value="0.5">
-      </div>
-      <div>
-        <h3>N</h3>
-        <input class="nKnob" data-width="100" data-displayInput=true value="3">
+      <div class="knobs">
+        <div>
+          <h3>Temperature</h3>
+          <input class="tempKnob" data-width="100" data-displayInput=true value="0">
+        </div>
+        <div>
+          <h3>Speed</h3>
+          <input class="speedKnob" data-width="100" data-displayInput=true value="0.5">
+        </div>
+        <div>
+          <h3>N</h3>
+          <input class="nKnob" data-width="100" data-displayInput=true value="3">
+        </div>
       </div>
     </div>
-  </div>
+
+
+    <div id="output-box">
+
+    </div>
+    <!-- Page content -->
   </div>
 
-  <div id="output-box">
-
-  </div>
 </body>
+
 </html>

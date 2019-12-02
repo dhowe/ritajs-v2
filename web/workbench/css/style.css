@@ -1,72 +1,126 @@
-body{
-  font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
-  text-align: center;
+body {
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 }
 
-h1{
-
+h1 {
   font-size: 30px;
   padding-top: 30px;
   text-align: center;
+  color: rgb(135, 206, 235);
+}
+#content{
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-div{
+
+#grammar-box, #panel, #output-box {
   background: #EEE;
-  width: calc(100% - 100px);
+  width: 1000px;
+  padding: 20px;
+    margin: 50px auto;
 }
 
-#grammar-box{
-  margin: 50px;
+#grammar-box {
   text-align: center;
   height: 30vh;
   overflow: auto;
 }
 
-textarea{
+textarea {
   width: 100%;
   height: 100%;
-  box-sizing:border-box;
+  padding:20px;
+  text-align: left;
+  box-sizing: border-box;
+  border: none
+
 }
 
-#output-box{
-    margin: 50px 50px 0px 50px;
-      text-align: center;
-    height: 30vh;
-    overflow: auto;
+#output-box {
+
+  text-align: center;
+  height: 30vh;
+  overflow: auto;
 }
 
-#panel{
-      text-align: center;
-      display:block;
-      background: #fff;
-display: table;
+#panel {
+  text-align: center;
+  display: block;
+  background: #fff;
+  display: table;
 }
 
-#panel div{
+#panel div {
   display: table-cell;
   vertical-align: middle;
-height: 100px;
-background: #fff;
+  height: 100px;
+  background: #fff;
 }
 
-.btn{
-  width:50%;
-}
-.knobs div{
-padding: 10px;
-}
-.knobs div h3{
-padding: 10px;
+.btn {
+  width: 50%;
 }
 
+.knobs div {
+  padding: 10px;
+}
 
-#exe-btn:enabled{
-  color:#000;
+.knobs div h3 {
+  padding: 10px;
+  color: rgb(135, 206, 235);
+}
+
+#exe-btn:enabled {
+  color: #fff;
   opacity: 100%;
 }
 
 #exe-btn:disabled {
-  color:#fff;
-  opacity: 50%;
+  color: #fff;
+  opacity: 10%;
 }
-button {background-color: #e7e7e7; color: black;} /* Gray */
+
+#load-btn:disabled {
+  color: #fff;
+  opacity: 10%;
+}
+
+
+#load-btn:enabled {
+  color: #fff;
+  opacity: 100%;
+}
+
+
+button {
+  color: #fff;
+  background-color: rgb(135, 206, 235);
+  font-size: 15;
+  border-radius: 4px;
+  border: 1px rgb(135, 206, 235);
+  display: inline-block;
+  width: 120px;
+  padding: 12px 12px;
+  margin: 0 5px;
+}
+
+button:hover {
+  background-color: rgb(135, 255, 255);
+}
+
+input[type="file"] {
+display: none;
+}
+
+.custom-file-upload {
+
+    display: inline-block;
+    padding: 14px 12px;
+    cursor: pointer;
+    color: rgb(255, 255, 255);
+    background-color: rgb(135, 206, 235);
+    border-radius: 4px;
+    width: 120px;
+  margin: 0 5px;
+}
