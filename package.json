@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --display-modules",
     "test": "NODE_ENV=test mocha ./tests/*.js",
-    "test-dist": "npx webpack && NODE_ENV=dist mocha ./tests/*.js",
+    "test-dist": "webpack && NODE_ENV=dist mocha ./tests/*.js",
     "watch": "npm-watch",
     "compile": "npm run antlr4-js",
     "antlr4-js": "java -Xmx500M -cp '/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH' org.antlr.v4.Tool -Dlanguage=JavaScript -lib grammar -o lib -visitor -Xexact-output-dir grammar/RiScript.g4",
