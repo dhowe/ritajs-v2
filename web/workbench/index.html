@@ -6,131 +6,39 @@
 <script src="js/jquery-3.4.1.min.js"></script>
 <script src="js/jquery.knob.min.js"></script>
 
+<script src="../../dist/rita-web.js"></script>
+<script src="workbench.js"></script>
+
 <head>
   <title>Markov Workbench</title>
 </head>
-
-<script type="text/javascript">
-  $(document).ready(function() {
-
-
-
-    $('.custom-file-upload').bind("click", function() {
-      console.log();
-      $('#fileToLoad').click();
-    });
-
-
-    $("#fileToLoad").replaceWith($("#fileToLoad").val('').clone(true));
-
-
-    if (document.getElementById("fileToLoad").files.length == 0) {
-      console.log("no files selected");
-      $('#load-btn').prop('disabled', true);
-    } else {
-      console.log("files selected");
-      $('#load-btn').prop('disabled', false);
-    }
-
-
-    $('input:file').change(
-      function() {
-        if ($(this).val()) {
-          $('load-btn').attr('disabled', false);
-          console.log("files selected");
-          $('#load-btn').prop('disabled', false);
-        }
-      }
-    );
-
-
-    /* text area */
-    $('#exe-btn').prop('disabled', true);
-    $('#field').keyup(function() {
-      if ($(this).val() != '') {
-        $('#exe-btn').prop('disabled', false);
-      } else {
-        $('#exe-btn').prop('disabled', true);
-      }
-    });
-
-    /* knobs */
-    $(".tempKnob").knob({
-      'min': 0,
-      'max': 1,
-      'step': 0.1,
-      'height': 100,
-      'release': function(v) {
-        console.log(v) //tempKnob actions here
-      }
-    });
-    $(".speedKnob").knob({
-      'min': 0,
-      'max': 1,
-      'step': 0.1,
-      'height': 100,
-      'release': function(v) {
-        console.log(v) //speedKnob actions here
-      }
-    });
-    $(".nKnob").knob({
-      'min': 1,
-      'max': 5,
-      'step': 1,
-      'height': 100,
-      'release': function(v) {
-        console.log(v) //nKnob actions here
-      }
-    });
-  });
-
-  /* file loader */
-  function loadFileAsText() {
-    var fileToLoad = document.getElementById("fileToLoad").files[0];
-
-    var fileReader = new FileReader();
-    fileReader.onload = function(fileLoadedEvent) {
-      var textFromFileLoaded = fileLoadedEvent.target.result;
-    //  $('#grammar-box').html(textFromFileLoaded);
-
-    //  var textArea = document.getElementById("myTextArea");
-    var textArea = document.getElementById("field");
-    textArea.value = textFromFileLoaded;
-    };
-
-    fileReader.readAsText(fileToLoad, "UTF-8");
-  }
-</script>
 
 <body>
   <div class="content">
 
     <h1>Markov Workbench</h1>
     <div id="grammar-box">
-      <textarea id="field">
-  </textarea>
+      <textarea id="field"></textarea>
     </div>
     <div id="panel">
       <div class="btn">
-        <label for="file-upload" class="custom-file-upload">
-          <i class="fa fa-cloud-upload"></i>Upload
-        </label>
+        <label for="file-upload" class="custom-file-upload">Load</label>
         <input id="fileToLoad" type="file" />
-        <button type="button" id="load-btn" onclick="loadFileAsText()">Load</button>
-        <button type="button" id="exe-btn" onclick="alert('Hello world!')">Execute</button>
+        <!--button type="button" id="load-btn" onclick="loadFileAsText()">Load</button-->
+        <button type="button" id="exe-btn">Start</button>
       </div>
       <div class="knobs">
         <div>
-          <h3>Temperature</h3>
-          <input class="tempKnob" data-width="100" data-displayInput=true value="0">
+          <h3>N</h3>
+          <input class="nKnob" data-width="75" data-displayInput=true value="3">
         </div>
         <div>
           <h3>Speed</h3>
-          <input class="speedKnob" data-width="100" data-displayInput=true value="0.5">
+          <input class="speedKnob" data-width="75" data-displayInput=true value="0.5">
         </div>
         <div>
-          <h3>N</h3>
-          <input class="nKnob" data-width="100" data-displayInput=true value="3">
+          <h3>Temperature</h3>
+          <input class="tempKnob" data-width="75" data-displayInput=true value="0">
         </div>
       </div>
     </div>

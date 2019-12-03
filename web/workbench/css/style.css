@@ -13,7 +13,6 @@ h1 {
   margin: 0 auto;
 }
 
-
 #grammar-box, #panel, #output-box {
   background: #EEE;
   width: 1000px;
@@ -34,13 +33,12 @@ textarea {
   text-align: left;
   box-sizing: border-box;
   border: none
-
 }
 
 #output-box {
-
   text-align: center;
   height: 30vh;
+  width: 50%;
   overflow: auto;
 }
 
@@ -86,12 +84,10 @@ textarea {
   opacity: 10%;
 }
 
-
 #load-btn:enabled {
   color: #fff;
   opacity: 100%;
 }
-
 
 button {
   color: #fff;
@@ -110,17 +106,16 @@ button:hover {
 }
 
 input[type="file"] {
-display: none;
+  display: none;
 }
 
 .custom-file-upload {
-
-    display: inline-block;
-    padding: 14px 12px;
-    cursor: pointer;
-    color: rgb(255, 255, 255);
-    background-color: rgb(135, 206, 235);
-    border-radius: 4px;
-    width: 120px;
+  display: inline-block;
+  padding: 14px 12px;
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+  background-color: rgb(135, 206, 235);
+  border-radius: 4px;
+  width: 120px;
   margin: 0 5px;
 }

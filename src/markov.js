@@ -132,6 +132,9 @@ class Markov {
             break;
           }
         }
+        else if (/^[.!?]$/.test(next.token)) {
+          fail(tokens);
+        }
       }
 
       //console.log("FAIL(" + result.length + ")", (tokens ? tokens.length + "" : "0") + " words",

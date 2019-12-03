@@ -9,14 +9,11 @@ class Lexicon {
     this.dict = dict;
   }
 
-  alliterations(word, { matchMinLength = 4, useLTS = false } = {}) {
+  alliterations(word, { matchMinLength = 4 } = {}) {
 
     word = word.includes(' ') ? word.substring(0, word.indexOf(' ')) : word;
 
     if (RiTa.VOWELS.includes(word.charAt(0))) return [];
-
-    // let matchMinLength = opts && opts.matchMinLength || 4;
-    // let useLTS = opts && opts.useLTS || false;
 
     let results = [];
     let words = Object.keys(this.dict);
