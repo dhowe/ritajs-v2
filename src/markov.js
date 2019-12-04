@@ -16,8 +16,9 @@
 // generateUntil (should only apply to tokens)
 // generateWith (should apply to tokens & sentences)
 
-// MAYBE
+// TODO:
 // startTokens can take a regex for first token?
+// load functions must take callbacks
 
 const ST = '<s/>';
 
