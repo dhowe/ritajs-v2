@@ -2,7 +2,7 @@
 // const RiTa = require('../src/rita_api');
 
 describe('RiTa.Lexicon', () => {
-  
+
   if (typeof module !== 'undefined') {
     RiTa = require('../src/rita');
     chai = require('chai');
@@ -367,6 +367,6 @@ describe('RiTa.Lexicon', () => {
   });
 
   function eql(output, expected, msg) { expect(output).eql(expected, msg); }
-  function ok(res, msg) { expect(res).eq(true, msg); }
+  function ok(res, m) { expect(res).to.not.be.undefined; }
   function eq(a, b, msg) { expect(a).eq(b, msg); }
 });

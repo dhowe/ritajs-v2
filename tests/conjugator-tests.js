@@ -2,7 +2,7 @@
 // const RiTa = require('../src/rita_api');
 
 describe('RiTa.Conjugator', () => {
-  
+
   if (typeof module !== 'undefined') {
     RiTa = require('../src/rita');
     chai = require('chai');
@@ -238,6 +238,6 @@ describe('RiTa.Conjugator', () => {
     }
   });
 
-  function ok(res, m) { expect(res).eq(true, m); }
+  function ok(res, m) { expect(res).to.not.be.undefined; }
   function equal(a, b, m) { expect(a).eq(b, m); }
 });

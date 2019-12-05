@@ -1,5 +1,4 @@
 const Util = require("./util");
-const Markov = require('./markov');
 const Grammar = require('./grammar');
 const RandGen = require('./random');
 const Stemmer = require('./stemmer');
@@ -207,8 +206,9 @@ class RiTa {
 
 
 // CLASSES
-RiTa.Markov = Markov;
 RiTa.Grammar = Grammar;
+RiTa.Markov = require('./markov');
+RiTa.Markov.parent = RiTa;
 
 // COMPONENTS
 RiTa.stemmer = new Stemmer(RiTa);

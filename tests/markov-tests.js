@@ -8,6 +8,7 @@ describe('RiTa.Markov', () => {
     RiTa = require('../src/rita');
     chai = require('chai');
     expect = chai.expect;
+    fs = require('fs');
   }
 
   const Markov = RiTa.Markov;
@@ -35,6 +36,21 @@ describe('RiTa.Markov', () => {
     rm.loadTokens(tokens);
     eq(rm.size(), tokens.length);
   });
+  //
+  // it('should correctly load a large model', async () => {
+  //   let rm = new Markov(4, { optimizeMemory: true });
+  //   let content = fs.readFileSync('/Users/dhowe/Desktop/dracula.txt', 'utf8');
+  //   rm.loadSentences(content);//.then(console.log('done'));
+  //   console.log('loaded');
+  //   //try {
+  //      var result = await rm.generateSentenceAsync();
+  //
+  //      ok(result);
+  //  //     done();
+  //  // } catch(err) {
+  //  //     done(err);
+  //  // }
+  // });
 
   it('should correctly call initSentence', () => {
     let rm, txt;
@@ -965,5 +981,6 @@ describe('RiTa.Markov', () => {
 
   function eql(a, b, c) { expect(a).eql(b, c); }
   function eq(a, b, c) { expect(a).eq(b, c); }
-  function ok(res, m) { expect(res).eq(true, m); }
+  function ok(res, m) { expect(res).to.not.be.undefined; }
+
 });

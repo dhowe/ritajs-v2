@@ -1,3 +1,4 @@
+
 // TODO:
 /* add 'temperature' arg
   2 methods (n = number of elements):
@@ -41,19 +42,41 @@ class Markov {
     this.mlm && this.input.push(...tokens);
   }
 
+  async generateSentenceAsync() {
+    return new Promise((resolve, reject) => {
+      try {
+        resolve(this.generateSentence(...arguments));
+      }
+      catch(e) {
+        reject(e);
+      }
+    });
+  }
+
+  async loadSentencesAsync() {
+    return new Promise((resolve, reject) => {
+      try {
+        resolve();
+      }
+      catch(e) {
+        reject(e);
+      }
+    });
+  }
+
   loadSentences(sentences) {
 
     let tokens = [];
 
     // split sentences if we have a string
     if (typeof sentences === 'string') {
-      sentences = RiTa.sentences(sentences);
+      sentences = Markov.parent.sentences(sentences);
     }
 
     // add a new token for each sentence start
     for (let i = 0; i < sentences.length; i++) {
       let sentence = sentences[i].replace(/\s+/, ' ').trim();
-      let words = RiTa.tokenize(sentence);
+      let words = Markov.parent.tokenize(sentence);
       tokens.push(ST, ...words);
     }
 
@@ -77,7 +100,7 @@ class Markov {
     }
 
     if (typeof startTokens === 'string') {
-      startTokens = RiTa.tokenize(startTokens);
+      startTokens = Markov.parent.tokenize(startTokens);
     }
 
     while (tries < Markov.MAX_GENERATION_ATTEMPTS) {
@@ -107,7 +130,7 @@ class Markov {
     }
 
     if (typeof startTokens === 'string') {
-      startTokens = RiTa.tokenize(startTokens);
+      startTokens = Markov.parent.tokenize(startTokens);
     }
 
     while (result.length < num) {
@@ -281,7 +304,7 @@ class Markov {
     }
 
     if (typeof includeTokens === 'string') {
-      includeTokens = RiTa.tokenize(includeTokens);
+      includeTokens = Markov.parent.tokenize(includeTokens);
     }
 
     // find the first half (sentence start through includeTokens)
@@ -289,7 +312,7 @@ class Markov {
     while (result.length < num) {
 
       if (!tokens) {
-        tokens = this._initSentenceWith(includeTokens);
+        tokens = this._initSentence(includeTokens, this.inverse);
         //console.log('got',tokens);
         if (!tokens) throw Error('No sentence including: "' + includeTokens + '"');
       }
@@ -323,35 +346,14 @@ class Markov {
 
   ////////////////////////////// end API ////////////////////////////////
 
-  _initSentenceWith(includeTokens, root, startTokens) {
+  _initSentence(initWith, root) {
 
     root = root || this.root;
 
     let tokens;
-    if (includeTokens) { // error if both
+    if (initWith) { // TODO:
       tokens = [];
-      let st = this._search(includeTokens, this.inverse);//, root.child(ST));
-      if (!st) return false; // fail
-      while (!st.isRoot()) {
-        tokens.unshift(st);
-        st = st.parent;
-      }
-    }
-    else { // no includes
-      //tokens = [ this.root.pselect() ];
-      tokens = [root.child(ST).pselect()];
-    }
-    return tokens;
-  }
-
-  _initSentence(startTokens, root) {
-
-    root = root || this.root;
-
-    let tokens;
-    if (startTokens) { // TODO:
-      tokens = [];
-      let st = this._search(startTokens);//, root.child(ST));
+      let st = this._search(initWith, root);
       if (!st) return false; // fail
       while (!st.isRoot()) {
         tokens.unshift(st);
@@ -359,7 +361,6 @@ class Markov {
       }
     }
     else { // no start-tokens
-      //tokens = [ this.root.pselect() ];
       tokens = [root.child(ST).pselect()];
     }
     return tokens;
@@ -390,7 +391,7 @@ class Markov {
     //check.push(typeof word.token === 'string' ? word.token : word);
     check.push(word); // string
     check = check.slice(-(this.mlm + 1));
-    //console.log('\nCHECK: '+RiTa.untokenize(check));
+    //console.log('\nCHECK: '+Markov.parent.untokenize(check));
     return !isSubArray(check, this.input);// ? false : check;
   }
 
@@ -433,7 +434,7 @@ class Markov {
   _flatten(nodes) {
     if (!nodes || !nodes.length) return '';
     if (nodes.token) return nodes.token; // single-node
-    return RiTa.untokenize(this._nodesToTokens(nodes));
+    return Markov.parent.untokenize(this._nodesToTokens(nodes));
   }
 
   /* create a sentence string from an array of nodes */
@@ -445,7 +446,7 @@ class Markov {
       return false;
     }
     if (allowDups || result.includes(sent)) {
-      if (!RiTa.SILENT) {
+      if (!Markov.parent.SILENT) {
         console.log("Skipping duplicate: '" + sent + "' after " + result.length);
       }
       return false;

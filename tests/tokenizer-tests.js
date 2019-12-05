@@ -305,6 +305,7 @@ describe('RiTa.Tokenizer', () => {
     eql(RiTa.sentences(""), [""]);
   });
 
-  function eql(a, b) { expect(a).eql(b); }
-  function eq(a, b) { expect(a).eq(b); }
-  function ok(res) { expect(res).eq(true); }});
+  function eql(a, b, m) { expect(a).eql(b, m); }
+  function eq(a, b, m) { expect(a).eq(b, m); }
+  function ok(res, m) { expect(res).to.not.be.undefined; }
+});

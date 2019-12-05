@@ -655,7 +655,7 @@ describe('RiTa.Core', () => {
     eql(output, expected);
   });
 
-  function ok(res, m) { expect(res).eq(true, m); }
+  function ok(res, m) { expect(res).to.not.be.undefined; }
   function eql(a, b, m) { expect(a).eql(b, m); }
   function eq(a, b, m) { expect(a).eq(b, m); }
 });

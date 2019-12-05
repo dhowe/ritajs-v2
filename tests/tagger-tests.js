@@ -2,7 +2,7 @@
 // const RiTa = require('../src/rita_api');
 
 describe('RiTa.Tagger', () => {
-  
+
   if (typeof module !== 'undefined') {
     RiTa = require('../src/rita');
     chai = require('chai');
@@ -529,6 +529,6 @@ describe('RiTa.Tagger', () => {
 
   function eql(a, b,m) { expect(a).eql(b,m); }
   function eq(a, b,m) { expect(a).eq(b,m); }
-  function ok(res,m) { expect(res).eq(true,m); }
+  function ok(res, m) { expect(res).to.not.be.undefined; }
 
 });
