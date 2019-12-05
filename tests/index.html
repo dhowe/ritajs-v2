@@ -8,20 +8,22 @@
 <body>
 <div id="mocha"></div>
 
-<script src="./dist/rita-web.js"></script>
+<script src="../dist/rita.js"></script>
+<!--script src="../dist/rita-full.js"></script-->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.2.0/chai.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/6.2.1/mocha.min.js"></script>
 
 <script>mocha.setup('bdd');</script>
 
-<script src="tests/rita-tests.js"></script>
-<script src="tests/riscript-tests.js"></script>
-<script src="tests/analyzer-tests.js"></script>
-<script src="tests/grammar-tests.js"></script>
-<script src="tests/markov-tests.js"></script>
-<script src="tests/tagger-tests.js"></script>
-<script src="tests/tokenizer-tests.js"></script>
-<script src="tests/lexicon-tests.js"></script>
+<script src="./rita-tests.js"></script>
+<script src="./riscript-tests.js"></script>
+<script src="./analyzer-tests.js"></script>
+<script src="./grammar-tests.js"></script>
+<script src="./markov-tests.js"></script>
+<script src="./tagger-tests.js"></script>
+<script src="./tokenizer-tests.js"></script>
+<script src="./lexicon-tests.js"></script>
 
 <script>
     const expect = chai.expect;

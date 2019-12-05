@@ -10,9 +10,8 @@ const Analyzer = require('./analyzer');
 const Concorder = require('./concorder');
 const Conjugator = require('./conjugator');
 const Pluralizer = require('./pluralizer');
-const LetterToSound = require("./rita_lts");
 const Syllabifier = require('./syllabifier');
-
+const LetterToSound = require('./rita_lts');
 
 const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
 
@@ -190,7 +189,14 @@ class RiTa {
   static _lexicon() { // lazy load
     if (typeof RiTa.lexicon === 'undefined') {
       RiTa.lts = new LetterToSound(RiTa);
-      RiTa.lexicon = new Lexicon(RiTa, require('./rita_dict'));
+      if (typeof NOLEX !== 'undefined') {
+        if (!RiTa.SILENT) console.warn("NO LEX!!!!!!");
+        RiTa.lexicon = new Lexicon(RiTa);
+      }
+      else {
+        if (!RiTa.SILENT) console.warn("LOADING LEX...");
+        RiTa.lexicon = new Lexicon(RiTa, require('./rita_dict'));
+      }
     }
     return RiTa.lexicon;
   }
@@ -203,7 +209,6 @@ class RiTa {
     return RiTa.analyzer;
   }
 }
-
 
 // CLASSES
 RiTa.Grammar = Grammar;

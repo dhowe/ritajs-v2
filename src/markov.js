@@ -41,27 +41,34 @@ class Markov {
     this._treeify(tokens);
     this.mlm && this.input.push(...tokens);
   }
-
-  async generateSentenceAsync() {
+  async generateSentenceAsync1() {
     return new Promise((resolve, reject) => {
       try {
         resolve(this.generateSentence(...arguments));
       }
-      catch(e) {
+      catch (e) {
         reject(e);
       }
     });
   }
 
-  async loadSentencesAsync() {
+  async loadSentencesAsync1() {
     return new Promise((resolve, reject) => {
       try {
-        resolve();
+        resolve(this.loadSentences(...arguments));
       }
-      catch(e) {
+      catch (e) {
         reject(e);
       }
     });
+  }
+
+  async generateSentenceAsync() {
+    return this.generateSentence(...arguments);
+  }
+
+  async loadSentencesAsync() {
+    return this.loadSentences(...arguments);
   }
 
   loadSentences(sentences) {
@@ -152,7 +159,7 @@ class Markov {
         if (tokens.length >= minLength) {
           let sent = this._validateSentence(result, tokens, allowDuplicates);
           if (sent) {
-            result.push(sent);
+            result.push(sent.replace(/ +/g,' '));
             break;
           }
         }
@@ -335,7 +342,7 @@ class Markov {
           let sent = this.generateSentence({ startTokens: start, minLength: start.length });
           if (!sent || result.includes(sent) && fail(tokens)) continue;
 
-          result.push(sent); // got one
+          result.push(sent.replace(/ +/,' ')); // got one
         }
       }
 

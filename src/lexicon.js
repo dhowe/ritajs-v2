@@ -7,6 +7,7 @@ class Lexicon {
   constructor(parent, dict) {
     RiTa = parent;
     this.dict = dict;
+    this.lexWarned = false;
   }
 
   alliterations(word, { matchMinLength = 4 } = {}) {
@@ -16,7 +17,7 @@ class Lexicon {
     if (RiTa.VOWELS.includes(word.charAt(0))) return [];
 
     let results = [];
-    let words = Object.keys(this.dict);
+    let words = Object.keys(this._dict(true));
     let fss = this._firstStressedSyl(word);
     let c1 = this._firstPhone(fss);
 
@@ -43,14 +44,14 @@ class Lexicon {
     let word = theWord.toLowerCase();
 
     let results = [];
-    let words = Object.keys(this.dict);
+    let words = Object.keys(this._dict(true));
     let p = this._lastStressedPhoneToEnd(word);
 
     for (let i = 0; i < words.length; i++) {
 
       if (words[i] === word) continue;
 
-      if (this.dict[words[i]][0].endsWith(p)) results.push(words[i]);
+      if (this._dict()[words[i]][0].endsWith(p)) results.push(words[i]);
     }
 
     return results;
@@ -68,22 +69,6 @@ class Lexicon {
       : this.similarByType(word, opts);
   }
 
-  toPhoneArray(raw) {
-    let result = [];
-    let sofar = '';
-    for (let i = 0; i < raw.length; i++) {
-      if (raw[i] == ' ' || raw[i] == '-') {
-        result[result.length] = sofar;
-        sofar = '';
-      }
-      else if (raw[i] != '1' && raw[i] != '0') {
-        sofar += raw[i];
-      }
-    }
-    result[result.length] = sofar;
-    return result;
-  }
-
   similarByType(word, opts) {
 
     let minLen = opts && opts.minimumWordLen || 2;
@@ -93,11 +78,11 @@ class Lexicon {
     let result = [];
     let minVal = Number.MAX_VALUE;
     let input = word.toLowerCase();
-    let words = Object.keys(this.dict);
+    let words = Object.keys(this._dict(true));
     let variations = [input, input + 's', input + 'es'];
 
     let compareA = opts.type === 'sound' ?
-      this.toPhoneArray(this._rawPhones(input)) : input;
+      this._toPhoneArray(this._rawPhones(input)) : input;
 
     for (let i = 0; i < words.length; i++) {
 
@@ -110,7 +95,7 @@ class Lexicon {
       }
 
       let compareB = Array.isArray(compareA) ?
-        this.toPhoneArray(this.dict[entry][0]) : entry;
+        this._toPhoneArray(this._dict()[entry][0]) : entry;
 
       let med = Util.minEditDist(compareA, compareB);
 
@@ -146,21 +131,21 @@ class Lexicon {
 
   hasWord(word) {
     word = word ? word.toLowerCase() : '';
-    return this.dict.hasOwnProperty(word) || RiTa.pluralizer.isPlural(word);
+    return this._dict(true).hasOwnProperty(word) || RiTa.pluralizer.isPlural(word);
   }
 
   words() {
-    return Object.keys(this.dict);
+    return Object.keys(this._dict(true));
   }
 
   size() {
-    return this.words.length;
+    return this.words().length;
   }
 
   randomWord(opts) {
 
     let pluralize = false;
-    let words = Object.keys(this.dict);
+    let words = Object.keys(this._dict(true));
     let ran = Math.floor(RiTa.random(words.length));
     let targetPos = opts && opts.pos;
     let targetSyls = opts && opts.syllableCount || 0;
@@ -183,7 +168,7 @@ class Lexicon {
 
     for (let i = 0; i < words.length; i++) {
       let j = (ran + i) % words.length;
-      let rdata = this.dict[words[j]];
+      let rdata = this._dict()[words[j]];
 
       // match the syls if supplied
       if (targetSyls && targetSyls !== rdata[0].split(' ').length) {
@@ -248,6 +233,22 @@ class Lexicon {
   }
 
   //////////////////////////////////////////////////////////////////////
+
+  _toPhoneArray(raw) {
+    let result = [];
+    let sofar = '';
+    for (let i = 0; i < raw.length; i++) {
+      if (raw[i] == ' ' || raw[i] == '-') {
+        result[result.length] = sofar;
+        sofar = '';
+      }
+      else if (raw[i] != '1' && raw[i] != '0') {
+        sofar += raw[i];
+      }
+    }
+    result[result.length] = sofar;
+    return result;
+  }
 
   _isVowel(c) {
 
@@ -397,9 +398,8 @@ class Lexicon {
   }
 
   _lookupRaw(word) {
-
     word = word && word.toLowerCase();
-    if (this.dict && this.dict[word]) return this.dict[word];
+    return this._dict()[word];
   }
 
   _rawPhones(word, opts) {
@@ -418,6 +418,17 @@ class Lexicon {
     }
 
     return result;
+  }
+
+  _dict(fatal) {
+    if (!this.dict) {
+      if (fatal) throw Error('No lexicon loaded');
+      if (!this.lexWarned) {
+        console.warn('No lexicon found!');
+        this.lexWarned = true;
+      }
+    }
+    return this.dict || {};
   }
 }
 
