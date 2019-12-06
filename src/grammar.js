@@ -21,36 +21,12 @@ class Grammar {
         return;
       }
     }
-
     Object.keys(rules).forEach(r => this.addRule(r, rules[r]))
-
     return this;
   }
 
   expand(context) {
     return this.expandFrom(Grammar.START_RULE, context);
-  }
-
-  _expandRule(g, prod) {
-
-    let entry, idx, pre, expanded, post, dbug = 0;
-
-    for (let name in g.rules) {
-
-      entry = g.rules[name];
-      idx = prod.indexOf(name);
-
-      if (idx >= 0) { // got a match, split into 3 parts
-
-        if (dbug) console.log('matched: ' + name);
-        pre = prod.substring(0, idx) || '';
-        expanded = g.doRule(name) || '';
-        post = prod.substring(idx + name.length) || '';
-
-        return pre + expanded + post;
-      }
-    }
-    // no rules matched
   }
 
   expandFrom(rule, context) {
@@ -60,45 +36,7 @@ class Grammar {
     if (!this.hasRule(rule)) err("Rule not found: " + rule
       + "\nRules:\n" + JSON.stringify(this.rules));
 
-    let parts, theCall, callResult, tries = 0, maxIterations = 1000;
-
-    let countTicks = (theCall) => {
-      let count = 0;
-      for (let i = 0; i < theCall.length; i++) {
-        if (theCall.charAt(i) == '`')
-          count++;
-      }
-      return count;
-    }
-
-    let handleExec = (input, context) => {
-
-      context = Object.assign(context || {}, Grammar.parent);
-
-      //console.log('handleExec('+input+", ", Object.keys(context)+')');
-      if (!input || !input.length) return null;
-
-      // strip backticks and eval
-      let res, exec = input.replace(STRIP_TICKS, '$1');
-
-      try {
-
-        res = eval(exec); // try in global context
-        return res ? res + E : null;
-
-      } catch (e) {
-
-        if (context) { // create sandbox for context args
-
-          try {
-            res = new Scope(context).eval(exec);
-            return res ? res + '' : null;
-          }
-          catch (e) { /* fall through */ }
-        }
-      }
-      return input;
-    }
+    let tries = 0, maxIterations = 1000;
 
     while (++tries < maxIterations) {
 
@@ -109,22 +47,20 @@ class Grammar {
       }
 
       // finished rules, check for back-ticked exec calls
-      parts = Grammar.EXEC_PATT.exec(rule);
-
-      //if (!parts || !parts.length) break // return, no evals (removed 11/18/19)
+      let parts = Grammar.EXEC_PATT.exec(rule);
 
       if (parts && parts.length > 2) {
 
-        theCall = parts[2];
+        let theCall = parts[2];
 
-        if (countTicks(theCall) != 2) {
-          warn("Unable to parse recursive exec: " + theCall + "...");
+        if (this._countTicks(theCall) != 2) {
+          warn("Failed parsing recursive exec: " + theCall);
           return null;
         }
 
-        callResult = handleExec(theCall, context);
+        let callResult = this._handleExec(theCall, context);
         if (!callResult) {
-          if (0) log("[WARN] (Grammar.expandFrom) Unexpected" +
+          if (0) console.log("[WARN] (Grammar.expandFrom) Unexpected" +
             " state: eval(" + theCall + ") :: returning '" + rule + "'");
           break; // return
         }
@@ -141,49 +77,9 @@ class Grammar {
 
       return unescapeHTML(rule);
     }
-
   }
 
-  doRule(pre) {
-
-    let stochasticRule = temp => { // map
-
-      let name, dbug = false, p = Math.random(), result, total = 0;
-      if (dbug) log("getStochasticRule(" + temp + ")");
-      for (name in temp) {
-        total += parseFloat(temp[name]);
-      }
-
-      if (dbug) log("total=" + total + "p=" + p);
-      for (name in temp) {
-        if (dbug) log("  name=" + name);
-        let amt = temp[name] / total;
-        if (dbug) log("amt=" + amt);
-        if (p < amt) {
-          result = name;
-          if (dbug) log("hit!=" + name);
-          break;
-        } else {
-          p -= amt;
-        }
-      }
-      return result;
-    };
-
-    let cnt = 0;
-    let name = '';
-    let rules = this.rules[pre];
-
-    if (!rules) return null;
-
-    for (name in rules) cnt++;
-
-    if (!cnt) return null;
-
-    return (cnt == 1) ? name : stochasticRule(rules);
-  }
-
-  reset() { // remove
+  reset() { // remove?
 
     this.rules = {};
     return this;
@@ -191,7 +87,7 @@ class Grammar {
 
   addRule(name, theRule, weight) {
 
-    weight = weight || 1.0; // default
+    weight = weight || 1.0;
 
     let ruleset = Array.isArray(theRule) ? theRule
       : theRule.split(OR_PATT);
@@ -200,42 +96,104 @@ class Grammar {
 
       let rule = ruleset[i];
       let prob = weight;
-      let m = PROB_PATT.exec(rule);
+      let match = PROB_PATT.exec(rule);
 
-      if (m) // found weighting
-      {
-        rule = m[1] + m[3];
-        prob = m[2];
+      if (match) {// found weighting
+        rule = match[1] + match[3];
+        prob = match[2];
       }
 
-      let temp; // simplify
-      if (this.hasRule(name)) {
-
-        temp = this.rules[name];
-        temp[rule] = prob;
-
-      } else {
-
-        temp = {};
-        temp[rule] = prob;
-        this.rules[name] = temp;
-      }
+      let temp = this.rules[name] || {};
+      temp[rule] = prob; // add the prob
+      this.rules[name] = temp;
     }
 
     return this;
   }
 
   hasRule(name) {
-
     return typeof this.rules[name] !== 'undefined';
   }
 
   removeRule(name) {
-
     delete this.rules[name];
     return this;
   }
+
+  ////////////////////////////////////////////////////////////////////////
+  _countTicks(theCall) {
+    let count = 0;
+    for (let i = 0; i < theCall.length; i++) {
+      if (theCall.charAt(i) == '`')
+        count++;
+    }
+    return count;
+  }
+
+  _expandRule(g, prod) {
+    let dbug = 0;
+    for (let name in g.rules) {
+      let idx = prod.indexOf(name);
+      if (idx >= 0) { // got a match, split into 3 parts
+        if (dbug) console.log('matched: ' + name);
+        let pre = prod.substring(0, idx) || '';
+        let expanded = g._doRule(name) || '';
+        let post = prod.substring(idx + name.length) || '';
+
+        return pre + expanded + post;
+      }
+    }  // no rules matched
+  }
+
+
+  _doRule(pre) {
+    let p = Math.random(), rule = this.rules[pre];
+    let total = Object.keys(rule).reduce(
+      (acc,name) => acc += parseFloat(rule[name]), 0);
+    for (let name in rule) {
+      let amt = rule[name] / total;
+      if (p < amt) {
+        return name;
+      }
+      p -= amt;
+    }
+  }
+
+  //return stochasticRule(this.rules[pre]);
+  // if (this.rules[pre]) {
+  //   let cnt = 0;
+  //   let name = '';
+  //   for (name in this.rules[pre]) cnt++;
+  //   if (cnt) return (cnt === 1) ? name : stochasticRule(this.rules[pre]);
+  // }
+
+  _handleExec(input, context) {
+
+    if (!input || !input.length) return null;
+
+    context = Object.assign(context || {}, Grammar.parent);
+    //console.log('_handleExec('+input+", ", Object.keys(context)+')');
+
+    // strip backticks and eval
+    let exec = input.replace(STRIP_TICKS, '$1');
+
+    try {
+      let res = eval(exec); // try in global context
+      return res ? res + E : null;
+
+    } catch (e) {
+      if (context) { // create sandbox for context args
+        try {
+          let res = new Scope(context).eval(exec);
+          return res ? res + '' : null;
+        }
+        catch (e) { /* fall through */ }
+      }
+    }
+    return input;
+  }
 }
+
 
 class Scope {
 

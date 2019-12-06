@@ -4,6 +4,20 @@
 module.exports = {
   mode: 'development',
   target: 'node',
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        enforce: "pre",
+        loader: "eslint-loader",
+        exclude: /node_modules/,
+        options: {
+          emitWarning: true,
+          configFile: "./.eslintrc.json"
+        }
+      }
+    ]
+  },
   output: {
     path: require('path').resolve(__dirname, 'dist'),
     library: 'RiTa',
