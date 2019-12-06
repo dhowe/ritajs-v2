@@ -5,7 +5,7 @@ module.exports =
   mode: 'development',
   target: 'web',
   output: {
-    path: require('path').resolve(__dirname, 'dist'),
+    path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
     filename: '[name].js',
     chunkFilename: 'rita-full.js',
@@ -20,7 +20,7 @@ module.exports =
     fs: "empty"
   },
   //entry: { 'rita': './src/rita.js', 'rita-dict': ['./src/rita_dict.js', './src/rita_lts.js'] }
-  entry: { 'rita': './src/rita.js', 'rita-dict': ['./src/rita_dict.js'] },
+  entry: { 'rita': './src/rita.js' },// 'rita-dict': ['./src/rita_dict.js'] },
   plugins: [new (require('webpack').DefinePlugin)({
     NOLEX: JSON.stringify(true),
   })]

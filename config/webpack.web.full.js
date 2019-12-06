@@ -5,7 +5,7 @@ module.exports =
   mode: 'development',
   target: 'web',
   output: {
-    path: require('path').resolve(__dirname, 'dist'),
+    path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
     filename: 'rita-full.js'
   },

@@ -1,3 +1,3 @@
 
 // build them all
-module.exports = [require('./webpack.web.full'), require('./webpack.web'), require('./webpack.node')];
+module.exports = [require('./config/webpack.web.full'), require('./config/webpack.web'), require('./config/webpack.node')];
