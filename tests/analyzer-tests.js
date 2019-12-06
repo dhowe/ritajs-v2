@@ -4,7 +4,9 @@
 describe('RiTa.Analyzer', () => {
 
   if (typeof module !== 'undefined') {
-    RiTa = require('../src/rita');
+    let path = process.env.NODE_ENV !== 'dist' ? '../src/rita' : '../dist/rita-node';
+    //console.log('PATH:',path);
+    RiTa = require(path);
     chai = require('chai');
     expect = chai.expect;
   }
@@ -347,6 +349,7 @@ describe('RiTa.Analyzer', () => {
     }
   });
 
-  function ok(res, m) { expect(res).to.not.be.undefined; }
+  function ok(a, m) { expect(a, m).to.be.true; }
+  function def(res, m) { expect(res, m).to.not.be.undefined; }
   function eq(a, b, m) { expect(a).eq(b, m); }
 });

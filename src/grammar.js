@@ -73,7 +73,9 @@ class Grammar {
 
     let handleExec = (input, context) => {
 
-      //console.log('handleExec('+input+", ",context+')');
+      context = Object.assign(context || {}, Grammar.parent);
+
+      //console.log('handleExec('+input+", ", Object.keys(context)+')');
       if (!input || !input.length) return null;
 
       // strip backticks and eval
@@ -122,7 +124,6 @@ class Grammar {
 
         callResult = handleExec(theCall, context);
         if (!callResult) {
-
           if (0) log("[WARN] (Grammar.expandFrom) Unexpected" +
             " state: eval(" + theCall + ") :: returning '" + rule + "'");
           break; // return
@@ -130,6 +131,8 @@ class Grammar {
 
         rule = parts[1] + callResult;
         if (parts.length > 3) rule += parts[3];
+        //console.log('rule: '+rule);
+        continue; // we may have more rules to expand
       }
 
       if (tries >= maxIterations) {

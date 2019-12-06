@@ -131,7 +131,8 @@ class Lexicon {
 
   hasWord(word) {
     word = word ? word.toLowerCase() : '';
-    return this._dict(true).hasOwnProperty(word) || RiTa.pluralizer.isPlural(word);
+    return this._dict(false).hasOwnProperty(word)
+      || RiTa.pluralizer.isPlural(word);
   }
 
   words() {
@@ -139,7 +140,8 @@ class Lexicon {
   }
 
   size() {
-    return this.words().length;
+    let dict = this._dict(false);
+    return dict ?  Object.keys(dict) : 0;
   }
 
   randomWord(opts) {

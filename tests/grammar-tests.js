@@ -6,7 +6,8 @@
 describe('RiTa.Grammar', () => {
 
   if (typeof module !== 'undefined') {
-    RiTa = require('../src/rita');
+    RiTa = require(process.env.NODE_ENV !==
+      'dist' ? '../src/rita' : '../dist/rita-node');
     chai = require('chai');
     expect = chai.expect;
   }
@@ -106,14 +107,14 @@ describe('RiTa.Grammar', () => {
   it("should correctly call removeRule", () => {
     let rg1 = new Grammar(sentenceGrammarJSON);
 
-    ok(rg1.rules['<start>']);
-    ok(rg1.rules['<noun_phrase>']);
+    def(rg1.rules['<start>']);
+    def(rg1.rules['<noun_phrase>']);
 
     rg1.removeRule('<noun_phrase>');
-    ok(!rg1.rules['<noun_phrase>']);
+    def(!rg1.rules['<noun_phrase>']);
 
     rg1.removeRule('<start>');
-    ok(!rg1.rules['<start>']);
+    def(!rg1.rules['<start>']);
 
     rg1.removeRule('');
     rg1.removeRule('bad-name');
@@ -122,14 +123,14 @@ describe('RiTa.Grammar', () => {
 
     rg1 = new Grammar(sentenceGrammarJSON2);
 
-    ok(rg1.rules['<start>']);
-    ok(rg1.rules['<noun_phrase>']);
+    def(rg1.rules['<start>']);
+    def(rg1.rules['<noun_phrase>']);
 
     rg1.removeRule('<noun_phrase>');
-    ok(!rg1.rules['<noun_phrase>']);
+    def(!rg1.rules['<noun_phrase>']);
 
     rg1.removeRule('<start>');
-    ok(!rg1.rules['<start>']);
+    def(!rg1.rules['<start>']);
 
     rg1.removeRule('');
     rg1.removeRule('bad-name');
@@ -429,8 +430,8 @@ describe('RiTa.Grammar', () => {
   });
 
   it("should correctly call exec", () => {
-    let temp = function() {
-      return Math.random() < 0.5 ? 'hot' : 'cold';
+    let ctx = {
+      temp: () => (Math.random() < 0.5 ? 'hot' : 'cold')
     }
     let rg = new Grammar();
     rg.addRule("<start>", "<first> | <second>");
@@ -442,9 +443,11 @@ describe('RiTa.Grammar', () => {
     rg.addRule("<action>", "cries | screams | falls");
 
     for (let i = 0; i < 10; i++) {
-      let res = rg.expand();
-      //console.log(res);
-      ok(res && !res.match("`") && res.match(/(hot|cold)/));
+      let res = rg.expand(ctx);
+      //console.log(i, res);
+      def(res);
+      ok(!/`/.test(res));
+      ok(/(hot|cold)/.test(res));
     }
 
     let newruleg = {
@@ -453,16 +456,15 @@ describe('RiTa.Grammar', () => {
       '<verb>': 'rhino'
     };
 
-    let newrule = function(n) { // global: for exec testing
-      return '<verb>';
-    }
+    ctx = { newrule: n => '<verb>' };
 
     rg = new Grammar(newruleg);
 
     for (let i = 0; i < 10; i++) {
-      let res = rg.expand();
-      //console.log(res);
-      ok(res && res.match(/ chased the rhino\./g));
+      let res = rg.expand(ctx);
+      //console.log(i, res);
+      def(res);
+      ok(res && /chased the rhino\./.test(res), 'run#' + i + ' was \'' + res + "'");
     }
 
     let newruleg2 = {
@@ -477,53 +479,61 @@ describe('RiTa.Grammar', () => {
     rg = new Grammar(newruleg2);
     for (let i = 0; i < 10; i++) {
       let res = rg.expand(staticFun);
-      //console.log(res);
-      ok(res && res.match(/ chased the rhino\./g));
-    }
-
-    newruleg2 = {
-      '<start>': 'The <noun> chased the `RiTa.pluralize(\'<noun>\')`.',
-      '<noun>': 'dog | cat | mouse',
-    };
-
-    rg = new Grammar(newruleg2);
-    for (let i = 0; i < 10; i++) {
-      let res = rg.expand();
-      //console.log(res);
-      ok(res && res.match(/(dogs|cats|mice)\./g));
+      //console.log(i, res);
+      ok(res && / chased the rhino\./.test(res));
     }
   });
 
   it("should correctly call exec with args", () => {
 
-    let newrule = function(n) { return '<verb>'; }
-    let adj = function(num) { return RiTa.randomWord("jj", num) };
-    let getFloat = function() { return Math.random() };
-    let isNumeric = function(n) {
-      return !isNaN(parseFloat(n)) && isFinite(n);
+    let rg, res;
+
+    let ctx = {
+      newrule: (n) => '<verb>',
+      adj: (num) => RiTa.randomWord("jj", num),
+      getFloat: () => Math.random(),
+      isNumeric: (n) => !isNaN(parseFloat(n)) && isFinite(n)
     }
 
-    let res, rg = new Grammar();
+    rg = new Grammar();
 
-    rg.addRule("<start>", "`getFloat()`");
+    rg.addRule("<stat>", "`getFloat()`");
     for (let i = 0; i < 5; i++) {
 
-      res = rg.expandFrom("<start>", this);
-      //console.log(res);
-      ok(res && res.length && isNumeric(res));
+      res = rg.expandFrom("<stat>", ctx);
+      //console.log(i, res);
+      ok(res && res.length && ctx.isNumeric(res));
     }
 
-    rg.reset();
-    rg.addRule("<start>", "`adj(2)`");
-    for (let i = 0; i < 5; i++) {
+    let objGram = {
+      '<start>': 'The <noun> chased the `RiTa.pluralize(\'<noun>\')`.',
+      '<noun>': 'dog | cat | mouse',
+    };
 
-      res = rg.expandFrom("<start>", this);
-      //console.log(res);
-      ok(res && res.length && RiTa.isAdjective(res));
+    rg = new Grammar(objGram);
+    for (let i = 0; i < 10; i++) {
+      let res = rg.expand();
+      //console.log(i, res);
+      ok(res && /(dogs|cats|mice)\.$/.test(res));
     }
+
+    if (RiTa.hasLexicon()) {
+      rg.reset();
+      rg.addRule("<stat>", "`adj(2)`");
+      for (let i = 0; i < 5; i++) {
+
+        res = rg.expandFrom("<stat>", this);
+        //console.log(res);
+        ok(res && res.length && RiTa.isAdjective(res));
+      }
+    }
+
+
+
   });
 
   function eql(a, b, c) { expect(a).eql(b, c); }
   function eq(a, b, c) { expect(a).eq(b, c); }
-  function ok(res, m) { expect(res).to.not.be.undefined; }
+  function ok(a, m) { expect(a, m).to.be.true; }
+  function def(res, m) { expect(res, m).to.not.be.undefined; }
 });

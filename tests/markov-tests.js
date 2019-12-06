@@ -5,7 +5,8 @@
 describe('RiTa.Markov', () => {
 
   if (typeof module !== 'undefined') {
-    RiTa = require('../src/rita');
+    RiTa = require(process.env.NODE_ENV !==
+      'dist' ? '../src/rita' : '../dist/rita-node');
     chai = require('chai');
     expect = chai.expect;
     fs = require('fs');
@@ -981,6 +982,6 @@ describe('RiTa.Markov', () => {
 
   function eql(a, b, c) { expect(a).eql(b, c); }
   function eq(a, b, c) { expect(a).eq(b, c); }
-  function ok(res, m) { expect(res).to.not.be.undefined; }
-
+  function ok(a, m) { expect(a, m).to.be.true; }
+  function def(res, m) { expect(res, m).to.not.be.undefined; }
 });

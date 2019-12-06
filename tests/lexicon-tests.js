@@ -4,10 +4,15 @@
 describe('RiTa.Lexicon', () => {
 
   if (typeof module !== 'undefined') {
-    RiTa = require('../src/rita');
+    RiTa = require(process.env.NODE_ENV !==
+      'dist' ? '../src/rita' : '../dist/rita-node');
     chai = require('chai');
     expect = chai.expect;
   }
+
+  it('Should correctly call hasWord', () => {
+
+  });
 
   it('Should correctly call randomWord', () => {
 

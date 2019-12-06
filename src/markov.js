@@ -41,27 +41,6 @@ class Markov {
     this._treeify(tokens);
     this.mlm && this.input.push(...tokens);
   }
-  async generateSentenceAsync1() {
-    return new Promise((resolve, reject) => {
-      try {
-        resolve(this.generateSentence(...arguments));
-      }
-      catch (e) {
-        reject(e);
-      }
-    });
-  }
-
-  async loadSentencesAsync1() {
-    return new Promise((resolve, reject) => {
-      try {
-        resolve(this.loadSentences(...arguments));
-      }
-      catch (e) {
-        reject(e);
-      }
-    });
-  }
 
   async generateSentenceAsync() {
     return this.generateSentence(...arguments);

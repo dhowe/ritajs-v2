@@ -4,7 +4,8 @@
 describe('RiTa.Conjugator', () => {
 
   if (typeof module !== 'undefined') {
-    RiTa = require('../src/rita');
+    RiTa = require(process.env.NODE_ENV !==
+      'dist' ? '../src/rita' : '../dist/rita-node');
     chai = require('chai');
     expect = chai.expect;
   }
@@ -238,6 +239,7 @@ describe('RiTa.Conjugator', () => {
     }
   });
 
-  function ok(res, m) { expect(res).to.not.be.undefined; }
+  function ok(a, m) { expect(a, m).to.be.true; }
+  function def(res, m) { expect(res, m).to.not.be.undefined; }
   function equal(a, b, m) { expect(a).eq(b, m); }
 });

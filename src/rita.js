@@ -1,6 +1,7 @@
 const Util = require("./util");
-const Grammar = require('./grammar');
+const Markov = require('./markov');
 const RandGen = require('./random');
+const Grammar = require('./grammar');
 const Stemmer = require('./stemmer');
 const Lexicon = require('./lexicon');
 const RiScript = require('./riscript');
@@ -184,17 +185,19 @@ class RiTa {
     return RiTa._lexicon().words();
   }
 
+  static hasLexicon() {
+    return RiTa._lexicon().size() > 0;
+  }
+
   /////////////////////////////////////////////////////////////////
 
   static _lexicon() { // lazy load
     if (typeof RiTa.lexicon === 'undefined') {
       RiTa.lts = new LetterToSound(RiTa);
-      if (typeof NOLEX !== 'undefined') {
-        if (!RiTa.SILENT) console.warn("NO LEX!!!!!!");
+      if (typeof NOLEX !== 'undefined') { // used by webpack, don't shorten
         RiTa.lexicon = new Lexicon(RiTa);
       }
       else {
-        if (!RiTa.SILENT) console.warn("LOADING LEX...");
         RiTa.lexicon = new Lexicon(RiTa, require('./rita_dict'));
       }
     }
@@ -212,8 +215,9 @@ class RiTa {
 
 // CLASSES
 RiTa.Grammar = Grammar;
-RiTa.Markov = require('./markov');
+RiTa.Markov = Markov
 RiTa.Markov.parent = RiTa;
+RiTa.Grammar.parent = RiTa;
 
 // COMPONENTS
 RiTa.stemmer = new Stemmer(RiTa);
