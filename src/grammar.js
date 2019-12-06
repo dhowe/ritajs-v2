@@ -13,7 +13,6 @@ class Grammar {
     if (typeof rules === 'string') {
       try {
         // first try with rita-script?
-        //console.log('trying JSON');
         rules = JSON.parse(rules);
       } catch (e) {
         err('Grammar appears to be invalid JSON, please check'
@@ -121,6 +120,7 @@ class Grammar {
   }
 
   ////////////////////////////////////////////////////////////////////////
+  
   _countTicks(theCall) {
     let count = 0;
     for (let i = 0; i < theCall.length; i++) {
@@ -158,14 +158,6 @@ class Grammar {
       p -= amt;
     }
   }
-
-  //return stochasticRule(this.rules[pre]);
-  // if (this.rules[pre]) {
-  //   let cnt = 0;
-  //   let name = '';
-  //   for (name in this.rules[pre]) cnt++;
-  //   if (cnt) return (cnt === 1) ? name : stochasticRule(this.rules[pre]);
-  // }
 
   _handleExec(input, context) {
 
