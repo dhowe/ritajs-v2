@@ -1,4 +1,4 @@
-const API = require('../api');
+const API = require('./api');
 
 // Signatures
 0 && API.RiTa.forEach(f => {
