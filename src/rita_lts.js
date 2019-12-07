@@ -1,3 +1,5 @@
+const Util = require("./util");
+
 let RiTa;
 
 class LetterToSound {
@@ -129,7 +131,7 @@ class LetterToSound {
           throw Error("Attempt to pass multi-digit number to LTS: '" + word + "'");
         }
 
-        phoneList.push(RiTa.syllabifier.Phones.digits[dig]);
+        phoneList.push(Util.Phones.digits[dig]);
       }
 
       return phoneList;

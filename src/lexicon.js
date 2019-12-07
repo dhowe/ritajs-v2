@@ -415,7 +415,7 @@ class Lexicon {
     if (rdata === undefined) { //|| forceLTS) { // ??
       phones = RiTa.lts && RiTa.lts.getPhones(word);
       if (phones && phones.length) {
-        result = RiTa.syllabifier.fromPhones(phones);
+        result = Util.syllablesFromPhones(phones);
       }
     }
 

@@ -11,7 +11,6 @@ const Analyzer = require('./analyzer');
 const Concorder = require('./concorder');
 const Conjugator = require('./conjugator');
 const Pluralizer = require('./pluralizer');
-const Syllabifier = require('./syllabifier');
 const LetterToSound = require('./rita_lts');
 
 const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
@@ -226,7 +225,6 @@ RiTa.concorder = new Concorder(RiTa);
 RiTa.tokenizer = new Tokenizer(RiTa);
 RiTa.pluralizer = new Pluralizer(RiTa);
 RiTa.conjugator = new Conjugator(RiTa);
-RiTa.syllabifier = new Syllabifier(RiTa);
 
 // LAZY-LOADS
 RiTa.analyzer = undefined;

@@ -1,5 +1,6 @@
-let RiTa;
+const Util = require("./util");
 
+let RiTa;
 class Analyzer {
 
   constructor(parent) {
@@ -45,7 +46,7 @@ class Analyzer {
           if (!RiTa.SILENT && !RiTa.SILENCE_LTS && words[i].match(/[a-zA-Z]+/)) {
             console.log("[RiTa] Used LTS-rules for '" + words[i] + "'");
           }
-          phones = RiTa.syllabifier.fromPhones(ltsPhones);
+          phones = Util.syllablesFromPhones(ltsPhones);
         } else {
           phones = words[i];
           useRaw = true;
