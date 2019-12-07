@@ -11,153 +11,23 @@ describe('RiTa.Analyzer', () => {
     expect = chai.expect;
   }
 
-  it('Should correctly call analyze', () => {
-
-    expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phonemes: '', syllables: '' });
-
-    let feats;
-    feats = RiTa.analyze("clothes");
-    expect(feats.pos).eq("nns");
-    expect(feats.tokens).eq("clothes");
-    expect(feats.syllables).eq("k-l-ow-dh-z");
-
-    feats = RiTa.analyze("the clothes");
-    expect(feats.pos).eq("dt nns");
-    expect(feats.tokens).eq("the clothes");
-    expect(feats.syllables).eq("dh-ah k-l-ow-dh-z");
-
-    feats = RiTa.analyze("chevrolet");
-    expect(feats.tokens).eq("chevrolet");
-    expect(feats.syllables).eq("sh-eh-v/r-ow/l-ey");
-  });
-
   it('Should correctly call analyze.lts', () => {
+    let silent = RiTa.SILENCE_LTS;
+    RiTa.SILENCE_LTS = true;
     let feats;
     feats = RiTa.analyze("cloze");
     expect(feats.pos).eq("nn");
     expect(feats.tokens).eq("cloze");
     expect(feats.syllables).eq("k-l-ow-z");
-  });
-
-  it('Should correctly call stresses', () => {
-    let result, answer;
-
-    result = RiTa.stresses("");
-    answer = "";
-    eq(result, answer);
-
-    result = RiTa.stresses("The emperor had no clothes on");
-    answer = "0 1/0/0 1 1 1 1";
-    eq(result, answer);
-
-    result = RiTa.stresses("The emperor had no clothes on.");
-    answer = "0 1/0/0 1 1 1 1 .";
-    eq(result, answer);
-
-    result = RiTa.stresses("The emperor had no clothes on. The King is fat.");
-    answer = "0 1/0/0 1 1 1 1 . 0 1 1 1 .";
-    eq(result, answer);
-
-    result = RiTa.stresses("to preSENT, to exPORT, to deCIDE, to beGIN");
-    answer = "1 1/0 , 1 1/0 , 1 0/1 , 1 0/1";
-    eq(result, answer);
-
-    result = RiTa.stresses("to present, to export, to decide, to begin");
-    answer = "1 1/0 , 1 1/0 , 1 0/1 , 1 0/1";
-    eq(result, answer);
-
-    result = RiTa.stresses("The dog ran faster than the other dog.  But the other dog was prettier.");
-    answer = "0 1 1 1/0 1 0 1/0 1 . 1 0 1/0 1 1 1/0/0 .";
-    eq(result, answer);
-
-    eq(RiTa.stresses("chevrolet"), "0/0/1");
-    eq(RiTa.stresses("women"), "1/0");
-    eq(RiTa.stresses("genuine"), "1/0/0");
-  });
-
-  it('Should correctly call phonemes', () => {
-    let result, answer;
-
-    result = RiTa.phonemes("");
-    answer = "";
-    eq(result, answer);
-
-    result = RiTa.phonemes("The");
-    answer = "dh-ah";
-    eq(result, answer);
-
-    result = RiTa.phonemes("said");
-    answer = "s-eh-d";
-    eq(result, answer);
-
-    result = RiTa.phonemes("The.");
-    answer = "dh-ah .";
-    eq(result, answer);
-
-    result = RiTa.phonemes("The boy jumped over the wild dog.");
-    answer = "dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-ao-g .";
-    eq(result, answer);
-
-    result = RiTa.phonemes("The boy ran to the store.");
-    answer = "dh-ah b-oy r-ae-n t-uw dh-ah s-t-ao-r .";
-    eq(result, answer);
-
-    result = RiTa.phonemes("The dog ran faster than the other dog.  But the other dog was prettier.");
-    answer = "dh-ah d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ah ah-dh-er d-ao-g . b-ah-t dh-ah ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er .";
-    eq(result, answer);
-
-    result = RiTa.phonemes("flowers");
-    answer = "f-l-aw-er-z";
-    eq(result, answer);
-
-    result = RiTa.phonemes("quiche");
-    answer = "k-iy-sh";
-    eq(result, answer);
-
-    result = RiTa.phonemes("mice");
-    answer = "m-ay-s";
-    eq(result, answer);
-
-    eq(RiTa.phonemes("chevrolet"), "sh-eh-v-r-ow-l-ey");
-    eq(RiTa.phonemes("women"), "w-ih-m-eh-n");
-    eq(RiTa.phonemes("genuine"), "jh-eh-n-y-uw-w-ah-n");
-  });
-
-  it('Should correctly call syllables', () => {
-
-    expect(RiTa.syllables('deforestations')).eq('d-ih/f-ao/r-ih/s-t-ey/sh-ah-n-z');
-
-    expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
-
-    expect(RiTa.syllables('')).eq('');
-    expect(RiTa.syllables("chevrolet")).eq("sh-eh-v/r-ow/l-ey");
-
-    expect(RiTa.syllables("women")).eq("w-ih/m-eh-n");
-    expect(RiTa.syllables("genuine")).eq("jh-eh-n/y-uw/w-ah-n");
-
-    let input, expected;
-
-    input = 'The emperor had no clothes on.';
-    expected = 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .';
-    expect(RiTa.syllables(input)).eq(expected);
-
-    input = 'The dog ran faster than the other dog. But the other dog was prettier.';
-    expected = 'dh-ah d-ao-g r-ae-n f-ae/s-t-er dh-ae-n dh-ah ah/dh-er d-ao-g . b-ah-t dh-ah ah/dh-er d-ao-g w-aa-z p-r-ih/t-iy/er .';
-    expect(RiTa.syllables(input)).eq(expected);
-
-    input = 'The dog ran faster than the other dog. But the other dog was prettier.';
-    expected = 'dh-ah d-ao-g r-ae-n f-ae/s-t-er dh-ae-n dh-ah ah/dh-er d-ao-g . b-ah-t dh-ah ah/dh-er d-ao-g w-aa-z p-r-ih/t-iy/er .';
-    expect(RiTa.syllables(input)).eq(expected);
-
-    input = 'The emperor had no clothes on.';
-    expected = 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .';
-    expect(RiTa.syllables(input)).eq(expected);
+    RiTa.SILENCE_LTS = silent;
   });
 
   it('Should correctly call syllables.lts', () => {
+    let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
-    expect(RiTa.syllables('The Laggin Dragon')).eq('dh-ah l-ae/g-ih-n d-r-ae/g-ah-n');
-    RiTa.SILENCE_LTS = false;
+    let result = RiTa.syllables('The Laggin');
+    expect(result).eq('dh-ah l-ae/g-ih-n', 'got \'' + result + "'");
+    RiTa.SILENCE_LTS = silent;
   });
 
   it('Should correctly handle number (singular/plural)', () => {
@@ -334,7 +204,7 @@ describe('RiTa.Analyzer', () => {
 
       res1 = RiTa.singularize(testPairs[i], { dbug: dbug });
       res2 = RiTa.pluralize(testPairs[i + 1], { dbug: dbug });
-      res3 = RiTa.pluralizer.isPlural(testPairs[i], { dbug: dbug });
+      res3 = RiTa.pluralizer.isPlural(testPairs[i], { dbug: dbug, fatal: false });
 
       eq(res1, testPairs[i + 1], 'FAIL: singularize(' + testPairs[i]
         + ') was ' + res1 + ', but expected ' + testPairs[i + 1] + '\n        '
@@ -347,6 +217,120 @@ describe('RiTa.Analyzer', () => {
 
       ok(res3, 'FAIL: isPlural(' + testPairs[i] + ') was false\n\n');
     }
+  });
+
+  it('Should correctly call analyze', () => {
+
+    expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phonemes: '', syllables: '' });
+
+    let feats, lex = RiTa.hasLexicon();
+    feats = RiTa.analyze("clothes");
+    expect(feats.pos).eq("nns");
+    expect(feats.tokens).eq("clothes");
+    expect(feats.syllables).eq("k-l-ow-dh-z");
+
+    feats = RiTa.analyze("the clothes");
+    expect(feats.pos).eq("dt nns");
+    expect(feats.tokens).eq("the clothes");
+    expect(feats.syllables).eq("dh-ah k-l-ow-dh-z");
+
+    feats = RiTa.analyze("chevrolet");
+    expect(feats.tokens).eq("chevrolet");
+    expect(feats.syllables).eq(lex ? "sh-eh-v/r-ow/l-ey" : 'ch-eh-v/r-ow/l-ah-t');
+  });
+
+  it('Should correctly call stresses', () => {
+
+    let result, answer, word, lex = RiTa.hasLexicon();
+
+    eq(RiTa.stresses(""), "");
+    eq(RiTa.stresses("women"), "1/0", "women");
+    eq(RiTa.stresses("The emperor had no clothes on"), "0 1/0/0 1 1 1 1");
+    eq(RiTa.stresses("The emperor had no clothes on."), "0 1/0/0 1 1 1 1 .");
+    eq(RiTa.stresses("The emperor had no clothes on. The King is fat."), "0 1/0/0 1 1 1 1 . 0 1 1 1 .");
+
+    word = "to present, to export, to decide, to begin";
+    result = RiTa.stresses(word);
+    answer = lex ? "1 1/0 , 1 1/0 , 1 0/1 , 1 0/1" : '1 1/1 , 1 0/1 , 1 0/1 , 1 1/1';
+    eq(result, answer, word);
+
+    word = "The dog ran faster than the other dog.  But the other dog was prettier."
+    result = RiTa.stresses(word);
+    answer = "0 1 1 1/0 1 0 1/0 1 . 1 0 1/0 1 1 1/0/0 .";
+    eq(result, answer, word);
+
+    // different without lexicon ------------------------------------------
+
+    eq(RiTa.stresses("chevrolet"), lex ? "0/0/1" : '1/0/0', "chevrolet");
+    eq(RiTa.stresses("genuine"), lex ? "1/0/0" : '1/0/1', "genuine");
+
+    word = "to preSENT, to exPORT, to deCIDE, to beGIN";
+    result = RiTa.stresses(word);
+    answer = lex ? "1 1/0 , 1 1/0 , 1 0/1 , 1 0/1" : '1 1/1 , 1 0/1 , 1 0/1 , 1 1/1';
+    eq(result, answer, word);
+
+  });
+
+  it('Should correctly call phonemes', () => {
+
+    let result, answer, lex = RiTa.hasLexicon();
+
+    eq(RiTa.phonemes(""), "");
+    eq(RiTa.phonemes("The"), "dh-ah");
+    eq(RiTa.phonemes("The."), "dh-ah .");
+    eq(RiTa.phonemes("flowers"), "f-l-aw-er-z");
+    eq(RiTa.phonemes("mice"), "m-ay-s");
+
+    // different without lexicon ------------------------------------------
+
+    result = RiTa.phonemes("The boy jumped over the wild dog.");
+    answer = lex ? "dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-ao-g ." : 'dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-aa-g .';
+    eq(result, answer);
+
+    result = RiTa.phonemes("The boy ran to the store.");
+    answer = lex ? "dh-ah b-oy r-ae-n t-uw dh-ah s-t-ao-r ." : 'dh-ah b-oy r-ah-n t-ow dh-ah s-t-ao-r .';
+    eq(result, answer);
+
+    result = RiTa.phonemes("The dog ran faster than the other dog.  But the other dog was prettier.");
+    answer = lex ? "dh-ah d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ah ah-dh-er d-ao-g . b-ah-t dh-ah ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er ." : 'dh-ah d-aa-g r-ah-n f-ae-s-t-er th-ae-n dh-ah ah-dh-er d-aa-g . b-ah-t dh-ah ah-dh-er d-aa-g w-ah-z p-r-eh-t-iy-er .';
+    eq(result, answer);
+
+    eq(RiTa.phonemes("quiche"), lex ? "k-iy-sh" : 'k-w-ih-sh');
+    eq(RiTa.phonemes("said"), lex ? "s-eh-d" : 's-ey-d');
+    eq(RiTa.phonemes("chevrolet"), lex ? "sh-eh-v-r-ow-l-ey" : 'ch-eh-v-r-ow-l-ah-t');
+    eq(RiTa.phonemes("women"), lex ? "w-ih-m-eh-n" : 'w-ow-m-eh-n');
+    eq(RiTa.phonemes("genuine"), lex ? "jh-eh-n-y-uw-w-ah-n" : 'jh-eh-n-y-ah-ay-n');
+  });
+
+  it('Should correctly call syllables', () => {
+
+    let input, expected, lex = RiTa.hasLexicon();
+
+    expect(RiTa.syllables('')).eq('');
+    expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
+
+    // different without lexicon ------------------------------------------
+
+    expect(RiTa.syllables('deforestations')).eq(lex ? 'd-ih/f-ao/r-ih/s-t-ey/sh-ah-n-z' : 'd-ah/f-ao-r/s-t-ey/sh-ah-n-z');
+    expect(RiTa.syllables("chevrolet")).eq(lex ? "sh-eh-v/r-ow/l-ey" : 'ch-eh-v/r-ow/l-ah-t');
+    expect(RiTa.syllables("women")).eq(lex ? "w-ih/m-eh-n" : 'w-ow/m-eh-n');
+    expect(RiTa.syllables("genuine")).eq(lex ? "jh-eh-n/y-uw/w-ah-n" : 'jh-eh-n/y-ah/ay-n');
+
+    input = 'The emperor had no clothes on.';
+    expected = lex ? 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .' : 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z ah-n .';
+    expect(RiTa.syllables(input)).eq(expected);
+
+    input = 'The dog ran faster than the other dog. But the other dog was prettier.';
+    expected = lex ? 'dh-ah d-ao-g r-ae-n f-ae/s-t-er dh-ae-n dh-ah ah/dh-er d-ao-g . b-ah-t dh-ah ah/dh-er d-ao-g w-aa-z p-r-ih/t-iy/er .' : 'dh-ah d-aa-g r-ah-n f-ae/s-t-er th-ae-n dh-ah ah/dh-er d-aa-g . b-ah-t dh-ah ah/dh-er d-aa-g w-ah-z p-r-eh/t-iy/er .';
+    expect(RiTa.syllables(input)).eq(expected);
+
+    input = 'The dog ran faster than the other dog. But the other dog was prettier.';
+    expected = lex ? 'dh-ah d-ao-g r-ae-n f-ae/s-t-er dh-ae-n dh-ah ah/dh-er d-ao-g . b-ah-t dh-ah ah/dh-er d-ao-g w-aa-z p-r-ih/t-iy/er .' : 'dh-ah d-aa-g r-ah-n f-ae/s-t-er th-ae-n dh-ah ah/dh-er d-aa-g . b-ah-t dh-ah ah/dh-er d-aa-g w-ah-z p-r-eh/t-iy/er .';
+    expect(RiTa.syllables(input)).eq(expected);
+
+    input = 'The emperor had no clothes on.';
+    expected = lex ? 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .' : 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z ah-n .';
+    expect(RiTa.syllables(input)).eq(expected);
   });
 
   function ok(a, m) { expect(a, m).to.be.true; }

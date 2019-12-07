@@ -13,6 +13,8 @@ describe('RiTa.Tagger', () => {
   it('Should correctly call posTags.array', () => {
     eql(RiTa.posTags([]), []);
     eql(RiTa.posTags(["freed"]), ["jj"]);
+    eql(RiTa.posTags(["the"]), ["dt"]);
+    eql(RiTa.posTags(["a"]), ["dt"]);
     eql(RiTa.posTags("the top seed".split(/ /)), ["dt", "jj", "nn"]);
     eql(RiTa.posTags("by illegal means".split(/ /)), ["in", "jj", "nn"]);
     eql(RiTa.posTags("He outnumbers us".split(/ /)), ["prp", "vbz", "prp"]);
@@ -24,6 +26,8 @@ describe('RiTa.Tagger', () => {
   it('Should correctly call simple posTags.array', () => {
     eql(RiTa.posTags([], { simple: true }), []);
     eql(RiTa.posTags(["freed"], { simple: true }), ["a"]);
+    eql(RiTa.posTags(["the"],{ simple: true }), ["-"]);
+    eql(RiTa.posTags(["a"],{ simple: true }), ["-"]);
     eql(RiTa.posTags("the top seed".split(/ /), { simple: true }), ["-", "a", "n"]);
     eql(RiTa.posTags("by illegal means".split(/ /), { simple: true }), ["-", "a", "n"]);
     eql(RiTa.posTags("He outnumbers us".split(/ /), { simple: true }), ["-", "v", "-"]);

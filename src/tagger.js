@@ -67,7 +67,7 @@ class PosTagger {
 
     if (!words || !words.length) return '';
 
-    if (words.length !== tags.length) throw Error('Bad lengths');
+    if (words.length !== tags.length) throw Error('Tagger: invalid state');
 
     delimiter = delimiter || '/';
 
@@ -86,17 +86,13 @@ class PosTagger {
 
   // Returns an array of parts-of-speech from the Penn tagset,
   // each corresponding to one word of input
-  tag(words, simple, inline) {
-
-    if (!words || !words.length) return inline ? '' : [];
+  tag(words, simple, inline, fatal) {
 
     let lexicon = RiTa._lexicon();
     let result = [], choices2d = [];
 
-    if (!Array.isArray(words)) {
-      if (words === '') return [];
-      words = RiTa.tokenizer.tokenize(words);
-    }
+    if (!words || !words.length) return inline ? '' : [];
+    if (!Array.isArray(words)) words = RiTa.tokenizer.tokenize(words);
 
     for (let i = 0, l = words.length; i < l; i++) {
 
@@ -112,26 +108,18 @@ class PosTagger {
         continue;
       }
 
-      let data = lexicon._posArr(words[i]);
+      let data = lexicon._posArr(words[i], fatal); // fail if no lexicon
       if (!data.length) {
 
-        // use stemmer categories if no lexicon
+        // TODO: use stemmer categories if no lexicon
 
         choices2d[i] = [];
         let tag = 'nn';
         if (words[i].endsWith('s')) {
           tag = 'nns';
         }
-
-        if (!RiTa.SILENT) { // warn
-          if (RiTa.LEX_WARN && lex.size() <= 1000) {
-            console.warn(RiTa.LEX_WARN);
-            RiTa.LEX_WARN = false;
-          }
-          if (RiTa.LTS_WARN && typeof LetterToSound === 'undefined') {
-            console.warn(RiTa.LTS_WARN);
-            RiTa.LTS_WARN = false;
-          }
+        else if (/^(the|a)$/i.test(words[i])) {
+          tag = 'dt';
         }
 
         if (words[i].endsWith('s')) {

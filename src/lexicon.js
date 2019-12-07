@@ -41,6 +41,7 @@ class Lexicon {
 
     if (!theWord || !theWord.length) return [];
 
+    let dict = this._dict(true);
     let word = theWord.toLowerCase();
 
     let results = [];
@@ -51,7 +52,9 @@ class Lexicon {
 
       if (words[i] === word) continue;
 
-      if (this._dict()[words[i]][0].endsWith(p)) results.push(words[i]);
+      if (dict[words[i]][0].endsWith(p)) {
+        results.push(words[i]);
+      }
     }
 
     return results;
@@ -129,10 +132,9 @@ class Lexicon {
     return this._intersect(simSound, simLetter);
   }
 
-  hasWord(word) {
-    word = word ? word.toLowerCase() : '';
-    return this._dict(false).hasOwnProperty(word)
-      || RiTa.pluralizer.isPlural(word);
+  hasWord(word, fatal) {
+    if (!word || !word.length) return false;
+    return this._dict(fatal).hasOwnProperty(word.toLowerCase());
   }
 
   words() {
@@ -141,7 +143,7 @@ class Lexicon {
 
   size() {
     let dict = this._dict(false);
-    return dict ?  Object.keys(dict) : 0;
+    return dict ? Object.keys(dict) : 0;
   }
 
   randomWord(opts) {
@@ -199,6 +201,8 @@ class Lexicon {
 
   isAlliteration(word1, word2) {
 
+    this._dict(true); // throw if no lexicon
+
     if (!word1 || !word2 || !word1.length || !word2.length) {
       return false;
     }
@@ -219,9 +223,12 @@ class Lexicon {
 
   isRhyme(word1, word2) {
 
+
     if (!word1 || !word2 || word1.toUpperCase() === word2.toUpperCase()) {
       return false;
     }
+
+    this._dict(true); // throw if no lexicon
 
     let phones1 = this._rawPhones(word1),
       phones2 = this._rawPhones(word2);
@@ -380,15 +387,15 @@ class Lexicon {
     return idx < 0 ? firstToEnd : firstToEnd.substring(0, idx);
   }
 
-  _posData(word) {
+  _posData(word, fatal) {
 
-    let rdata = this._lookupRaw(word);
+    let rdata = this._lookupRaw(word, fatal);
     return (rdata && rdata.length === 2) ? rdata[1] : '';
   }
 
-  _posArr(word) {
+  _posArr(word, fatal) {
 
-    let pl = this._posData(word);
+    let pl = this._posData(word, fatal);
     if (!pl || !pl.length) return [];
     return pl.split(' ');
   }
@@ -399,20 +406,21 @@ class Lexicon {
     return (pl.length > 0) ? pl[0] : [];
   }
 
-  _lookupRaw(word) {
+  _lookupRaw(word, fatal) {
     word = word && word.toLowerCase();
-    return this._dict()[word];
+    return this._dict(fatal)[word];
   }
 
   _rawPhones(word, opts) {
 
     let noLts = opts && opts.noLts;
-    let phones, result, rdata = this._lookupRaw(word);
+    let fatal = opts && opts.fatal;
+    let phones, result, rdata = this._lookupRaw(word, fatal);
     if (rdata) result = rdata.length === 2 ? rdata[0] : '';
 
     if (noLts) return result;
 
-    if (rdata === undefined) { //|| forceLTS) { // ??
+    if (rdata === undefined) {
       phones = RiTa.lts && RiTa.lts.getPhones(word);
       if (phones && phones.length) {
         result = Util.syllablesFromPhones(phones);
@@ -424,9 +432,9 @@ class Lexicon {
 
   _dict(fatal) {
     if (!this.dict) {
-      if (fatal) throw Error('No lexicon loaded');
+      if (fatal) throw Error('This function requires a lexicon, make sure you are using the full version of rita.js,\navailable at ' + RiTa.DOWNLOAD_URL + '\n');
       if (!this.lexWarned) {
-        console.warn('No lexicon found!');
+        console.warn('[WARN] no lexicon appears to be loaded; feature-analysis and pos-tagging may be incorrect.');
         this.lexWarned = true;
       }
     }

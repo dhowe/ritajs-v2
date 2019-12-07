@@ -11,7 +11,7 @@ describe('RiTa.Lexicon', () => {
   }
 
   it('Should correctly call hasWord', () => {
-
+    eq(RiTa.hasWord("random"), true);
   });
 
   it('Should correctly call randomWord', () => {

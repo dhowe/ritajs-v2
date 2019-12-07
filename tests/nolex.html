@@ -4,12 +4,6 @@
     <meta charset="utf-8">
     <title>RiTa Tests</title>
     <link href="https://unpkg.com/mocha@4.0.1/mocha.css" rel="stylesheet" />
-    <!-- <script>
-    let loader = document.createElement('script');
-    let path = window.location.search.includes('nolex') ? 'rita.js' : 'rita-full.js';
-    loader.setAttribute('src', '../dist/'+path);
-    document.head.appendChild(loader);
-    </script> -->
 </head>
 <body>
 <div id="mocha"></div>
@@ -25,10 +19,14 @@
 <script src="./grammar-tests.js"></script>
 <script src="./markov-tests.js"></script>
 <script src="./tokenizer-tests.js"></script>
-
 <script src="./analyzer-tests.js"></script>
+
+
+<!--
+THESE SHOULD ALL THROW WITHOUT LEXICON
 <script src="./tagger-tests.js"></script>
 <script src="./lexicon-tests.js"></script>
+-->
 
 <script>
     const expect = chai.expect;

@@ -1,6 +1,7 @@
+const Util = require("./util");
 
-const RE = require("./util").RE;
-const MODALS = require("./util").MODALS;
+const RE = Util.RE;
+const MODALS = Util.MODALS;
 const DEFAULT_IS_PLURAL = /(ae|ia|s)$/;
 const DEFAULT_SINGULAR_RULE = RE("^.*s$", 1);
 
@@ -134,8 +135,10 @@ class Pluralizer {
 
     if (!word || !word.length) return false;
 
-    word = word.toLowerCase();
     let dbug = opts && opts.debug;
+    let fatal = opts && opts.fatal;
+
+    word = word.toLowerCase();
 
     if (MODALS.includes(word)) return true;
 
@@ -144,15 +147,13 @@ class Pluralizer {
     }*/
 
     let lex = RiTa._lexicon();
+    let dict = lex._dict(fatal);
     let sing = RiTa.singularize(word);
-    let data = lex.dict[sing];
 
     // Is singularized form is in lexicon as 'nn'?
-    if (data && data.length === 2) {
-      let pos = data[1].split(' ');
-      for (let i = 0; i < pos.length; i++) {
-        if (pos[i] === 'nn') return true;
-      }
+    if (dict[sing] && dict[sing].length === 2) {
+      let pos = dict[sing][1].split(' ');
+      if (pos.includes('nn'))return true;
     }
 
     // A general modal form? (for example, ends in 'ness')
@@ -161,8 +162,8 @@ class Pluralizer {
     }
 
     // Is word without final 's in lexicon as 'nn'?
-    if (word.endsWith("s")) {
-      let data = lex.dict[word.substring(0, word.length - 1)];
+    if (dict && word.endsWith("s")) {
+      let data = dict[word.substring(0, word.length - 1)];
       if (data && data.length === 2) {
         let pos = data[1].split(' ');
         for (let i = 0; i < pos.length; i++) {
@@ -172,6 +173,15 @@ class Pluralizer {
     }
 
     if (DEFAULT_IS_PLURAL.test(word)) return true;
+
+    let rules = SINGULAR_RULES;
+    for (let i = 0; i < rules.length; i++) {
+      let rule = rules[i];
+      if (rule.applies(word)) {
+        dbug && console.log(word + ' hit', rule);
+        return true;
+      }
+    }
 
     dbug && console.log('isPlural: no rules hit for ' + word);
 

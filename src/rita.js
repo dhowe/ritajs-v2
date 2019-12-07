@@ -53,8 +53,8 @@ class RiTa {
     return RiScript.evaluate(...arguments);
   }
 
-  static hasWord() {
-    return RiTa._lexicon().hasWord(...arguments);
+  static hasWord(word) {
+    return RiTa._lexicon().hasWord(word, true);
   }
 
   static isAbbreviation(input, { caseSensitive = false } = {}) {
@@ -109,11 +109,11 @@ class RiTa {
   }
 
   static posTags(words, { simple = false, inline = false } = {}) {
-    return RiTa.tagger.tag(words, simple, inline);
+    return RiTa.tagger.tag(words, simple, inline, true);
   }
 
   static posTagsInline(words, { simple = false } = {}) {
-    return RiTa.tagger.tag(words, simple, true);
+    return RiTa.tagger.tag(words, simple, true, true);
   }
 
   static pluralize() {
@@ -234,8 +234,8 @@ RiTa.lts = undefined;
 
 // MESSAGES
 RiTa.SILENT = false;
-RiTa.SILENCE_LTS = true;
-RiTa.LEX_WARN = true;
+RiTa.SILENCE_LTS = false;
+RiTa.DOWNLOAD_URL = 'https://rednoise.org/rita/downloads';
 
 // CONSTANTS
 RiTa.VERSION = 2;
