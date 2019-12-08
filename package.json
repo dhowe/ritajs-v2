@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "webpack",
+    "build-production": "webpack --mode production",
     "watch": "webpack --watch",
     "test": "mocha ./tests/*.js",
     "test-dist": "webpack && NODE_ENV=dist mocha ./tests/*.js",
