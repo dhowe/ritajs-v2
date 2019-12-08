@@ -143,7 +143,7 @@ class Lexicon {
 
   size() {
     let dict = this._dict(false);
-    return dict ? Object.keys(dict) : 0;
+    return dict ? Object.keys(dict).length : 0;
   }
 
   randomWord(opts) {
@@ -151,15 +151,17 @@ class Lexicon {
     let pluralize = false;
     let words = Object.keys(this._dict(true));
     let ran = Math.floor(RiTa.random(words.length));
+    
     let targetPos = opts && opts.pos;
-    let targetSyls = opts && opts.syllableCount || 0;
+    let targetSyls = opts && opts.syllables || 0;
 
     let massNouns = ['dive', 'people', 'salespeople'];
-    let isMassNoun = (w, pos) => (w.endsWith("ness") ||
-      w.endsWith("ism") || pos.indexOf("vbg") > 0 ||
-      massNouns.includes(w));
 
-    let invalidNNS = ['dives'];
+    let isMassNoun = (w, pos) => {
+      return w.endsWith("ness") ||
+        w.endsWith("ism") || pos.indexOf("vbg") > 0 ||
+        massNouns.includes(w);
+    }
 
     if (targetPos && targetPos.length) {
       targetPos = targetPos.trim().toLowerCase();

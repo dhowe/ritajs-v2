@@ -13,7 +13,8 @@ class Symbol {
   constructor(visitor, text) {
     this.text = text;
     this.parent = visitor;
-    this.transforms = null;
+    this.transforms = undefined;
+    this.symbolTable = undefined;
   }
   getText() { return this.text; }
   accept() {
@@ -79,7 +80,13 @@ class Visitor extends SuperClass {
     this.trace && console.log('visitAssign: $' + id + '=' +
       this.flatten(token), "tfs=" + (token.transforms || "[]"));
 
-    this.context[id] = token ? this.visit(token) : '';
+    // this.
+    if (this.symbolTable) {
+      this.symbolTable['$'+id] = token.getText();
+    }
+    else {
+      this.context[id] = token ? this.visit(token) : '';
+    }
 
     return ''; // no output on vanilla assign
   }
@@ -112,6 +119,11 @@ class Visitor extends SuperClass {
     let result = this.visitScript(ctx).trim();
     return Entities.decode(result.replace(/ +/g, ' '))
       .replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
+  }
+
+  compile(ctx) {
+    this.symbolTable = {};
+    this.start(ctx);
   }
 
   // ---------------------- Helpers ---------------------------

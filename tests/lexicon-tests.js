@@ -3,13 +3,8 @@
 
 describe('RiTa.Lexicon', () => {
 
-  if (typeof module !== 'undefined') {
-    RiTa = require(process.env.NODE_ENV !==
-      'dist' ? '../src/rita' : '../dist/rita-node');
-    chai = require('chai');
-    expect = chai.expect;
-  }
-
+  if (typeof module !== 'undefined') require('./before');
+  
   it('Should correctly call hasWord', () => {
     eq(RiTa.hasWord("random"), true);
   });
@@ -39,11 +34,11 @@ describe('RiTa.Lexicon', () => {
     ok(result.length < 1, "randomWord rp=" + result);
 
     //int
-    result = RiTa.randomWord({ syllableCount: 3 });
-    ok(result.length > 0, "3 syllableCount: " + result);
+    result = RiTa.randomWord({ syllables: 3 });
+    ok(result.length > 0, "3 syllables: " + result);
 
-    result = RiTa.randomWord({ syllableCount: 5 });
-    ok(result.length > 0, "5 syllableCount: " + result);
+    result = RiTa.randomWord({ syllables: 5 });
+    ok(result.length > 0, "5 syllables: " + result);
 
   });
 
@@ -84,32 +79,32 @@ describe('RiTa.Lexicon', () => {
   it('Should correctly call randomWord.syls', () => {
     let i, result, syllables, num;
     for (i = 0; i < 10; i++) {
-      result = RiTa.randomWord({ syllableCount: 3 });
+      result = RiTa.randomWord({ syllables: 3 });
       syllables = RiTa.syllables(result);
       num = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
       ok(result.length > 0);
-      ok(num == 3, result + ": " + syllables); // "3 syllableCount: "
+      ok(num == 3, result + ": " + syllables); // "3 syllables: "
     }
 
     for (i = 0; i < 10; i++) {
-      result = RiTa.randomWord({ syllableCount: 5 });
+      result = RiTa.randomWord({ syllables: 5 });
       syllables = RiTa.syllables(result);
       num = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
-      ok(result.length > 0); // "3 syllableCount: "
-      ok(num == 5); // "3 syllableCount: "
+      ok(result.length > 0); // "3 syllables: "
+      ok(num == 5); // "3 syllables: "
     }
   });
 
   it('Should correctly call randomWord.pos.syls', () => {
     let result, syllables;
     for (let i = 0; i < 5; i++) {
-      result = RiTa.randomWord({ syllableCount: 3, pos: "vbz" });
+      result = RiTa.randomWord({ syllables: 3, pos: "vbz" });
       ok(result.length > 0, "randomWord vbz: " + result);
       syllables = RiTa.syllables(result);
       eq(3, syllables.split(RiTa.SYLLABLE_BOUNDARY).length, result);
       eq("vbz", RiTa.lexicon._bestPos(result), result);
 
-      result = RiTa.randomWord({ syllableCount: 1, pos: "n" });
+      result = RiTa.randomWord({ syllables: 1, pos: "n" });
       ok(result.length > 0, "randomWord n: " + result);
       syllables = RiTa.syllables(result);
       //console.log("n: ",result,syllables.split(RiTa.SYLLABLE_BOUNDARY));
@@ -120,7 +115,7 @@ describe('RiTa.Lexicon', () => {
 
   it('Should correctly call randomWord.pos.syls', () => {
     let result, syllables;
-    result = RiTa.randomWord({ syllableCount: 5, pos: "nns" });
+    result = RiTa.randomWord({ syllables: 5, pos: "nns" });
     ok(result.length > 0, "randomWord nns: " + result);
     syllables = RiTa.syllables(result);
     let count = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;

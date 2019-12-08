@@ -1,6 +1,7 @@
 const Util = require("./util");
 
 let RiTa;
+
 class Analyzer {
 
   constructor(parent) {
@@ -10,7 +11,6 @@ class Analyzer {
   }
 
   analyze(text) {
-
     let phonemes = '', syllables = '', stresses = '';
     let slash = '/', delim = '-', features = {};
     let words = RiTa.tokenizer.tokenize(text);

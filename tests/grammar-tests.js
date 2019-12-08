@@ -5,12 +5,7 @@
 
 describe('RiTa.Grammar', () => {
 
-  if (typeof module !== 'undefined') {
-    RiTa = require(process.env.NODE_ENV !==
-      'dist' ? '../src/rita' : '../dist/rita-node');
-    chai = require('chai');
-    expect = chai.expect;
-  }
+  if (typeof module !== 'undefined') require('./before');
   const Grammar = RiTa.Grammar;
 
   let sentenceGrammarJSON = {
@@ -490,7 +485,7 @@ describe('RiTa.Grammar', () => {
 
     let ctx = {
       newrule: (n) => '<verb>',
-      adj: (num) => RiTa.randomWord("jj", num),
+      adj: (num) => RiTa.randomWord({ pos: 'jj', syllables: num }),
       getFloat: () => Math.random(),
       isNumeric: (n) => !isNaN(parseFloat(n)) && isFinite(n)
     }
@@ -517,19 +512,16 @@ describe('RiTa.Grammar', () => {
       ok(res && /(dogs|cats|mice)\.$/.test(res));
     }
 
-    if (RiTa.hasLexicon()) {
-      rg.reset();
-      rg.addRule("<stat>", "`adj(2)`");
-      for (let i = 0; i < 5; i++) {
+    if (!RiTa.hasLexicon()) return; // below requires lexicon
 
-        res = rg.expandFrom("<stat>", this);
-        //console.log(res);
-        ok(res && res.length && RiTa.isAdjective(res));
-      }
+    rg.reset();
+    rg.addRule("<stat>", "`adj(2)`");
+    for (let i = 0; i < 5; i++) {
+      res = rg.expandFrom("<stat>", ctx);
+      //console.log(i, res);
+      ok(res && res.length && RiTa.isAdjective(res),
+        'failed on ' + res + ' dict: ' + RiTa._lexicon()._dict()[res]);
     }
-
-
-
   });
 
   function eql(a, b, c) { expect(a).eql(b, c); }

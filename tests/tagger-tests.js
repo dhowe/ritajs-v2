@@ -3,12 +3,7 @@
 
 describe('RiTa.Tagger', () => {
 
-  if (typeof module !== 'undefined') {
-    RiTa = require(process.env.NODE_ENV !==
-      'dist' ? '../src/rita' : '../dist/rita-node');
-    chai = require('chai');
-    expect = chai.expect;
-  }
+  if (typeof module !== 'undefined') require('./before');
 
   it('Should correctly call posTags.array', () => {
     eql(RiTa.posTags([]), []);

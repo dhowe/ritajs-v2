@@ -29,6 +29,10 @@ class RiTa {
     return RiTa._lexicon().alliterations(...arguments);
   }
 
+  static compile() {
+    return RiScript.compile(...arguments);
+  }
+
   static concordance() {
     return RiTa.concorder.concordance(...arguments);
   }

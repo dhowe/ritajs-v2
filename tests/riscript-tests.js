@@ -1,6 +1,3 @@
-// require('../src/transforms');
-//
-// const RiScript = require('../src/riscript');
 // const expect = require('chai').expect;
 
 // SOLUTION 1:
@@ -15,18 +12,32 @@
 
 describe('RiTa.RiScript', function() {
 
-  if (typeof module !== 'undefined') {
-    RiTa = require(process.env.NODE_ENV !==
-      'dist' ? '../src/rita' : '../dist/rita-node');
-    chai = require('chai');
-    expect = chai.expect;
-  }
+  if (typeof module !== 'undefined') require('./before');
 
   describe('Compile Various', function() {
 
-    // WORKING HERE: why is the grammar output all wrong?
+    // WORKING HERE
+    it('Should eval post-defined variables', function() {
 
-    /*it('Should eval converted grammar', function() {
+      let script, res;
+      script = RiTa.compile('$start=$foo\n$foo=hello');
+      res = script.expand('$start');
+      expect(res).eq('hello');
+
+      script = RiTa.compile('$start=(I said $foo to her) $foo=hello', 0);
+      res = script.expand('$start');
+      expect(res).eq('I said hello to her');
+    });
+
+    /*
+    it('Should eval linebreak-defined variables', function() {
+
+      script = RiTa.compile('$start=I said $foo to her\n$foo=hello', 0);
+      res = script.expand('$start');
+      expect(res).eq('I said hello to her');
+    });
+
+    it('Should eval converted grammar', function() {
       let script = [
         '$start = $nounp $verbp.',
         '$nounp = $determiner $noun',
@@ -36,13 +47,13 @@ describe('RiTa.RiScript', function() {
         '$verb = shoots',
         '$start'
       ].join(' ');
-      let rc = RiScript.compile(script, 1);
+      let rc = RiTa.compile(script, 1);
       let res = rc.run();
       expect().eq('the woman shoots the woman');
     });
 
     it('Should eval post-defined variables', function() {
-      let rc = RiScript.compile('$start=$foo $foo=hello $start', 1);
+      let rc = RiTa.compile('$start=$foo $foo=hello $start', 1);
       console.log("--------------------------------------------------\n");
       //console.log(rc.parseTree.toStringTree(rc.scripting.parser.ruleNames));
       let res = rc.run();
@@ -50,25 +61,25 @@ describe('RiTa.RiScript', function() {
     });*/
 
     /*it('Should compile choices', function() {
-      expect(RiScript.compile('(a)').run()).eq('a');
-      expect(RiScript.compile('(a | a)').run()).eq('a');
-      expect(RiScript.compile('(a | )').run()).to.be.oneOf(['a', '']);
-      expect(RiScript.compile('(a | b)').run()).to.be.oneOf(['a', 'b']);
-      expect(RiScript.compile('(a | b | c)').run()).to.be.oneOf(['a', 'b', 'c']);
-      expect(RiScript.compile('(a | (b | c) | d)').run()).to.be.oneOf(['a', 'b', 'c', 'd']);
-      expect(RiScript.compile('(|)').run()).eq('');
+      expect(RiTa.compile('(a)').run()).eq('a');
+      expect(RiTa.compile('(a | a)').run()).eq('a');
+      expect(RiTa.compile('(a | )').run()).to.be.oneOf(['a', '']);
+      expect(RiTa.compile('(a | b)').run()).to.be.oneOf(['a', 'b']);
+      expect(RiTa.compile('(a | b | c)').run()).to.be.oneOf(['a', 'b', 'c']);
+      expect(RiTa.compile('(a | (b | c) | d)').run()).to.be.oneOf(['a', 'b', 'c', 'd']);
+      expect(RiTa.compile('(|)').run()).eq('');
     });
 
     it('Should compile symbols', function() {
-      expect(RiScript.compile('a $dog').run({ dog: 'terrier' })).eq('a terrier');
-      expect(RiScript.compile('I ate the $dog').run({ dog: 'beagle' })).eq('I ate the beagle');
-      expect(RiScript.compile('The $dog today.').run({ dog: 'lab' })).eq('The lab today.');
-      expect(RiScript.compile('I ate the $dog.').run({ dog: 'lab' })).eq('I ate the lab.');
-      expect(RiScript.compile('$foo', 0).run({ foo: 'bar' })).eq('bar');
-      expect(RiScript.compile('$foo', 0).run()).eq('$foo'); // no-op
+      expect(RiTa.compile('a $dog').run({ dog: 'terrier' })).eq('a terrier');
+      expect(RiTa.compile('I ate the $dog').run({ dog: 'beagle' })).eq('I ate the beagle');
+      expect(RiTa.compile('The $dog today.').run({ dog: 'lab' })).eq('The lab today.');
+      expect(RiTa.compile('I ate the $dog.').run({ dog: 'lab' })).eq('I ate the lab.');
+      expect(RiTa.compile('$foo', 0).run({ foo: 'bar' })).eq('bar');
+      expect(RiTa.compile('$foo', 0).run()).eq('$foo'); // no-op
 
       // compile-time vars override runtime vars ?
-      expect(RiScript.compile('$foo=a $foo', 0).run({ foo: 'bar' })).eq('a');
+      expect(RiTa.compile('$foo=a $foo', 0).run({ foo: 'bar' })).eq('a');
     });*/
   });
 
