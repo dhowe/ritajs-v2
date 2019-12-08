@@ -1,10 +1,13 @@
 // const expect = require('chai').expect;
 // const RiTa = require('../src/rita_api');
 
-describe('RiTa.Lexicon', () => {
+describe('RiTa.Lexicon', function() {
+
+  this.timeout(5000); // TODO: why is mocha slow with dist/node file
 
   if (typeof module !== 'undefined') require('./before');
-  
+
+
   it('Should correctly call hasWord', () => {
     eq(RiTa.hasWord("random"), true);
   });

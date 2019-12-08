@@ -1,6 +1,7 @@
 module.exports = {
 	RiTa: [
 		'alliterations',
+		'compile',
 		'concordance',
 		'conjugate',
 		'createGrammar',
