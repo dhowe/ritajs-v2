@@ -8,7 +8,7 @@ describe('RiTa.Markov', () => {
     require('./before');
     fs = require('fs');
   }
-  
+
   const Markov = RiTa.Markov;
 
   let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
@@ -132,6 +132,38 @@ describe('RiTa.Markov', () => {
       res = RiTa.untokenize(toks);
       eq(toks.length, 20);
       //console.log(i, res);
+    }
+  });
+
+  it('should correctly call generateTokens.regex', () => {
+    let toks, expected = ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although'];
+    rm = new Markov(4);
+    rm.loadTokens(RiTa.tokenize(sample));
+
+    for (i = 0; i < 10; i++) {
+      toks = rm.generateTokens(1, { startTokens: /^[A-Z][a-z]*$/ });
+      //console.log(i, toks);
+      eq(toks.length, 1);
+      ok(expected.includes(toks[0]));
+    }
+
+    for (i = 0; i < 10; i++) {
+      toks = rm.generateTokens(3, { startTokens: /^[A-Z][a-z]*$/ });
+      //console.log(i, toks);
+      eq(toks.length, 3);
+      ok(expected.includes(toks[0]));
+    }
+  });
+
+  it('should correctly call generateToken.regex', () => {
+    let expected = ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although'];
+    rm = new Markov(4);
+    rm.loadTokens(RiTa.tokenize(sample));
+    for (let i = 0; i < expected.length; i++) {
+      let tok = rm.generateToken({ startTokens: expected[i] });
+      //console.log(i, tok);
+      // should get 2nd word
+      ok(!expected.includes(tok), 'got ' + tok);
     }
   });
 
@@ -611,7 +643,7 @@ describe('RiTa.Markov', () => {
       let arr = rm.generateUntil(/[.?!]/, { startTokens: startTokens });
       let res = RiTa.untokenize(arr);
       //console.log(i+") "+res);
-      ok(/Achieving.*[.?!]$/.test(res));
+      ok(/Achieving.*[.?!]$/.test(res), 'failed on "' + res + '"');
 
       let n = rm.n;
       for (let j = 0; j < arr.length - n; j++) {
@@ -644,9 +676,23 @@ describe('RiTa.Markov', () => {
     }
   });
 
+  it('should correctly generate sentence token by token', () => {
+
+    let rm = new Markov(3);
+    rm.loadTokens(RiTa.tokenize(sample));
+
+    for (let i = 0; i < 5; i++) {
+      let res = rm.generateSentenceTokens();
+      ok(Array.isArray(res), i + ": failed with: " + res);
+      res = RiTa.untokenize(res);
+      //console.log(i, res);
+      ok(/^[A-Z][a-z]*.*[.?!]$/.test(res), 'got: "' + res + '"');
+    }
+  });
+
   it('should correctly call generateUntil.maxLength', () => {
 
-    let rm = new Markov(3), maxLength = 3;
+    let rm = new Markov(3), maxLength = 4;
     rm.loadTokens(RiTa.tokenize(sample));
 
     let arr = rm.generateUntil(/[.?!]/, { maxLength: maxLength });

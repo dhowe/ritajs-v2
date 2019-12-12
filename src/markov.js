@@ -19,7 +19,7 @@
 
 // TODO:
 // startTokens can take a regex for first token?
-// load functions must take callbacks
+// load functions must take callbacks ?
 
 const ST = '<s/>';
 
@@ -76,8 +76,35 @@ class Markov {
     this.mlm && this.input.push(...tokens);
   }
 
-  generateTokens(num, { startTokens, temperature = 0 } = {}) {
+  generateToken({ startTokens, temperature = 0 } = {}) {
+    let toks = this.generateTokens(1, ...arguments);
+    //console.log('GOT '+tok);
+    return toks[0];
+  }
 
+  generateSentenceTokens({ minLength = 5, maxLength = 25, temperature = 0 } = {}) {
+    let words, tries = 0, fail = () => {
+      //console.log('FAIL: ' + this._flatten(words));
+      words = undefined;
+      tries++;
+    }
+    while (tries < Markov.MAX_GENERATION_ATTEMPTS) {
+      words = words || [ this.generateToken({ startTokens: /^[A-Z][a-z]*$/ }) ];
+      let next = this.generateToken({ startTokens: words, temperature: temperature });
+      words.push(next);
+      if (/^[?!.]$/.test(next)) { // sentence-end?
+        if (words.length < minLength) {
+          fail(words);
+          continue;
+        }
+        break; // success
+      }
+      if (words.length >= maxLength) fail(words);
+    }
+    return words;
+  }
+
+  generateTokens(num, { startTokens, temperature = 0 } = {}) {
     let tokens, tries = 0, fail = () => {
       //console.log('FAIL: ' + this._flatten(tokens));
       tokens = undefined;
@@ -91,8 +118,11 @@ class Markov {
 
     while (tries < Markov.MAX_GENERATION_ATTEMPTS) {
 
-      if (!tokens) {
+      if (!tokens) { // create start sequence
         tokens = this._initTokens(startTokens);
+        if (startTokens instanceof RegExp && tokens.length >= num) {
+          return [tokens.pop().token]; // return single
+        }
         if (!tokens) throw Error('No path starting with: "' + startTokens + '"');
       }
 
@@ -103,8 +133,11 @@ class Markov {
       if (!next && fail()) continue; // possible if all children excluded
 
       // if we have enough tokens, we're done
-      if (tokens.push(next) >= num) return tokens.map(n => n.token);
+      if (tokens.push(next) >= num) {
+        return tokens.slice(-num).map(n => n.token);
+      }
     }
+
     throwError(tries);
   }
 
@@ -138,7 +171,7 @@ class Markov {
         if (tokens.length >= minLength) {
           let sent = this._validateSentence(result, tokens, allowDuplicates);
           if (sent) {
-            result.push(sent.replace(/ +/g,' '));
+            result.push(sent.replace(/ +/g, ' '));
             break;
           }
         }
@@ -156,7 +189,9 @@ class Markov {
     return result;
   }
 
-  generateUntil(regex, { minLength = 1, maxLength = Number.MAX_VALUE, startTokens, temperature = 0 } = {}) {
+  generateUntil(regex, { minLength = 3, maxLength = Number.MAX_VALUE, startTokens, temperature = 0 } = {}) {
+
+    if (maxLength <= minLength) throw Error('invalid min/max length');
 
     let tries = 0;
     OUT: while (++tries < Markov.MAX_GENERATION_ATTEMPTS) {
@@ -321,7 +356,7 @@ class Markov {
           let sent = this.generateSentence({ startTokens: start, minLength: start.length });
           if (!sent || result.includes(sent) && fail(tokens)) continue;
 
-          result.push(sent.replace(/ +/,' ')); // got one
+          result.push(sent.replace(/ +/, ' ')); // got one
         }
       }
 
@@ -358,17 +393,30 @@ class Markov {
 
     let tokens;
     if (startTokens) {
-      tokens = [];
-      let st = this._search(startTokens, root);
-      if (!st) return false; // fail
-      while (!st.isRoot()) {
-        tokens.unshift(st);
-        st = st.parent;
+
+      // a single regexp to match
+      if (startTokens instanceof RegExp) {
+        let matched = Object.values(root.children).filter(c => startTokens.test(c.token));
+        //console.log(this._flatten(matched).split(' '));
+        if (!matched.length) throw Error('Unable to match Regex:', startTokens);
+        let selector = new Node(null, 'SELECT');
+        matched.forEach(m => selector.addChild(m.token, m.count));
+        tokens = [selector.pselect()];
+      }
+      else { // a path of tokens to match
+        tokens = [];
+        let st = this._search(startTokens, root);
+        if (!st) return false; // fail
+        while (!st.isRoot()) {
+          tokens.unshift(st);
+          st = st.parent;
+        }
       }
     }
-    else { // start-tokens supplies
+    else { // no start-tokens supplied
       tokens = [this.root.pselect()];
     }
+
     return tokens;
   }
 
@@ -457,6 +505,7 @@ class Node {
     this.parent = parent;
     this.token = word;
     this.count = count || 0;
+    this.numChildren = -1;
   }
 
   /*
@@ -500,29 +549,38 @@ class Node {
   }
 
   childCount() {
-    let sum = 0;
-    for (let k in this.children) {
-      if (k === ST) continue;
-      sum += this.children[k].count;
+    if (this.numChildren === -1) {
+      let sum = 0;
+      for (let k in this.children) {
+        if (k === ST) continue;
+        sum += this.children[k].count;
+      }
+      this.numChildren = sum;
     }
-    return sum;
+    return this.numChildren;
   }
 
   nodeProb() {
-    return this.parent ? this.count / this.parent.childCount() : -1;
+    if (!this.parent) throw Error('no parent');
+    return this.count / this.parent.childCount();
   }
 
   /*
    * Increments count for a child node and returns it
    */
   addChild(word, count) {
+
+    this.numChildren === -1; // invalidate cache
+
     count = count || 1;
     let node = this.children[word];
     if (!node) {
       node = new Node(this, word);
       this.children[word] = node;
     }
+
     node.count += count;
+
     return node;
   }
 

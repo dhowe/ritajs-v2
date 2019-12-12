@@ -18,5 +18,16 @@ module.exports =
   node: {
     fs: "empty"
   },
-  entry: './src/rita.js',
+  entry: './src/rita.js'
+  // optimization: {
+  //   splitChunks: {
+  //     cacheGroups: {
+  //       commons: {
+  //         test: /[\\/]node_modules[\\/]/,
+  //         name: 'vendors',
+  //         chunks: 'all'
+  //       }
+  //     }
+  //   }
+  // }
 };

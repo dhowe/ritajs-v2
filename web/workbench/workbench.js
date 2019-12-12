@@ -4,26 +4,38 @@ $(document).ready(function() {
   // CHECK perf on load/exec with timer
   // ADD callback for load
 
-  let markov, n = 3, speed = .5, temp = 0, dirty = true;
+  let markov, n = 3, speed = .5, temp = 0;
+  let dirty = true, running = false;
 
-  console.log('dirty',dirty);
   $('.custom-file-upload').bind("click", function() {
     $('#fileToLoad').click();
   });
 
+  let words = [];
+  let nextWord = function() {
+    let starts = words.length ? words : /^[A-Z][a-z]*$/;
+    console.log('nextWord', words.length ? words+"" : 'RE');
+    let next = markov.generateToken({ startTokens: starts });
+    $('#output-box').text($('#output-box').text()+' '+next);
+    words.push(next);
+    running && setTimeout(nextWord, 1000);
+  }
+
   $('#exe-btn').bind("click", function() {
+
     $(this).prop('disabled', true);
-    console.log('dirty',dirty);
-    markov = markov || RiTa.createMarkov(n);
-    if (dirty) {
-      console.log('LOADING');
+    //console.log('dirty',dirty);
+    if (dirty || !markov) {
+      markov = RiTa.createMarkov(n);
+      console.time('loadSentences');
       markov.loadSentences($('#field').val().trim());
+      console.timeEnd('loadSentences');
     }
-    let sent = markov.generateSentence({ minLength: 8 });
-    console.log('GOT', sent);
-    $('#output-box').text($('#output-box').text()+' '+sent);
+    let timeout = dirty ? 0 : 1000;
+    running = true;
     dirty = false;
-    $(this).prop('disabled', false);
+    setTimeout(nextWord, timeout);
+    //let sent = markov.generateSentence({ minLength: 8 });
   });
 
   //$('#load-btn').prop('disabled', document.getElementById("fileToLoad").files.length);
@@ -40,21 +52,26 @@ $(document).ready(function() {
   );
 
   /* text area */
-  $('#exe-btn').prop('disabled', $('#field').val().trim() === '');
+  $('#exe-btn').prop('disabled', $('#field').val().trim().length === 0);
+  console.log('keyup1: '+$('#field').val().trim().length);
+
 
   $('#field').keyup(function() {
     dirty = true;
-    $('#exe-btn').prop('disabled', $(this).val().trim().length === '');
+    running = false;
+    console.log('keyup2: '+$(this).val().trim().length);
+    $('#exe-btn').prop('disabled', $(this).val().trim().length === 0);
   });
 
   /* knobs */
   $(".nKnob").knob({
     min: 1,
-    max: 5,
+    max: 6,
     step: 1,
     height: 100,
-    release: function(v) {
-      n = v;
+    release: function(newN) {
+      dirty = (n !== newN);
+      n = newN;
       console.log(n, speed, temp);
     }
   });
@@ -63,8 +80,8 @@ $(document).ready(function() {
     max: 1,
     step: 0.01,
     height: 100,
-    release: function(v) {
-      speed = v;
+    release: function(newSpeed) {
+      speed = newSpeed;
       console.log(n, speed, temp);
     }
   });
@@ -73,8 +90,8 @@ $(document).ready(function() {
     max: 1,
     step: 0.01,
     height: 100,
-    release: function(v) {
-      temp = v;
+    release: function(newTemp) {
+      temp = newTemp;
       console.log(n, speed, temp);
     }
   });
