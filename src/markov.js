@@ -82,6 +82,7 @@ class Markov {
     return toks[0];
   }
 
+  // temp: not needed in java
   generateSentenceTokens({ minLength = 5, maxLength = 25, temperature = 0 } = {}) {
     let words, tries = 0, fail = () => {
       //console.log('FAIL: ' + this._flatten(words));

@@ -676,6 +676,7 @@ describe('RiTa.Markov', () => {
     }
   });
 
+  // temp: not needed in java
   it('should correctly generate sentence token by token', () => {
 
     let rm = new Markov(3);
