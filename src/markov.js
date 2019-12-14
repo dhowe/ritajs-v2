@@ -76,21 +76,18 @@ class Markov {
     this.mlm && this.input.push(...tokens);
   }
 
-  generateToken({ startTokens, temperature = 0 } = {}) {
-    let toks = this.generateTokens(1, ...arguments);
-    //console.log('GOT '+tok);
-    return toks[0];
-  }
-
   // temp: not needed in java
-  generateSentenceTokens({ minLength = 5, maxLength = 25, temperature = 0 } = {}) {
+  generateSentenceTokens({ minLength = 5, maxLength = 25, temperature = 0, startTokens } = {}) {
     let words, tries = 0, fail = () => {
       //console.log('FAIL: ' + this._flatten(words));
       words = undefined;
       tries++;
     }
+
+    startTokens = startTokens || /^[A-Z][a-z]*$/;
+
     while (tries < Markov.MAX_GENERATION_ATTEMPTS) {
-      words = words || [ this.generateToken({ startTokens: /^[A-Z][a-z]*$/ }) ];
+      words = words || [this.generateToken({ startTokens: startTokens })];
       let next = this.generateToken({ startTokens: words, temperature: temperature });
       words.push(next);
       if (/^[?!.]$/.test(next)) { // sentence-end?
@@ -103,6 +100,10 @@ class Markov {
       if (words.length >= maxLength) fail(words);
     }
     return words;
+  }
+
+  generateToken() {
+    return this.generateTokens(1, ...arguments)[0];
   }
 
   generateTokens(num, { startTokens, temperature = 0 } = {}) {
@@ -140,6 +141,10 @@ class Markov {
     }
 
     throwError(tries);
+  }
+
+  generateSentence() {
+    return this.generateSentences(1, ...arguments)[0];
   }
 
   generateSentences(num, { minLength = 5, maxLength = 35, startTokens, allowDuplicates, temperature = 0 } = {}) {
@@ -237,7 +242,8 @@ class Markov {
 
         if (this.mlm && this.mlm <= tokens.length) {
           if (!this._validateMlms(next.token, tokens)) {
-            //console.log('FAIL(i='+i+'/'+(nodes.length)+' mlm=' + this.mlm + '): ' + this._flatten(tokens) + ' -> ' + next.token);
+            //console.log('FAIL(i='+i+'/'+(nodes.length)+' mlm=' + this.mlm
+            //+ '): ' + this._flatten(tokens) + ' -> ' + next.token);
             continue;
           }
         }
@@ -262,10 +268,6 @@ class Markov {
       }
     }
     return probs;
-  }
-
-  generateSentence() {
-    return this.generateSentences(1, ...arguments)[0];
   }
 
   completions(pre, post) {
@@ -501,7 +503,6 @@ Markov.MAX_GENERATION_ATTEMPTS = 999;
 class Node {
 
   constructor(parent, word, count) {
-
     this.children = {};
     this.parent = parent;
     this.token = word;
@@ -509,9 +510,7 @@ class Node {
     this.numChildren = -1;
   }
 
-  /*
-   * Find a (direct) child node with matching token, given a word or node
-   */
+  // Find a (direct) child node with matching token, given a word or node
   child(word) {
     let lookup = word;
     if (word.token) lookup = word.token;
@@ -531,8 +530,6 @@ class Node {
       pTotal += nodes[i].nodeProb();
       if (selector < pTotal) return nodes[i];
     }
-
-    throw Error(this + "\npselect() fail\nnodes(" + nodes.length + ") -> " + nodes);
   }
 
   isLeaf() {
@@ -540,7 +537,7 @@ class Node {
   }
 
   isRoot() {
-    return this.parent === null;
+    return !this.parent;
   }
 
   childNodes(sorted) {
@@ -631,7 +628,7 @@ class Node {
     if (tok === '\r\n') tok = '\\r\\n';
     return tok;
   }
-} // end Node
+}
 
 // --------------------------------------------------------------
 

@@ -11,13 +11,13 @@ $(document).ready(function() {
     $('#fileToLoad').click();
   });
 
-  let words = [];
+  let next, words = [];
   let nextWord = function() {
     let starts = words.length ? words : /^[A-Z][a-z]*$/;
     console.log('nextWord', words.length ? words+"" : 'RE');
-    let next = markov.generateToken({ startTokens: starts });
+    words.push((next = markov.generateToken({ startTokens: starts })));
+    if (!RiTa.isPunctuation(next)) next = ' ' + next;
     $('#output-box').text($('#output-box').text()+' '+next);
-    words.push(next);
     running && setTimeout(nextWord, 1000);
   }
 
