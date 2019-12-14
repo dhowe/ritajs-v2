@@ -589,6 +589,8 @@ class Node {
 
   stringify(mn, str, depth, sort) {
 
+    sort = sort || false;
+
     let l = [], indent = '\n';
 
     Object.keys(mn.children).map(k => l.push(mn.children[k]));
@@ -597,18 +599,19 @@ class Node {
 
     if (sort) l.sort();
 
+    for (let j = 0; j < depth; j++) indent += "  ";
+
     for (let i = 0; i < l.length; i++) {
-
       let node = l[i];
-      let tok = this._encode(node.token);
-      str += indent + "'" + tok + "'";
-
-      if (!node.isRoot()) str += " [" + node.count + ",p=" + node.nodeProb().toFixed(3) + "]";
-      if (!node.isLeaf()) str += '  {';
-
-      str = this.childCount() ? this.stringify(node, str, depth + 1, sort) : str + '}';
+      if (node) {
+        str += indent + "'" + this._encode(node.token) + "'";
+        if (!node.isRoot()) str += " [" + node.count + ",p=" + node.nodeProb().toFixed(3) + "]";
+        if (!node.isLeaf()) str += '  {';
+        str = this.childCount() ? this.stringify(node, str, depth + 1, sort) : str + '}';
+      }
     }
 
+    indent = '\n';
     for (let j = 0; j < depth - 1; j++) indent += "  ";
 
     return str + indent + "}";
