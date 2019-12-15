@@ -7,6 +7,7 @@
 <script src="js/jquery.knob.min.js"></script>
 
 <script src="../../dist/rita.js"></script>
+<script src="generator.js"></script>
 <script src="workbench.js"></script>
 
 <head>
@@ -15,7 +16,6 @@
 
 <body>
   <div class="content">
-
     <h1>Markov Workbench</h1>
     <div id="text-div">
       <textarea id="field"></textarea>
@@ -25,7 +25,8 @@
         <label for="file-upload" class="custom-file-upload">Load</label>
         <input id="fileToLoad" type="file" />
         <!--button type="button" id="load-btn" onclick="loadFileAsText()">Load</button-->
-        <button type="button" id="exe-btn">Start</button>
+        <button type="button" id="start-btn">Start</button>
+        <button type="button" id="pause-btn">Pause</button>
       </div>
       <div class="knobs">
         <div>
@@ -42,12 +43,8 @@
         </div>
       </div>
     </div>
-
-
     <div id="output-box">
-
     </div>
-    <!-- Page content -->
   </div>
 
 </body>

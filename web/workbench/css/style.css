@@ -69,12 +69,22 @@ textarea {
   color: rgb(135, 206, 235);
 }
 
-#exe-btn:enabled {
+#start-btn:enabled {
   color: #fff;
   opacity: 100%;
 }
 
-#exe-btn:disabled {
+#start-btn:disabled {
+  color: #fff;
+  opacity: 10%;
+}
+
+#pause-btn:enabled {
+  color: #fff;
+  opacity: 100%;
+}
+
+#pause-btn:disabled {
   color: #fff;
   opacity: 10%;
 }

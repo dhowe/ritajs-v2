@@ -1018,8 +1018,11 @@ describe('RiTa.Markov', () => {
 
   it('should correctly call size', () => {
 
+    let rm = new Markov(4);
+    eq(rm.size(), 0);
+
     let tokens = RiTa.tokenize(sample);
-    let rm = new Markov(3);
+    rm = new Markov(3);
     rm.loadTokens(tokens);
     eq(rm.size(), tokens.length);
   });

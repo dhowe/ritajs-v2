@@ -1,67 +1,80 @@
 $(document).ready(function() {
 
-  // NEXT: add knobs for min/max length, mlm
-  // CHECK perf on load/exec with timer
-  // ADD callback for load
+  // NEXT:
+  // single word generator
+  // add knob for mlm
 
-  let markov, n = 3, speed = .5, temp = 0;
-  let dirty = true, running = false;
+  let gen, dirty, running, words = [];
+  let n = 4, speed = .5, temp = 0, id = 0;
 
-  $('.custom-file-upload').bind("click", function() {
-    $('#fileToLoad').click();
-  });
+  $('.custom-file-upload').bind("click", () => $('#fileToLoad').click());
 
-  let next, words = [];
-  let nextWord = function() {
-    let starts = words.length ? words : /^[A-Z][a-z]*$/;
-    console.log('nextWord', words.length ? words+"" : 'RE');
-    words.push((next = markov.generateToken({ startTokens: starts })));
-    if (!RiTa.isPunctuation(next)) next = ' ' + next;
-    $('#output-box').text($('#output-box').text()+' '+next);
-    running && setTimeout(nextWord, 1000);
+  let rate = () => (1 - speed) * 1000;
+
+  let showNextWord = () => {
+    if (gen) {
+      let starts = words.length ? words : /^[A-Z][a-z]*$/;
+      if (gen.done()) gen.reset({ minLength: 10, temperature: temp, startTokens: starts });
+      let word = gen.next({ temperature: temp });
+      if (!word) throw Error('no next word');
+      words.push(word);
+      let display = word.replace(/["“”\u2019‘`]/g, '');
+      if (!RiTa.isPunctuation(display)) display =  ' ' + display;
+      $('#output-box').text($('#output-box').text() + display);
+      running && (id = setTimeout(showNextWord, rate()));
+    }
   }
 
-  $('#exe-btn').bind("click", function() {
-
-    $(this).prop('disabled', true);
-    //console.log('dirty',dirty);
-    if (dirty || !markov) {
-      markov = RiTa.createMarkov(n);
-      console.time('loadSentences');
-      markov.loadSentences($('#field').val().trim());
-      console.timeEnd('loadSentences');
-    }
-    let timeout = dirty ? 0 : 1000;
-    running = true;
-    dirty = false;
-    setTimeout(nextWord, timeout);
-    //let sent = markov.generateSentence({ minLength: 8 });
+  $('#pause-btn').bind("click", function() {
+    running = false;
+    clearTimeout(id);
+    $(this).prop('disabled', !running);
+    $('#start-btn').prop('disabled', !$(this).prop('disabled'));
   });
 
-  //$('#load-btn').prop('disabled', document.getElementById("fileToLoad").files.length);
-
-  $('input:file').change(
-    function() {
-      if ($(this).val()) {
-        $('load-btn').attr('disabled', false);
-        $('#load-btn').prop('disabled', false);
-        $('#exe-btn').prop('disabled', false);
-        loadFileAsText();
-      }
+  $('#start-btn').bind("click", function() {
+    $(this).prop('disabled', true);
+    clearTimeout(id);
+    if (dirty || !gen) {
+      let raw = $('#field').val().trim();
+      if (!(raw && raw.length)) return;
+      let model = RiTa.createMarkov(n);
+      model.loadTokens(RiTa.tokenize(raw));
+      gen = new Generator(model, { minLength: 10, temperature: temp });
     }
-  );
+    running = true;
+    dirty = false;
+    showNextWord();
+    $('#pause-btn').prop('disabled', !$(this).prop('disabled'));
+  });
 
-  /* text area */
-  $('#exe-btn').prop('disabled', $('#field').val().trim().length === 0);
-  console.log('keyup1: '+$('#field').val().trim().length);
-
+  $('input:file').change(function() {
+    if ($(this).val()) {
+      $('#load-btn').prop('disabled', true);
+      $('#start-btn').prop('disabled', true);
+      $('#pause-btn').prop('disabled', true);
+      dirty = true;
+      let file = document.getElementById("fileToLoad").files[0];
+      let fileReader = new FileReader();
+      fileReader.onload = function(fileLoadedEvent) {
+        let textFromFileLoaded = fileLoadedEvent.target.result;
+        let textArea = document.getElementById("field");
+        textArea.value = textFromFileLoaded;
+        $('#load-btn').prop('disabled', false);
+        $('#start-btn').prop('disabled', false);
+      };
+      fileReader.readAsText(file, "UTF-8")
+    }
+  });
 
   $('#field').keyup(function() {
     dirty = true;
     running = false;
-    console.log('keyup2: '+$(this).val().trim().length);
-    $('#exe-btn').prop('disabled', $(this).val().trim().length === 0);
+    $('#start-btn').prop('disabled', $(this).val().trim().length === 0);
   });
+
+  $('#pause-btn').prop('disabled', true);
+  $('#start-btn').prop('disabled', $('#field').val().trim().length === 0);
 
   /* knobs */
   $(".nKnob").knob({
@@ -69,42 +82,36 @@ $(document).ready(function() {
     max: 6,
     step: 1,
     height: 100,
-    release: function(newN) {
-      dirty = (n !== newN);
-      n = newN;
-      console.log(n, speed, temp);
+    release: newN => {
+      if (n !== newN) {
+        n = newN;
+        gen = undefined;
+        $('#output-box').text('');
+        $('#start-btn').click();
+      }
     }
   });
+
   $(".speedKnob").knob({
     min: 0,
     max: 1,
     step: 0.01,
     height: 100,
-    release: function(newSpeed) {
-      speed = newSpeed;
-      console.log(n, speed, temp);
-    }
+    release: newSpeed => speed = newSpeed
   });
+
   $(".tempKnob").knob({
     min: 0,
     max: 1,
     step: 0.01,
     height: 100,
-    release: function(newTemp) {
-      temp = newTemp;
-      console.log(n, speed, temp);
+    release: newTemp => {
+      if (temp != newTemp) {
+        temp = newTemp;
+        clearTimeout(id);
+        showNextWord();
+        //$('#pause-btn').click();
+      }
     }
   });
 });
-
-function loadFileAsText() {
-  dirty = true;
-  let fileToLoad = document.getElementById("fileToLoad").files[0];
-  let fileReader = new FileReader();
-  fileReader.onload = function(fileLoadedEvent) {
-    let textFromFileLoaded = fileLoadedEvent.target.result;
-    let textArea = document.getElementById("field");
-    textArea.value = textFromFileLoaded;
-  };
-  fileReader.readAsText(fileToLoad, "UTF-8");
-}

@@ -7,8 +7,6 @@
 */
 // allow for real-time weighting ala atken
 
-// NEXT: generateWith (inverse-tree) - postpone
-
 // TODO:
 // ERROR: loadTokens and loadSentences ?
 // ERROR: generateSentences after loadTokens
@@ -125,10 +123,13 @@ class Markov {
         if (startTokens instanceof RegExp && tokens.length >= num) {
           return [tokens.pop().token]; // return single
         }
-        if (!tokens) throw Error('No path starting with: "' + startTokens + '"');
+        if (!tokens) {
+          let idx = Math.max(0, startTokens.length - (this.n - 1));
+          throw Error('No path starting with: ' + startTokens.slice(idx));
+        }
       }
 
-      let parent = this._search(tokens);
+      let parent = this._findNode(tokens);
       if ((!parent || parent.isLeaf()) && fail()) continue;
 
       let next = this.selectNext(parent, tokens, temperature);
@@ -167,7 +168,7 @@ class Markov {
 
       while (tokens && tokens.length < maxLength) {
 
-        let parent = this._search(tokens);
+        let parent = this._findNode(tokens);
         if ((!parent || parent.isLeaf()) && fail(tokens)) continue;
 
         let next = this.selectNext(parent, tokens, temperature);
@@ -195,6 +196,7 @@ class Markov {
     return result;
   }
 
+  // tokens only (call generateTokensUntil)
   generateUntil(regex, { minLength = 3, maxLength = Number.MAX_VALUE, startTokens, temperature = 0 } = {}) {
 
     if (maxLength <= minLength) throw Error('invalid min/max length');
@@ -208,7 +210,7 @@ class Markov {
       // keep adding one and checking until we pass the max
       while (tokens.length < maxLength) {
 
-        let mn = this._search(tokens);
+        let mn = this._findNode(tokens);
         if (!mn || mn.isLeaf()) continue OUT; // hit a leaf, restart
 
         mn = this.selectNext(mn, tokens, temperature);
@@ -230,20 +232,19 @@ class Markov {
     let pTotal = 0, selector = Math.random();
     let rprobs = nodes.map(n => n.nodeProb()).slice().reverse();
 
-    // TODO: optimize for cases with 0 temp
-
     // loop twice here in case we skip earlier nodes based on probability
     for (let i = 0; i < nodes.length * 2; i++) {
       let idx = i % nodes.length;
       let next = nodes[idx];
       let prob = lerp(next.nodeProb(), rprobs[idx], temp);
+
       pTotal += prob;//next.nodeProb();
       if (selector < pTotal) { // should always be true 2nd time through
-
+        // console.log(next.token +' -> ' +prob + ' temp='+ temp);
         if (this.mlm && this.mlm <= tokens.length) {
           if (!this._validateMlms(next.token, tokens)) {
             //console.log('FAIL(i='+i+'/'+(nodes.length)+' mlm=' + this.mlm
-            //+ '): ' + this._flatten(tokens) + ' -> ' + next.token);
+            //  + '): ' + this._flatten(tokens) + ' -> ' + next.token);
             continue;
           }
         }
@@ -261,7 +262,7 @@ class Markov {
     }
 
     let tn, probs = {};
-    if (tn = this._search(path)) {
+    if (tn = this._findNode(path)) {
       let nexts = tn.childNodes();
       for (let i = 0; i < nexts.length; i++) {
         if (nexts[i]) probs[nexts[i].token] = nexts[i].nodeProb();
@@ -270,7 +271,7 @@ class Markov {
     return probs;
   }
 
-  completions(pre, post) {
+  completions(pre, post) { // TODO: add temperature
     let tn, result = [];
     if (post) { // fill the center
 
@@ -279,14 +280,14 @@ class Markov {
           (pre.length + post.length));
       }
 
-      if (!(tn = this._search(pre))) return; // TODO: add warning
+      if (!(tn = this._findNode(pre))) return; // TODO: add warning
 
       let nexts = tn.childNodes();
       for (let i = 0; i < nexts.length; i++) {
 
         let atest = pre.slice(0);
         atest.push(nexts[i].token, ...post);
-        if (this._search(atest)) result.push(nexts[i].token);
+        if (this._findNode(atest)) result.push(nexts[i].token);
       }
 
       return result;
@@ -301,23 +302,10 @@ class Markov {
   probability(data) {
     if (data && data.length) {
       let tn = (typeof data === 'string') ?
-        this.root.child(data) : this._search(data);
+        this.root.child(data) : this._findNode(data);
       if (tn) return tn.nodeProb();
     }
     return 0;
-  }
-
-  toString() {
-    return this.root.asTree().replace(/{}/g, '');
-  }
-
-  size() {
-    return this.root.childCount();
-  }
-
-  print(root) {
-    root = root || this.root;
-    console && console.log(root.asTree().replace(/{}/g, ''));
   }
 
   generateSentencesWith(num, includeTokens, { minLength = 5, maxLength = 35, allowDuplicates, temperature = 0 } = {}) {
@@ -337,13 +325,13 @@ class Markov {
 
       if (!tokens) {
         tokens = this._initSentence(includeTokens, this.inverse);
-        //console.log('got',tokens);
+//console.log('got',tokens);
         if (!tokens) throw Error('No sentence including: "' + includeTokens + '"');
       }
 
       while (tokens && tokens.length < maxLength) {
 
-        let parent = this._search(tokens, this.inverse);
+        let parent = this._findNode(tokens, this.inverse);
         if ((!parent || parent.isLeaf()) && fail(tokens)) continue;
 
         let next = this.selectNext(parent, tokens, temperature);
@@ -368,6 +356,19 @@ class Markov {
     return result;
   }
 
+  toString() {
+    return this.root.asTree().replace(/{}/g, '');
+  }
+
+  size() {
+    return this.root.childCount();
+  }
+
+  print(root) {
+    root = root || this.root;
+    console && console.log(root.asTree().replace(/{}/g, ''));
+  }
+
   ////////////////////////////// end API ////////////////////////////////
 
   _initSentence(initWith, root) {
@@ -375,9 +376,9 @@ class Markov {
     root = root || this.root;
 
     let tokens;
-    if (initWith) { // TODO:
+    if (initWith) {
       tokens = [];
-      let st = this._search(initWith, root);
+      let st = this._findNode(initWith, root);
       if (!st) return false; // fail
       while (!st.isRoot()) {
         tokens.unshift(st);
@@ -406,9 +407,10 @@ class Markov {
         matched.forEach(m => selector.addChild(m.token, m.count));
         tokens = [selector.pselect()];
       }
-      else { // a path of tokens to match
+      // a path of tokens to match
+      else {
         tokens = [];
-        let st = this._search(startTokens, root);
+        let st = this._findNode(startTokens, root);
         if (!st) return false; // fail
         while (!st.isRoot()) {
           tokens.unshift(st);
@@ -416,10 +418,10 @@ class Markov {
         }
       }
     }
-    else { // no start-tokens supplied
+    // no start-tokens supplied
+    else {
       tokens = [this.root.pselect()];
     }
-
     return tokens;
   }
 
@@ -439,7 +441,7 @@ class Markov {
    * @param  {node} root of tree to search
    * @return {Node} or undefined
    */
-  _search(path, root) {
+  _findNode(path, root) {
 
     root = root || this.root;
 
