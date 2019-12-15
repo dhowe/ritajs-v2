@@ -384,11 +384,15 @@ describe('RiTa.Core', () => {
     }
   });
 
+  it('Should correctly call concordance', () => {
+    // TODO:
+  });
+
   it('Should correctly call sentences', () => {
 
     let input, expected, output;
 
-    eql(RiTa.sentences(""), [""]);
+    eql(RiTa.sentences(''), ['']);
 
     input = "Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications. The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels. If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs.";
     expected =  ["Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications.", "The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels.", "If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs."];
