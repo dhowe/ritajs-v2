@@ -1,7 +1,9 @@
-const expect = require('chai').expect;
-const RiTa = require('../src/rita_api');
+// const expect = require('chai').expect;
+// const RiTa = require('../src/rita_api');
 
 describe('RiTa.Tokenizer', () => {
+
+  if (typeof module !== 'undefined') require('./before');
 
   it('Should correctly call tokenize', () => {
 
@@ -218,7 +220,7 @@ describe('RiTa.Tokenizer', () => {
     ];
 
     expect(inputs.length).eq(outputs.length);
-    for (i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
       expect(RiTa.untokenize(inputs[i])).eq(outputs[i]);
     }
   });
@@ -299,6 +301,8 @@ describe('RiTa.Tokenizer', () => {
     eql(RiTa.sentences(""), [""]);
   });
 
-  function eql(a, b) { expect(a).eql(b); }
-  function eq(a, b) { expect(a).eq(b); }
-  function ok(res) { expect(res).eq(true); }});
+  function eql(a, b, m) { expect(a).eql(b, m); }
+  function eq(a, b, m) { expect(a).eq(b, m); }
+  function ok(a, m) { expect(a, m).to.be.true; }
+  function def(res, m) { expect(res, m).to.not.be.undefined; }
+});

@@ -53,9 +53,9 @@ class SeededRandom {
 
   // API ////////////////////////////////////////////////////////////////////
 
-  randomOrdering(num) {
-    let o = Array.from(Array(num).keys());
-    for (let j, x, i = o.length; i; j = parseInt(Math.random() * i),
+  randomOrdering(arg) {
+    let o = Array.isArray(arg) ? arg : Array.from(Array(arg).keys());
+    for (let j, x, i = o.length; i; j = parseInt(this.random() * i),
       x = o[--i], o[i] = o[j], o[j] = x) { /* shuffle */ }
     return o;
   }

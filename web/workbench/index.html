@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/style.css">
+<script src="js/jquery-3.4.1.min.js"></script>
+<script src="js/jquery.knob.min.js"></script>
+
+<script src="../../dist/rita.js"></script>
+<script src="generator.js"></script>
+<script src="workbench.js"></script>
+
+<head>
+  <title>Markov Workbench</title>
+</head>
+
+<body>
+  <div class="content">
+    <h1>Markov Workbench</h1>
+    <div id="text-div">
+      <textarea id="field"></textarea>
+    </div>
+    <div id="panel">
+      <div class="btn">
+        <label for="file-upload" class="custom-file-upload">Load</label>
+        <input id="fileToLoad" type="file" />
+        <!--button type="button" id="load-btn" onclick="loadFileAsText()">Load</button-->
+        <button type="button" id="start-btn">Start</button>
+        <button type="button" id="pause-btn">Pause</button>
+      </div>
+      <div class="knobs">
+        <div>
+          <h3>N</h3>
+          <input class="nKnob" data-width="75" data-displayInput=true value="4">
+        </div>
+        <div>
+          <h3>Speed</h3>
+          <input class="speedKnob" data-width="75" data-displayInput=true value="0.5">
+        </div>
+        <div>
+          <h3>Temperature</h3>
+          <input class="tempKnob" data-width="75" data-displayInput=true value="0">
+        </div>
+      </div>
+    </div>
+    <div id="output-box">
+    </div>
+  </div>
+
+</body>
+
+</html>

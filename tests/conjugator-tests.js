@@ -1,7 +1,9 @@
-const expect = require('chai').expect;
-const RiTa = require('../src/rita_api');
+// const expect = require('chai').expect;
+// const RiTa = require('../src/rita_api');
 
 describe('RiTa.Conjugator', () => {
+
+  if (typeof module !== 'undefined') require('./before');
 
   it('Should correctly call pastParticiple', () => {
 
@@ -35,6 +37,7 @@ describe('RiTa.Conjugator', () => {
 
   it('Should correctly call presentParticiple', () => {
 
+    equal(RiTa.presentParticiple(""), "");
     equal(RiTa.presentParticiple("sleep"), "sleeping");
     equal(RiTa.presentParticiple("withhold"), "withholding");
 
@@ -57,27 +60,14 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.presentParticiple("bring"), "bringing");
     equal(RiTa.presentParticiple("speak"), "speaking");
 
-    equal(RiTa.presentParticiple("study "), "studying");
-    //space
-    equal(RiTa.presentParticiple(" study"), "studying");
-    //space
-    equal(RiTa.presentParticiple("study  "), "studying");
-    //double space
-    equal(RiTa.presentParticiple("  study"), "studying");
-    //double space
-    equal(RiTa.presentParticiple("study    "), "studying");
-    //tab space
-    equal(RiTa.presentParticiple(" study"), "studying");
-    //tab space
-    equal(RiTa.presentParticiple(""), "");
+    equal(RiTa.presentParticiple("study "), "studying"); // trim
+    equal(RiTa.presentParticiple(" study"), "studying"); // trim
   });
 
   it('Should correctly call conjugate', () => {
     let args, s, a;
 
     equal("swum", RiTa.pastParticiple("swim"));
-
-    //return;
 
     equal(RiTa.conjugate("be", { form: RiTa.GERUND, }), "being");
 
@@ -230,14 +220,19 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.conjugate("barter", args), "bartered");
     equal(RiTa.conjugate("run", args), "ran");
 
+    args = {
+      number: RiTa.PLURAL,
+      person: RiTa.SECOND_PERSON,
+      tense: RiTa.PAST_TENSE
+    };
     s = ["compete", "complete", "eject"];
     a = ["competed", "completed", "ejected"];
-    ok(a.length === s.length);
     for (let i = 0; i < s.length; i++) {
-      c = RiTa.conjugate(s[i], args);
-      equal(c, a[i]);
+      equal(RiTa.conjugate(s[i], args), a[i], 'failed on ' + s[i]);
     }
   });
-  function ok(res) { expect(res).eq(true); }
-  function equal(a, b) { expect(a).eq(b); }
+
+  function ok(a, m) { expect(a, m).to.be.true; }
+  function def(res, m) { expect(res, m).to.not.be.undefined; }
+  function equal(a, b, m) { expect(a).eq(b, m); }
 });

@@ -1,5 +1,4 @@
 const Util = require("./util");
-//const MED = require("js-levenshtein");
 
 let RiTa;
 
@@ -8,20 +7,18 @@ class Lexicon {
   constructor(parent, dict) {
     RiTa = parent;
     this.dict = dict;
+    this.lexWarned = false;
   }
 
-  alliterations(word, { matchMinLength = 4, useLTS = false } = {}) {
+  alliterations(word, { matchMinLength = 4 } = {}) {
 
     word = word.includes(' ') ? word.substring(0, word.indexOf(' ')) : word;
 
     if (RiTa.VOWELS.includes(word.charAt(0))) return [];
 
-    // let matchMinLength = opts && opts.matchMinLength || 4;
-    // let useLTS = opts && opts.useLTS || false;
-
     let results = [];
-    let words = Object.keys(this.dict);
-    let fss = this._firstStressedSyl(word, useLTS);
+    let words = Object.keys(this._dict(true));
+    let fss = this._firstStressedSyl(word);
     let c1 = this._firstPhone(fss);
 
     if (!c1 || !c1.length) return [];
@@ -30,7 +27,7 @@ class Lexicon {
 
       if (words[i].length < matchMinLength) continue;
 
-      let c2 = this._firstPhone(this._firstStressedSyl(words[i], useLTS));
+      let c2 = this._firstPhone(this._firstStressedSyl(words[i]));
 
       if (RiTa.VOWELS.includes(word.charAt(0))) return []; // ????
 
@@ -44,17 +41,20 @@ class Lexicon {
 
     if (!theWord || !theWord.length) return [];
 
+    let dict = this._dict(true);
     let word = theWord.toLowerCase();
 
     let results = [];
-    let words = Object.keys(this.dict);
+    let words = Object.keys(this._dict(true));
     let p = this._lastStressedPhoneToEnd(word);
 
     for (let i = 0; i < words.length; i++) {
 
       if (words[i] === word) continue;
 
-      if (this.dict[words[i]][0].endsWith(p)) results.push(words[i]);
+      if (dict[words[i]][0].endsWith(p)) {
+        results.push(words[i]);
+      }
     }
 
     return results;
@@ -72,22 +72,6 @@ class Lexicon {
       : this.similarByType(word, opts);
   }
 
-  toPhoneArray(raw) {
-    let result = [];
-    let sofar = '';
-    for (let i = 0; i < raw.length; i++) {
-      if (raw[i] == ' ' || raw[i] == '-') {
-        result[result.length] = sofar;
-        sofar = '';
-      }
-      else if (raw[i] != '1' && raw[i] != '0') {
-        sofar += raw[i];
-      }
-    }
-    result[result.length] = sofar;
-    return result;
-  }
-
   similarByType(word, opts) {
 
     let minLen = opts && opts.minimumWordLen || 2;
@@ -97,11 +81,11 @@ class Lexicon {
     let result = [];
     let minVal = Number.MAX_VALUE;
     let input = word.toLowerCase();
-    let words = Object.keys(this.dict);
+    let words = Object.keys(this._dict(true));
     let variations = [input, input + 's', input + 'es'];
 
     let compareA = opts.type === 'sound' ?
-      this.toPhoneArray(this._rawPhones(input)) : input;
+      this._toPhoneArray(this._rawPhones(input)) : input;
 
     for (let i = 0; i < words.length; i++) {
 
@@ -114,7 +98,7 @@ class Lexicon {
       }
 
       let compareB = Array.isArray(compareA) ?
-        this.toPhoneArray(this.dict[entry][0]) : entry;
+        this._toPhoneArray(this._dict()[entry][0]) : entry;
 
       let med = Util.minEditDist(compareA, compareB);
 
@@ -148,29 +132,36 @@ class Lexicon {
     return this._intersect(simSound, simLetter);
   }
 
-  hasWord(word) {
-    word = word ? word.toLowerCase() : '';
-    return this.dict.hasOwnProperty(word) || RiTa.pluralizer.isPlural(word);
+  hasWord(word, fatal) {
+    if (!word || !word.length) return false;
+    return this._dict(fatal).hasOwnProperty(word.toLowerCase());
   }
 
   words() {
-    return Object.keys(this.dict);
+    return Object.keys(this._dict(true));
   }
 
   size() {
-    return this.words.length;
+    let dict = this._dict(false);
+    return dict ? Object.keys(dict).length : 0;
   }
 
   randomWord(opts) {
 
     let pluralize = false;
-    let words = Object.keys(this.dict);
+    let words = Object.keys(this._dict(true));
     let ran = Math.floor(RiTa.random(words.length));
+    
     let targetPos = opts && opts.pos;
-    let targetSyls = opts && opts.syllableCount || 0;
+    let targetSyls = opts && opts.syllables || 0;
 
-    let isNNWithoutNNS = (w, pos) => (w.endsWith("ness") ||
-      w.endsWith("ism") || pos.indexOf("vbg") > 0);
+    let massNouns = ['dive', 'people', 'salespeople'];
+
+    let isMassNoun = (w, pos) => {
+      return w.endsWith("ness") ||
+        w.endsWith("ism") || pos.indexOf("vbg") > 0 ||
+        massNouns.includes(w);
+    }
 
     if (targetPos && targetPos.length) {
       targetPos = targetPos.trim().toLowerCase();
@@ -183,7 +174,7 @@ class Lexicon {
 
     for (let i = 0; i < words.length; i++) {
       let j = (ran + i) % words.length;
-      let rdata = this.dict[words[j]];
+      let rdata = this._dict()[words[j]];
 
       // match the syls if supplied
       if (targetSyls && targetSyls !== rdata[0].split(' ').length) {
@@ -197,7 +188,7 @@ class Lexicon {
           if (!pluralize) return words[j];
 
           // match plural noun
-          if (!isNNWithoutNNS(words[j], rdata[1])) {
+          if (!isMassNoun(words[j], rdata[1])) {
             return RiTa.pluralize(words[j]);
           }
         }
@@ -210,7 +201,9 @@ class Lexicon {
     return []; // TODO: failed, should throw here
   }
 
-  isAlliteration(word1, word2, useLTS) {
+  isAlliteration(word1, word2) {
+
+    this._dict(true); // throw if no lexicon
 
     if (!word1 || !word2 || !word1.length || !word2.length) {
       return false;
@@ -220,8 +213,8 @@ class Lexicon {
       throw Error('isAlliteration expects single words only');
     }
 
-    let c1 = this._firstPhone(this._firstStressedSyl(word1, useLTS)),
-      c2 = this._firstPhone(this._firstStressedSyl(word2, useLTS));
+    let c1 = this._firstPhone(this._firstStressedSyl(word1)),
+      c2 = this._firstPhone(this._firstStressedSyl(word2));
 
     if (this._isVowel(c1.charAt(0)) || this._isVowel(c2.charAt(0))) {
       return false;
@@ -230,24 +223,43 @@ class Lexicon {
     return c1 && c2 && c1 === c2;
   }
 
-  isRhyme(word1, word2, useLTS) {
+  isRhyme(word1, word2) {
+
 
     if (!word1 || !word2 || word1.toUpperCase() === word2.toUpperCase()) {
       return false;
     }
 
-    let phones1 = this._rawPhones(word1, useLTS),
-      phones2 = this._rawPhones(word2, useLTS);
+    this._dict(true); // throw if no lexicon
+
+    let phones1 = this._rawPhones(word1),
+      phones2 = this._rawPhones(word2);
 
     if (phones2 === phones1) return false;
 
-    let p1 = this._lastStressedVowelPhonemeToEnd(word1, useLTS),
-      p2 = this._lastStressedVowelPhonemeToEnd(word2, useLTS);
+    let p1 = this._lastStressedVowelPhonemeToEnd(word1),
+      p2 = this._lastStressedVowelPhonemeToEnd(word2);
 
     return p1 && p2 && p1 === p2;
   }
 
   //////////////////////////////////////////////////////////////////////
+
+  _toPhoneArray(raw) {
+    let result = [];
+    let sofar = '';
+    for (let i = 0; i < raw.length; i++) {
+      if (raw[i] == ' ' || raw[i] == '-') {
+        result[result.length] = sofar;
+        sofar = '';
+      }
+      else if (raw[i] != '1' && raw[i] != '0') {
+        sofar += raw[i];
+      }
+    }
+    result[result.length] = sofar;
+    return result;
+  }
 
   _isVowel(c) {
 
@@ -301,12 +313,12 @@ class Lexicon {
     return ret;
   }
 
-  _lastStressedPhoneToEnd(word, useLTS) {
+  _lastStressedPhoneToEnd(word) {
 
     if (!word || !word.length) return ''; // return null?
 
     let idx, c, result;
-    let raw = this._rawPhones(word, useLTS);
+    let raw = this._rawPhones(word);
 
     if (!raw || !raw.length) return ''; // return null?
 
@@ -327,11 +339,11 @@ class Lexicon {
   }
 
 
-  _lastStressedVowelPhonemeToEnd(word, useLTS) {
+  _lastStressedVowelPhonemeToEnd(word) {
 
     if (!word || !word.length) return ''; // return null?
 
-    let raw = this._lastStressedPhoneToEnd(word, useLTS);
+    let raw = this._lastStressedPhoneToEnd(word);
     if (!raw || !raw.length) return ''; // return null?
 
     let syllables = raw.split(' ');
@@ -350,9 +362,9 @@ class Lexicon {
     return lastSyllable.substring(idx);
   }
 
-  _firstStressedSyl(word, useLTS) {
+  _firstStressedSyl(word) {
 
-    let raw = this._rawPhones(word, useLTS);
+    let raw = this._rawPhones(word);
 
     if (!raw || !raw.length) return ''; // return null?
 
@@ -377,15 +389,15 @@ class Lexicon {
     return idx < 0 ? firstToEnd : firstToEnd.substring(0, idx);
   }
 
-  _posData(word) {
+  _posData(word, fatal) {
 
-    let rdata = this._lookupRaw(word);
+    let rdata = this._lookupRaw(word, fatal);
     return (rdata && rdata.length === 2) ? rdata[1] : '';
   }
 
-  _posArr(word) {
+  _posArr(word, fatal) {
 
-    let pl = this._posData(word);
+    let pl = this._posData(word, fatal);
     if (!pl || !pl.length) return [];
     return pl.split(' ');
   }
@@ -396,29 +408,39 @@ class Lexicon {
     return (pl.length > 0) ? pl[0] : [];
   }
 
-  _lookupRaw(word) {
-
+  _lookupRaw(word, fatal) {
     word = word && word.toLowerCase();
-    if (this.dict && this.dict[word]) return this.dict[word];
+    return this._dict(fatal)[word];
   }
 
-  _rawPhones(word) {//, forceLTS) {
+  _rawPhones(word, opts) {
 
-    // TODO: remove all useLTS vars ?
-
-    let phones, result, rdata = this._lookupRaw(word);
-    //useLTS = useLTS || false;
-
+    let noLts = opts && opts.noLts;
+    let fatal = opts && opts.fatal;
+    let phones, result, rdata = this._lookupRaw(word, fatal);
     if (rdata) result = rdata.length === 2 ? rdata[0] : '';
 
-    if (rdata === undefined) { //|| forceLTS) { // ??
+    if (noLts) return result;
+
+    if (rdata === undefined) {
       phones = RiTa.lts && RiTa.lts.getPhones(word);
       if (phones && phones.length) {
-        result = RiTa.syllabifier.fromPhones(phones);
+        result = Util.syllablesFromPhones(phones);
       }
     }
 
     return result;
+  }
+
+  _dict(fatal) {
+    if (!this.dict) {
+      if (fatal) throw Error('This function requires a lexicon, make sure you are using the full version of rita.js,\navailable at ' + RiTa.DOWNLOAD_URL + '\n');
+      if (!this.lexWarned) {
+        console.warn('[WARN] no lexicon appears to be loaded; feature-analysis and pos-tagging may be incorrect.');
+        this.lexWarned = true;
+      }
+    }
+    return this.dict || {};
   }
 }
 

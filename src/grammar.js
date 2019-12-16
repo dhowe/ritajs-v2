@@ -1,5 +1,3 @@
-const RiTa = require('./rita_api');
-
 const OR_PATT = /\s*\|\s*/;
 const STRIP_TICKS = /`([^`]*)`/g;
 const PROB_PATT = /(.*[^\s])\s*\[([0-9.]+)\](.*)/;
@@ -15,7 +13,6 @@ class Grammar {
     if (typeof rules === 'string') {
       try {
         // first try with rita-script?
-        //console.log('trying JSON');
         rules = JSON.parse(rules);
       } catch (e) {
         err('Grammar appears to be invalid JSON, please check'
@@ -23,36 +20,12 @@ class Grammar {
         return;
       }
     }
-
     Object.keys(rules).forEach(r => this.addRule(r, rules[r]))
-
     return this;
   }
 
   expand(context) {
     return this.expandFrom(Grammar.START_RULE, context);
-  }
-
-  _expandRule(g, prod) {
-
-    let entry, idx, pre, expanded, post, dbug = 0;
-
-    for (let name in g.rules) {
-
-      entry = g.rules[name];
-      idx = prod.indexOf(name);
-
-      if (idx >= 0) { // got a match, split into 3 parts
-
-        if (dbug) console.log('matched: ' + name);
-        pre = prod.substring(0, idx) || '';
-        expanded = g.doRule(name) || '';
-        post = prod.substring(idx + name.length) || '';
-
-        return pre + expanded + post;
-      }
-    }
-    // no rules matched
   }
 
   expandFrom(rule, context) {
@@ -62,43 +35,7 @@ class Grammar {
     if (!this.hasRule(rule)) err("Rule not found: " + rule
       + "\nRules:\n" + JSON.stringify(this.rules));
 
-    let parts, theCall, callResult, tries = 0, maxIterations = 1000;
-
-    var countTicks = (theCall) => {
-      var count = 0;
-      for (var i = 0; i < theCall.length; i++) {
-        if (theCall.charAt(i) == '`')
-          count++;
-      }
-      return count;
-    }
-
-    var handleExec = (input, context) => {
-
-      //console.log('handleExec('+input+", ",context+')');
-      if (!input || !input.length) return null;
-
-      // strip backticks and eval
-      var res, exec = input.replace(STRIP_TICKS, '$1');
-
-      try {
-
-        res = eval(exec); // try in global context
-        return res ? res + E : null;
-
-      } catch (e) {
-
-        if (context) { // create sandbox for context args
-
-          try {
-            res = new Scope(context).eval(exec);
-            return res ? res + '' : null;
-          }
-          catch (e) { /* fall through */ }
-        }
-      }
-      return input;
-    }
+    let tries = 0, maxIterations = 1000;
 
     while (++tries < maxIterations) {
 
@@ -109,29 +46,28 @@ class Grammar {
       }
 
       // finished rules, check for back-ticked exec calls
-      parts = Grammar.EXEC_PATT.exec(rule);
-
-      //if (!parts || !parts.length) break // return, no evals (removed 11/18/19)
+      let parts = Grammar.EXEC_PATT.exec(rule);
 
       if (parts && parts.length > 2) {
 
-        theCall = parts[2];
+        let theCall = parts[2];
 
-        if (countTicks(theCall) != 2) {
-          warn("Unable to parse recursive exec: " + theCall + "...");
+        if (this._countTicks(theCall) != 2) {
+          warn("Failed parsing recursive exec: " + theCall);
           return null;
         }
 
-        callResult = handleExec(theCall, context);
+        let callResult = this._handleExec(theCall, context);
         if (!callResult) {
-
-          if (0) log("[WARN] (Grammar.expandFrom) Unexpected" +
+          if (0) console.log("[WARN] (Grammar.expandFrom) Unexpected" +
             " state: eval(" + theCall + ") :: returning '" + rule + "'");
           break; // return
         }
 
         rule = parts[1] + callResult;
         if (parts.length > 3) rule += parts[3];
+        //console.log('rule: '+rule);
+        continue; // we may have more rules to expand
       }
 
       if (tries >= maxIterations) {
@@ -140,49 +76,9 @@ class Grammar {
 
       return unescapeHTML(rule);
     }
-
   }
 
-  doRule(pre) {
-
-    let stochasticRule = temp => { // map
-
-      var name, dbug = false, p = Math.random(), result, total = 0;
-      if (dbug) log("getStochasticRule(" + temp + ")");
-      for (name in temp) {
-        total += parseFloat(temp[name]);
-      }
-
-      if (dbug) log("total=" + total + "p=" + p);
-      for (name in temp) {
-        if (dbug) log("  name=" + name);
-        var amt = temp[name] / total;
-        if (dbug) log("amt=" + amt);
-        if (p < amt) {
-          result = name;
-          if (dbug) log("hit!=" + name);
-          break;
-        } else {
-          p -= amt;
-        }
-      }
-      return result;
-    };
-
-    var cnt = 0;
-    let name = '';
-    let rules = this.rules[pre];
-
-    if (!rules) return null;
-
-    for (name in rules) cnt++;
-
-    if (!cnt) return null;
-
-    return (cnt == 1) ? name : stochasticRule(rules);
-  }
-
-  reset() { // remove
+  reset() { // remove?
 
     this.rules = {};
     return this;
@@ -190,7 +86,7 @@ class Grammar {
 
   addRule(name, theRule, weight) {
 
-    weight = weight || 1.0; // default
+    weight = weight || 1.0;
 
     let ruleset = Array.isArray(theRule) ? theRule
       : theRule.split(OR_PATT);
@@ -199,42 +95,97 @@ class Grammar {
 
       let rule = ruleset[i];
       let prob = weight;
-      let m = PROB_PATT.exec(rule);
+      let match = PROB_PATT.exec(rule);
 
-      if (m) // found weighting
-      {
-        rule = m[1] + m[3];
-        prob = m[2];
+      if (match) {// found weighting
+        rule = match[1] + match[3];
+        prob = match[2];
       }
 
-      let temp; // simplify
-      if (this.hasRule(name)) {
-
-        temp = this.rules[name];
-        temp[rule] = prob;
-
-      } else {
-
-        temp = {};
-        temp[rule] = prob;
-        this.rules[name] = temp;
-      }
+      let temp = this.rules[name] || {};
+      temp[rule] = prob; // add the prob
+      this.rules[name] = temp;
     }
 
     return this;
   }
 
   hasRule(name) {
-
     return typeof this.rules[name] !== 'undefined';
   }
 
   removeRule(name) {
-
     delete this.rules[name];
     return this;
   }
+
+  ////////////////////////////////////////////////////////////////////////
+  
+  _countTicks(theCall) {
+    let count = 0;
+    for (let i = 0; i < theCall.length; i++) {
+      if (theCall.charAt(i) == '`')
+        count++;
+    }
+    return count;
+  }
+
+  _expandRule(g, prod) {
+    let dbug = 0;
+    for (let name in g.rules) {
+      let idx = prod.indexOf(name);
+      if (idx >= 0) { // got a match, split into 3 parts
+        if (dbug) console.log('matched: ' + name);
+        let pre = prod.substring(0, idx) || '';
+        let expanded = g._doRule(name) || '';
+        let post = prod.substring(idx + name.length) || '';
+
+        return pre + expanded + post;
+      }
+    }  // no rules matched
+  }
+
+
+  _doRule(pre) {
+    let p = Math.random(), rule = this.rules[pre];
+    let total = Object.keys(rule).reduce(
+      (acc,name) => acc += parseFloat(rule[name]), 0);
+    for (let name in rule) {
+      let amt = rule[name] / total;
+      if (p < amt) {
+        return name;
+      }
+      p -= amt;
+    }
+  }
+
+  _handleExec(input, context) {
+
+    if (!input || !input.length) return null;
+
+    context = Object.assign(context || {}, Grammar.parent);
+    //console.log('_handleExec('+input+", ", Object.keys(context)+')');
+
+    // strip backticks and eval
+    let exec = input.replace(STRIP_TICKS, '$1');
+
+    try {
+      let res = eval(exec); // try in global context
+      return res ? res + E : null;
+
+    } catch (e) {
+      if (context) { // create sandbox for context args
+        try {
+          let res = new Scope(context).eval(exec);
+          return res ? res + '' : null;
+        }
+        catch (e) { /* fall through */ }
+      }
+    }
+    return input;
+  }
 }
+
 
 class Scope {
 
@@ -271,13 +222,13 @@ function unescapeHTML(input) {
 
   if (!input || !input.length) return input;
 
-  var answer = input.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+  let answer = input.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
     .replace(/&amp;/g, "&").replace(/&quot;/g, "\"");
 
   String.fromCharCodePoint = function() { // uggh
-    var codeunits = [];
-    for (var i = 0; i < arguments.length; i++) {
-      var c = arguments[i];
+    let codeunits = [];
+    for (let i = 0; i < arguments.length; i++) {
+      let c = arguments[i];
       if (arguments[i] < 0x10000) {
         codeunits.push(arguments[i]);
       } else if (arguments[i] < 0x110000) {
@@ -299,8 +250,8 @@ function unescapeHTML(input) {
 }
 
 function err() {
-  var msg = "[RiTa] " + arguments[0];
-  for (var i = 1; i < arguments.length; i++)
+  let msg = "[RiTa] " + arguments[0];
+  for (let i = 1; i < arguments.length; i++)
     msg += '\n' + arguments[i];
   throw Error(msg);
 }

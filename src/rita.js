@@ -1,16 +1,17 @@
 const Util = require("./util");
+const Markov = require('./markov');
 const RandGen = require('./random');
-const Parser = require('./parser');
+const Grammar = require('./grammar');
 const Stemmer = require('./stemmer');
 const Lexicon = require('./lexicon');
+const RiScript = require('./riscript');
 const Tokenizer = require('./tokenizer');
 const PosTagger = require('./tagger');
 const Analyzer = require('./analyzer');
 const Concorder = require('./concorder');
 const Conjugator = require('./conjugator');
 const Pluralizer = require('./pluralizer');
-const LetterToSound = require("./rita_lts");
-const Syllabifier = require('./syllabifier');
+const LetterToSound = require('./rita_lts');
 
 const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
 
@@ -28,6 +29,10 @@ class RiTa {
     return RiTa._lexicon().alliterations(...arguments);
   }
 
+  static compile() {
+    return RiScript.compile(...arguments);
+  }
+
   static concordance() {
     return RiTa.concorder.concordance(...arguments);
   }
@@ -37,19 +42,23 @@ class RiTa {
   }
 
   static createGrammar() {
-    return new (RiTa._grammar())(...arguments);
+    return new RiTa.Grammar(...arguments);
   }
 
   static createMarkov() {
-    return new (RiTa._markov())(...arguments);
+    return new RiTa.Markov(...arguments);
   }
 
   static env() {
     return Util.isNode() ? RiTa.NODE : RiTa.JS;
   }
 
-  static hasWord() {
-    return RiTa._lexicon().hasWord(...arguments);
+  static evaluate() { // runScript ? evalScript?
+    return RiScript.evaluate(...arguments);
+  }
+
+  static hasWord(word) {
+    return RiTa._lexicon().hasWord(word, true);
   }
 
   static isAbbreviation(input, { caseSensitive = false } = {}) {
@@ -104,15 +113,15 @@ class RiTa {
   }
 
   static posTags(words, { simple = false, inline = false } = {}) {
-    return RiTa.tagger.tag(words, simple, inline);
+    return RiTa.tagger.tag(words, simple, inline, true);
   }
 
   static posTagsInline(words, { simple = false } = {}) {
-    return RiTa.tagger.tag(words, simple, true);
+    return RiTa.tagger.tag(words, simple, true, true);
   }
 
-  static pluralize(word) {
-    return RiTa.pluralizer.pluralize(word);
+  static pluralize() {
+    return RiTa.pluralizer.pluralize(...arguments);
   }
 
   static presentParticiple(verb) {
@@ -131,16 +140,16 @@ class RiTa {
     return RandGen.seed(theSeed);
   }
 
-  static randomWord(opts) {
-    return RiTa._lexicon().randomWord(opts);
+  static randomWord() {
+    return RiTa._lexicon().randomWord(...arguments);
   }
 
   static rhymes() {
     return RiTa._lexicon().rhymes(...arguments);
   }
 
-  static evaluate() {
-    return RiTa.parser.lexParseVisit(...arguments);
+  static stem(word) {
+    return RiTa.stem(word);
   }
 
   static stresses(text) {
@@ -155,8 +164,8 @@ class RiTa {
     return RiTa._lexicon().similarBy(...arguments);
   }
 
-  static singularize(word) {
-    return RiTa.pluralizer.singularize(word);
+  static singularize() {
+    return RiTa.pluralizer.singularize(...arguments);
   }
 
   static sentences(text) {
@@ -179,31 +188,26 @@ class RiTa {
     return RiTa._lexicon().words();
   }
 
+  static hasLexicon() {
+    return RiTa._lexicon().size() > 0;
+  }
+
   /////////////////////////////////////////////////////////////////
 
-  static _markov() {
-    if (typeof RiTa.Markov === 'undefined') {
-      RiTa.Markov = require('./markov');
-    }
-    return RiTa.Markov;
-  }
-
-  static _grammar() {
-    if (typeof RiTa.LegacyGrammar === 'undefined') {
-      RiTa.LegacyGrammar = require('./grammar');
-    }
-    return RiTa.LegacyGrammar;
-  }
-
-  static _lexicon() {
+  static _lexicon() { // lazy load
     if (typeof RiTa.lexicon === 'undefined') {
       RiTa.lts = new LetterToSound(RiTa);
-      RiTa.lexicon = new Lexicon(RiTa, require('./rita_dict'));
+      if (typeof NOLEX !== 'undefined') { // used by webpack, don't shorten
+        RiTa.lexicon = new Lexicon(RiTa);
+      }
+      else {
+        RiTa.lexicon = new Lexicon(RiTa, require('./rita_dict'));
+      }
     }
     return RiTa.lexicon;
   }
 
-  static _analyzer() {
+  static _analyzer() { // lazy load
     if (typeof RiTa.analyzer === 'undefined') {
       RiTa._lexicon();
       RiTa.analyzer = new Analyzer(RiTa);
@@ -212,15 +216,19 @@ class RiTa {
   }
 }
 
+// CLASSES
+RiTa.Grammar = Grammar;
+RiTa.Markov = Markov
+RiTa.Markov.parent = RiTa;
+RiTa.Grammar.parent = RiTa;
+
 // COMPONENTS
-RiTa.parser = new Parser(RiTa);
 RiTa.stemmer = new Stemmer(RiTa);
 RiTa.tagger = new PosTagger(RiTa);
 RiTa.concorder = new Concorder(RiTa);
 RiTa.tokenizer = new Tokenizer(RiTa);
 RiTa.pluralizer = new Pluralizer(RiTa);
 RiTa.conjugator = new Conjugator(RiTa);
-RiTa.syllabifier = new Syllabifier(RiTa);
 
 // LAZY-LOADS
 RiTa.analyzer = undefined;
@@ -228,12 +236,15 @@ RiTa.lexicon = undefined;
 RiTa.dict = undefined;
 RiTa.lts = undefined;
 
+// MESSAGES
+RiTa.SILENT = false;
+RiTa.SILENCE_LTS = false;
+RiTa.DOWNLOAD_URL = 'https://rednoise.org/rita/downloads';
+
 // CONSTANTS
 RiTa.VERSION = 2;
 RiTa.NODE = 'node';
 RiTa.BROWSER = 'browser';
-RiTa.SILENT = false;
-RiTa.SILENCE_LTS = true;
 RiTa.FIRST_PERSON = 1;
 RiTa.SECOND_PERSON = 2;
 RiTa.THIRD_PERSON = 3;

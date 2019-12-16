@@ -1,3 +1,5 @@
+const Util = require("./util");
+
 let RiTa;
 
 class Analyzer {
@@ -9,69 +11,72 @@ class Analyzer {
   }
 
   analyze(text) {
-
-    let stressyls, phones, ltsPhones, useRaw;
-    let phonemes = '',
-      syllables = '',
-      stresses = '',
-      slash = '/',
-      delim = '-',
-      features = {};
-
+    let phonemes = '', syllables = '', stresses = '';
+    let slash = '/', delim = '-', features = {};
     let words = RiTa.tokenizer.tokenize(text);
-    let tags = RiTa.posTags(text);
+    let tags = RiTa.tagger.tag(text); // don't fail if no lexicon
 
     features.tokens = words.join(' ');
     features.pos = tags.join(' ');
 
     for (let i = 0, l = words.length; i < l; i++) {
 
-      useRaw = false;
-      phones = this.lexicon._rawPhones(words[i], false);
+      let useRaw = false;
+      let word = words[i];
+      let phones = this.lexicon._rawPhones(word, { noLts: true });
 
+      // if its a simple plural ending in 's',
+      // and the singular is the lexicon, add '-z' to end
+      if (!phones && word.endsWith('s')) {
+        let sing = RiTa.singularize(word);
+        phones = this.lexicon._rawPhones(sing, { noLts: true });
+        phones && (phones += '-z'); // add 's' phone
+      }
+
+      // if no phones yet, try the lts-engine
       if (!phones) {
 
-        ltsPhones = RiTa.lts.getPhones(words[i]);
+        let ltsPhones = RiTa.lts.getPhones(word);
         if (ltsPhones && ltsPhones.length > 0) {
 
-          if (!RiTa.SILENT && !RiTa.SILENCE_LTS && words[i].match(/[a-zA-Z]+/)) {
-            console.log("[RiTa] Used LTS-rules for '" + words[i] + "'");
+          if (!RiTa.SILENT && !RiTa.SILENCE_LTS && RiTa.hasLexicon() && word.match(/[a-zA-Z]+/)) {
+            console.log("[RiTa] Used LTS-rules for '" + word + "'");
           }
-
-          phones = RiTa.syllabifier.fromPhones(ltsPhones);
+          phones = Util.syllablesFromPhones(ltsPhones);
 
         } else {
 
-          phones = words[i];
+          phones = word;
           useRaw = true;
         }
       }
 
-      phonemes += phones.replace(/[0-2]/g, '').replace(/ /g, delim) + ' ';
-      syllables += phones.replace(/ /g, slash).replace(/1/g, '') + ' ';
+      let sp = phones.replace(/[0-2]/g, '').replace(/ /g, delim) + ' ';
+      phonemes += (sp === 'dh ') ? 'dh-ah ' : sp; // special case
+      let ss = phones.replace(/ /g, slash).replace(/1/g, '') + ' ';
+      syllables += (ss === 'dh ') ? 'dh-ah ' : ss;
 
       if (!useRaw) {
-        stressyls = phones.split(' ');
+        let stressyls = phones.split(' ');
         for (let j = 0; j < stressyls.length; j++) {
 
           if (!stressyls[j].length) continue;
 
-          stresses += (stressyls[j].indexOf(RiTa.STRESSED) > -1) ?
-            RiTa.STRESSED : RiTa.UNSTRESSED;
+          stresses += stressyls[j].includes(RiTa.STRESSED) ? RiTa.STRESSED : RiTa.UNSTRESSED;
 
           if (j < stressyls.length - 1) stresses += slash;
         }
       } else {
 
-        stresses += words[i];
+        stresses += word;
       }
 
       if (!stresses.endsWith(' ')) stresses += ' ';
     }
 
     features.stresses = stresses.trim();
-    features.phonemes = phonemes.trim(); //.replace(/\\s+/, ' '); // needed?
-    features.syllables = syllables.trim();//.replace(/\\s+/, ' '); // needed?
+    features.phonemes = phonemes.trim();
+    features.syllables = syllables.trim();
 
     return features;
   }

@@ -1,3 +1,5 @@
+const MODALS = require("./util").MODALS;
+
 const ADJ = ['jj', 'jjr', 'jjs'];
 const ADV = ['rb', 'rbr', 'rbs', 'rp'];
 const NOUNS = ['nn', 'nns', 'nnp', 'nnps'];
@@ -65,7 +67,7 @@ class PosTagger {
 
     if (!words || !words.length) return '';
 
-    if (words.length !== tags.length) throw Error('Bad lengths');
+    if (words.length !== tags.length) throw Error('Tagger: invalid state');
 
     delimiter = delimiter || '/';
 
@@ -81,39 +83,16 @@ class PosTagger {
 
     return sb.trim();
   }
-  //
-  // tagSimple(words) {
-  //
-  //   let tags = this.tag(words);
-  //
-  //   if (words && tags.length) {
-  //
-  //     for (let i = 0; i < tags.length; i++) {
-  //       if (NOUNS.includes(tags[i])) tags[i] = 'n';
-  //       else if (VERBS.includes(tags[i])) tags[i] = 'v';
-  //       else if (ADJ.includes(tags[i])) tags[i] = 'a';
-  //       else if (ADV.includes(tags[i])) tags[i] = 'r';
-  //       else tags[i] = '-'; // default: other
-  //     }
-  //
-  //     return tags;
-  //   }
-  //   return [];
-  // }
 
   // Returns an array of parts-of-speech from the Penn tagset,
   // each corresponding to one word of input
-  tag(words, simple, inline) {
-
-    if (!words || !words.length) return inline ? '' : [];
+  tag(words, simple, inline, fatal) {
 
     let lexicon = RiTa._lexicon();
     let result = [], choices2d = [];
 
-    if (!Array.isArray(words)) {
-      if (words === '') return [];
-      words = RiTa.tokenizer.tokenize(words);
-    }
+    if (!words || !words.length) return inline ? '' : [];
+    if (!Array.isArray(words)) words = RiTa.tokenizer.tokenize(words);
 
     for (let i = 0, l = words.length; i < l; i++) {
 
@@ -129,26 +108,18 @@ class PosTagger {
         continue;
       }
 
-      let data = lexicon._posArr(words[i]);
+      let data = lexicon._posArr(words[i], fatal); // fail if no lexicon
       if (!data.length) {
 
-        // use stemmer categories if no lexicon
+        // TODO: use stemmer categories if no lexicon
 
         choices2d[i] = [];
         let tag = 'nn';
         if (words[i].endsWith('s')) {
           tag = 'nns';
         }
-
-        if (!RiTa.SILENT) { // warn
-          if (RiTa.LEX_WARN && lex.size() <= 1000) {
-            console.warn(RiTa.LEX_WARN);
-            RiTa.LEX_WARN = false;
-          }
-          if (RiTa.LTS_WARN && typeof LetterToSound === 'undefined') {
-            console.warn(RiTa.LTS_WARN);
-            RiTa.LTS_WARN = false;
-          }
+        else if (/^(the|a)$/i.test(words[i])) {
+          tag = 'dt';
         }
 
         if (words[i].endsWith('s')) {
@@ -171,7 +142,7 @@ class PosTagger {
           if (this._lexHas("n", sing)) {
             choices2d.push("nns");
             tag = 'nns';
-          } else if (RiTa.stemmer._checkPluralNoLex(words[i])) {
+          } else if (RiTa.stemmer.checkPluralWithoutLexicon(words[i])) {
             tag = 'nns';
             //common plurals
           }
@@ -210,14 +181,18 @@ class PosTagger {
 
       if (word.indexOf(' ') < 0) {
 
-        let psa = RiTa._lexicon()._posArr(word);
+        let lex = RiTa._lexicon();
+        let psa = lex._posArr(word); // try dictionary
 
-        if (RiTa.LEX_WARN && psa.length < 1 && this.size() <= 1000) {
-          warn(RiTa.LEX_WARN);
-          RiTa.LEX_WARN = 0; // only once
+        if (!psa.length) {
+          if (RiTa.LEX_WARN && lex.size() <= 1000) {
+            console.warn(RiTa.LEX_WARN);
+            RiTa.LEX_WARN = 0; // only once
+          }
+          psa = RiTa.posTags(word); // try lts-engine
         }
 
-        return psa.filter(p => tagArray.indexOf(p) > -1).length > 0;
+        return psa.filter(p => tagArray.includes(p)).length > 0;
       }
 
       throw Error("checkType() expects single word, found: '" + word + "'");
@@ -264,8 +239,9 @@ class PosTagger {
           // transform 7: if a word has been categorized as a
           // common noun and it ends with "s", then set its type to plural common noun (NNS)
           if (word.match(/^.*[^s]s$/)) {
-            if (!NULL_PLURALS.applies(word))
+            if (!MODALS.includes(word)) {
               tag = "nns";
+            }
           }
 
           this._logCustom("1a", word, tag);
@@ -397,7 +373,6 @@ class PosTagger {
         let tags = RiTa.lexicon._posArr(words[i]);
 
         for (let j = 0; j < tags.length; j++) {
-
           if (pos === 'n' && this.isNounTag(tags[j]) ||
             pos === 'v' && this.isVerbTag(tags[j]) ||
             pos === 'r' && this.isAdverbTag(tags[j]) ||
