@@ -74,19 +74,23 @@ class Lexicon {
 
   similarByType(word, opts) {
 
+    // TODO: optimize
     let minLen = opts && opts.minimumWordLen || 2;
     let preserveLength = opts && opts.preserveLength || 0;
     let minAllowedDist = opts && opts.minAllowedDistance || 1;
 
     let result = [];
-    let minVal = Number.MAX_VALUE;
+    let dict = this._dict(true);
+    let sound = (opts.type === 'sound');
+
     let input = word.toLowerCase();
-    let words = Object.keys(this._dict(true));
+    let words = Object.keys(dict);
     let variations = [input, input + 's', input + 'es'];
 
-    let compareA = opts.type === 'sound' ?
-      this._toPhoneArray(this._rawPhones(input)) : input;
+    let compareA = sound ? this._toPhoneArray
+      (this._rawPhones(input)) : input;
 
+    let minVal = Number.MAX_VALUE;
     for (let i = 0; i < words.length; i++) {
 
       let entry = words[i];
@@ -97,8 +101,10 @@ class Lexicon {
         continue;
       }
 
-      let compareB = Array.isArray(compareA) ?
-        this._toPhoneArray(this._dict()[entry][0]) : entry;
+      let compareB = sound ? dict[entry][0]
+        .replace(/[01]/g,'')
+        .replace(/ /g, '-')
+        .split('-') : entry;
 
       let med = Util.minEditDist(compareA, compareB);
 
@@ -151,7 +157,7 @@ class Lexicon {
     let pluralize = false;
     let words = Object.keys(this._dict(true));
     let ran = Math.floor(RiTa.random(words.length));
-    
+
     let targetPos = opts && opts.pos;
     let targetSyls = opts && opts.syllables || 0;
 
@@ -246,19 +252,7 @@ class Lexicon {
   //////////////////////////////////////////////////////////////////////
 
   _toPhoneArray(raw) {
-    let result = [];
-    let sofar = '';
-    for (let i = 0; i < raw.length; i++) {
-      if (raw[i] == ' ' || raw[i] == '-') {
-        result[result.length] = sofar;
-        sofar = '';
-      }
-      else if (raw[i] != '1' && raw[i] != '0') {
-        sofar += raw[i];
-      }
-    }
-    result[result.length] = sofar;
-    return result;
+    return raw.replace(/[01]/g,'').replace(/ /g, '-').split('-');
   }
 
   _isVowel(c) {
@@ -280,37 +274,8 @@ class Lexicon {
     return ''; // return null?
   }
 
-  _intersect() { // https://gist.github.com/lovasoa/3361645
-    let i, all, n, len, ret = [],
-      obj = {},
-      shortest = 0,
-      nOthers = arguments.length - 1,
-      nShortest = arguments[0].length;
-    for (i = 0; i <= nOthers; i++) {
-      n = arguments[i].length;
-      if (n < nShortest) {
-        shortest = i;
-        nShortest = n;
-      }
-    }
-    for (i = 0; i <= nOthers; i++) {
-      n = (i === shortest) ? 0 : (i || shortest);
-      len = arguments[n].length;
-      for (let j = 0; j < len; j++) {
-        let elem = arguments[n][j];
-        if (obj[elem] === i - 1) {
-          if (i === nOthers) {
-            ret.push(elem);
-            obj[elem] = 0;
-          } else {
-            obj[elem] = i;
-          }
-        } else if (i === 0) {
-          obj[elem] = 0;
-        }
-      }
-    }
-    return ret;
+  _intersect(a1, a2) {
+    return [a1, a2].reduce((a, b) => a.filter(e => b.includes(e)))
   }
 
   _lastStressedPhoneToEnd(word) {
@@ -417,19 +382,14 @@ class Lexicon {
 
     let noLts = opts && opts.noLts;
     let fatal = opts && opts.fatal;
-    let phones, result, rdata = this._lookupRaw(word, fatal);
-    if (rdata) result = rdata.length === 2 ? rdata[0] : '';
+    let rdata = this._lookupRaw(word, fatal);
+    if (rdata && rdata.length) return rdata[0];
 
-    if (noLts) return result;
-
-    if (rdata === undefined) {
-      phones = RiTa.lts && RiTa.lts.getPhones(word);
-      if (phones && phones.length) {
-        result = Util.syllablesFromPhones(phones);
-      }
+    if (!noLts) {
+      let phones = RiTa.lts && RiTa.lts.getPhones(word);
+      return Util.syllablesFromPhones(phones);
     }
-
-    return result;
+    return '';
   }
 
   _dict(fatal) {

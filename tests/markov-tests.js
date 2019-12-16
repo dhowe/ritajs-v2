@@ -137,17 +137,17 @@ describe('RiTa.Markov', () => {
 
   it('should correctly call generateTokens.regex', () => {
     let toks, expected = ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although'];
-    rm = new Markov(4);
+    let rm = new Markov(4);
     rm.loadTokens(RiTa.tokenize(sample));
 
-    for (i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) {
       toks = rm.generateTokens(1, { startTokens: /^[A-Z][a-z]*$/ });
       //console.log(i, toks);
       eq(toks.length, 1);
       ok(expected.includes(toks[0]));
     }
 
-    for (i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) {
       toks = rm.generateTokens(3, { startTokens: /^[A-Z][a-z]*$/ });
       //console.log(i, toks);
       eq(toks.length, 3);
@@ -157,7 +157,7 @@ describe('RiTa.Markov', () => {
 
   it('should correctly call generateToken.regex', () => {
     let expected = ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although'];
-    rm = new Markov(4);
+    let rm = new Markov(4);
     rm.loadTokens(RiTa.tokenize(sample));
     for (let i = 0; i < expected.length; i++) {
       let tok = rm.generateToken({ startTokens: expected[i] });
@@ -703,9 +703,8 @@ describe('RiTa.Markov', () => {
     ok(arr.length <= maxLength, res + '  (length=' + arr.length + ")");
     ok(/[.?!]$/.test(res));
 
-    let n = rm.n;
-    for (let j = 0; j < arr.length - n; j++) {
-      partial = arr.slice(j, j + n);
+    for (let j = 0; j < arr.length - rm.n; j++) {
+      let partial = arr.slice(j, j + rm.n);
       //console.log(partial);
       partial = RiTa.untokenize(partial);
       ok(sample.indexOf(partial) > -1, partial);
