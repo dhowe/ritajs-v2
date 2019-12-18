@@ -1,10 +1,74 @@
 
 if (typeof module !== 'undefined') {
   RiTa = require('../../dist/rita-node.js');
-  //bigrams = require('./bigrams');
+  input = require('fs').readFileSync(require('path').resolve
+    (process.cwd(), 'warpeace-2000.txt')).toString('utf8');
 }
 
 class Generator {
+  constructor(model, opts) {
+    this.endRE = /^[.!?]$/;
+    this.model = model;
+    this.reset(opts);
+    this.starts = Object.values(this.model.root.child('<s/>').children);
+    this.tokens = [];
+  }
+  reset() {
+    this.complete = false;
+  }
+  next() {
+    if (this.tokens.length) {
+      let choices = this.model.completions(this.tokens);
+      let next = this.model.selectNext(choices, this.tokens, 0);
+      console.log(next);
+    }
+    return (this.tokens[0] = RiTa.randomItem(this.starts, s => s.token));
+  }
+  done() {
+    return this.complete;
+  }
+}
+
+
+let model = new RiTa.Markov(4);
+model.loadSentences(input);
+let gen = new Generator(model);
+console.log(gen.next());
+console.log(gen.next());
+// gen.starts.map(s => console.log(s.token+'->'+s.count));
+// console.log(gen.starts.length);
+
+
+class GeneratorTake2 {
+  constructor(model, opts) {
+    this.start = /^[A-Z][a-z]*$/;
+    this.end = /^[.!?]$/;
+    this.model = model;
+    this.queue = new HistoryQ(this.model.n - 1);
+    this.reset(opts);
+  }
+  reset() {
+    this.complete = false;
+  }
+  next() {
+    let opts = arguments[0] || {};
+    opts.startTokens = this.queue.size() ? this.queue.asArray() : this.start;
+    let next = this.model.generateToken(opts);
+
+    // try completions instead?
+
+    this.queue.add(next);
+    if (this.end.test(next)) {
+      this.complete = true;
+    }
+    return next;
+  }
+  done() {
+    return this.complete;
+  }
+}
+
+class GeneratorTake1 {
 
   constructor(model, opts) {
     this.model = model;
@@ -23,13 +87,13 @@ class Generator {
       this.temp = temperature;
       // here we throw away the rest of the sentence
       // and regenerate it with the new temperature
-//console.log('orig:', this.tokens);
+      //console.log('orig:', this.tokens);
       let first = this.tokens.splice(0, this.index);
-//console.log('first:', first);
+      //console.log('first:', first);
       let opts = { temperature: temperature, startTokens: first };
       let sent = this.model.generateUntil(/[/.!?]$/, opts);
       this.tokens = first.concat(...sent.slice(2));
-//console.log('new:', this.tokens);
+      //console.log('new:', this.tokens);
       this.history.add(JSON.stringify(this.tokens));
     }
     this.complete = this.index >= this.tokens.length - 1;
@@ -72,6 +136,9 @@ class HistoryQ {
     this.q = [];
     this.capacity = sz;
   }
+  asArray() {
+    return this.q;
+  }
   add() {
     for (var i = 0; i < arguments.length; i++) {
       this.q.push(arguments[i]);
@@ -111,6 +178,13 @@ class HistoryQ {
     this.q = [];
     return this;
   }
+}
+
+function cleanSentences(text) {
+  let raw = text.replace(/[()“”"]/g,'').replace(/--[^.!?-]+--/g,'')
+    .replace(/\.\.+/g, '.').replace(/--/g, '-').replace(/ *\* */g, ' ');
+  let all = RiTa.sentences(raw).filter(s => RiTa.tokenize(s, ' ').length > 10);
+  return all
 }
 
 if (0) {

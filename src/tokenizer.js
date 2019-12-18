@@ -12,18 +12,20 @@ class Tokenizer {
   sentences(text, regex) {
     if (!text || !text.length) return [text];
 
+    let clean = text.replace(/(\r?\n)+/g, ' ')
+
     let delim = '___';
     let re = new RegExp(delim, 'g');
     let pattern = regex || this.splitter;
 
-    function unescapeAbbrevs(arr) {
+    let unescapeAbbrevs = (arr) => {
       for (let i = 0; i < arr.length; i++) {
         arr[i] = arr[i].replace(re, ".");
       }
       return arr;
     }
 
-    function escapeAbbrevs(text) {
+    let escapeAbbrevs = (text) => {
       let abbrevs = RiTa.ABBREVIATIONS;
       for (let i = 0; i < abbrevs.length; i++) {
         let abv = abbrevs[i];
@@ -36,8 +38,7 @@ class Tokenizer {
       return text;
     }
 
-    let arr = escapeAbbrevs(text).match(pattern);
-
+    let arr = escapeAbbrevs(clean).match(pattern);
     return arr && arr.length ? unescapeAbbrevs(arr) : [text];
   }
 

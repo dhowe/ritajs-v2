@@ -232,6 +232,11 @@ describe('RiTa.Tokenizer', () => {
     var output = RiTa.sentences(input);
     eql(output, expected);
 
+    var input = "Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications.\n\nThe slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels.\r\n If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs.";
+    var expected = ["Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications.", "The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels.", "If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs."];
+    var output = RiTa.sentences(input);
+    eql(output, expected);
+
     var input = "\"The boy went fishing.\", he said. Then he went away.";
     var expected = ["\"The boy went fishing.\", he said.", "Then he went away."];
     var output = RiTa.sentences(input);

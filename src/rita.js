@@ -144,6 +144,11 @@ class RiTa {
     return RiTa._lexicon().randomWord(...arguments);
   }
 
+  static randomItem() {
+    return RandGen.randomItem(...arguments);
+  }
+
+
   static rhymes() {
     return RiTa._lexicon().rhymes(...arguments);
   }

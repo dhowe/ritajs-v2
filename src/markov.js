@@ -40,13 +40,12 @@ class Markov {
     this.mlm && this.input.push(...tokens);
   }
 
-  async generateSentenceAsync() {
+  /*async generateSentenceAsync() {
     return this.generateSentence(...arguments);
   }
-
   async loadSentencesAsync() {
     return this.loadSentences(...arguments);
-  }
+  }*/
 
   loadSentences(sentences) {
 
@@ -115,6 +114,7 @@ class Markov {
     if (typeof startTokens === 'string') {
       startTokens = Markov.parent.tokenize(startTokens);
     }
+    //console.log('generateTokens',startTokens);
 
     while (tries < Markov.MAX_GENERATION_ATTEMPTS) {
 
@@ -124,8 +124,8 @@ class Markov {
           return [tokens.pop().token]; // return single
         }
         if (!tokens) {
-          let idx = Math.max(0, startTokens.length - (this.n - 1));
-          throw Error('No path starting with: ' + startTokens.slice(idx));
+          throw Error('No path starting with: ' + startTokens.slice
+            (Math.max(0, startTokens.length - (this.n - 1))));
         }
       }
 
@@ -226,52 +226,34 @@ class Markov {
     throwError(tries);
   }
 
+
   selectNext(parent, tokens, temp) {
 
-    let nodes = parent.childNodes(true); // sorted
     let pTotal = 0, selector = Math.random();
-    let rprobs = nodes.map(n => n.nodeProb()).slice().reverse();
+    let nodemap = this._computeProbs(parent, temp);
+    let nodes = Object.keys(nodemap);
 
     // loop twice here in case we skip earlier nodes based on probability
     for (let i = 0; i < nodes.length * 2; i++) {
       let idx = i % nodes.length;
       let next = nodes[idx];
-      let prob = lerp(next.nodeProb(), rprobs[idx], temp);
-
-      pTotal += prob;//next.nodeProb();
+      pTotal += nodemap[next];
       if (selector < pTotal) { // should always be true 2nd time through
-        // console.log(next.token +' -> ' +prob + ' temp='+ temp);
-        if (this.mlm && this.mlm <= tokens.length) {
-          if (!this._validateMlms(next.token, tokens)) {
-            //console.log('FAIL(i='+i+'/'+(nodes.length)+' mlm=' + this.mlm
-            //  + '): ' + this._flatten(tokens) + ' -> ' + next.token);
-            continue;
-          }
+        // console.log(next.token +' -> ' +nodemap[next] + ' temp='+ temp);
+        if (this.mlm && this.mlm <= tokens.length
+          && !this._validateMlms(next, tokens)) {
+          //console.log('FAIL(i='+i+'/'+(nodes.length)+' mlm=' + this.mlm
+          //  + '): ' + this._flatten(tokens) + ' -> ' + next.token);
+          continue;
         }
-        return next;
+        return parent.children[next];
       }
     }
   }
 
-  probabilities(path) {
+  // return an array of possible strings
+  completions(pre, post) {
 
-    if (!Array.isArray(path)) path = [path];
-
-    if (path.length > this.n) {
-      path = path.slice(Math.max(0, path.length - (this.n - 1)), path.length);
-    }
-
-    let tn, probs = {};
-    if (tn = this._findNode(path)) {
-      let nexts = tn.childNodes();
-      for (let i = 0; i < nexts.length; i++) {
-        if (nexts[i]) probs[nexts[i].token] = nexts[i].nodeProb();
-      }
-    }
-    return probs;
-  }
-
-  completions(pre, post) { // TODO: add temperature
     let tn, result = [];
     if (post) { // fill the center
 
@@ -280,7 +262,10 @@ class Markov {
           (pre.length + post.length));
       }
 
-      if (!(tn = this._findNode(pre))) return; // TODO: add warning
+      if (!(tn = this._findNode(pre))) {
+        if (!RiTa.SILENT) console.warn('Unable to find pre: ' + pre);
+        return; // TODO: add warning
+      }
 
       let nexts = tn.childNodes();
       for (let i = 0; i < nexts.length; i++) {
@@ -299,13 +284,20 @@ class Markov {
     }
   }
 
+  // return an object mapping {string -> prob}
+  probabilities(path, temp) {
+    if (!Array.isArray(path)) path = RiTa.tokenize(path);
+    return this._computeProbs(this._findNode(path), temp);
+  }
+
   probability(data) {
+    let p = 0;
     if (data && data.length) {
       let tn = (typeof data === 'string') ?
         this.root.child(data) : this._findNode(data);
-      if (tn) return tn.nodeProb();
+      if (tn) p = tn.nodeProb();
     }
-    return 0;
+    return p;
   }
 
   generateSentencesWith(num, includeTokens, { minLength = 5, maxLength = 35, allowDuplicates, temperature = 0 } = {}) {
@@ -325,7 +317,7 @@ class Markov {
 
       if (!tokens) {
         tokens = this._initSentence(includeTokens, this.inverse);
-//console.log('got',tokens);
+        //console.log('got',tokens);
         if (!tokens) throw Error('No sentence including: "' + includeTokens + '"');
       }
 
@@ -423,6 +415,21 @@ class Markov {
       tokens = [this.root.pselect()];
     }
     return tokens;
+  }
+
+  _computeProbs(parent, temp) {
+    temp = temp || 0
+    let tprobs, probs = {};
+    if (parent) {
+      let nexts = parent.childNodes(temp > 0);
+      if (temp > 0) tprobs = nexts.map(n => n.nodeProb()).slice().reverse();
+      for (let i = 0; nexts && i < nexts.length; i++) {
+        let rawProb = nexts[i].nodeProb();
+        let prob = tprobs ? lerp(rawProb, tprobs[i], temp) : rawProb;
+        if (nexts[i]) probs[nexts[i].token] = prob;
+      }
+    }
+    return probs;
   }
 
   _validateMlms(word, nodes) {

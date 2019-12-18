@@ -103,26 +103,22 @@ describe('RiTa.Lexicon', function() {
       result = RiTa.randomWord({ syllables: 3, pos: "vbz" });
       ok(result.length > 0, "randomWord vbz: " + result);
       syllables = RiTa.syllables(result);
-      eq(3, syllables.split(RiTa.SYLLABLE_BOUNDARY).length, result);
-      eq("vbz", RiTa.lexicon._bestPos(result), result);
+      eq(3, syllables.split(RiTa.SYLLABLE_BOUNDARY).length, "GOT: " +result);
+      eq("vbz", RiTa.lexicon._bestPos(result), "GOT: " +result);
 
       result = RiTa.randomWord({ syllables: 1, pos: "n" });
       ok(result.length > 0, "randomWord n: " + result);
       syllables = RiTa.syllables(result);
       //console.log("n: ",result,syllables.split(RiTa.SYLLABLE_BOUNDARY));
-      eq(1, syllables.split(RiTa.SYLLABLE_BOUNDARY).length, result);
-      eq(RiTa.posTags(result, { simple: true })[0], "n", result);
+      eq(1, syllables.split(RiTa.SYLLABLE_BOUNDARY).length, "GOT: " + result);
+      eq(RiTa.posTags(result, { simple: true })[0], "n", "GOT: " + result);
     }
-  });
 
-  it('Should correctly call randomWord.pos.syls', () => {
-    let result, syllables;
     result = RiTa.randomWord({ syllables: 5, pos: "nns" });
     ok(result.length > 0, "randomWord nns: " + result);
     syllables = RiTa.syllables(result);
     let count = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
-
-    if (0 && count !== 5) console.warn("Syllabifier problem: " // see #2
+    if (count !== 5) console.warn("Syllabifier problem: " // see #2
       + result + ".syllables was " + count + ', expected 5');
   });
 

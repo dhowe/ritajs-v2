@@ -833,6 +833,10 @@ describe('RiTa.Markov', () => {
     eql(res, ["not", "occasionally"]);
   });
 
+  it('should correctly call probabilities.temp', () => {
+    //TODO
+  });
+
   it('should correctly call probabilities', () => {
 
     let rm = new Markov(3);
@@ -855,9 +859,8 @@ describe('RiTa.Markov', () => {
     }, {}];
 
     for (let i = 0; i < checks.length; i++) {
-
       let res = rm.probabilities(checks[i]);
-      //console.log(checks[i] + ":", res, expected[i]);
+      //console.log(checks[i] + ":", res, " ->", expected[i]);
       eql(res, expected[i]);
     }
   });
@@ -960,7 +963,7 @@ describe('RiTa.Markov', () => {
     eq(rm.probability([]), 0);
   });
 
-  /*it('should correctly call loadSentences', () => {
+  it('should correctly call loadSentences', () => {
     let rm = new Markov(4);
     let sents = RiTa.sentences(sample);
     let count = 0;
@@ -970,7 +973,10 @@ describe('RiTa.Markov', () => {
     }
     rm.loadSentences(sents);
     eq(rm.size(), count);
-  });*/
+
+    let ss = rm.root.child('<s/>');
+    eql(Object.keys(ss.children),['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although' ]);
+  });
 
   it('should correctly call loadTokens', () => {
     //TODO: revise tests

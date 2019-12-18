@@ -60,6 +60,11 @@ class SeededRandom {
     return o;
   }
 
+  randomItem(arr, func) {
+    let item = arr[Math.floor(this.random()*arr.length)];
+    return typeof func === 'function' ? func(item) : item;
+  }
+
   random() {
     let crand = this.randomFloat();
     if (!arguments.length) return crand;
