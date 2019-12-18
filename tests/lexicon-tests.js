@@ -7,7 +7,6 @@ describe('RiTa.Lexicon', function() {
 
   if (typeof module !== 'undefined') require('./before');
 
-
   it('Should correctly call hasWord', () => {
     eq(RiTa.hasWord("random"), true);
   });
@@ -248,7 +247,6 @@ describe('RiTa.Lexicon', function() {
   });
 
   it('Should correctly call similarBy.sound', () => {
-
     let result, answer;
 
     eql(RiTa.similarBy("tornado", { type: 'sound' }), ["torpedo"]);
@@ -280,10 +278,6 @@ describe('RiTa.Lexicon', function() {
 
   it('Should correctly call similarBy.soundAndLetter', () => {
     let result;
-
-    //result = RiTa.similarBy("", { type: 'soundAndLetter' });
-    //eql(result, []);
-
     result = RiTa.similarBy("try", { type: 'soundAndLetter' });
     eql(result, ["cry", "dry", "fry", "pry", "tray", "wry"]);
 

@@ -92,13 +92,6 @@ class Util {
     return matrix[source.length][target.length];
   }
 
-  static _min3(a, b, c) {
-    let min = a;
-    if (b < min) min = b;
-    if (c < min) min = c;
-    return min;
-  }
-
   // Takes a syllabification and turns it into a string of phonemes,
   // delimited with dashes, with spaces between syllables
   static syllablesToPhones(syllables) {
@@ -130,6 +123,8 @@ class Util {
   }
 
   static syllablesFromPhones(input) { // adapted from FreeTTS
+
+    if (!input || !input.length) return '';
 
     let dbug, none;
     let internuclei = [];
