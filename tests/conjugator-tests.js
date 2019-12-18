@@ -97,8 +97,6 @@ describe('RiTa.Conjugator', () => {
       equal(RiTa.conjugate(s[i], args), a[i]);
     }
 
-    /////////////////////////////////////////////////
-
     args = {
       number: RiTa.SINGULAR,
       person: RiTa.FIRST_PERSON,

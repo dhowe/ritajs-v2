@@ -4,8 +4,13 @@ $(document).ready(function() {
   // single word generator
   // add knob for mlm
 
+
+
   let gen, dirty, running, words = [];
-  let n = 4, speed = .5, temp = 0, id = 0;
+  let n = 4,
+    speed = .5,
+    temp = 0,
+    id = 0;
 
   $('.custom-file-upload').bind("click", () => $('#fileToLoad').click());
 
@@ -14,12 +19,18 @@ $(document).ready(function() {
   let showNextWord = () => {
     if (gen) {
       let starts = words.length ? words : /^[A-Z][a-z]*$/;
-      if (gen.done()) gen.reset({ minLength: 10, temperature: temp, startTokens: starts });
-      let word = gen.next({ temperature: temp });
+      if (gen.done()) gen.reset({
+        minLength: 10,
+        temperature: temp,
+        startTokens: starts
+      });
+      let word = gen.next({
+        temperature: temp
+      });
       if (!word) throw Error('no next word');
       words.push(word);
       let display = word.replace(/["“”\u2019‘`]/g, '');
-      if (!RiTa.isPunctuation(display)) display =  ' ' + display;
+      if (!RiTa.isPunctuation(display)) display = ' ' + display;
       $('#output-box').text($('#output-box').text() + display);
       running && (id = setTimeout(showNextWord, rate()));
     }
@@ -40,7 +51,10 @@ $(document).ready(function() {
       if (!(raw && raw.length)) return;
       let model = RiTa.createMarkov(n);
       model.loadTokens(RiTa.tokenize(raw));
-      gen = new Generator(model, { minLength: 10, temperature: temp });
+      gen = new Generator(model, {
+        minLength: 10,
+        temperature: temp
+      });
     }
     running = true;
     dirty = false;
@@ -56,16 +70,59 @@ $(document).ready(function() {
       dirty = true;
       let file = document.getElementById("fileToLoad").files[0];
       let fileReader = new FileReader();
+    //  console.log(fileReader)
+
       fileReader.onload = function(fileLoadedEvent) {
         let textFromFileLoaded = fileLoadedEvent.target.result;
         let textArea = document.getElementById("field");
         textArea.value = textFromFileLoaded;
         $('#load-btn').prop('disabled', false);
         $('#start-btn').prop('disabled', false);
+        $("#progress_bar").css("display", "none");
       };
+      addListeners(fileReader);
       fileReader.readAsText(file, "UTF-8")
     }
   });
+
+  function addListeners(reader) {
+    reader.addEventListener('loadstart', handleEvent);
+    reader.addEventListener('load', handleEvent);
+    reader.addEventListener('loadend', handleEvent);
+    reader.addEventListener('progress', handleEvent);
+    reader.addEventListener('error', handleEvent);
+    reader.addEventListener('abort', handleEvent);
+  }
+
+  function errorHandler(evt) {
+    switch (evt.target.error.code) {
+      case evt.target.error.NOT_FOUND_ERR:
+        alert('File Not Found!');
+        break;
+      case evt.target.error.NOT_READABLE_ERR:
+        alert('File is not readable');
+        break;
+      case evt.target.error.ABORT_ERR:
+        break; // noop
+      default:
+        alert('An error occurred reading this file.');
+    };
+  }
+  function handleEvent(event) {
+    //console.log(event)
+
+    if (event.type === "loadend") {
+      $("#progress-bar").css("display", "none");
+    } else {
+      $("#progress-bar").css("display", "block");
+    }
+
+  }
+
+  /*
+  Fileloader end
+
+  */
 
   $('#field').keyup(function() {
     dirty = true;

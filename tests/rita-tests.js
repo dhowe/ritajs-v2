@@ -64,8 +64,7 @@ describe('RiTa.Core', () => {
   it('Should correctly call isAbbreviation', () => {
 
     ok(RiTa.isAbbreviation("Dr."));
-    ok(RiTa.isAbbreviation("dr."));
-    //T in java
+    ok(!RiTa.isAbbreviation("dr."));
 
     ok(!RiTa.isAbbreviation("DR."));
     // F in Processing.lowercase is true but uppercase is false
@@ -86,8 +85,8 @@ describe('RiTa.Core', () => {
     ok(!RiTa.isAbbreviation("Doctor."));
 
     ok(RiTa.isAbbreviation("Prof."));
-    ok(RiTa.isAbbreviation("prof."));
-    //T in java
+    ok(!RiTa.isAbbreviation("prof."));
+
     ok(!RiTa.isAbbreviation("PRFO."));
     //  F in Processing. lowercase is true but uppercase is false
     ok(!RiTa.isAbbreviation("PrFo."));
@@ -141,24 +140,24 @@ describe('RiTa.Core', () => {
 
     punct = ",;:!?)([].#\"\\!@$%&}<>|+=-_\\/*{^";
     for (let i = 0; i < punct.length; i++) {
-      ok(RiTa.isPunctuation(punct[i]), punct[i]);
+      ok(RiTa.isPunctuation(punct[i]));
     }
 
     // TODO: also test multiple characters strings here ****
     punct = "\"��������`'";
     for (let i = 0; i < punct.length; i++) {
-      ok(RiTa.isPunctuation(punct[i]), punct[i]);
+      ok(RiTa.isPunctuation(punct[i]));
     }
 
     punct = "\"��������`',;:!?)([].#\"\\!@$%&}<>|+=-_\\/*{^";
     for (let i = 0; i < punct.length; i++) {
-      ok(RiTa.isPunctuation(punct[i]), punct[i]);
+      ok(RiTa.isPunctuation(punct[i]));
     }
 
     // TODO: and here...
     let nopunct = 'Helloasdfnals  FgG   \t kjdhfakjsdhf askjdfh aaf98762348576';
     for (let i = 0; i < nopunct.length; i++) {
-      ok(!RiTa.isPunctuation(nopunct[i]), nopunct[i]);
+      ok(!RiTa.isPunctuation(nopunct[i]));
     }
 
     ok(!RiTa.isPunctuation(""));
