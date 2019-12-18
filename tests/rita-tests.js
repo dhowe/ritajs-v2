@@ -32,8 +32,8 @@ describe('RiTa.Core', () => {
       "happiness", "happiness",
       "terrible", "terrible",
     ];
-    for (var i = 0; i < data.length; i+=2) {
-      eq(RiTa.stem(data[i]), data[i+1], 'got '+RiTa.stem(data[i]));
+    for (var i = 0; i < data.length; i += 2) {
+      eq(RiTa.stem(data[i]), data[i + 1], 'got ' + RiTa.stem(data[i]));
     }
   });
 
@@ -64,44 +64,50 @@ describe('RiTa.Core', () => {
   it('Should correctly call isAbbreviation', () => {
 
     ok(RiTa.isAbbreviation("Dr."));
-    ok(!RiTa.isAbbreviation("dr."));
+    ok(RiTa.isAbbreviation("dr."));
+    ok(RiTa.isAbbreviation("DR."));
+    ok(RiTa.isAbbreviation("Dr. "));
+    ok(RiTa.isAbbreviation(" Dr."));
+    ok(RiTa.isAbbreviation("Prof."));
+    ok(RiTa.isAbbreviation("prof."));
 
-    ok(!RiTa.isAbbreviation("DR."));
-    // F in Processing.lowercase is true but uppercase is false
-    ok(!RiTa.isAbbreviation("Dr. "));
-    //space
-    ok(!RiTa.isAbbreviation(" Dr."));
-    //space
-    ok(!RiTa.isAbbreviation("  Dr."));
-    //double space
-    ok(!RiTa.isAbbreviation("Dr.  "));
-    //double space
-    ok(!RiTa.isAbbreviation("   Dr."));
-    //tab space
-    ok(!RiTa.isAbbreviation("Dr.    "));
-    //tab space
     ok(!RiTa.isAbbreviation("Dr"));
     ok(!RiTa.isAbbreviation("Doctor"));
     ok(!RiTa.isAbbreviation("Doctor."));
-
-    ok(RiTa.isAbbreviation("Prof."));
-    ok(!RiTa.isAbbreviation("prof."));
-
     ok(!RiTa.isAbbreviation("PRFO."));
-    //  F in Processing. lowercase is true but uppercase is false
     ok(!RiTa.isAbbreviation("PrFo."));
-    //  F in Processing. lowercase is true but uppercase is false
     ok(!RiTa.isAbbreviation("Professor"));
     ok(!RiTa.isAbbreviation("professor"));
     ok(!RiTa.isAbbreviation("PROFESSOR"));
     ok(!RiTa.isAbbreviation("Professor."));
-
     ok(!RiTa.isAbbreviation("@#$%^&*()"));
-
     ok(!RiTa.isAbbreviation(""));
     ok(!RiTa.isAbbreviation(null));
     ok(!RiTa.isAbbreviation(undefined));
     ok(!RiTa.isAbbreviation(1));
+
+    ok(RiTa.isAbbreviation("Dr.", { caseSensitive: true }));
+    ok(RiTa.isAbbreviation("Dr. ", { caseSensitive: true }));
+    ok(RiTa.isAbbreviation(" Dr.", { caseSensitive: true }));
+    ok(RiTa.isAbbreviation("Prof.", { caseSensitive: true }));
+
+    ok(!RiTa.isAbbreviation("dr.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("DR.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("Dr", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("Doctor", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("Doctor.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("prof.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("PRFO.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("PrFo.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("Professor", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("professor", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("PROFESSOR", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("Professor.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("@#$%^&*()", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation(null, { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation(undefined, { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation(1, { caseSensitive: true }));
   });
 
   it('Should correctly call isPunctuation', () => {
@@ -394,12 +400,12 @@ describe('RiTa.Core', () => {
     eql(RiTa.sentences(''), ['']);
 
     input = "Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications. The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels. If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs.";
-    expected =  ["Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications.", "The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels.", "If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs."];
+    expected = ["Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications.", "The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels.", "If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs."];
     output = RiTa.sentences(input);
     eql(output, expected);
 
     input = "\"The boy went fishing.\", he said. Then he went away.";
-    expected =  ["\"The boy went fishing.\", he said.", "Then he went away."];
+    expected = ["\"The boy went fishing.\", he said.", "Then he went away."];
     output = RiTa.sentences(input);
     eql(output, expected);
 
@@ -413,55 +419,55 @@ describe('RiTa.Core', () => {
 
     input = "Oh my god, the dog ate the baby!";
     output = RiTa.sentences(input);
-    expected =  ["Oh my god, the dog ate the baby!"];
+    expected = ["Oh my god, the dog ate the baby!"];
     eql(output, expected);
 
     input = "Which dog ate the baby?"
     output = RiTa.sentences(input);
-    expected =  ["Which dog ate the baby?"];
+    expected = ["Which dog ate the baby?"];
     eql(output, expected);
 
     input = "'Yes, it was a dog that ate the baby', he said."
     output = RiTa.sentences(input);
-    expected =  ["\'Yes, it was a dog that ate the baby\', he said."];
+    expected = ["\'Yes, it was a dog that ate the baby\', he said."];
     eql(output, expected);
 
     input = "The baby belonged to Mr. and Mrs. Stevens. They will be very sad.";
     output = RiTa.sentences(input);
-    expected =  ["The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad."];
+    expected = ["The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad."];
     eql(output, expected);
 
     // More quotation marks
     input = "\"The baby belonged to Mr. and Mrs. Stevens. They will be very sad.\"";
     output = RiTa.sentences(input);
-    expected =  ["\"The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\""];
+    expected = ["\"The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\""];
     eql(output, expected);
 
     input = "\u201CThe baby belonged to Mr. and Mrs. Stevens. They will be very sad.\u201D";
     output = RiTa.sentences(input);
-    expected =  ["\u201CThe baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\u201D"];
+    expected = ["\u201CThe baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\u201D"];
     eql(output, expected);
 
     //https://github.com/dhowe/RiTa/issues/498
     input = "\"My dear Mr. Bennet. Netherfield Park is let at last.\"";
     output = RiTa.sentences(input);
-    expected =  ["\"My dear Mr. Bennet.", "Netherfield Park is let at last.\""];
+    expected = ["\"My dear Mr. Bennet.", "Netherfield Park is let at last.\""];
     eql(output, expected);
 
     input = "\u201CMy dear Mr. Bennet. Netherfield Park is let at last.\u201D";
     output = RiTa.sentences(input);
-    expected =  ["\u201CMy dear Mr. Bennet.", "Netherfield Park is let at last.\u201D"];
+    expected = ["\u201CMy dear Mr. Bennet.", "Netherfield Park is let at last.\u201D"];
     eql(output, expected);
     /*******************************************/
 
     input = "She wrote: \"I don't paint anymore. For a while I thought it was just a phase that I'd get over.\"";
     output = RiTa.sentences(input);
-    expected =  ["She wrote: \"I don't paint anymore.", "For a while I thought it was just a phase that I'd get over.\""];
+    expected = ["She wrote: \"I don't paint anymore.", "For a while I thought it was just a phase that I'd get over.\""];
     eql(output, expected);
 
     input = " I had a visit from my \"friend\" the tax man.";
     output = RiTa.sentences(input);
-    expected =  ["I had a visit from my \"friend\" the tax man."];
+    expected = ["I had a visit from my \"friend\" the tax man."];
     eql(output, expected);
   });
 

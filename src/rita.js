@@ -62,9 +62,11 @@ class RiTa {
   }
 
   static isAbbreviation(input, { caseSensitive = false } = {}) {
-
-    return RiTa.ABBREVIATIONS.includes
-      (caseSensitive ? input : Util.titleCase(input));
+    if (typeof input === 'string') {
+      if (caseSensitive) return RiTa.ABBREVIATIONS.includes(input.trim());
+      let check = input.trim().toLowerCase();
+      return RiTa.ABBREVIATIONS.filter(a => a.toLowerCase() === check).length > 0;
+    }
   }
 
   static isAdjective(word) {
@@ -266,7 +268,7 @@ RiTa.WORD_BOUNDARY = " ";
 RiTa.SYLLABLE_BOUNDARY = "/";
 RiTa.SENTENCE_BOUNDARY = "|";
 RiTa.VOWELS = "aeiou";
-RiTa.ABBREVIATIONS = ["Adm.", "Capt.", "Cmdr.", "Col.", "Dr.", "Gen.", "Gov.", "Lt.", "Maj.", "Messrs.", "Mr.", "Mrs.", "Ms.", "Prof.", "Rep.", "Reps.", "Rev.", "Sen.", "Sens.", "Sgt.", "Sr.", "St.", "a.k.a.", "c.f.", "i.e.", "e.g.", "vs.", "v.", "Jan.", "Feb.", "Mar.", "Apr.", "Mar.", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
+RiTa.ABBREVIATIONS = ["Adm.", "Capt.", "Cmdr.", "Col.", "Dr.", "Gen.", "Gov.", "Lt.", "Maj.", "Messrs.", "Mr.", "Mrs.", "Ms.", "Prof.", "Rep.", "Reps.", "Rev.", "Sen.", "Sens.", "Sgt.", "Sr.", "St.", "A.k.a.", "C.f.", "I.e.", "E.g.", "Vs.", "V.", "Jan.", "Feb.", "Mar.", "Apr.", "Mar.", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
 RiTa.QUESTIONS = ["was", "what", "when", "where", "which", "why", "who", "will", "would", "who", "how", "if", "is", "could", "might", "does", "are", "have"];
 RiTa.INFINITIVE = 1;
 RiTa.GERUND = 2;

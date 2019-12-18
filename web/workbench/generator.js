@@ -2,41 +2,52 @@
 if (typeof module !== 'undefined') {
   RiTa = require('../../dist/rita-node.js');
   input = require('fs').readFileSync(require('path').resolve
-    (process.cwd(), 'warpeace-2000.txt')).toString('utf8');
+    ('texts', 'warpeace-2000.txt')).toString('utf8');
 }
 
 class Generator {
   constructor(model, opts) {
-    this.endRE = /^[.!?]$/;
     this.model = model;
-    this.reset(opts);
-    this.starts = Object.values(this.model.root.child('<s/>').children);
-    this.tokens = [];
+    this.complete = false;
+    this.tokens = new HistoryQ(this.model.n - 1).asArray();
+    this.starts = opts && opts.startTokens ||
+      Object.values(this.model.root.child('<s/>').children);
   }
   reset() {
-    this.complete = false;
-  }
-  next() {
-    if (this.tokens.length) {
-      let choices = this.model.completions(this.tokens);
-      let next = this.model.selectNext(choices, this.tokens, 0);
-      console.log(next);
-    }
-    return (this.tokens[0] = RiTa.randomItem(this.starts, s => s.token));
+    // TODO: NEXT: sentences after reset
+    //this.complete = false;
   }
   done() {
     return this.complete;
   }
+  next({ temp = 0 } = {}) {
+    if (this.tokens.length) {
+      let parent = this.model._findNode(this.tokens);
+      if (!parent) throw Error('no path for: ' + this.tokens);
+      let nodemap = this.model._computeProbs(parent, temp);
+      let nodes = Object.keys(nodemap);
+      let result, pTotal = 0, selector = Math.random();
+
+      for (let i = 0; i < nodes.length; i++) {
+        let next = nodes[i];
+        pTotal += nodemap[next];
+        if (selector < pTotal) {
+          result = parent.children[next];
+          break;
+        }
+      }
+      // TODO: mlm
+
+      this.tokens.push(result.token);
+      this.complete = /^[.!?]$/.test(result.token); // minLength?
+    }
+    else {
+      this.tokens.push(RiTa.randomItem(this.starts, s => s.token));
+    }
+
+    return this.tokens[this.tokens.length - 1];
+  }
 }
-
-
-let model = new RiTa.Markov(4);
-model.loadSentences(input);
-let gen = new Generator(model);
-console.log(gen.next());
-console.log(gen.next());
-// gen.starts.map(s => console.log(s.token+'->'+s.count));
-// console.log(gen.starts.length);
 
 
 class GeneratorTake2 {
@@ -139,6 +150,9 @@ class HistoryQ {
   asArray() {
     return this.q;
   }
+  push() {
+    this.add(...arguments);
+  }
   add() {
     for (var i = 0; i < arguments.length; i++) {
       this.q.push(arguments[i]);
@@ -181,7 +195,7 @@ class HistoryQ {
 }
 
 function cleanSentences(text) {
-  let raw = text.replace(/[()“”"]/g,'').replace(/--[^.!?-]+--/g,'')
+  let raw = text.replace(/[()“”"]/g, '').replace(/--[^.!?-]+--/g, '')
     .replace(/\.\.+/g, '.').replace(/--/g, '-').replace(/ *\* */g, ' ');
   let all = RiTa.sentences(raw).filter(s => RiTa.tokenize(s, ' ').length > 10);
   return all
@@ -213,4 +227,27 @@ if (0) {
     setTimeout(next, 10);
   };
   next();
+}
+else {
+  let model = new RiTa.Markov(4);
+  model.loadSentences(input);
+  let gen = new Generator(model);
+  let opts = {}, llen = 0;
+  for (var i = 0; i < 5; i++) {
+    while (!gen.done()) {
+      let word = gen.next(opts);
+      if (llen && !RiTa.isPunctuation(word)) {
+        word = ' ' + word;
+      }
+      llen += word.length;
+      if (llen > 80) {
+        llen = 0;
+        word += '\n';
+      }
+      process.stdout.write(word);
+    }
+    gen.reset(opts);
+    process.stdout.write('\n');
+  }
+
 }

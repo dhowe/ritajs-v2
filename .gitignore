@@ -1,4 +1,4 @@
-web/workbench/texts
+web/workbench/texts/*
 node_modules
 hs_err_pid*
 dist/*

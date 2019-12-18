@@ -84,7 +84,7 @@ class Markov {
     startTokens = startTokens || /^[A-Z][a-z]*$/;
 
     while (tries < Markov.MAX_GENERATION_ATTEMPTS) {
-      words = words || [this.generateToken({ startTokens: startTokens })];
+      words = words || this.generateTokens(1, { startTokens: startTokens });
       let next = this.generateToken({ startTokens: words, temperature: temperature });
       words.push(next);
       if (/^[?!.]$/.test(next)) { // sentence-end?
@@ -132,7 +132,7 @@ class Markov {
       let parent = this._findNode(tokens);
       if ((!parent || parent.isLeaf()) && fail()) continue;
 
-      let next = this.selectNext(parent, tokens, temperature);
+      let next = this.selectNext(parent, temperature, tokens);
       if (!next && fail()) continue; // possible if all children excluded
 
       // if we have enough tokens, we're done
@@ -171,7 +171,7 @@ class Markov {
         let parent = this._findNode(tokens);
         if ((!parent || parent.isLeaf()) && fail(tokens)) continue;
 
-        let next = this.selectNext(parent, tokens, temperature);
+        let next = this.selectNext(parent, temperature, tokens);
         if (!next && fail(tokens)) continue; // possible if all children excluded
 
         tokens.push(next);
@@ -213,7 +213,7 @@ class Markov {
         let mn = this._findNode(tokens);
         if (!mn || mn.isLeaf()) continue OUT; // hit a leaf, restart
 
-        mn = this.selectNext(mn, tokens, temperature);
+        mn = this.selectNext(mn, temperature, tokens);
         if (!mn) continue OUT; // can't find next, restart
 
         tokens.push(mn.token); // add the token
@@ -227,14 +227,15 @@ class Markov {
   }
 
 
-  selectNext(parent, tokens, temp) {
+  selectNext(parent, temp, tokens) {
 
     let pTotal = 0, selector = Math.random();
     let nodemap = this._computeProbs(parent, temp);
     let nodes = Object.keys(nodemap);
+    let tries = nodes.length * 2;
 
     // loop twice here in case we skip earlier nodes based on probability
-    for (let i = 0; i < nodes.length * 2; i++) {
+    for (let i = 0; i < tries; i++) {
       let idx = i % nodes.length;
       let next = nodes[idx];
       pTotal += nodemap[next];
@@ -251,7 +252,8 @@ class Markov {
     }
   }
 
-  // return an array of possible strings
+  // return the array of possible tokens following pre
+  // and (optionally) before post
   completions(pre, post) {
 
     let tn, result = [];
@@ -326,7 +328,7 @@ class Markov {
         let parent = this._findNode(tokens, this.inverse);
         if ((!parent || parent.isLeaf()) && fail(tokens)) continue;
 
-        let next = this.selectNext(parent, tokens, temperature);
+        let next = this.selectNext(parent, temperature, tokens);
         if (!next && fail(tokens)) continue; // possible if all children excluded
 
         tokens.push(next);
