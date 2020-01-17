@@ -4,6 +4,9 @@
 // Unenclosed variables on a line, include the whole line and can have nothing else
 // other you need to use {} or [] or ()
 
+// 1. SHOULDNT MATTER if symbol is defined in context or in prior riscript
+// 2. " or in *post* riscript
+
 // TODO:
 // lazy evaluation of variables in script (to support cf-grammars)
 // add variable declarations ***
@@ -29,35 +32,41 @@ describe('RiTa.RiScript', function() {
       expect(res).eq('I said hello to her');
     });
 
-    /*it('Should create symbol table on compile', function() {
-      let script = [
-        '$start = ($nounp $verbp.)',
-        '$nounp = $determiner $noun',
-        '$determiner = (the | the)',
-        '$verbp = $verb $nounp',
-        '$noun = (woman | woman)',
-        '$verb = shoots',
-        '$start'
-      ].join(' ');
+    it('Should create symbol table on compile', function() {
+      let script = '$start = (a | b)';
       let rc = RiTa.compile(script, 1);
-      console.log(rc.symbolTable);
-      expect(rc.symbolTable['$start']).eq('$nounp $verbp.');
-    })
+      expect(rc.symbolTable['$start']).eq('(a | b)');
+    });
+    /*
+        it('Should create symbol table on compile', function() {
+          let script = [
+            '$start = ($nounp $verbp.)',
+            '$nounp = $determiner $noun',
+            '$determiner = (the | the)',
+            '$verbp = $verb $nounp',
+            '$noun = (woman | woman)',
+            '$verb = shoots',
+            '$start'
+          ].join(' ');
+          let rc = RiTa.compile(script, 1);
+          console.log(rc.symbolTable);
+          expect(rc.symbolTable['$start']).eq('$nounp $verbp.');
+        })
 
-    it('Should eval converted grammar', function() {
-      let script = [
-        '$start = $nounp $verbp.',
-        '$nounp = $determiner $noun',
-        '$determiner = (the | the)',
-        '$verbp = $verb $nounp',
-        '$noun = (woman | woman)',
-        '$verb = shoots',
-        '$start'
-      ].join(' ');
-      let rc = RiTa.compile(script, 1);
-      let res = rc.expand();
-      expect(res).eq('the woman shoots the woman');
-    })*/
+        it('Should eval converted grammar', function() {
+          let script = [
+            '$start = $nounp $verbp.',
+            '$nounp = $determiner $noun',
+            '$determiner = (the | the)',
+            '$verbp = $verb $nounp',
+            '$noun = (woman | woman)',
+            '$verb = shoots',
+            '$start'
+          ].join(' ');
+          let rc = RiTa.compile(script, 1);
+          let res = rc.expand();
+          expect(res).eq('the woman shoots the woman');
+        })*/
 
     /*
     it('Should eval linebreak-defined variables', function() {
@@ -121,11 +130,40 @@ describe('RiTa.RiScript', function() {
 
     it('Should correctly parse/resolve symbols', function() {
       expect(RiTa.evaluate('$foo', {}, 0)).eq('$foo'); // no-op
+      expect(RiTa.evaluate('$foo.', {}, 0)).eq('$foo.'); // no-op
       expect(RiTa.evaluate('a $foo dog', {}, 0)).eq('a $foo dog'); // no-op
+      expect(RiTa.evaluate('a $foo dog.', {}, 0)).eq('a $foo dog.'); // no-op
       expect(RiTa.evaluate('a $dog', { dog: 'terrier' })).eq('a terrier');
+      expect(RiTa.evaluate('a $dog.', { dog: 'terrier' })).eq('a terrier.');
       expect(RiTa.evaluate('I ate the $dog', { dog: 'beagle' }, 0)).eq('I ate the beagle');
       expect(RiTa.evaluate('The $dog today.', { dog: 'lab' }, 0)).eq('The lab today.');
       expect(RiTa.evaluate('I ate the $dog.', { dog: 'lab' }, 0)).eq('I ate the lab.');
+    });
+  });
+
+  describe('Evaluate Expressions', function() {
+
+    it('Should parse basic expressions', function() {
+      expect(RiTa.evaluate('a.')).eq('a.');
+
+      // WORKING HERE **********
+      if (0) {
+        expect(RiTa.evaluate('.a', 0, 1)).eq('.a');
+
+        expect(RiTa.evaluate('a.', 0, 1)).eq('a.');
+        expect(RiTa.evaluate('.a.', 0, 1)).eq('.a.');
+        expect(RiTa.evaluate('.....a.....', 0, 1)).eq('.....a....');
+
+
+
+
+        expect(RiTa.evaluate('$foo=a.', ctx = {}, 0)).eq('');
+        expect(ctx.foo).eq('a.');
+
+        expect(RiTa.evaluate('(a. | (b. | c.) | d.)')).to.be.oneOf(['a', 'b.', 'c.', 'd.']);
+      }
+      //expect(RiTa.evaluate('.a',0,1)).eq('.a');
+      //expect(RiTa.evaluate('&dot;a'),0,1).eq('.a');
     });
   });
 
@@ -148,11 +186,20 @@ describe('RiTa.RiScript', function() {
       expect(RiTa.evaluate('(a | b | c)'), {}).to.be.oneOf(['a', 'b', 'c']);
       expect(RiTa.evaluate('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
       expect(RiTa.evaluate('(|)')).eq('');
+
+      expect(RiTa.evaluate('(a.)')).eq('a.');
+      expect(RiTa.evaluate('(a. | a.)')).eq('a.');
+      expect(RiTa.evaluate('(a. | .)')).to.be.oneOf(['a.', '.']);
+      expect(RiTa.evaluate('(a. | b.)')).to.be.oneOf(['a.', 'b.']);
+      expect(RiTa.evaluate('(a. | b. | c.)'), {}).to.be.oneOf(['a.', 'b.', 'c.']);
+      expect(RiTa.evaluate('(.|.)')).eq('.');
     });
 
     it('Should parse choices from an expression', function() {
 
       expect(RiTa.evaluate("x (a | a | a) x")).eq('x a x');
+      //expect(RiTa.evaluate("x. (a | a | a) .x.")).eq('x. a x.');
+
       expect(RiTa.evaluate("x (a | a | a)")).eq('x a');
       expect(RiTa.evaluate("x (a | a | a)x")).eq('x ax');
       expect(RiTa.evaluate("x(a | a | a) x")).eq('xa x');
@@ -272,16 +319,18 @@ describe('RiTa.RiScript', function() {
     //   expect(RiTa.evaluate('That is (ant).articlize().')).eq('That is an ant.');
     // });
   });
+  const NEW_ASSIGNS = true;
 
   describe('Evaluate Assignments', function() {
 
     it('Should eval previous assignments', function() {
       expect(RiTa.evaluate('$foo=a\n$foo', null, 0)).eq('a');
-      expect(RiTa.evaluate('$foo=(hi | hi) $foo there', null, 0)).eq('hi there');
-      expect(RiTa.evaluate('$foo=(hi | hi) $foo there', null, 0)).eq('hi there');
-
-      expect(RiTa.evaluate('$foo=dog\n$bar=$foo\n$baz=$foo\n$baz', null, 0)).eq('dog');
-      expect(RiTa.evaluate('$foo=hi $foo there', null, 0)).eq('hi there');
+      if (!NEW_ASSIGNS) {
+        expect(RiTa.evaluate('$foo=(hi | hi) $foo there', null, 0)).eq('hi there');
+        expect(RiTa.evaluate('$foo=(hi | hi) $foo there', null, 0)).eq('hi there');
+        expect(RiTa.evaluate('$foo=dog\n$bar=$foo\n$baz=$foo\n$baz', null, 0)).eq('dog');
+        expect(RiTa.evaluate('$foo=hi $foo there', null, 0)).eq('hi there');
+      }
     });
 
     it('Should eval pre-defined variables', function() {
@@ -294,55 +343,84 @@ describe('RiTa.RiScript', function() {
     });
 
     it('Should parse assignments', function() {
-      let ctx = {};
-      expect(RiTa.evaluate('$foo=a', ctx, 0)).eq('');
+      let ctx;
+
+      expect(RiTa.evaluate('$foo = ($nounp)', ctx = {}, 0)).eq('');
+      expect(ctx.foo).eq('$nounp');
+
+      //expect(RiTa.evaluate('$foo = ($nounp.)', ctx = {}, 0)).eq('');
+      //expect(ctx.foo).eq('$nounp.');
+      //return;
+      // expect(RiTa.evaluate('$start = ($nounp) $verbp.)', ctx = {}, 0)).eq('');
+      // expect(ctx.foo).eq('a.');
+
+      expect(RiTa.evaluate('$foo=a', ctx = {}, 0)).eq('');
       expect(ctx.foo).eq('a');
 
-      ctx = {};
-      expect(RiTa.evaluate('$foo=a\nb', ctx, 0)).eq('b');
-      expect(ctx.foo).eq('a');
-
-      ctx = {};
-      expect(RiTa.evaluate('$foo=(a | a)', ctx, 0)).eq('');
-      expect(ctx.foo).eq('a');
-
-      ctx = {};
-      expect(RiTa.evaluate('$foo=ab', ctx, 0)).eq('');
-      expect(ctx.foo).eq('ab');
-
-      ctx = {};
-      expect(RiTa.evaluate('$foo=ab bc', ctx, 0)).eq('bc');
-      expect(ctx.foo).eq('ab');
-
-      ctx = {};
-      expect(RiTa.evaluate('$foo=(ab) (bc)', ctx, 0)).eq('bc');
-      expect(ctx.foo).eq('ab');
-
-      ctx = {};
-      expect(RiTa.evaluate('$foo=(ab bc)', ctx, 0)).eq('');
+      expect(RiTa.evaluate('$foo=(ab bc)', ctx = {}, 0)).eq('');
       expect(ctx.foo).eq('ab bc');
 
-      ctx = {};
-      expect(RiTa.evaluate('$foo=(a | a) (b | b)', ctx, 0)).eq('b');
+      if (!NEW_ASSIGNS) {
+        expect(RiTa.evaluate('$foo=(ab bc) cd', ctx = {}, 0)).eq('cd');
+        expect(ctx.foo).eq('ab bc');
+
+        expect(RiTa.evaluate('$foo=ab $bar=bc cd', ctx = {}, 0)).eq('cd');
+        expect(ctx.foo).eq('ab');
+        expect(ctx.bar).eq('bc');
+
+        expect(RiTa.evaluate('$foo=ab $foo', ctx = {}, 0)).eq('ab');
+        expect(ctx.foo).eq('ab');
+
+        expect(RiTa.evaluate('$foo=ab $bar=$foo $bar', ctx = {}, 0)).eq('ab');
+        expect(ctx.foo).eq('ab');
+        expect(ctx.bar).eq('ab');
+
+        expect(RiTa.evaluate('$foo=ab $bar=($foo a)', ctx = {}, 0)).eq('');
+        expect(ctx.foo).eq('ab');
+        expect(ctx.bar).eq('ab a');
+
+        expect(RiTa.evaluate('$a=a $b=b $c=($a $b) $c', ctx = {}, 0)).eq('a b');
+        expect(ctx.a).eq('a');
+        expect(ctx.b).eq('b');
+        expect(ctx.c).eq('a b');
+
+        expect(RiTa.evaluate('$foo=a\nb', ctx = {}, 0)).eq('b');
+        expect(ctx.foo).eq('a');
+
+
+        expect(RiTa.evaluate('$foo=ab bc', ctx = {}, 0)).eq('bc');
+        expect(ctx.foo).eq('ab');
+
+        expect(RiTa.evaluate('$foo=(ab) (bc)', ctx = {}, 0)).eq('bc');
+        expect(ctx.foo).eq('ab');
+
+
+        expect(RiTa.evaluate('$foo=(a | a) (b | b)', ctx = {}, 0)).eq('b');
+        expect(ctx.foo).eq('a');
+
+      }
+
+      expect(RiTa.evaluate('$foo=(a | a)', ctx = {}, 0)).eq('');
       expect(ctx.foo).eq('a');
 
-      ctx = {};
-      expect(RiTa.evaluate('$foo=((a | a) | (a | a))', ctx, 0)).eq('');
+      expect(RiTa.evaluate('$foo=ab', ctx = {}, 0)).eq('');
+      expect(ctx.foo).eq('ab');
+
+      expect(RiTa.evaluate('$foo=(ab bc)', ctx = {}, 0)).eq('');
+      expect(ctx.foo).eq('ab bc');
+
+      expect(RiTa.evaluate('$foo=((a | a) | (a | a))', ctx = {}, 0)).eq('');
       expect(ctx.foo).eq('a');
 
-      ctx = {};
-      expect(RiTa.evaluate('$foo=()', ctx, 0)).eq(''); // empty string
+      expect(RiTa.evaluate('$foo=()', ctx = {}, 0)).eq(''); // empty string
       expect(ctx.foo).eq('');
 
-      ctx = {};
-      expect(RiTa.evaluate('$foo=a\n$bar=$foo', ctx, 0)).eq(''); // empty string
+      expect(RiTa.evaluate('$foo=a\n$bar=$foo', ctx = {}, 0)).eq(''); // empty string
       expect(ctx.foo).eq('a');
       expect(ctx.bar).eq('a');
     });
 
     it('Should parse transformed assignments', function() {
-
-      // WORKING HERE
 
       let ctx = {};
       expect(RiTa.evaluate('$foo=(a).toUpperCase()', ctx, 0)).eq('');
@@ -356,21 +434,24 @@ describe('RiTa.RiScript', function() {
       expect(RiTa.evaluate('$foo=(ab).toUpperCase()', ctx, 0)).eq('');
       expect(ctx.foo).eq('AB');
       //return;
-      ctx = {};
-      expect(RiTa.evaluate('$foo=(ab).toUpperCase() (bc).toUpperCase()', ctx, 0)).eq('BC');
-      expect(ctx.foo).eq('AB');
+
+      if (!NEW_ASSIGNS) {
+        ctx = {};
+        expect(RiTa.evaluate('$foo=(ab).toUpperCase() (bc).toUpperCase()', ctx, 0)).eq('BC');
+        expect(ctx.foo).eq('AB');
+
+        ctx = {};
+        expect(RiTa.evaluate('$foo=(a | a).toUpperCase() (b | b)', ctx, 0)).eq('b');
+        expect(ctx.foo).eq('A');
+
+        ctx = {};
+        expect(RiTa.evaluate('$foo=(a | a).toUpperCase() (b | b).toUpperCase()', ctx, 0)).eq('B');
+        expect(ctx.foo).eq('A');
+      }
 
       ctx = {};
       expect(RiTa.evaluate('$foo=(ab bc).toUpperCase()', ctx, 0)).eq('');
       expect(ctx.foo).eq('AB BC');
-
-      ctx = {};
-      expect(RiTa.evaluate('$foo=(a | a).toUpperCase() (b | b)', ctx, 0)).eq('b');
-      expect(ctx.foo).eq('A');
-
-      ctx = {};
-      expect(RiTa.evaluate('$foo=(a | a).toUpperCase() (b | b).toUpperCase()', ctx, 0)).eq('B');
-      expect(ctx.foo).eq('A');
 
       ctx = {};
       expect(RiTa.evaluate('$foo=((a | a) | (a | a))', ctx, 0)).eq('');

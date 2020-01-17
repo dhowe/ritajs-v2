@@ -34,10 +34,12 @@ choice: ((LP (expr OR)* expr RP)
         | (LP OR expr OR RP)
         | (LP RP))
         transform*;
-assign: symbol EQ value;
+assign: symbol EQ value NL*;
 value: symbol | choice | CHR;
-expr: (symbol | choice | assign | CHR | NL | DOT | ENT)
-  (WS+ (symbol | choice | assign | CHR | NL | DOT | ENT))*;
+/* value: (symbol | choice | (CHR | DOT | ENT)+)
+  (WS+ (symbol | choice | CHR | DOT | ENT))*; */
+expr: (symbol | choice | assign | (CHR | NL | DOT | ENT)+)
+  (WS+ (symbol | choice | assign | (CHR | NL | DOT | ENT)+)*;
 
 LP: '(';
 RP: ')';

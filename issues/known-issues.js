@@ -10,7 +10,7 @@ describe('RiTa.KnownIssues', () => {
   });
 
   it('1: pluralize or singularize fails', () => {
-    let testPairs = [ ]; // FAILING ITEMS HERE
+    let testPairs = []; // FAILING ITEMS HERE
     let res1, res2, res3, i = 0, dbug = true;
     if (!testPairs.length) return;
     dbug && console.log(testPairs[i] + '/' + testPairs[i + 1]);
@@ -42,6 +42,16 @@ describe('RiTa.KnownIssues', () => {
 
 
 describe('RiScript.KnownIssues', () => {
+
+  it('Should parse assignments with periods', function() {
+    let ctx;
+
+    expect(RiTa.evaluate('$foo=a.', ctx = {}, 0)).eq('');
+    expect(ctx.foo).eq('a.');
+
+    expect(RiTa.evaluate('$a=(The Dog.) $a', ctx = {}, 0)).eq('The Dog');
+    expect(ctx.a).eq('The Dog.');
+  });
 
   it('Should eval post-defined variables', function() {
 
