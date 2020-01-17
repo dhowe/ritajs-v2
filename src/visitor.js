@@ -37,7 +37,7 @@ class Visitor extends SuperClass {
   constructor(context, lexerRules, parserRules, trace) {
     super();
     this.trace = trace || false;
-  //this.trace = 1;
+//this.trace = 1;
   //this.symbolTable = {};
     this.lexerRules = lexerRules;
     this.parserRules = parserRules;

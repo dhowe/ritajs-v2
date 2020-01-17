@@ -29,6 +29,36 @@ describe('RiTa.RiScript', function() {
       expect(res).eq('I said hello to her');
     });
 
+    /*it('Should create symbol table on compile', function() {
+      let script = [
+        '$start = ($nounp $verbp.)',
+        '$nounp = $determiner $noun',
+        '$determiner = (the | the)',
+        '$verbp = $verb $nounp',
+        '$noun = (woman | woman)',
+        '$verb = shoots',
+        '$start'
+      ].join(' ');
+      let rc = RiTa.compile(script, 1);
+      console.log(rc.symbolTable);
+      expect(rc.symbolTable['$start']).eq('$nounp $verbp.');
+    })
+
+    it('Should eval converted grammar', function() {
+      let script = [
+        '$start = $nounp $verbp.',
+        '$nounp = $determiner $noun',
+        '$determiner = (the | the)',
+        '$verbp = $verb $nounp',
+        '$noun = (woman | woman)',
+        '$verb = shoots',
+        '$start'
+      ].join(' ');
+      let rc = RiTa.compile(script, 1);
+      let res = rc.expand();
+      expect(res).eq('the woman shoots the woman');
+    })*/
+
     /*
     it('Should eval linebreak-defined variables', function() {
 

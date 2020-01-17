@@ -29,11 +29,13 @@ class RiScript {
 
   expand(rule, context) {
     let dbug = 0;
-    let result = rule;
+    let result = rule || '$start';
     let tries = 0, maxIterations = 100;
     //while (result.includes('$')) {
     while (++tries < maxIterations) {
       let next = this.expandRule(result, dbug);
+      dbug && console.log('expand: '+result+ ' -> '+next);
+
       if (next && next.length && next !== result) { // matched a rule
         result = this.scripting.lexParseExpand(next, context);
         dbug && console.log('got: '+result);
