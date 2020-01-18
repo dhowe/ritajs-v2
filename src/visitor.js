@@ -12,33 +12,14 @@ String.prototype.ucf = function() {
 class Symbol {
   constructor(text, transforms) {
     this.text = text;
-    //this.transforms = undefined;
     this.transforms = transforms.map(t => t.getText());
   }
+  // interface functions
   getText() { return this.text; }
   accept(ctx) {
-    //    this.transforms = ctx.transform().map(t => t.getText());
-    //console.log('Symbol.accept $'+this.text, ctx);
-    let sname = this.text;
     this.text = ctx.context[this.text] || '$' + this.text;
-    //console.log("  checking $"+sname);
-    let res = ctx.visitTerminal(this);
-
-    // TODO: what if res contains other symbols or choices or ...
-
-    //let res = this.parent.visitTerminal(sname);
-    //let res = this.parent.visit(this.getText);
-    //console.log("  $"+sname +" -> '" + res+"'");
-    //this.parent.symbolTable[sname] = res;
-    return res;
+    return ctx.visitTerminal(this);
   }
-  //
-  // setTransforms(ctx) {
-  //   this.transforms = ctx.transform().map(t => t.getText());
-  //   //this.transforms
-  //   //newTransforms = this.appendToArray(newTransforms, ctx.transforms);
-  //   //this.transforms = this.appendToArray(this.transforms, newTransforms);
-  // }
 }
 
 /*
