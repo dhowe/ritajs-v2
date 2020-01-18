@@ -11,14 +11,16 @@ class RiScript {
 
   constructor() {
     //this.parseTree = undefined;
-    this.symbolTable = undefined;
+    //this.symbolTable = undefined;
     this.scripting = new Scripting();
   }
 
   static compile(input, context, showParse, silent) {
     let rs = new RiScript();
-    rs.symbolTable = rs.scripting.lexParseCompile(input, context, showParse, silent);
-    return rs;
+
+    rs.scripting.lexParseCompile(input, context, showParse, silent);
+
+    return context;
     //
     // rs.parseTree = rs.scripting.lexParse(input, showParse, silent);
     // rs.visitor = rs.scripting.createVisitor(context, showParse, silent);
@@ -193,7 +195,7 @@ class Scripting {
 
   lexParseVisit(input, context, showParse, silent) {
     let tree = this.lexParse(input, showParse, silent);
-    return this.createVisitor(context, showParse).start(tree);
+    return this.createVisitor(context, showParse, silent).start(tree);
   }
 
   createVisitor(context, showParse, silent) {
@@ -205,9 +207,10 @@ class Scripting {
   lexParseCompile(input, context, showParse, silent) { // not used...
     let tree = this.lexParse(input, showParse, silent);
     let visitor = this.createVisitor(context, showParse);
-    visitor.symbolTable = {};
+    //visitor.symbolTable = {};
     visitor.start(tree);
-    return visitor.symbolTable;
+    //return visitor.symbolTable;
+    return context;
   }
 
   lexParseExpand(input, context, showParse, silent) { // not used...

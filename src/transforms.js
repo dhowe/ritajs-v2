@@ -34,6 +34,11 @@ String.prototype.quotify = function() {
 }
 
 /// <summary>
+/// Wraps the given string in double-quotes.
+/// </summary>
+String.prototype.cc = String.prototype.quotify;
+
+/// <summary>
 /// Pluralizes the word according to english regular/irregular rules.
 /// </summary>
 String.prototype.pluralize = function() {

@@ -43,6 +43,10 @@ describe('RiTa.KnownIssues', () => {
 
 describe('RiScript.KnownIssues', () => {
 
+  it('simple evaluations', function() {
+    expect(RiTa.evaluate('foo.bar', {}, 0)).eq('foo.bar');
+  });
+
   it('Should eval post-defined variables', function() {
 
     let rc = RiScript.compile('$start=$foo\n$foo=hello\n$start', 1);

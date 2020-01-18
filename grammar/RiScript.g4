@@ -1,6 +1,7 @@
 grammar RiScript;
 
-// NOTE: changing this file require a re-compile
+// NOTE: changing this file require a re-compile:
+//       use $ npm run watch-grammar
 
 // TODO:  silent assigns
 //        single and double quotes

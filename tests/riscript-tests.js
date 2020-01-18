@@ -1,4 +1,4 @@
-// const expect = require('chai').expect;
+require('../src/transforms');
 
 // SOLUTION 1:
 // Unenclosed variables on a line, include the whole line and can have nothing else
@@ -113,19 +113,50 @@ describe('RiTa.RiScript', function() {
     });*/
   });
 
+  describe('Evaluate Expressions', function() {
+    it('Should eval simple expressions', function() {
+      expect(RiTa.evaluate('foo', {}, 0)).eq('foo');
+      expect(RiTa.evaluate('foo.', {}, 0)).eq('foo.');
+      expect(RiTa.evaluate('foo\nbar', {}, 0)).eq('foo bar');
+      //expect(RiTa.evaluate('foo.bar', {}, 0)).eq('foo.bar');
+    });
+  });
+
   describe('Evaluate Symbols', function() {
 
     it('Should throw on bad symbols', function() {
       expect(() => RiTa.evaluate('$', 0, 0, 1)).to.throw();
     });
 
-    it('Should correctly parse/resolve symbols', function() {
-      expect(RiTa.evaluate('$foo', {}, 0)).eq('$foo'); // no-op
-      expect(RiTa.evaluate('a $foo dog', {}, 0)).eq('a $foo dog'); // no-op
+    it('Should correctly resolve symbols', function() {
+      expect(RiTa.evaluate('$foo', {}, 0, 1)).eq('$foo'); // no-op
+      expect(RiTa.evaluate('a $foo dog', {}, 0, 1)).eq('a $foo dog'); // no-op
       expect(RiTa.evaluate('a $dog', { dog: 'terrier' })).eq('a terrier');
       expect(RiTa.evaluate('I ate the $dog', { dog: 'beagle' }, 0)).eq('I ate the beagle');
       expect(RiTa.evaluate('The $dog today.', { dog: 'lab' }, 0)).eq('The lab today.');
       expect(RiTa.evaluate('I ate the $dog.', { dog: 'lab' }, 0)).eq('I ate the lab.');
+
+      expect(RiTa.evaluate('$foo\n', {}, 0, 1)).eq('$foo');
+      expect(RiTa.evaluate('a $foo\ndog', {}, 0, 1)).eq('a $foo dog');
+      expect(RiTa.evaluate('a $dog', { dog: 'terrier' })).eq('a terrier');
+      expect(RiTa.evaluate('I ate\nthe $dog', { dog: 'beagle' }, 0)).eq('I ate the beagle');
+      expect(RiTa.evaluate('The $dog\ntoday.', { dog: 'lab' }, 0)).eq('The lab today.');
+      expect(RiTa.evaluate('I ate the\n$dog.', { dog: 'lab' }, 0)).eq('I ate the lab.');
+    });
+
+    it('Should correctly resolve pre-defined symbols', function() {
+      expect(RiTa.evaluate('$foo=bar\n$foo', {}, 0)).eq('bar');
+      expect(RiTa.evaluate('$foo', { foo: 'bar' }, 0)).eq('bar');
+      expect(RiTa.evaluate('$foo=baz\n$bar=$foo\n$bar', {}, 0, 1)).eq('baz');
+
+      //expect(RiTa.evaluate('$bar', { foo: 'baz', bar: '$foo' }, 1, 1)).eq('baz');
+    });
+  });
+
+  describe('Compile Symbols', function() {
+    it('Should correctly resolve post-defined symbols', function() {
+      //let rs = RiTa.compile('$foo=$bar\n$bar=baz', {}, 0, 1);
+      //expect(rs.expand('$foo')).eq('baz'); HERE
     });
   });
 
@@ -267,14 +298,10 @@ describe('RiTa.RiScript', function() {
       expect(RiTa.evaluate("That was $user.name.", ctx)).eq('That was jen.');
     });
 
-    // it('Should correctly handle transforms on literals', function() {
-    //   expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many "teeth" do you have?');
-    //   expect(RiTa.evaluate('That is (ant).articlize().')).eq('That is an ant.');
-    // });
-  });
-
-  describe('Evaluate Expressions', function() {
-    it('Should eval simple expressions', function() {
+    it('Should correctly handle transforms on literals', function() {
+      expect(RiTa.evaluate('How many (teeth).toUpperCase() do you have?', 0, 0)).eq('How many TEETH do you have?');
+      expect(RiTa.evaluate('How many (teeth).quotify() do you have?', 0, 0)).eq('How many "teeth" do you have?');
+      expect(RiTa.evaluate('That is (ant).articlize().')).eq('That is an ant.');
     });
   });
 
