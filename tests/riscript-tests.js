@@ -10,6 +10,8 @@ require('../src/transforms');
 // handle multipliers in cfg-s
 // allow json format?
 
+const REENABLE = 0;
+
 describe('RiTa.RiScript', function() {
 
   if (typeof module !== 'undefined') require('./before');
@@ -113,7 +115,7 @@ describe('RiTa.RiScript', function() {
   });});*/
 
   describe('Compilation', function() {
-    0 && it('Should correctly compile post-defined symbols', function() {
+    REENABLE && it('Should correctly compile post-defined symbols', function() {
       //let rs = RiTa.compile('$foo=$bar\n$bar=baz', {}, 0, 1);
       //expect(rs.expand('$foo')).eq('baz'); HERE
     });
@@ -202,9 +204,8 @@ describe('RiTa.RiScript', function() {
       expect(RiTa.evaluate('(|a|)')).to.be.oneOf(['a', '']);
     });
 
-    false && it('Should parse symbols/choices from an expr', function() {
+    REENABLE && it('Should parse symbols/choices from an expr', function() {
       let ctx = { user: { name: 'jen' } }
-      expect(RiTa.evaluate('Was the $dog.breed (ok | ok) today?', { dog: { breed: 'Corgie' } }, 0)).eq('Was the Corgie ok today?');
       expect(RiTa.evaluate("Was $user.name.ucf() (ok | ok) today?", ctx)).eq('Was Jen ok today?');
       expect(RiTa.evaluate("$user.name was ok", ctx)).eq('jen was ok');
       expect(RiTa.evaluate("That was $user.name", ctx)).eq('That was jen');
@@ -214,6 +215,7 @@ describe('RiTa.RiScript', function() {
       expect(RiTa.evaluate("$user.name.toUpperCase()", ctx, 0)).eq('JEN');
       expect(RiTa.evaluate("$user.name.uc()", ctx, 0)).eq('JEN');
       expect(RiTa.evaluate("$user.name.ucf()", ctx, 0)).eq('Jen');
+      expect(RiTa.evaluate('Was the $dog.breed (ok | ok) today?', { dog: { breed: 'Corgie' } }, 0)).eq('Was the Corgie ok today?');
     });
   });
 
@@ -429,7 +431,7 @@ describe('RiTa.RiScript', function() {
     //
     // });
 
-    false && it('Should correctly concatenate variables', function() {
+    REENABLE && it('Should correctly concatenate variables', function() {
       let ctx = {};
       expect(RiTa.evaluate('{$foo=(h | h)} ${foo}ello', ctx, 0)).eq('hello'); // TODO
       expect(ctx.foo).eq('h');
@@ -440,7 +442,7 @@ describe('RiTa.RiScript', function() {
     });
   });
 
-  false && describe('Inline Assignments', function() {
+  REENABLE && describe('Inline Assignments', function() {
 
     it('Should correctly compare inline and out', function() {
 

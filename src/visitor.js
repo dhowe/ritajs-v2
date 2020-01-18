@@ -35,47 +35,35 @@ class Visitor extends SuperVis {
     this.trace = trace || false;
   }
 
-  visit(ctx) {
+  /*visit(ctx) { // not used
     return Array.isArray(ctx) ?
       ctx.map(function(child) {
         return child.accept(this);
       }, this) : ctx.accept(this);
-  }
+  }*/
 
-  handleTransforms(term, ctx) {
-    this.trace && console.log('handleTransforms: ' + term);
-    if (!ctx.transforms) return term;
-    for (let i = 0; i < ctx.transforms.length; i++) {
-      let transform = ctx.transforms[i];
-      let comps = transform.split('.');
-      for (let j = 1; j < comps.length; j++) {
-        //console.log(j, comps[j]);
-        if (comps[j].endsWith(Visitor.FUNCTION)) { // remove parens
-          comps[j] = comps[j].substring(0, comps[j].length - 2);
-        }
-        if (typeof term[comps[j]] === 'function') {
-          term = term[comps[j]]();
-        } else if (term.hasOwnProperty(comps[j])) {
-          term = term[comps[j]];
-        } else {
-          term = ctx.getText() + ctx.transforms[i]; // no-op
+  handleTransforms(obj, ctx) {
+    let term = obj;
+    if (ctx.transforms) {
+      for (let i = 0; i < ctx.transforms.length; i++) {
+        let transform = ctx.transforms[i];
+        let comps = transform.split('.');
+        for (let j = 1; j < comps.length; j++) {
+          //console.log(j, comps[j]);
+          if (comps[j].endsWith(Visitor.FUNCTION)) {
+            comps[j] = comps[j].substring(0, comps[j].length - 2);
+          }
+          if (typeof term[comps[j]] === 'function') {
+            term = term[comps[j]]();
+          } else if (term.hasOwnProperty(comps[j])) {
+            term = term[comps[j]];
+          } else {
+            term = ctx.getText() + ctx.transforms[i]; // no-op
+          }
         }
       }
     }
-    return term;
-  }
-
-  visitTerminalString(term, ctx) {
-    if (term === Visitor.EOF) return '';
-    term = term.replace(/\r?\n/, ' '); // no line-breaks
-    this.trace && console.log('visitTerminalString: "' + term + '" ' + (ctx.transforms || "[]"));
-    term = this.handleTransforms(term, ctx);
-    this.trace && console.log('            -> "' + term + '"');
-    if (typeof term === 'string' && term.includes('$')) {
-      if (!RiTa.SILENT && !this.context._silent) {
-        console.warn('[WARN] Unresolved symbol(s): ' + term);
-      }
-    }
+    this.trace && console.log('handleTransforms: ' + obj + ' -> ' + term);
     return term;
   }
 
@@ -83,14 +71,24 @@ class Visitor extends SuperVis {
     if (typeof ctx === 'string') return ctx;
 
     let term = ctx.getText();
-    if (typeof term !== 'string') {
-      term = this.handleTransforms(term, ctx);
-    }
-    else {
-      term = term.toString();
+
+    // check remaining transforms if not a string
+    if (typeof term === 'string') {
+
+      if (term === Visitor.EOF) return '';
+      term = term.replace(/\r?\n/, ' '); // no line-breaks
     }
 
-    return this.visitTerminalString(term, ctx);
+    this.trace && console.log('visitTerminalString: "' + term + '" ' + (ctx.transforms || "[]"));
+    term = this.handleTransforms(term, ctx);
+    this.trace && console.log('            -> "' + term + '"');
+
+    // should be string here
+    if (term.includes('$') && !RiTa.SILENT && !this.context._silent) {
+      console.warn('[WARN] Unresolved symbol(s): ' + term);
+    }
+
+    return term;
   }
 
   // Visits a leaf node and returns a string
@@ -171,7 +169,7 @@ class Visitor extends SuperVis {
       //console.log('trans',typeOf(trans));
       this.trace && console.log('HIT', typeof this.context[ident], this.context[ident], 'with ' + trans.length + ' transforms');
       if (trans && trans.length) {
-        resolved = '('+resolved+')';
+        resolved = '(' + resolved + ')';
         for (var i = 0; i < trans.length; i++) {
           resolved += trans[i].getText();
         }
