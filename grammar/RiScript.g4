@@ -23,7 +23,7 @@ grammar RiScript;
 
 // TODO: Labels
 
-script: expr+ EOF;
+script: (expr | NL)+ EOF;
 transform: TF;
 ident: SYM;
 symbol: ident transform*;
@@ -36,8 +36,8 @@ choice: ((LP (expr OR)* expr RP)
         transform*;
 assign: symbol EQ value;
 value: symbol | choice | CHR;
-expr: (symbol | choice | assign | CHR | NL | DOT | ENT)
-  (WS+ (symbol | choice | assign | CHR | NL | DOT | ENT))*;
+expr: (symbol | choice | assign | CHR | DOT | ENT)
+  (WS+ (symbol | choice | assign | CHR |  DOT | ENT))*;
 
 LP: '(';
 RP: ')';
