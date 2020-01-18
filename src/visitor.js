@@ -28,14 +28,11 @@ class Symbol {
  */
 class Visitor extends SuperVis {
 
-  constructor(context, lexerRules, parserRules, trace) {
+  constructor(parent, context, trace) {
     super();
-    this.trace = trace || false;
-    //this.trace = 1;
-    //this.symbolTable = {};
-    this.lexerRules = lexerRules;
-    this.parserRules = parserRules;
+    this.parent = parent;
     this.context = context || {};
+    this.trace = trace || false;
   }
 
   visit(ctx) {
@@ -45,49 +42,86 @@ class Visitor extends SuperVis {
       }, this) : ctx.accept(this);
   }
 
-  // Visits a leaf node and returns a string
-  visitTerminal(ctx) {
-
-    let term = ctx.getText();
-
-    //console.log('visitTerminal', typeof ctx, typeof ctx.getText());
-
-    if (term === Visitor.EOF) return '';
-    //if (/ *\r?\n */.test(term)) return '';
-
-    if (typeof term === 'string') term = term.replace(/\r?\n/, ' '); // no line-breaks
-
-    // handle associated transforms
-    if (ctx.transforms && (typeof term !== 'string' || term.length)) {
-      for (let i = 0; i < ctx.transforms.length; i++) {
-        let transform = ctx.transforms[i];
-        let comps = transform.split('.');
-        for (let j = 1; j < comps.length; j++) {
-          //console.log(j,comps[j]);
-          if (comps[j].endsWith(Visitor.FUNCTION)) { // remove parens
-            comps[j] = comps[j].substring(0, comps[j].length - 2);
-          }
-          if (typeof term[comps[j]] === 'function') {
-            term = term[comps[j]]();
-          } else if (term.hasOwnProperty(comps[j])) {
-            term = term[comps[j]];
-          } else {
-            term = ctx.getText() + ctx.transforms[i]; // no-op
-          }
+  handleTransforms(term, ctx) {
+    this.trace && console.log('handleTransforms: ' + term);
+    if (!ctx.transforms) return term;
+    for (let i = 0; i < ctx.transforms.length; i++) {
+      let transform = ctx.transforms[i];
+      let comps = transform.split('.');
+      for (let j = 1; j < comps.length; j++) {
+        //console.log(j, comps[j]);
+        if (comps[j].endsWith(Visitor.FUNCTION)) { // remove parens
+          comps[j] = comps[j].substring(0, comps[j].length - 2);
+        }
+        if (typeof term[comps[j]] === 'function') {
+          term = term[comps[j]]();
+        } else if (term.hasOwnProperty(comps[j])) {
+          term = term[comps[j]];
+        } else {
+          term = ctx.getText() + ctx.transforms[i]; // no-op
         }
       }
     }
-    this.trace && console.log('visitTerminal: "', term, '"');
+    return term;
+  }
 
-    // Warn on unresolved symbols
+  visitTerminalString(term, ctx) {
+    if (term === Visitor.EOF) return '';
+    term = term.replace(/\r?\n/, ' '); // no line-breaks
+    this.trace && console.log('visitTerminalString: "' + term + '" ' + (ctx.transforms || "[]"));
+    term = this.handleTransforms(term, ctx);
+    this.trace && console.log('            -> "' + term + '"');
     if (typeof term === 'string' && term.includes('$')) {
       if (!RiTa.SILENT && !this.context._silent) {
         console.warn('[WARN] Unresolved symbol(s): ' + term);
       }
     }
-
     return term;
   }
+
+  visitTerminal(ctx) {
+    if (typeof ctx === 'string') return ctx;
+
+    let term = ctx.getText();
+    if (typeof term !== 'string') {
+      term = this.handleTransforms(term, ctx);
+    }
+    else {
+      term = term.toString();
+    }
+
+    return this.visitTerminalString(term, ctx);
+  }
+
+  // Visits a leaf node and returns a string
+  // visitTerminal(ctx) {
+  //
+  //   let term = ctx.getText();
+  //
+  //   //console.log('visitTerminal', typeof ctx, typeof ctx.getText());
+  //
+  //   if (term === Visitor.EOF) return '';
+  //   //if (/ *\r?\n */.test(term)) return '';
+  //
+  //   if (typeof term === 'string') term = term.replace(/\r?\n/, ' '); // no line-breaks
+  //
+  //   this.trace && console.log('visitTerminal: "' + term + '" ' + (ctx.transforms || "[]"));
+  //
+  //   // handle associated transforms
+  //   if (ctx.transforms && ctx.transforms.length && (typeof term !== 'string' || term.length)) {
+  //     term = this.handleTransforms(term, ctx);
+  //   }
+  //   this.trace && console.log('            -> "'+term+'"');
+  //
+  //   // Warn on unresolved symbols
+  //   if (typeof term === 'string' && term.includes('$')) {
+  //     if (!RiTa.SILENT && !this.context._silent) {
+  //       console.warn('[WARN] Unresolved symbol(s): ' + term);
+  //     }
+  //   }
+  //
+  //   return term;
+  // }
 
   visitAssign(ctx) {
     let token = ctx.value();
@@ -98,24 +132,79 @@ class Visitor extends SuperVis {
     return ''; // no output on vanilla assign
   }
 
-  visitSymbol(ctx) {
-    let id = ctx.ident().getText()
+  visitSymbolOrig(ctx) {
+    let ident = ctx.ident().getText()
       .replace(/^\$/, '') // strip $
       .replace(/[}{]/g, ''); // strip {}
     let trans = ctx.transform();
-    let symbol = new Symbol(id, trans);
+    let symbol = new Symbol(ident, trans);
+    symbol.transforms = this.inheritTransforms(symbol, ctx);
     this.trace && console.log('visitSymbol: $' +
       symbol.text + ' ' + (symbol.transforms || "[]"));
     return this.visit(symbol);
   }
+  /*
+  class Symbol {
+    constructor(visitor, text) {
+      this.text = text;
+      this.parent = visitor;
+      this.transforms = undefined;
+    }
+    getText() { return this.text; }
+    accept() {
+      this.text = this.parent.context[this.text] || '$' + this.text;
+      return this.parent.visitTerminal(this);
+    }
+  }*/
+
+  visitSymbol(ctx) {
+    //console.log(Object.keys(ctx), ctx.getText(), this.flatten(ctx.children));
+    let ident = ctx.ident().getText()
+      .replace(/^\$/, '') // strip $
+      .replace(/[}{]/g, ''); // strip {}
+    let trans = ctx.transform();
+
+    let res = '$' + ident;
+
+    if (this.context.hasOwnProperty(ident)) {
+      let resolved = this.context[ident];
+      //console.log('trans',typeOf(trans));
+      this.trace && console.log('HIT', typeof this.context[ident], this.context[ident], 'with ' + trans.length + ' transforms');
+      if (trans && trans.length) {
+        resolved = '('+resolved+')';
+        for (var i = 0; i < trans.length; i++) {
+          resolved += trans[i].getText();
+        }
+      }
+      this.trace && console.log('NEW-PARSE', resolved);
+      res = this.parent.lexParseVisit(resolved, this.context, this.trace);
+      this.trace && console.log('1. $' + ident + ' -> ' + res, trans.length);
+      return res;
+    }
+
+
+    this.trace && console.log('2. $' + ident + ' -> ' + ctx.getText(), trans.length);
+
+    //console.log('got: '+res);
+    //console.log(Object.keys(ctx));
+    // res = this.handleTransforms(res, ctx);
+    // console.log('2. $' + ident + ' -> ' + res);
+
+    return ctx.getText();//this.visitTerminal(res);
+    // let symbol = new Symbol(ident, trans);
+    // this.trace && console.log('visitSymbol: $' +
+    //   symbol.text + ' ' + (symbol.transforms || "[]"));
+    // return this.visit(symbol);
+  }
 
   visitChoice(ctx) {
     let options = ctx.expr();
+    // TODO: should create empty string tokens instead of empty strings
     this.handleEmptyChoices(ctx, options);
     let token = this.randomElement(options);
     if (typeof token === 'string') {
       this.trace && console.log('visitChoice: "' + token + '"', options);
-      return token; // fails for transforms ?
+      return token; // fails for transforms on empty string
     } else {
       token.transforms = this.inheritTransforms(token, ctx);
       this.trace && console.log('visitChoice: ' + this.flattenChoice(token), "tfs=" + (token.transforms || "[]"));
@@ -143,8 +232,8 @@ class Visitor extends SuperVis {
 
   getRuleName(ctx) {
     return ctx.hasOwnProperty('symbol') ?
-      this.lexerRules[ctx.symbol.type] :
-      this.parserRules[ctx.ruleIndex];
+      this.parent.lexer.symbolicNames[ctx.symbol.type] :
+      this.parent.parser.ruleNames[ctx.ruleIndex];
   }
 
   countChildRules(ctx, ruleName) {
@@ -201,10 +290,15 @@ class Visitor extends SuperVis {
 
   visitChildren(ctx) {
     return ctx.children.reduce((acc, child) => {
-      (child.transforms = ctx.transforms);
+      child.transforms = ctx.transforms;
       return acc + this.visit(child);
     }, '');
   }
+}
+
+function typeOf(o) {
+  if (typeof o !== 'object') return typeof o;
+  return Array.isArray(o) ? 'array' : 'object';
 }
 
 Visitor.LP = '(';

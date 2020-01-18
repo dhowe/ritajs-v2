@@ -36,7 +36,7 @@ choice: ((LP (expr OR)* expr RP)
         | (LP RP))
         transform*;
 assign: symbol EQ value;
-value: symbol | choice | CHR;
+value: expr+;//symbol | choice | CHR;
 expr: (symbol | choice | assign | CHR | DOT | ENT)
   (WS+ (symbol | choice | assign | CHR |  DOT | ENT))*;
 

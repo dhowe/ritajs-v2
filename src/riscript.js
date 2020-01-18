@@ -200,7 +200,7 @@ class Scripting {
 
   createVisitor(context, showParse, silent) {
     Object.assign((context = context || {}), silent ? { _silent: silent } : {});
-    return new Visitor(context, this.lexer.symbolicNames, this.parser.ruleNames, showParse);
+    return new Visitor(this, context, showParse);
   }
 
   ////////////// NEW //////////////
