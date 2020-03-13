@@ -115,9 +115,9 @@ describe('RiTa.RiScript', function() {
   });});*/
 
   describe('Compilation', function() {
-    REENABLE && it('Should correctly compile post-defined symbols', function() {
-      //let rs = RiTa.compile('$foo=$bar\n$bar=baz', {}, 0, 1);
-      //expect(rs.expand('$foo')).eq('baz'); HERE
+    it('Should correctly compile post-defined symbols', function() {
+      let rs = RiTa.compile('$foo=$bar\n$bar=baz', {}, 0, 1);
+      expect(rs.expand('$foo')).eq('baz');
     });
   });
 

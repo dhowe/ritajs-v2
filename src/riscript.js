@@ -13,14 +13,14 @@ class RiScript {
     //this.parseTree = undefined;
     //this.symbolTable = undefined;
     this.scripting = new Scripting();
+    //this.context = context;
   }
 
   static compile(input, context, showParse, silent) {
     let rs = new RiScript();
-
     rs.scripting.lexParseCompile(input, context, showParse, silent);
-
-    return context;
+    rs.context = context;
+    return rs;
     //
     // rs.parseTree = rs.scripting.lexParse(input, showParse, silent);
     // rs.visitor = rs.scripting.createVisitor(context, showParse, silent);
@@ -29,7 +29,7 @@ class RiScript {
     // return rs;
   }
 
-  expand(rule, context) {
+  expand(rule) {
     let dbug = 0;
     let result = rule || '$start';
     let tries = 0, maxIterations = 100;
@@ -49,18 +49,18 @@ class RiScript {
     dbug && console.log('return nil');
   }
 
-  expandRule(prod, dbug) {
-    for (let name in this.symbolTable) {
-      let idx = prod.indexOf(name);
-      if (idx >= 0) { // got a match, split into 3 parts
-        dbug && console.log('matched: ' + name);
-        let pre = prod.substring(0, idx) || '';
-        let expanded = this.symbolTable[name] || '';
-        let post = prod.substring(idx + name.length) || '';
-        return pre + expanded + post;
-      }
-    }  // no rules matched
-  }
+  // expandRule(prod, dbug) {
+  //   for (let name in this.context) {
+  //     let idx = prod.indexOf(name);
+  //     if (idx >= 0) { // got a match, split into 3 parts
+  //       dbug && console.log('matched: ' + name);
+  //       let pre = prod.substring(0, idx) || '';
+  //       let expanded = this.symbolTable[name] || '';
+  //       let post = prod.substring(idx + name.length) || '';
+  //       return pre + expanded + post;
+  //     }
+  //   }  // no rules matched
+  // }
 
   expandOrig(rule) {
 
@@ -97,6 +97,9 @@ class RiScript {
     return new Scripting().lexParseVisit(input, context, showParse, silent);
   }
 
+  // run(cmd, showParse, silent) {
+  //   return this.scripting.lexParseVisit(this.context, showParse, silent);
+  // }
   /*
     run(context, showParse, silent) {
       let vis = this.scripting.createVisitor(context, showParse, silent);
