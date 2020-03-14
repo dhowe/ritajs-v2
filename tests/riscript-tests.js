@@ -114,10 +114,53 @@ describe('RiTa.RiScript', function() {
     expect(RiTa.compile('$foo=a $foo', 0).run({ foo: 'bar' })).eq('a');
   });});*/
 
-  describe('Compilation', function() {
-    it('Should correctly compile post-defined symbols', function() {
-      let rs = RiTa.compile('$foo=$bar\n$bar=baz', {}, 0, 1);
-      expect(rs.expand('$foo')).eq('baz');
+  describe('Grammars', function() {
+
+    it('Should evaluate post-defined symbols', function() {
+      let rs = RiTa.evaluate('$foo=$bar\n$bar=baz\n$foo', {}, 0);
+      expect(rs).eq('baz');
+    });
+
+    it('Should evaluate symbols with a transform', function() {
+      let rs = RiTa.evaluate('$foo=$bar.toUpperCase()\n$bar=baz\n$foo', {}, 0);
+      expect(rs).eq('BAZ');
+    });
+
+    it('Should evaluate symbols even with a bad func transform', function() {
+      let rs = RiTa.evaluate('$foo=$bar.ucf\n$bar=baz\n$foo', {}, 0);
+      expect(rs).eq('baz.ucf');
+    });
+
+    it('Should evaluate symbols even with one bad func transform', function() {
+      let rs = RiTa.evaluate('$foo=$bar.toUpperCase().ucf\n$bar=baz\n$foo', {}, 0);
+      expect(rs).eq('BAZ.ucf');
+    });
+
+    // WORKING HERE: need to debug
+    /*it('Should evaluate symbol with a property transform', function() {
+      let ctx = { bar: { color: 'blue' } };
+      let rs = RiTa.evaluate('$foo=$bar.color\n$foo', ctx, 1);
+      expect(rs).eq('blue');
+    });*/
+
+    it('Should evaluate post-defined symbols with transforms', function() {
+      let rs = RiTa.evaluate('$foo=$bar.toLowerCase().ucf()\n$bar=baz\n$foo', {}, 0);
+      expect(rs).eq('Baz');
+    });
+
+    it('Should eval converted grammar', function() {
+      let script = [
+        '$start = $nounp $verbp.',
+        '$nounp = $determiner $noun',
+        '$determiner = (the | the)',
+        '$verbp = $verb $nounp',
+        '$noun = (woman | woman)',
+        '$verb = shoots',
+        '$start'
+      ].join('\n') + '\n';
+      //console.log(script);
+      let rs = RiTa.evaluate(script, null, 0);
+      expect(rs).eq('the woman shoots the woman.');
     });
   });
 
@@ -127,7 +170,7 @@ describe('RiTa.RiScript', function() {
       expect(RiTa.evaluate('foo', {}, 0)).eq('foo');
       expect(RiTa.evaluate('foo.', {}, 0)).eq('foo.');
       expect(RiTa.evaluate('foo\nbar', {}, 0)).eq('foo bar');
-      //expect(RiTa.evaluate('foo.bar', {}, 0)).eq('foo.bar');
+      //expect(RiTa.evaluate('foo.bar', {}, 0)).eq('foo.bar'); // KNOWN
     });
   });
 

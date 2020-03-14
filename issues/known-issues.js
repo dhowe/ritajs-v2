@@ -9,8 +9,8 @@ describe('RiTa.KnownIssues', () => {
     expect(RiTa.evaluate('That is (ant).articlize().')).eq('That is an ant.');
   });
 
-  it('1: pluralize or singularize fails', () => {
-    let testPairs = [ ]; // FAILING ITEMS HERE
+  it('1: pluralize or singularize fails', () => { // ok
+    let testPairs = [ ]; // ADD FAILING ITEMS HERE
     let res1, res2, res3, i = 0, dbug = true;
     if (!testPairs.length) return;
     dbug && console.log(testPairs[i] + '/' + testPairs[i + 1]);
@@ -31,7 +31,7 @@ describe('RiTa.KnownIssues', () => {
     ok(res3, 'FAIL: isPlural(' + testPairs[i] + ') was false\n\n');
   });
 
-  it('2: conjugation fails', () => {
+  it('2: conjugation fails', () => { // ok
 
   });
 
@@ -70,7 +70,7 @@ describe('RiScript.KnownIssues', () => {
     expect(RiScript.evaluate('$foo=().toUpperCase()', ctx, 0)).eq('');
     expect(ctx.foo).eq('');
 
-    // *** WORKING HERE: transform should not be applied to silent assign
+    // *** WORKING HERE: transform should not be applied to silent assign ??
     0 && expect(RiScript.evaluate('How many (tooth | tooth).pluralize() do you have?')).eq('How many teeth do you have?');
   });
 

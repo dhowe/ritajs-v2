@@ -29,9 +29,9 @@ class RiTa {
     return RiTa._lexicon().alliterations(...arguments);
   }
 
-  static compile() {
-    return RiScript.compile(...arguments);
-  }
+  // static compile() {
+  //   return RiScript.compile(...arguments);
+  // }
 
   static concordance() {
     return RiTa.concorder.concordance(...arguments);
@@ -53,8 +53,10 @@ class RiTa {
     return Util.isNode() ? RiTa.NODE : RiTa.JS;
   }
 
-  static evaluate() { // runScript ? evalScript?
-    return RiScript.evaluate(...arguments);
+  static evaluate(input, context, showParse, silent) { // runScript ? evalScript?
+    //return RiScript.evaluate(...arguments);
+    Object.assign((context = context || {}), silent ? { _silent: silent } : {});
+    return new RiScript().lexParseVisit(input, context, showParse, silent);
   }
 
   static hasWord(word) {
@@ -149,7 +151,6 @@ class RiTa {
   static randomItem() {
     return RandGen.randomItem(...arguments);
   }
-
 
   static rhymes() {
     return RiTa._lexicon().rhymes(...arguments);

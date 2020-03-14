@@ -7,47 +7,41 @@ const Visitor = require('./visitor');
 const Lexer = require('../lib/RiScriptLexer');
 const Parser = require('../lib/RiScriptParser');
 
-class RiScript {
+// class RiScript {
+//
+//   constructor() {
+//     //this.parseTree = undefined;
+//     //this.symbolTable = undefined;
+//     this.scripting = new Scripting();
+//     //this.context = context;
+//   }
 
-  constructor() {
-    //this.parseTree = undefined;
-    //this.symbolTable = undefined;
-    this.scripting = new Scripting();
-    //this.context = context;
-  }
-
-  static compile(input, context, showParse, silent) {
+  /*static compile(input, context, showParse, silent) {
     let rs = new RiScript();
     rs.scripting.lexParseCompile(input, context, showParse, silent);
     rs.context = context;
     return rs;
-    //
-    // rs.parseTree = rs.scripting.lexParse(input, showParse, silent);
-    // rs.visitor = rs.scripting.createVisitor(context, showParse, silent);
-    // let symbolTable = rs.visitor.compile(context, 1);
-    // console.log(rs.symbolTable);
-    // return rs;
-  }
+  }*/
 
-  expand(rule) {
-    let dbug = 0;
-    let result = rule || '$start';
-    let tries = 0, maxIterations = 100;
-    //while (result.includes('$')) {
-    while (++tries < maxIterations) {
-      let next = this.expandRule(result, dbug);
-      dbug && console.log('expand: '+result+ ' -> '+next);
-
-      if (next && next.length && next !== result) { // matched a rule
-        result = this.scripting.lexParseExpand(next, context);
-        dbug && console.log('got: '+result);
-        continue;
-      }
-      dbug && console.log('return: '+result+'\n---------------');
-      return result;
-    }
-    dbug && console.log('return nil');
-  }
+  // expand(rule) {
+  //   let dbug = 0;
+  //   let result = rule || '$start';
+  //   let tries = 0, maxIterations = 100;
+  //   //while (result.includes('$')) {
+  //   while (++tries < maxIterations) {
+  //     let next = this.expandRule(result, dbug);
+  //     dbug && console.log('expand: '+result+ ' -> '+next);
+  //
+  //     if (next && next.length && next !== result) { // matched a rule
+  //       result = this.scripting.lexParseExpand(next, context);
+  //       dbug && console.log('got: '+result);
+  //       continue;
+  //     }
+  //     dbug && console.log('return: '+result+'\n---------------');
+  //     return result;
+  //   }
+  //   dbug && console.log('return nil');
+  // }
 
   // expandRule(prod, dbug) {
   //   for (let name in this.context) {
@@ -62,7 +56,7 @@ class RiScript {
   //   }  // no rules matched
   // }
 
-  expandOrig(rule) {
+  /*expandOrig(rule) {
 
     rule = rule || '$start';
 
@@ -90,12 +84,12 @@ class RiScript {
 
     throw Error('Failed to expand grammar from '
       + rule + ', after ' + tries + ' tries');
-  }
-
-  static evaluate(input, context, showParse, silent) {
-    Object.assign((context = context || {}), silent ? { _silent: silent } : {});
-    return new Scripting().lexParseVisit(input, context, showParse, silent);
-  }
+  }*/
+  //
+  // static evaluate(input, context, showParse, silent) {
+  //   Object.assign((context = context || {}), silent ? { _silent: silent } : {});
+  //   return new Scripting().lexParseVisit(input, context, showParse, silent);
+  // }
 
   // run(cmd, showParse, silent) {
   //   return this.scripting.lexParseVisit(this.context, showParse, silent);
@@ -119,16 +113,20 @@ class RiScript {
       rs.parseTree = rs.scripting.lexParse(input, showParse, silent);
       return rs;
     }
-  */
-}
 
-class Scripting {
+}*/
+
+class RiScript {
 
   constructor() {
     this.lexer = undefined;
     this.parser = undefined;
     this.visitor = undefined;
   }
+
+  // static evaluate(input, context, showParse, silent) {
+  //
+  // }
 
   lex(input, showTokens, silent) {
 
@@ -144,6 +142,7 @@ class Scripting {
     try {
       tokens = new antlr4.CommonTokenStream(this.lexer);
       if (showTokens) {
+        console.log('-------------------------------------------------------');
         tokens.fill();
         tokens.tokens.forEach(t => console.log(this.tokenToString(t)));
         console.log();
@@ -171,9 +170,9 @@ class Scripting {
 
     // create the parser
     this.parser = new Parser.RiScriptParser(tokens);
-    //this.parser.buildParseTrees = false;
     this.parser.removeErrorListeners();
     this.parser.addErrorListener(new ParserErrors());
+    //this.parser.buildParseTrees = false;
     //this.parser.addErrorListener(new ConsoleErrorListener());
 
     // try the parsing
@@ -206,8 +205,8 @@ class Scripting {
     return new Visitor(this, context, showParse);
   }
 
-  ////////////// NEW //////////////
-  lexParseCompile(input, context, showParse, silent) { // not used...
+  ////////////// NEW //////////////////////////////////////////// // not used...
+  lexParseCompile(input, context, showParse, silent) {
     let tree = this.lexParse(input, showParse, silent);
     let visitor = this.createVisitor(context, showParse);
     //visitor.symbolTable = {};

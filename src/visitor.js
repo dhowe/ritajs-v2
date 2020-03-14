@@ -35,36 +35,61 @@ class Visitor extends SuperVis {
     this.trace = trace || false;
   }
 
-  /*visit(ctx) { // not used
-    return Array.isArray(ctx) ?
-      ctx.map(function(child) {
-        return child.accept(this);
-      }, this) : ctx.accept(this);
-  }*/
+  /* simply create a mapping in the symbol table */
+  visitAssign(ctx) {
+    let token = ctx.value();
+    let id = this.symbolName(ctx.symbol().getText());
+    this.trace && console.log('visitAssign: $' + id + '=' +
+      this.flatten(token) + ' tfs=[' + (token.transforms || '') + ']');
+    this.context[id] = token ? this.visit(token) : '';
+    return ''; // no output on vanilla assign
+  }
 
-  handleTransforms(obj, ctx) {
-    let term = obj;
-    if (ctx.transforms) {
-      for (let i = 0; i < ctx.transforms.length; i++) {
-        let transform = ctx.transforms[i];
-        let comps = transform.split('.');
-        for (let j = 1; j < comps.length; j++) {
-          //console.log(j, comps[j]);
-          if (comps[j].endsWith(Visitor.FUNCTION)) {
-            comps[j] = comps[j].substring(0, comps[j].length - 2);
-          }
-          if (typeof term[comps[j]] === 'function') {
-            term = term[comps[j]]();
-          } else if (term.hasOwnProperty(comps[j])) {
-            term = term[comps[j]];
-          } else {
-            term = ctx.getText() + ctx.transforms[i]; // no-op
-          }
+  /* expand the choices according to specified probabilities */
+  visitChoice(ctx) {
+    let options = ctx.expr();
+    // TODO: should create empty string tokens instead of empty strings
+    this.handleEmptyChoices(ctx, options);
+    let token = this.randomElement(options);
+    if (typeof token === 'string') {
+      this.trace && console.log('visitChoice: "' + token + '"', options);
+      return token; // fails for transforms on empty string
+    } else {
+      token.transforms = this.inheritTransforms(token, ctx);
+      this.trace && console.log('visitChoice: ' + this.flatten(token),
+        "tfs=" + (token.transforms || "[]"));
+      return this.visit(token);
+    }
+  }
+
+  /* whenever we resolve a symbol we start a new parse on the result */
+  visitSymbol(ctx) {
+    //console.log(Object.keys(ctx), ctx.getText(), this.flatten(ctx.children));
+    let ident = ctx.ident().getText()
+      .replace(/^\$/, '') // strip $
+      .replace(/[}{]/g, ''); // strip {}
+    let trans = ctx.transform();
+    let res = '$' + ident;
+
+    if (this.context.hasOwnProperty(ident)) {
+      let resolved = this.context[ident];
+      //console.log('trans',typeOf(trans));
+
+      //this.trace && console.log('HIT', typeof this.context[ident],
+      //this.context[ident], 'with ' + trans.length + ' transforms');
+
+      if (trans && trans.length) {
+        resolved = '(' + resolved + ')';
+        for (var i = 0; i < trans.length; i++) {
+          resolved += trans[i].getText();
         }
       }
+      //this.trace && console.log('\n');
+      res = this.parent.lexParseVisit(resolved, this.context, this.trace);
+      //this.trace && console.log('1. $' + ident + ' -> ' + res, trans.length);
+      return res;
     }
-    this.trace && console.log('handleTransforms: ' + obj + ' -> ' + term);
-    return term;
+    return ctx.getText();
   }
 
   visitTerminal(ctx) {
@@ -79,15 +104,52 @@ class Visitor extends SuperVis {
       term = term.replace(/\r?\n/, ' '); // no line-breaks
     }
 
-    this.trace && console.log('visitTerminalString: "' + term + '" ' + (ctx.transforms || "[]"));
+    this.trace && console.log('visitTerminal: "'
+      + term + '" tfs=[' + (ctx.transforms || '') + ']');
+
     term = this.handleTransforms(term, ctx);
-    this.trace && console.log('            -> "' + term + '"');
+    //this.trace && console.log('            -> "' + term + '"');
 
     // should be string here
     if (term.includes('$') && !RiTa.SILENT && !this.context._silent) {
       console.warn('[WARN] Unresolved symbol(s): ' + term);
     }
 
+    return term;
+  }
+
+  /* run the transforms and return the results */
+  handleTransforms(obj, ctx) {
+    let term = obj;
+    if (ctx.transforms) {
+      let tfs = this.trace ? '' : null;
+      for (let i = 0; i < ctx.transforms.length; i++) {
+        let transform = ctx.transforms[i];
+        this.trace && (tfs += transform);
+        let comps = transform.split('.');
+        for (let j = 1; j < comps.length; j++) {
+          if (comps[j].endsWith(Visitor.FUNCTION)) {
+            comps[j] = comps[j].substring(0, comps[j].length - 2);
+            if (typeof term[comps[j]] === 'function') {
+              //console.log('function: ' + comps[j]);
+              term = term[comps[j]]();
+              //console.log('term=' + term);
+            }
+            else {
+              throw Error('Expecting ' + term + '.' + comps[j] + ' to be a function');
+            }
+          } else if (term.hasOwnProperty(comps[j])) {
+            console.log('property!!!!');
+            term = term[comps[j]];
+          } else {
+            //console.warn();
+            term = term + '.' + comps[j]; // no-op
+          }
+        }
+      }
+      this.trace && obj.trim().length && console.log
+        ('handleTransforms: ' + obj + tfs + ' -> ' + term);
+    }
     return term;
   }
 
@@ -121,15 +183,15 @@ class Visitor extends SuperVis {
   //   return term;
   // }
 
-  visitAssign(ctx) {
-    let token = ctx.value();
-    let id = this.symbolName(ctx.symbol().getText());
-    this.trace && console.log('visitAssign: $' + id + '=' +
-      this.flatten(token), "tfs=" + (token.transforms || "[]"));
-    this.context[id] = token ? this.visit(token) : '';
-    return ''; // no output on vanilla assign
-  }
+  /*visit(ctx) { // not used
+    return Array.isArray(ctx) ?
+      ctx.map(function(child) {
+        return child.accept(this);
+      }, this) : ctx.accept(this);
+  }*/
 
+
+  /* simply visit the resolved symbol, don't reparse */
   visitSymbolOrig(ctx) {
     let ident = ctx.ident().getText()
       .replace(/^\$/, '') // strip $
@@ -154,61 +216,19 @@ class Visitor extends SuperVis {
       return this.parent.visitTerminal(this);
     }
   }*/
-
-  visitSymbol(ctx) {
-    //console.log(Object.keys(ctx), ctx.getText(), this.flatten(ctx.children));
-    let ident = ctx.ident().getText()
-      .replace(/^\$/, '') // strip $
-      .replace(/[}{]/g, ''); // strip {}
-    let trans = ctx.transform();
-
-    let res = '$' + ident;
-
-    if (this.context.hasOwnProperty(ident)) {
-      let resolved = this.context[ident];
-      //console.log('trans',typeOf(trans));
-      this.trace && console.log('HIT', typeof this.context[ident], this.context[ident], 'with ' + trans.length + ' transforms');
-      if (trans && trans.length) {
-        resolved = '(' + resolved + ')';
-        for (var i = 0; i < trans.length; i++) {
-          resolved += trans[i].getText();
-        }
-      }
-      this.trace && console.log('NEW-PARSE', resolved);
-      res = this.parent.lexParseVisit(resolved, this.context, this.trace);
-      this.trace && console.log('1. $' + ident + ' -> ' + res, trans.length);
-      return res;
-    }
-
-
-    this.trace && console.log('2. $' + ident + ' -> ' + ctx.getText(), trans.length);
-
-    //console.log('got: '+res);
-    //console.log(Object.keys(ctx));
-    // res = this.handleTransforms(res, ctx);
-    // console.log('2. $' + ident + ' -> ' + res);
-
-    return ctx.getText();//this.visitTerminal(res);
-    // let symbol = new Symbol(ident, trans);
-    // this.trace && console.log('visitSymbol: $' +
-    //   symbol.text + ' ' + (symbol.transforms || "[]"));
-    // return this.visit(symbol);
-  }
-
-  visitChoice(ctx) {
-    let options = ctx.expr();
-    // TODO: should create empty string tokens instead of empty strings
-    this.handleEmptyChoices(ctx, options);
-    let token = this.randomElement(options);
-    if (typeof token === 'string') {
-      this.trace && console.log('visitChoice: "' + token + '"', options);
-      return token; // fails for transforms on empty string
-    } else {
-      token.transforms = this.inheritTransforms(token, ctx);
-      this.trace && console.log('visitChoice: ' + this.flattenChoice(token), "tfs=" + (token.transforms || "[]"));
-      return this.visit(token);
-    }
-  }
+  //   //this.trace && console.log('2. $' + ident + ' -> ' + ctx.getText(), trans.length);
+  //
+  //   //console.log('got: '+res);
+  //   //console.log(Object.keys(ctx));
+  //   // res = this.handleTransforms(res, ctx);
+  //   // console.log('2. $' + ident + ' -> ' + res);
+  //
+  //   return ctx.getText();//this.visitTerminal(res);
+  //   // let symbol = new Symbol(ident, trans);
+  //   // this.trace && console.log('visitSymbol: $' +
+  //   //   symbol.text + ' ' + (symbol.transforms || "[]"));
+  //   // return this.visit(symbol);
+  // }
 
   // Entry point for tree visiting
   start(ctx) {
@@ -216,11 +236,11 @@ class Visitor extends SuperVis {
     return Entities.decode(result.replace(/ +/g, ' '))
       .replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
   }
-
-  compile(ctx) {
-    //this.symbolTable = {}; // use context
-    this.start(ctx);
-  }
+  //
+  // compile(ctx) {
+  //   //this.symbolTable = {}; // use context
+  //   this.start(ctx);
+  // }
 
   // ---------------------- Helpers ---------------------------
 
