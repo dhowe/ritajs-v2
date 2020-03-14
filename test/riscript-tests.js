@@ -137,11 +137,18 @@ describe('RiTa.RiScript', function() {
     });
 
     // WORKING HERE: need to debug
-    /*it('Should evaluate symbol with a property transform', function() {
+    it('Should evaluate symbol with a property transform', function () {
       let ctx = { bar: { color: 'blue' } };
-      let rs = RiTa.evaluate('$foo=$bar.color\n$foo', ctx, 1);
+      let rs = RiTa.evaluate('$bar.color', ctx, 1);
       expect(rs).eq('blue');
-    });*/
+    });
+
+    // WORKING HERE: need to debug
+    it('Should evaluate symbol with a value property transform', function() {
+      let ctx = { bar: { color: 'blue' } };
+      let rs = RiTa.evaluate('$foo=$bar.color\n$foo', ctx, 0);
+      expect(rs).eq('blue');
+    });
 
     it('Should evaluate post-defined symbols with transforms', function() {
       let rs = RiTa.evaluate('$foo=$bar.toLowerCase().ucf()\n$bar=baz\n$foo', {}, 0);

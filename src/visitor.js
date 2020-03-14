@@ -73,7 +73,8 @@ class Visitor extends SuperVis {
 
     if (this.context.hasOwnProperty(ident)) {
       let resolved = this.context[ident];
-      //console.log('trans',typeOf(trans));
+      console.log('resolved', typeOf(resolved));
+      console.log('trans', typeOf(trans));
 
       //this.trace && console.log('HIT', typeof this.context[ident],
       //this.context[ident], 'with ' + trans.length + ' transforms');
@@ -85,6 +86,7 @@ class Visitor extends SuperVis {
         }
       }
       //this.trace && console.log('\n');
+      this.trace && console.log('reparse: '+resolved);
       res = this.parent.lexParseVisit(resolved, this.context, this.trace);
       //this.trace && console.log('1. $' + ident + ' -> ' + res, trans.length);
       return res;
@@ -139,7 +141,7 @@ class Visitor extends SuperVis {
               throw Error('Expecting ' + term + '.' + comps[j] + ' to be a function');
             }
           } else if (term.hasOwnProperty(comps[j])) {
-            console.log('property!!!!');
+            //console.log('property!!!!');
             term = term[comps[j]];
           } else {
             //console.warn();
