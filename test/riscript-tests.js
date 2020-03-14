@@ -355,7 +355,7 @@ describe('RiTa.RiScript', function() {
       ctx = {};
       expect(RiTa.evaluate('$foo=(ab).toUpperCase()', ctx, 0)).eq('');
       expect(ctx.foo).eq('AB');
-      //return;
+
       ctx = {};
       expect(RiTa.evaluate('$foo=(ab).toUpperCase() (bc).toUpperCase()', ctx, 0)).eq('BC');
       expect(ctx.foo).eq('AB');
