@@ -1,6 +1,7 @@
 grammar RiScript;
 
-// NOTE: changing this file require a re-compile
+// NOTE: changing this file require a re-compile:
+//       use $ npm run watch-grammar
 
 // TODO:  silent assigns
 //        single and double quotes
@@ -23,7 +24,7 @@ grammar RiScript;
 
 // TODO: Labels
 
-script: expr+ EOF;
+script: (expr | NL)+ EOF;
 transform: TF;
 ident: SYM;
 symbol: ident transform*;
@@ -35,9 +36,9 @@ choice: ((LP (expr OR)* expr RP)
         | (LP RP))
         transform*;
 assign: symbol EQ value;
-value: symbol | choice | CHR;
-expr: (symbol | choice | assign | CHR | NL | DOT | ENT)
-  (WS+ (symbol | choice | assign | CHR | NL | DOT | ENT))*;
+value: expr+;//symbol | choice | CHR;
+expr: (symbol | choice | assign | CHR | DOT | ENT)
+  (WS+ (symbol | choice | assign | CHR |  DOT | ENT))*;
 
 LP: '(';
 RP: ')';

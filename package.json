@@ -7,6 +7,7 @@
     "build": "webpack",
     "build.production": "webpack --mode production",
     "watch": "webpack --watch",
+    "test": "mocha",    
     "test-g": "mocha ./test/*.js -g ",
     "test-grammar": "mocha ./test/riscript-tests.js",
     "test-quick": "mocha './test/**/!(lexicon-tests).js'",
