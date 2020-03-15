@@ -12,14 +12,25 @@
             "args": [
                 "--timeout",
                 "999999",
-                "--colors",
-                "${workspaceFolder}/test"
+                "--colors"
             ],
             "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
-            "skipFiles": [
-                "<node_internals>/**,current.js"
-            ]
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha All (!Lex)",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": [
+                "--timeout",
+                "999999",
+                "--colors",
+                "--exclude",
+                "test/lexicon-tests.js"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
         },
         {
             "type": "node",

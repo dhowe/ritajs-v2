@@ -1,11 +1,11 @@
 const SuperVis = require('../lib/RiScriptVisitor').RiScriptVisitor;
 const Entities = require('he'); // provides decode()
 
-String.prototype.uc = function() {
+String.prototype.uc = function () {
   return this.toUpperCase();
 }
 
-String.prototype.ucf = function() {
+String.prototype.ucf = function () {
   return this[0].toUpperCase() + this.substring(1);
 }
 
@@ -35,7 +35,7 @@ class Visitor extends SuperVis {
     this.trace = trace || false;
   }
 
-  /* simply create a mapping in the symbol table */
+  /* visit value and create a mapping in the symbol table */
   visitAssign(ctx) {
     let token = ctx.value();
     let id = this.symbolName(ctx.symbol().getText());
@@ -62,89 +62,70 @@ class Visitor extends SuperVis {
     }
   }
 
-  /* whenever we resolve a symbol we start a new parse on the result */
-  visitSymbol(ctx) {
-    //console.log(Object.keys(ctx), ctx.getText(), this.flatten(ctx.children));
+  /* simply visit the resolved symbol, don't reparse */
+  visitSymbol(ctx) { // TODO: remove symbol class
     let ident = ctx.ident().getText()
       .replace(/^\$/, '') // strip $
       .replace(/[}{]/g, ''); // strip {}
-    let trans = ctx.transform();
-    let res = '$' + ident;
 
-    if (this.context.hasOwnProperty(ident)) {
-      let resolved = this.context[ident];
-      console.log('resolved', typeOf(resolved));
-      console.log('trans', typeOf(trans));
+    //let symbol = new Symbol(ident, ctx.transform());
+    this.trace && console.log('visitSymbol: $' + ident
+      + ' tfs=[' + (ctx.transform() || '') + ']');
 
-      //this.trace && console.log('HIT', typeof this.context[ident],
-      //this.context[ident], 'with ' + trans.length + ' transforms');
-
-      if (trans && trans.length) {
-        resolved = '(' + resolved + ')';
-        for (var i = 0; i < trans.length; i++) {
-          resolved += trans[i].getText();
-        }
-      }
-      //this.trace && console.log('\n');
-      this.trace && console.log('reparse: '+resolved);
-      res = this.parent.lexParseVisit(resolved, this.context, this.trace);
-      //this.trace && console.log('1. $' + ident + ' -> ' + res, trans.length);
-      return res;
-    }
-    return ctx.getText();
+    let text = this.context[ident] || '$' + ident;
+    return this.visitTerminal(text, ctx.transform());
   }
 
-  visitTerminal(ctx) {
-    if (typeof ctx === 'string') return ctx;
+  visitTerminal(ctx, tforms) {
 
-    let term = ctx.getText();
+    //console.log('visitTerminal', typeof ctx, typeof ctx === 'string' ? ctx : ctx.getText(), typeOf(tforms));
 
-    // check remaining transforms if not a string
-    if (typeof term === 'string') {
+    let term = (typeof ctx === 'string') ? ctx : ctx.getText();
+    if (typeof term !== 'string') throw Error('not a string!! was', typeof term);
+    let tfs = tforms || ctx.transforms;
 
-      if (term === Visitor.EOF) return '';
-      term = term.replace(/\r?\n/, ' '); // no line-breaks
-    }
+    if (term === Visitor.EOF) return '';
+    term = term.replace(/\r?\n/, ' '); // no line-breaks
 
     this.trace && console.log('visitTerminal: "'
-      + term + '" tfs=[' + (ctx.transforms || '') + ']');
-
-    term = this.handleTransforms(term, ctx);
-    //this.trace && console.log('            -> "' + term + '"');
+      + term + '" tfs=[' + (tfs || '') + ']');
 
     // should be string here
-    if (term.includes('$') && !RiTa.SILENT && !this.context._silent) {
-      console.warn('[WARN] Unresolved symbol(s): ' + term);
+    if (term.includes('$')) {
+      if (!RiTa.SILENT && !this.context._silent) {
+        console.warn('[WARN] Unresolved symbol(s): ' + term);
+      }
+      return term + (tfs ? tfs.reduce((acc, val) => acc + (typeof val === 'string' ? val : val.getText()), '') : '');
     }
+
+    term = this.handleTransforms(term, tfs);
 
     return term;
   }
 
   /* run the transforms and return the results */
-  handleTransforms(obj, ctx) {
+  handleTransforms(obj, transforms) {
     let term = obj;
-    if (ctx.transforms) {
-      let tfs = this.trace ? '' : null;
-      for (let i = 0; i < ctx.transforms.length; i++) {
-        let transform = ctx.transforms[i];
-        this.trace && (tfs += transform);
+    if (transforms) {
+      let tfs = this.trace ? '' : null; // debugging
+      for (let i = 0; i < transforms.length; i++) {
+        let transform = transforms[i];
+        transform = (typeof transform === 'string') ? transform : transform.getText();
+
+        this.trace && (tfs += transform); // debugging
         let comps = transform.split('.');
         for (let j = 1; j < comps.length; j++) {
           if (comps[j].endsWith(Visitor.FUNCTION)) {
             comps[j] = comps[j].substring(0, comps[j].length - 2);
             if (typeof term[comps[j]] === 'function') {
-              //console.log('function: ' + comps[j]);
               term = term[comps[j]]();
-              //console.log('term=' + term);
             }
             else {
               throw Error('Expecting ' + term + '.' + comps[j] + ' to be a function');
             }
-          } else if (term.hasOwnProperty(comps[j])) {
-            //console.log('property!!!!');
+          } else if (term.hasOwnProperty(comps[j])) { // property
             term = term[comps[j]];
           } else {
-            //console.warn();
             term = term + '.' + comps[j]; // no-op
           }
         }
@@ -192,32 +173,6 @@ class Visitor extends SuperVis {
       }, this) : ctx.accept(this);
   }*/
 
-
-  /* simply visit the resolved symbol, don't reparse */
-  visitSymbolOrig(ctx) {
-    let ident = ctx.ident().getText()
-      .replace(/^\$/, '') // strip $
-      .replace(/[}{]/g, ''); // strip {}
-    let trans = ctx.transform();
-    let symbol = new Symbol(ident, trans);
-    symbol.transforms = this.inheritTransforms(symbol, ctx);
-    this.trace && console.log('visitSymbol: $' +
-      symbol.text + ' ' + (symbol.transforms || "[]"));
-    return this.visit(symbol);
-  }
-  /*
-  class Symbol {
-    constructor(visitor, text) {
-      this.text = text;
-      this.parent = visitor;
-      this.transforms = undefined;
-    }
-    getText() { return this.text; }
-    accept() {
-      this.text = this.parent.context[this.text] || '$' + this.text;
-      return this.parent.visitTerminal(this);
-    }
-  }*/
   //   //this.trace && console.log('2. $' + ident + ' -> ' + ctx.getText(), trans.length);
   //
   //   //console.log('got: '+res);
@@ -231,6 +186,52 @@ class Visitor extends SuperVis {
   //   //   symbol.text + ' ' + (symbol.transforms || "[]"));
   //   // return this.visit(symbol);
   // }
+
+  /* simply visit the resolved symbol
+  visitSymbolNew(ctx) {
+    let ident = ctx.ident().getText()
+      .replace(/^\$/, '') // strip $
+      .replace(/[}{]/g, ''); // strip {}
+  
+    if (this.context.hasOwnProperty(ident)) {
+      let resolved = this.context[ident];
+      ctx = this.visit(resolved);
+    }
+    this.trace && console.log('visitSymbol: $' +
+      ctx.getText() + ' ' + (ctx.transforms || "[]"));
+  
+    // TODO: handle transforms
+    //let term = this.handleTransforms(term, ctx);
+  
+    return ctx.getText();
+  }*/
+
+  /* whenever we resolve a symbol we start a new parse on the result
+  visitSymbolReparse(ctx) {
+    //console.log(Object.keys(ctx), ctx.getText(), this.flatten(ctx.children));
+    let ident = ctx.ident().getText()
+      .replace(/^\$/, '') // strip $
+      .replace(/[}{]/g, ''); // strip {}
+    let trans = ctx.transform();
+    let res = '$' + ident;
+  
+    if (this.context.hasOwnProperty(ident)) {
+      let resolved = this.context[ident];
+  
+      if (trans && trans.length) {
+        resolved = '(' + resolved + ')';
+        for (var i = 0; i < trans.length; i++) {
+          resolved += trans[i].getText();
+        }
+      }
+      //this.trace && console.log('\n');
+      this.trace && console.log('reparse: ' + resolved);
+      res = this.parent.lexParseVisit(resolved, this.context, this.trace);
+      //this.trace && console.log('1. $' + ident + ' -> ' + res, trans.length);
+      return res;
+    }
+    return ctx.getText();
+  }*/
 
   // Entry point for tree visiting
   start(ctx) {
