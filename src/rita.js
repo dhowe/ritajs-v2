@@ -54,9 +54,7 @@ class RiTa {
   }
 
   static evaluate(input, context, showParse, silent) { // runScript ? evalScript?
-    //return RiScript.evaluate(...arguments);
-    Object.assign((context = context || {}), silent ? { _silent: silent } : {});
-    return new RiScript().lexParseVisit(input, context, showParse, silent);
+    return RiScript.evaluate(...arguments);
   }
 
   static hasWord(word) {

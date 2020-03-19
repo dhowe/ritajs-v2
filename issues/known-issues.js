@@ -47,7 +47,22 @@ describe('RiScript.KnownIssues', () => {
     expect(RiTa.evaluate('foo.bar', {}, 0)).eq('foo.bar');
   });
 
-  it('Should eval post-defined variables', function() {
+  it('Symbols that resolve to other elements', () =>{
+
+    // 1) OPTIONS PARSE ALL VALUES IN CONTEXT BEFORE STARTING
+    // 2) DISALLOW RISCRIPT IN CONTEXT **
+
+    // TODO: symbols that resolve to other symbols
+    expect(RiTa.evaluate('$bar', { foo: 'baz', bar: '$foo' }, 1)).eq('baz');
+
+    // TODO: symbols that resolve to choices
+    expect(RiTa.evaluate('$bar', { foo: 'baz', bar: '(A | A)' }, 1)).eq('A');
+
+    // TODO: symbols that resolve to riscript
+    expect(RiTa.evaluate('$bar', { foo: 'baz', bar: '$foo starts with (b | b)' }, 1)).eq('baz starts with b');
+  });
+
+  it('Should eval post-defined variables', () =>{
 
     let rc = RiScript.compile('$start=$foo\n$foo=hello\n$start', 1);
     let res = rc.run();
@@ -63,15 +78,12 @@ describe('RiScript.KnownIssues', () => {
 
   return; // remove to work
 
-  it('Should be fixed to pass', function() {
+  it('Should be fixed to pass', () => {
     //return;
 
     ctx = {};
     expect(RiScript.evaluate('$foo=().toUpperCase()', ctx, 0)).eq('');
     expect(ctx.foo).eq('');
-
-    // *** WORKING HERE: transform should not be applied to silent assign ??
-    0 && expect(RiScript.evaluate('How many (tooth | tooth).pluralize() do you have?')).eq('How many teeth do you have?');
   });
 
   it('Should eval converted grammar', function() {
@@ -88,3 +100,57 @@ describe('RiScript.KnownIssues', () => {
   });
 
 });
+
+// GRAMMARS
+
+
+  /*
+  it('Should eval post-defined variables', function() {
+
+    let script, res;
+    script = RiTa.compile('$start=$foo\n$foo=hello');
+    res = script.expand('$start');
+    expect(res).eq('hello');
+
+    script = RiTa.compile('$start=(I said $foo to her) $foo=hello', 0);
+    res = script.expand('$start');
+    expect(res).eq('I said hello to her');
+  });
+  
+  it('Should eval converted grammar', function() {
+    let script = [
+      '$start = $nounp $verbp.',
+      '$nounp = $determiner $noun',
+      '$determiner = (the | the)',
+      '$verbp = $verb $nounp',
+      '$noun = (woman | woman)',
+      '$verb = shoots',
+      '$start'
+    ].join(' ');
+    let rc = RiTa.compile(script, 1);
+    let res = rc.expand();
+    expect(res).eq('the woman shoots the woman');
+  })
+
+  it('Should eval converted grammar', function() {
+    let script = [
+      '$start = $nounp $verbp.',
+      '$nounp = $determiner $noun',
+      '$determiner = (the | the)',
+      '$verbp = $verb $nounp',
+      '$noun = (woman | woman)',
+      '$verb = shoots',
+      '$start'
+    ].join(' ');
+    let rc = RiTa.compile(script, 1);
+    let res = rc.run();
+    expect().eq('the woman shoots the woman');
+  });
+
+  it('Should eval post-defined variables', function() {
+    let rc = RiTa.compile('$start=$foo $foo=hello $start', 1);
+    console.log("--------------------------------------------------\n");
+    //console.log(rc.parseTree.toStringTree(rc.scripting.parser.ruleNames));
+    let res = rc.run();
+    expect(res).eq('hello');
+  });*/

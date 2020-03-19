@@ -45,5 +45,5 @@ String.prototype.pluralize = function() {
   // TODO: if name matches a RiTa function, use it ??
   if (this.indexOf(' ') > -1) throw Error
     ('pluralize expected a single word, got "' + this + '"');
-  return RiTa.pluralize(word);
+  return RiTa.pluralize(this);
 }

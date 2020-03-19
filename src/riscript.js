@@ -15,6 +15,11 @@ class RiScript {
     this.visitor = undefined;
   }
 
+  static evaluate(input, context, showParse, silent) {
+    Object.assign((context = context || {}), silent ? { _silent: silent } : {});
+    return new RiScript().lexParseVisit(input, context, showParse, silent);
+  }
+
   lex(input, showTokens, silent) {
 
     // create the lexer

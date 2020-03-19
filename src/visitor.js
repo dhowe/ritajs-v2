@@ -73,6 +73,10 @@ class Visitor extends SuperVis {
       + ' tfs=[' + (ctx.transform() || '') + ']');
 
     let text = this.context[ident] || '$' + ident;
+
+    // TODO: what if we get choice or symbol or here ...
+    // need to visit, but its not a context, just a string
+
     return this.visitTerminal(text, ctx.transform());
   }
 
@@ -80,22 +84,31 @@ class Visitor extends SuperVis {
 
     //console.log('visitTerminal', typeof ctx, typeof ctx === 'string' ? ctx : ctx.getText(), typeOf(tforms));
 
-    let term = (typeof ctx === 'string') ? ctx : ctx.getText();
-    if (typeof term !== 'string') throw Error('not a string!! was', typeof term);
+    let term = ctx;
+    if (typeof ctx.getText === 'function') {
+      term = ctx.getText(); 
+    }
+  
+    // if (typeof term !== 'string') throw Error('not a string!! was', typeof term);
     let tfs = tforms || ctx.transforms;
 
-    if (term === Visitor.EOF) return '';
-    term = term.replace(/\r?\n/, ' '); // no line-breaks
+    if (typeof term === 'string') {
+      if (term === Visitor.EOF) return '';
+      term = term.replace(/\r?\n/, ' '); // no line-breaks
 
-    this.trace && console.log('visitTerminal: "'
-      + term + '" tfs=[' + (tfs || '') + ']');
+      this.trace && console.log('visitTerminal: "'
+        + term + '" tfs=[' + (tfs || '') + ']');
 
-    // should be string here
-    if (term.includes('$')) {
-      if (!RiTa.SILENT && !this.context._silent) {
-        console.warn('[WARN] Unresolved symbol(s): ' + term);
+      if (term.includes('$')) {
+        if (!RiTa.SILENT && !this.context._silent) {
+          console.warn('[WARN] Unresolved symbol(s): ' + term);
+        }
+        return term + (tfs ? tfs.reduce((acc, val) => acc + 
+          (typeof val === 'string' ? val : val.getText()), '') : '');
       }
-      return term + (tfs ? tfs.reduce((acc, val) => acc + (typeof val === 'string' ? val : val.getText()), '') : '');
+    } else {
+      this.trace && console.log('visitTerminal('+(typeof term)+'): "'
+        + JSON.stringify(term) + '" tfs=[' + (tfs || '') + ']');
     }
 
     term = this.handleTransforms(term, tfs);
@@ -130,8 +143,8 @@ class Visitor extends SuperVis {
           }
         }
       }
-      this.trace && obj.trim().length && console.log
-        ('handleTransforms: ' + obj + tfs + ' -> ' + term);
+      this.trace && (typeof obj !== 'string' || obj.trim().length) 
+        && console.log('handleTransforms: ' + obj + tfs + ' -> ' + term);
     }
     return term;
   }
