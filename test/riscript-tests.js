@@ -20,18 +20,18 @@ describe('RiTa.RiScript', function () {
   describe('Multevals', function () {
     it('Should eval simple expressions', function () {
       let ctx, exp;
-/*       ctx = { a: 'a', b: 'b' };
+      ctx = { a: 'a', b: 'b' };
       expr = '(a|a)';
       expect(RiScript.eval(expr, ctx)).eq('a');
 
       ctx = { a: 'a', b: 'b' };
       expr = '(a|a)';
       expect(RiScript.multeval(expr, ctx)).eq('a');
- */
+
       ctx = { a: '$b', b: '(c | c)' };
       expr = '$a';
-      expect(RiScript.multeval(expr, ctx,1)).eq('c');
-return;
+      expect(RiScript.multeval(expr, ctx)).eq('c');
+
       ctx = { a: '$b', b: '(c | c)' };
       expr = '$k = $a\n$k';
       expect(RiScript.multeval(expr, ctx)).eq('c');
@@ -42,7 +42,34 @@ return;
       expr = { s: '$a', a: '$b', c: '$d', d: 'c' };
       expect(RiScript.multeval('$s', ctx)).eq('c');
     });
+
+/*     it('Should throw on infinite recursions', function () {
+      let ctx, exp;
+      ctx = { a: 'a', b: 'b' };
+      expr = '(a|a)';
+      expect(RiScript.eval(expr, ctx)).eq('a');
+
+      ctx = { a: 'a', b: 'b' };
+      expr = '(a|a)';
+      expect(RiScript.multeval(expr, ctx)).eq('a');
+
+      ctx = { a: '$b', b: '(c | c)' };
+      expr = '$a';
+      expect(RiScript.multeval(expr, ctx)).eq('c');
+
+      ctx = { a: '$b', b: '(c | c)' };
+      expr = '$k = $a\n$k';
+      expect(RiScript.multeval(expr, ctx)).eq('c');
+
+      expr = '$s = $a\n$a = $b\n$c = $d\n$d = c\n$s';
+      expect(RiScript.multeval(expr, ctx)).eq('c');
+
+      expr = { s: '$a', a: '$b', c: '$d', d: 'c' };
+      expect(RiScript.multeval('$s', ctx)).eq('c');
+    }); */
   })
+
+  
 
   describe('Expressions', function () {
     it('Should eval simple expressions', function () {
@@ -205,12 +232,12 @@ return;
   describe('Symbols', function () {
 
     it('Should throw on bad symbols', function () {
-      expect(() => RiTa.evaluate('$', 0, 0, 1)).to.throw();
+      expect(() => RiTa.evaluate('$',0,0,1)).to.throw();
     });
 
     it('Should evaluate symbol with a property transform', function () {
       let ctx = { bar: { color: 'blue' } };
-      let rs = RiTa.evaluate('$bar.color', ctx, 1);
+      let rs = RiTa.evaluate('$bar.color', ctx);
       expect(rs).eq('blue');
     });
 
@@ -221,8 +248,7 @@ return;
     });
 
     it('Should eval linebreak-defined variables', function () {
-
-      res = RiTa.evaluate('$foo=hello\n$start=I said $foo to her\n$start', {}, 0);
+      let res = RiTa.evaluate('$foo=hello\n$start=I said $foo to her\n$start', {}, 0);
       expect(res).eq('I said hello to her');
     });
 

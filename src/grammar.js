@@ -39,28 +39,15 @@ class Grammar {
 
   expandFrom(rule, context, trace) {
     if (rule.startsWith('$')) rule = rule.substring(1);
-    console.log('expandFrom:'+rule);
     let lookup = deepmerge(context, this.rules);
-    console.log('lookup1', lookup);
     Object.keys(lookup).forEach(r => 
       lookup[r] = RiScript.multeval(lookup[r], lookup, trace));
-    console.log('lookup2', lookup);
     if (!lookup.hasOwnProperty(rule)) throw Error
       ('Rule ' + rule + ' not found');
     return lookup[rule];
-/*     let last, result = lookup[rule];
-    trace && console.log('------------------------------------------', lookup);
-    trace && console.log('-)' + result);
-    if (!result) throw Error('Rule ' + rule + ' not found');
-    for (let i = 0; i < 100 && result !== last; i++) {
-      last = result;
-      result = RiScript.eval(result, lookup, 1);
-      trace && console.log(i + ')' + result);
-    }
-    return result; */
   }
 
-  reset() { // remove?
+  reset() {
 
     this.rules = {};
     return this;

@@ -271,7 +271,7 @@ describe('RiTa.Grammar', () => {
 
         s = "{ \"$start\": \"hello &#124; name\" }";
         rg = new Grammar(s);
-        res = rg.expand(0, 1);
+        res = rg.expand();
         //console.log(res);
         ok(res === "hello | name");
         return;

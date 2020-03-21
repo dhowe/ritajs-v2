@@ -9,6 +9,12 @@ const Lexer = require('../lib/RiScriptLexer');
 const Parser = require('../lib/RiScriptParser');
 const MaxTries = 100;
 
+/*
+NEXT:
+  inline assignments
+  weightings for choices
+ */
+
 class RiScript {
 
   constructor() {
@@ -16,22 +22,23 @@ class RiScript {
     this.parser = undefined;
     this.visitor = undefined;
   }
-    
-  static eval(input, context, showParse, silent) {
-    Object.assign(context || {}, silent ? {_silent : true } : {});
-    let res = new RiScript().lexParseVisit(input, context, showParse);
+
+  static eval(input, context = {}, showParse, silent) {
+    let res = new RiScript().lexParseVisit(input, context, showParse, silent);
     return resolveEntities(res);
   }
 
-  static multeval(input, context, showParse, silent) {
-    Object.assign(context || {}, silent ? { _silent: true } : {});
+  static multeval(input, context = {}, showParse, silent) {
     let last, expr = input;
     let rs = new RiScript();
     for (let i = 0; i < MaxTries && expr !== last; i++) {
       last = expr;
-      expr = rs.lexParseVisit(expr, context, showParse);
+      expr = rs.lexParseVisit(expr, context, showParse, true);
       showParse && console.log(i + ') ' + expr);
       if (i >= MaxTries - 1) throw Error('Failed to resolve: ' + stmt);
+    }
+    if (!silent && !RiTa.SILENT && expr.includes('$')) {
+      console.warn('[WARN] Unresolved symbol(s) in "' + term + '"');
     }
     return resolveEntities(expr);
   }
@@ -43,7 +50,6 @@ class RiScript {
     this.lexer = new Lexer.RiScriptLexer(stream);
     this.lexer.removeErrorListeners();
     this.lexer.addErrorListener(new LexerErrors());
-    //this.lexer.strictMode = false;
 
     // try the lexing
     let tokens;
@@ -56,9 +62,8 @@ class RiScript {
         console.log();
       }
     } catch (e) {
-      if (!silent) {
-        console.error(colors.red("LEXER: " + input + '\n' + e.message + "\n"));
-      }
+      if (!silent) console.error
+        (colors.red("LEXER: " + input + '\n' + e.message + "\n"));
       throw e;
     }
     return tokens;
@@ -80,8 +85,6 @@ class RiScript {
     this.parser = new Parser.RiScriptParser(tokens);
     this.parser.removeErrorListeners();
     this.parser.addErrorListener(new ParserErrors());
-    //this.parser.buildParseTrees = false;
-    //this.parser.addErrorListener(new ConsoleErrorListener());
 
     // try the parsing
     let tree;
@@ -103,13 +106,13 @@ class RiScript {
     return this.parse(tokens, input, showParse, silent);
   }
 
-  lexParseVisit(input, context, showParse) {
-    let tree = this.lexParse(input, showParse, context && context._silent);
-    return this.createVisitor(context, showParse).start(tree);
+  lexParseVisit(input, context, showParse, silent) {
+    let tree = this.lexParse(input, showParse, silent);
+    return this.createVisitor(context, showParse, silent).start(tree);
   }
 
-  createVisitor(context, showParse) {
-    return new Visitor(this, context, showParse);
+  createVisitor(context, showParse, silent) {
+    return new Visitor(this, context, showParse, silent);
   }
 }
 
