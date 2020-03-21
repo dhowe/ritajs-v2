@@ -54,7 +54,7 @@ class RiTa {
   }
 
   static evaluate(input, context, showParse, silent) { // runScript ? evalScript?
-    return RiScript.evaluate(...arguments);
+    return RiScript.eval(...arguments);
   }
 
   static hasWord(word) {

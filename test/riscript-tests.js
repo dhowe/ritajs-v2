@@ -1,4 +1,5 @@
-require('../src/transforms');
+const RiScript = require('../src/riscript');
+const Transforms = require('../src/transforms');
 
 // SOLUTION 1:
 // Unenclosed variables on a line, include the whole line and can have nothing else
@@ -15,6 +16,33 @@ const DO_SILENT_ASSIGNS = 0;
 describe('RiTa.RiScript', function () {
 
   if (typeof module !== 'undefined') require('./before');
+
+  describe('Multevals', function () {
+    it('Should eval simple expressions', function () {
+      let ctx, exp;
+/*       ctx = { a: 'a', b: 'b' };
+      expr = '(a|a)';
+      expect(RiScript.eval(expr, ctx)).eq('a');
+
+      ctx = { a: 'a', b: 'b' };
+      expr = '(a|a)';
+      expect(RiScript.multeval(expr, ctx)).eq('a');
+ */
+      ctx = { a: '$b', b: '(c | c)' };
+      expr = '$a';
+      expect(RiScript.multeval(expr, ctx,1)).eq('c');
+return;
+      ctx = { a: '$b', b: '(c | c)' };
+      expr = '$k = $a\n$k';
+      expect(RiScript.multeval(expr, ctx)).eq('c');
+
+      expr = '$s = $a\n$a = $b\n$c = $d\n$d = c\n$s';
+      expect(RiScript.multeval(expr, ctx)).eq('c');
+
+      expr = { s: '$a', a: '$b', c: '$d', d: 'c' };
+      expect(RiScript.multeval('$s', ctx)).eq('c');
+    });
+  })
 
   describe('Expressions', function () {
     it('Should eval simple expressions', function () {

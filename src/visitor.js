@@ -1,5 +1,4 @@
 const SuperVis = require('../lib/RiScriptVisitor').RiScriptVisitor;
-const Entities = require('he'); // provides decode()
 
 String.prototype.uc = function () {
   return this.toUpperCase();
@@ -248,9 +247,7 @@ class Visitor extends SuperVis {
 
   // Entry point for tree visiting
   start(ctx) {
-    let result = this.visitScript(ctx).trim();
-    return Entities.decode(result.replace(/ +/g, ' '))
-      .replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
+    return this.visitScript(ctx).trim();
   }
   //
   // compile(ctx) {
