@@ -11,7 +11,7 @@ const Transforms = require('../src/transforms');
 // handle multipliers in cfg-s
 // allow json format?
 
-const DO_SILENT_ASSIGNS = 0;
+const VARIABLE_CONCAT = 0;
 
 describe('RiTa.RiScript', function () {
 
@@ -43,33 +43,33 @@ describe('RiTa.RiScript', function () {
       expect(RiScript.multeval('$s', ctx)).eq('c');
     });
 
-/*     it('Should throw on infinite recursions', function () {
-      let ctx, exp;
-      ctx = { a: 'a', b: 'b' };
-      expr = '(a|a)';
-      expect(RiScript.eval(expr, ctx)).eq('a');
-
-      ctx = { a: 'a', b: 'b' };
-      expr = '(a|a)';
-      expect(RiScript.multeval(expr, ctx)).eq('a');
-
-      ctx = { a: '$b', b: '(c | c)' };
-      expr = '$a';
-      expect(RiScript.multeval(expr, ctx)).eq('c');
-
-      ctx = { a: '$b', b: '(c | c)' };
-      expr = '$k = $a\n$k';
-      expect(RiScript.multeval(expr, ctx)).eq('c');
-
-      expr = '$s = $a\n$a = $b\n$c = $d\n$d = c\n$s';
-      expect(RiScript.multeval(expr, ctx)).eq('c');
-
-      expr = { s: '$a', a: '$b', c: '$d', d: 'c' };
-      expect(RiScript.multeval('$s', ctx)).eq('c');
-    }); */
+    /*     it('Should throw on infinite recursions', function () {
+          let ctx, exp;
+          ctx = { a: 'a', b: 'b' };
+          expr = '(a|a)';
+          expect(RiScript.eval(expr, ctx)).eq('a');
+    
+          ctx = { a: 'a', b: 'b' };
+          expr = '(a|a)';
+          expect(RiScript.multeval(expr, ctx)).eq('a');
+    
+          ctx = { a: '$b', b: '(c | c)' };
+          expr = '$a';
+          expect(RiScript.multeval(expr, ctx)).eq('c');
+    
+          ctx = { a: '$b', b: '(c | c)' };
+          expr = '$k = $a\n$k';
+          expect(RiScript.multeval(expr, ctx)).eq('c');
+    
+          expr = '$s = $a\n$a = $b\n$c = $d\n$d = c\n$s';
+          expect(RiScript.multeval(expr, ctx)).eq('c');
+    
+          expr = { s: '$a', a: '$b', c: '$d', d: 'c' };
+          expect(RiScript.multeval('$s', ctx)).eq('c');
+        }); */
   })
 
-  
+
 
   describe('Expressions', function () {
     it('Should eval simple expressions', function () {
@@ -80,22 +80,8 @@ describe('RiTa.RiScript', function () {
     });
   });
 
-
-  describe('Assignments', function () {
-
-    DO_SILENT_ASSIGNS && it('Should correctly handle assign transforms', function () {
-      let ctx = {};
-      expect(RiTa.evaluate('[$stored=(a | a).toUpperCase()] dog is a mammal.', ctx)).eq('A dog is a mammal.');
-      expect(ctx.stored).eq('A');
-      expect(RiTa.evaluate('[$stored=(the | the)].toUpperCase() dog is a mammal.', ctx)).eq('the dog is a mammal.');
-      expect(ctx.stored).eq('the');
-      ctx = {};
-      RiTa.evaluate('[$x=(a | b)].toUpperCase()', ctx);
-      expect(ctx.x).to.be.oneOf(['a', 'b']);
-    });
-
-
-    DO_SILENT_ASSIGNS && it('Should correctly concatenate variables', function () {
+  VARIABLE_CONCAT && describe('Variable Concatenation', () => {
+    it('Should correctly concatenate variables', function () {
       let ctx = {};
       expect(RiTa.evaluate('{$foo=(h | h)} ${foo}ello', ctx, 0)).eq('hello'); // TODO
       expect(ctx.foo).eq('h');
@@ -104,14 +90,25 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate('${foo} b c', ctx, 0)).eq('a b c');
       expect(RiTa.evaluate('${foo}bc', ctx, 0)).eq('abc');
     });
+  });
 
-    DO_SILENT_ASSIGNS && it('Should correctly compare inline and out', function () {
+  describe('Inline Assignments', () => {
+
+    it('Should correctly evaluate inline assigns', function () {
+      expect(RiTa.evaluate('[$foo=hi]', 0, 0)).eq('hi');
+      expect(RiTa.evaluate('[$foo=(hi | hi)] there')).eq('hi there');
+      expect(RiTa.evaluate('[$foo=(hi | hi).ucf()] there')).eq('Hi there');
 
       expect(RiTa.evaluate('$foo=(hi | hi)\n$foo there', ctx = {}, 0))
         .eq(RiTa.evaluate('[$foo=(hi | hi)] there'));
     });
 
-    DO_SILENT_ASSIGNS && it('Should correctly assign a variable to a result', function () {
+    it('Should correctly handle assign transforms', function () {
+      let ctx = {};
+      expect(RiTa.evaluate('[$stored=(a | a).toUpperCase()] dog is a mammal.', ctx)).eq('A dog is a mammal.');
+    });
+
+    it('Should correctly assign a variable to a result', function () {
       let context = {};
       let result = RiTa.evaluate('[$stored=(a | b)]', context);
       expect(result).to.be.oneOf(['a', 'b']);
@@ -121,26 +118,33 @@ describe('RiTa.RiScript', function () {
       expect(result2).eq(context.stored);
     });
 
-
-    DO_SILENT_ASSIGNS && it('Should correctly assign a variable to code', function () {
+    it('Should correctly assign a variable to code', function () {
       expect(RiTa.evaluate('A [$stored=($animal | $animal)] is a mammal', { animal: 'dog' })).eq('A dog is a mammal');
-      expect(RiTa.evaluate('[$b=(a | a)].toUpperCase() dog is a $b.', {}, 0)).eq('A dog is a A.');
       expect(RiTa.evaluate('[$b=(a | a).toUpperCase()] dog is a $b.', {}, 0)).eq('A dog is a A.');
     });
 
-    DO_SILENT_ASSIGNS && it('Should correctly reuse an assigned variable', function () {
+    it('Should correctly reuse an assigned variable', function () {
       let ctx = {};
       let inp = 'Once there was a girl called [$hero=(Jane | Jane)].';
       inp += '\n$hero lived in [$home=(Neverland | Neverland)].';
       inp += '\n$hero liked living in $home.';
-      let out = 'Once there was a girl called Jane.\nJane lived in Neverland.\nJane liked living in Neverland.';
+      let out = 'Once there was a girl called Jane. Jane lived in Neverland. Jane liked living in Neverland.';
       expect(RiTa.evaluate(inp, ctx)).eq(out);
     });
+  });
+
+
+  describe('Basic Assignments', () => {
 
     it('Should parse assignments', function () {
       let ctx = {};
       expect(RiTa.evaluate('$foo=a', ctx, 0)).eq('');
       expect(ctx.foo).eq('a');
+
+      ctx = {};
+      //RiTa.evaluate('$foo=(a) b', ctx, 0);
+      expect(RiTa.evaluate('$foo=(a) b', ctx, 0)).eq('');
+      expect(ctx.foo).eq('a b');
 
       ctx = {};
       expect(RiTa.evaluate('$foo=a\nb', ctx, 0)).eq('b');
@@ -183,6 +187,10 @@ describe('RiTa.RiScript', function () {
       expect(ctx.foo).eq('a');
       expect(ctx.bar).eq('a');
 
+  /*     expect(RiTa.evaluate('$foo=a\n$bar=$foo.', ctx, 0)).eq(''); // empty string
+      expect(ctx.foo).eq('a');
+      expect(ctx.bar).eq('a.'); */
+
       expect(RiTa.evaluate('$foo=(a | a)', ctx = {}, 0)).eq('');
       expect(ctx.foo).eq('a');
 
@@ -194,6 +202,55 @@ describe('RiTa.RiScript', function () {
 
       expect(RiTa.evaluate('$foo=The boy walked his dog', ctx = {}, 0)).eq('');
       expect(ctx.foo).eq('The boy walked his dog');
+    });
+
+    it('Should handle sentences', function () {
+      let res, ctx;
+
+     /* // MOVE TO KNOWN ISSUES  
+       ctx = {};  
+      expect(RiTa.evaluate('$foo=.r', ctx, 1)).eq('');
+      expect(ctx.foo).eq('.r');  */
+
+      expect(RiTa.evaluate('.', null, 0)).eq('.');
+      
+      ctx = {};
+      expect(RiTa.evaluate('$foo=a', ctx, 0)).eq('');
+      expect(ctx.foo).eq('a'); 
+
+      // NEXT: working on strange problem with DOT in expr
+      ctx = {};
+      expect(RiTa.evaluate('$foo=.', ctx, 0)).eq('');
+      expect(ctx.foo).eq('.'); 
+
+      ctx = {};
+      expect(RiTa.evaluate('$foo=r.', ctx, 0)).eq('');
+      expect(ctx.foo).eq('r.');
+
+      ctx = {};
+      expect(RiTa.evaluate('$foo=ran.', ctx, 0)).eq('');
+      expect(ctx.foo).eq('ran.');
+
+      ctx = {};
+      res = RiTa.evaluate('$start=dog\n$start', ctx, 0);
+      expect(ctx.start).eq('dog');
+      expect(res).eq('dog');
+
+      ctx = {};
+      res = RiTa.evaluate('$start=.\n$start', ctx, 0);
+      expect(ctx.start).eq('.');
+      expect(res).eq('.');
+
+      ctx = {};
+      res = RiTa.evaluate('$noun=I\n$start=$noun ran.\n$start', ctx, 0);
+      expect(ctx.noun).eq('I');
+      expect(res).eq('I ran.');
+
+      ctx = {};
+      res = RiTa.evaluate('$noun=I\n$verb=sat\n$start=$noun $verb.\n$start', ctx, 0);
+      expect(ctx.noun).eq('I');
+      expect(ctx.verb).eq('sat');
+      expect(res).eq('I sat.');
     });
 
     it('Should parse transformed assignments', function () {
@@ -232,8 +289,9 @@ describe('RiTa.RiScript', function () {
   describe('Symbols', function () {
 
     it('Should throw on bad symbols', function () {
-      expect(() => RiTa.evaluate('$',0,0,1)).to.throw();
+      expect(() => RiTa.evaluate('$', 0, 0, 1)).to.throw();
     });
+
 
     it('Should evaluate symbol with a property transform', function () {
       let ctx = { bar: { color: 'blue' } };
@@ -432,68 +490,72 @@ describe('RiTa.RiScript', function () {
     });
   });
 
-  /*
-    describe('Grammars', function () {
 
-      it('Should evaluate post-defined symbols', function () {
-        let rs = RiTa.evaluate('$foo=$bar\n$bar=baz\n$foo', {}, 0);
-        expect(rs).eq('baz');
-      });
+  describe('Grammars', function () {
 
-      it('Should evaluate symbols with a transform', function () {
-        let rs = RiTa.evaluate('$foo=$bar.toUpperCase()\n$bar=baz\n$foo', {}, 0);
-        expect(rs).eq('BAZ');
-      });
+    it('Should evaluate post-defined symbols', function () {
+      let rs = RiScript.multeval('$foo=$bar\n$bar=baz\n$foo', {}, 0);
+      expect(rs).eq('baz');
+    });
 
-      it('Should evaluate symbols even with a bad func transform', function () {
-        let rs = RiTa.evaluate('$foo=$bar.ucf\n$bar=baz\n$foo', {}, 0);
-        expect(rs).eq('baz.ucf');
-      });
+    it('Should evaluate symbols with a transform', function () {
+      let rs = RiScript.multeval('$foo=$bar.toUpperCase()\n$bar=baz\n$foo', {}, 0);
+      expect(rs).eq('BAZ');
+    });
 
-      it('Should evaluate symbols even with one bad func transform', function () {
-        let rs = RiTa.evaluate('$foo=$bar.toUpperCase().ucf\n$bar=baz\n$foo', {}, 0);
-        expect(rs).eq('BAZ.ucf');
-      });
+    it('Should evaluate symbols even with property transform', function () {
+      let context = { bar: { ucf: 'result' } };
+      let rs = RiScript.multeval('$foo=$bar.ucf\n$foo', context, 0);
+      expect(rs).eq('result');
+    });
 
-      it('Should evaluate post-defined symbols with transforms', function () {
-        let rs = RiTa.evaluate('$foo=$bar.toLowerCase().ucf()\n$bar=baz\n$foo', {}, 0);
-        expect(rs).eq('Baz');
-      });
+    /*
+    it('Should evaluate symbols even with a bad func transform', function () {
+      let rs = RiScript.multeval('$foo=$bar.ucf\n$bar=baz\n$foo', {}, 0);
+      expect(rs).eq('baz.ucf');
+    });
 
-      it('Should eval converted grammar', function () {
-        let script = [
-          '$start = $nounp $verbp.',
-          '$nounp = $determiner $noun',
-          '$determiner = (the | the)',
-          '$verbp = $verb $nounp',
-          '$noun = (woman | woman)',
-          '$verb = shoots',
-          '$start'
-        ].join('\n') + '\n';
-        //console.log(script);
-        let rs = RiTa.evaluate(script, null, 0);
-        expect(rs).eq('the woman shoots the woman.');
-      });
+    it('Should evaluate symbols even with one bad func transform', function () {
+      let rs = RiScript.multeval('$foo=$bar.toUpperCase().ucf\n$bar=baz\n$foo', {}, 0);
+      expect(rs).eq('BAZ.ucf');
+    });*/
 
-      it('Should eval previous assignments', function() {
-        expect(RiTa.evaluate('$foo=a\n$foo', null, 0)).eq('a');
-        expect(RiTa.evaluate('$foo=(hi | hi) $foo there', null, 0)).eq('hi there');
-        expect(RiTa.evaluate('$foo=(hi | hi) $foo there', null, 0)).eq('hi there');
-      
-        expect(RiTa.evaluate('$foo=dog\n$bar=$foo\n$baz=$foo\n$baz', null, 0)).eq('dog');
-        expect(RiTa.evaluate('$foo=hi $foo there', null, 0)).eq('hi there');
-      });
+    it('Should evaluate post-defined symbols with transforms', function () {
+      let rs = RiScript.multeval('$foo=$bar.toLowerCase().ucf()\n$bar=baz\n$foo', {}, 0);
+      expect(rs).eq('Baz');
+    });
 
-      it('Should eval pre-defined variables', function() {
-        let script = [
-          '$noun=(woman | woman)',
-          '$start=$noun',
-          '$start'
-        ].join('\n');
-        expect(RiTa.evaluate(script, null, 0)).eq('woman');
-      });
+    it('Should eval converted grammar', function () {
+      let script = [
+        '$start = $nounp $verbp.',
+        '$nounp = $determiner $noun',
+        '$determiner = (the | the)',
+        '$verbp = $verb $nounp',
+        '$noun = (woman | woman)',
+        '$verb = shoots',
+        '$start'
+      ].join('\n') + '\n';
+      //console.log(script);
+      let rs = RiScript.multeval(script, null, 0);
+      expect(rs).eq('the woman shoots the woman.');
+    });
 
-  });*/
+    it('Should eval previous assignments', function () {
+      expect(RiScript.multeval('$foo=dog\n$bar=$foo\n$baz=$foo\n$baz', null, 0)).eq('dog');
+      expect(RiScript.multeval('$foo=hi\n$foo there', null, 0)).eq('hi there');
+      expect(RiScript.multeval('$foo=a\n$foo', null, 0)).eq('a'); 
+    });
+
+    it('Should eval pre-defined variables', function () {
+      let script = [
+        '$noun=(woman | woman)',
+        '$start=$noun',
+        '$start'
+      ].join('\n');
+      expect(RiScript.multeval(script, null, 0)).eq('woman');
+    });
+
+  });
 
   /*describe('S-assignments', function() {
 

@@ -21,15 +21,39 @@ class Visitor extends SuperClass {
     this.context = context || {};
     this.ignoreMissingSymbols = silent;
   }
+  
+  visitExpr(ctx) {
+    this.trace && console.log('visitExpr(' + ctx.getText() + ') ');
+    //this.trace && this.printChildren(ctx);
+    return this.visitChildren(ctx);
+  }
+
+  visitText(ctx) {
+    this.trace && console.log('visitText(' + ctx.getText() + ') ');
+    return ctx.getText();
+  }
 
   /* visit value and create a mapping in the symbol table */
   visitAssign(ctx) {
-    let token = ctx.value();
+    let token = ctx.expr();
     let id = this.symbolName(ctx.symbol().getText());
+    
+//this.trace = id === 'start';
     this.trace && console.log('visitAssign: $' + id + '=' +
       this.flatten(token) + ' tfs=[' + (token.transforms || '') + ']');
+//this.trace = false;
     this.context[id] = token ? this.visit(token) : '';
     return ''; // no output on vanilla assign
+  }
+
+  /* output expr value and create a mapping in the symbol table */
+  visitInline(ctx) {
+    let token = ctx.expr();
+    let id = this.symbolName(ctx.symbol().getText());
+    this.trace && console.log('visitInline: $' + id + '=' +
+      this.flatten(token) + ' tfs=[' + (token.transforms || '') + ']');
+    this.context[id] = token ? this.visit(token) : '';
+    return this.context[id];
   }
 
   /* expand the choices according to specified probabilities */
@@ -55,9 +79,9 @@ class Visitor extends SuperClass {
       .replace(/^\$/, '') // strip $
       .replace(/[}{]/g, ''); // strip {}
 
-    //let symbol = new Symbol(ident, ctx.transform());
     this.trace && console.log('visitSymbol: $' + ident
-      + ' tfs=[' + (ctx.transform() || '') + ']');
+      + ' tfs=[' + (ctx.transform() || '') + '] ctx[\'' 
+      + ident + '\']='+this.context[ident]);
 
     let text = this.context[ident] || '$' + ident;
 
@@ -73,9 +97,9 @@ class Visitor extends SuperClass {
 
     let term = ctx;
     if (typeof ctx.getText === 'function') {
-      term = ctx.getText(); 
+      term = ctx.getText();
     }
-  
+
     // if (typeof term !== 'string') throw Error('not a string!! was', typeof term);
     let tfs = tforms || ctx.transforms;
 
@@ -90,11 +114,11 @@ class Visitor extends SuperClass {
         if (!RiTa.SILENT && !this.ignoreMissingSymbols) {
           console.warn('[WARN] Unresolved symbol(s): ' + term);
         }
-        return term + (tfs ? tfs.reduce((acc, val) => acc + 
+        return term + (tfs ? tfs.reduce((acc, val) => acc +
           (typeof val === 'string' ? val : val.getText()), '') : '');
       }
     } else {
-      this.trace && console.log('visitTerminal('+(typeof term)+'): "'
+      this.trace && console.log('visitTerminal2(' + (typeof term) + '): "'
         + JSON.stringify(term) + '" tfs=[' + (tfs || '') + ']');
     }
 
@@ -104,7 +128,7 @@ class Visitor extends SuperClass {
   /* run the transforms and return the results */
   handleTransforms(obj, transforms) {
     let term = obj;
-    if (transforms) {
+    if (transforms && transforms.length) {
       let tfs = this.trace ? '' : null; // debugging
       for (let i = 0; i < transforms.length; i++) {
         let transform = transforms[i];
@@ -128,7 +152,7 @@ class Visitor extends SuperClass {
           }
         }
       }
-      this.trace && (typeof obj !== 'string' || obj.trim().length) 
+      this.trace && (typeof obj !== 'string' || obj.trim().length)
         && console.log('handleTransforms: ' + obj + tfs + ' -> ' + term);
     }
     return term;
@@ -162,7 +186,7 @@ class Visitor extends SuperClass {
   printChildren(ctx) {
     for (let i = 0; i < ctx.getChildCount(); i++) {
       let child = ctx.getChild(i);
-      console.log(i, child.getText(), this.getRuleName(child));
+      console.log('  child'+i+':', child.getText(), 'type='+this.getRuleName(child));
     }
   }
 

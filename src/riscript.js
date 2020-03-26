@@ -1,7 +1,6 @@
 const antlr4 = require('antlr4');
 const colors = require('colors');
-
-const Entities = require('he'); // provides decode
+const { decode } = require('he');
 const LexerErrors = require('./errors').LexerErrors;
 const ParserErrors = require('./errors').ParserErrors;
 const Visitor = require('./visitor');
@@ -23,22 +22,23 @@ class RiScript {
     this.visitor = undefined;
   }
 
-  static eval(input, context = {}, showParse, silent) {
-    let res = new RiScript().lexParseVisit(input, context, showParse, silent);
+  static eval(input, context, showParse, silent) {
+    let res = new RiScript().lexParseVisit(input, context || {}, showParse, silent);
     return resolveEntities(res);
   }
 
-  static multeval(input, context = {}, showParse, silent) {
+  static multeval(input, context, showParse, silent) {
     let last, expr = input;
     let rs = new RiScript();
+    let ctx = context || {};
     for (let i = 0; i < MaxTries && expr !== last; i++) {
       last = expr;
-      expr = rs.lexParseVisit(expr, context, showParse, true);
-      showParse && console.log(i + ') ' + expr);
+      expr = rs.lexParseVisit(expr, ctx, showParse, true);
+      showParse && console.log(i + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
       if (i >= MaxTries - 1) throw Error('Failed to resolve: ' + stmt);
     }
     if (!silent && !RiTa.SILENT && expr.includes('$')) {
-      console.warn('[WARN] Unresolved symbol(s) in "' + term + '"');
+      console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
     }
     return resolveEntities(expr);
   }
@@ -117,7 +117,7 @@ class RiScript {
 }
 
 function resolveEntities(result) {
-  return Entities.decode(result.replace(/ +/g, ' '))
+  return decode(result.replace(/ +/g, ' '))
     .replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
 }
 
