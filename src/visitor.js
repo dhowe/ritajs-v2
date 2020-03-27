@@ -32,11 +32,6 @@ class Visitor extends RiScriptVisitor {
     return this.visitChildren(ctx);
   }
 
-  visitText(ctx) {
-    this.trace && console.log('visitText(' + ctx.getText() + ') ');
-    return ctx.getText();
-  }
-
   /* visit value and create a mapping in the symbol table */
   visitAssign(ctx) {
     let token = ctx.expr();
@@ -62,9 +57,11 @@ class Visitor extends RiScriptVisitor {
     let options = ctx.expr();
     this.handleEmptyChoices(ctx, options);
     let token = this.randomElement(options);
+    // merge transforms on entire choice and selected option
     token.transforms = this.inheritTransforms(token, ctx);
     this.trace && console.log('visitChoice: ' + this.flatten(token),
       "tfs=" + (token.transforms || "[]"));
+
     return this.visit(token);
   }
 
@@ -80,23 +77,32 @@ class Visitor extends RiScriptVisitor {
       + ident + '\']=' + this.context[ident]);
 
     let text = this.context[ident] || '$' + ident;
+    
+    let textContext = { text, getText: () => text };
+    textContext.transforms = ctx.transform().map(t => t.getText());
 
-    /* TODO: what if we get choice or symbol or here ...
+    /*
+    TODO: what if we get choice or symbol or here ...
     need to visit, but its not a context, just a string
-    Options: either reparse, or simply treat as terminal 
-    to be handled if necessary in multeval() call */
+    Options: either reparse, or simply treat as terminal
+    to be handled if necessary in multeval() call
+    */
 
-    return this.visitTerminal(text, ctx.transform());
+    // TODO: if we an object here and a transform, we should 
+    // attempt to resolve it immediately ***
+
+    return this.visitTerminal(textContext);
+    //return this.visitTerminal(text, ctx.transform());
   }
 
-  visitTerminal(ctx, tforms) {
+  visitTerminal(ctx/*, tforms*/) {
 
     let term = ctx;
     if (typeof ctx.getText === 'function') {
       term = ctx.getText();
     }
 
-    let tfs = tforms || ctx.transforms;
+    let tfs = /*tforms || */ctx.transforms;
 
     if (typeof term === 'string') {
       if (term === Visitor.EOF) return '';
@@ -105,7 +111,8 @@ class Visitor extends RiScriptVisitor {
       this.trace && console.log('visitTerminal: "'
         + term + '" tfs=[' + (tfs || '') + ']');
 
-      if (term.includes('$')) {
+      if (term.includes('$')) { // Unresolved symbols
+
         if (!RiTa.SILENT && !this.ignoreMissingSymbols) {
           console.warn('[WARN] Unresolved symbol(s): ' + term);
         }
@@ -113,7 +120,7 @@ class Visitor extends RiScriptVisitor {
           (typeof val === 'string' ? val : val.getText()), '') : '');
       }
     } else {
-
+      // Here we've resolved a symbol to an object in visitSymbol
       this.trace && console.log('visitTerminal2(' + (typeof term) + '): "'
         + JSON.stringify(term) + '" tfs=[' + (tfs || '') + ']');
     }
@@ -196,22 +203,12 @@ class Visitor extends RiScriptVisitor {
     return toks.reduce((acc, t) => acc += '[' + this.getRuleName(t) + ':' + t.getText() + ']', 'choice: ');
   }
 
-  appendToArray(orig, adds) {
-    return (adds && adds.length) ? (orig || []).concat(adds) : orig;
-  }
-
-  setTransforms(token, ctx) {
-    let newTransforms = ctx.transform().map(t => t.getText());
-    newTransforms = this.appendToArray(newTransforms, ctx.transforms);
-    token.transforms = this.appendToArray(token.transforms, newTransforms);
-  }
 
   inheritTransforms(token, ctx) {
-
-    // TODO: when does ctx.transform != ctx.transforms
-    let newTransforms = ctx.transform().map(t => t.getText());
-    newTransforms = this.appendToArray(newTransforms, ctx.transforms);
-    return this.appendToArray(token.transforms, newTransforms);
+    let ctxTransforms = ctx.transform().map(t => t.getText());
+    // NOTE: there may be 3 sets needed here instead of 2
+    //ctxTransforms = mergeArrays(ctxTransforms, ctx.transforms);
+    return mergeArrays(token.transforms, ctxTransforms);
   }
 
   handleEmptyChoices(ctx, options) {
@@ -233,6 +230,10 @@ class Visitor extends RiScriptVisitor {
       return acc + this.visit(child);
     }, '') : '';
   }
+}
+
+function mergeArrays(orig, adds) {
+  return (adds && adds.length) ? (orig || []).concat(adds) : orig;
 }
 
 function inspect(o) {
