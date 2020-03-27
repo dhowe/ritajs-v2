@@ -6,10 +6,8 @@ const Transforms = require('../src/transforms');
 // other you need to use {} or [] or ()
 
 // TODO:
-// lazy evaluation of variables in script (to support cf-grammars)
-// add variable declarations ***
 // handle multipliers in cfg-s
-// allow json format?
+// variable concatenation
 
 const VARIABLE_CONCAT = 0;
 
