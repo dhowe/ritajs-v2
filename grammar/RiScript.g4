@@ -20,21 +20,23 @@ transform: TF;
 ident: SYM;
 symbol: ident transform*;
 choice: (
-		(LP (expr OR)* expr RP)
-		| (LP (expr OR)+ RP)
-		| (LP (OR expr)+ RP)
+		(LP (expr weight? OR)* expr weight? RP)
+		| (LP (expr weight? OR)+ RP)
+		| (LP (OR expr weight? )+ RP)
 		| (LP OR RP)
-		| (LP OR expr OR RP)
+		| (LP OR expr weight? OR RP)
 		| (LP RP)
 	) transform*;
 inline: LB symbol EQ expr RB;
 assign: symbol EQ expr;
+weight: LB num RB;
+num: NUM;
 expr: (
 		symbol
 		| choice
 		| assign
 		| inline
-		| (CHR | DOT | ENT)+
+		| (CHR | DOT | ENT | NUM)+
 		| WS
 	)+;
 //expr: (symbol | choice | assign | inline | (CHR | DOT | ENT)+)+ (WS+ (symbol | choice | assign | inline | (CHR |  DOT | ENT)+))*;
@@ -53,6 +55,7 @@ OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
 TF: ('.' IDENT ( '(' ')')?)+;
 ENT: '&' [A-Za-z0-9#]+ ';';
+NUM: ([0-9]+ | ( [0-9]* '.' [0-9]+));
 CHR:
 	~(
 		'.'
