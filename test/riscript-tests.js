@@ -11,16 +11,27 @@ const Transforms = require('../src/transforms');
 
 const VARIABLE_CONCAT = 0;
 
-describe('RiTa.RiScript', () => {
+describe.only('RiTa.RiScript', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
   describe('Weighted Choices', () => {
     it('Should parse/select weighted choices', () => {
 
-      // NEXT: WORKING HERE
-      expect(RiTa.evaluate('(a | b [2]|)', {}, 0)).to.be.oneOf(['a', 'b', '']);
-    });
+    expect(RiTa.evaluate('( a [2] |a [3] )', {}, 0)).eq('a');
+
+    let result = { b: 0, a: 0 };
+      for (let i = 0; i < 1000; i++) {
+        result[RiTa.evaluate('(a | b [2])')]++;
+      } //console.log(result);
+      expect(result.b).gt(result.a); 
+
+      expect(RiTa.evaluate('( a [2] )', {}, 0)).eq('a');
+      expect(RiTa.evaluate('([2] |[3])', {}, 0)).eq('');
+
+      expect(RiTa.evaluate('(a | b [2] |[3])', {}, 0)).to.be.oneOf(['a', 'b', '']);
+      expect(RiTa.evaluate('(a | b[2] |[3])', {}, 0)).to.be.oneOf(['a', 'b', '']);
+    }); 
   });
 
   describe('Multevals', () => {
@@ -298,7 +309,6 @@ describe('RiTa.RiScript', () => {
       expect(() => RiTa.evaluate('$', 0, 0, 1)).to.throw();
     });
 
-
     it('Should evaluate symbol with a property transform', () => {
       let ctx = { bar: { color: 'blue' } };
       let rs = RiTa.evaluate('$bar.color', ctx);
@@ -346,6 +356,20 @@ describe('RiTa.RiScript', () => {
       // TODO: symbols that resolve to other symbols (symbols in context are not resolved?)
       //expect(RiTa.evaluate('$bar', { foo: 'baz', bar: '$foo' }, 1)).eq('baz');
     });
+
+    it('Should parse symbols from an expr', () => {
+      let ctx = { user: { name: 'jen' } }
+      expect(RiTa.evaluate("Was $user.name.ucf() (ok | ok) today?", ctx)).eq('Was Jen ok today?');
+      expect(RiTa.evaluate("$user.name was ok", ctx)).eq('jen was ok');
+      expect(RiTa.evaluate("That was $user.name", ctx)).eq('That was jen');
+      expect(RiTa.evaluate("Was that $user.name.ucf()?", ctx)).eq('Was that Jen?');
+      expect(RiTa.evaluate("$user.name", ctx)).eq('jen');
+      expect(RiTa.evaluate("$user.name", ctx)).eq('jen');
+      expect(RiTa.evaluate("$user.name.toUpperCase()", ctx, 0)).eq('JEN');
+      expect(RiTa.evaluate("$user.name.uc()", ctx, 0)).eq('JEN');
+      expect(RiTa.evaluate("$user.name.ucf()", ctx, 0)).eq('Jen');
+      expect(RiTa.evaluate('Was the $dog.breed (ok | ok) today?', { dog: { breed: 'Corgie' } }, 0)).eq('Was the Corgie ok today?');
+    });
   });
 
   describe('Choices', () => {
@@ -361,7 +385,7 @@ describe('RiTa.RiScript', () => {
     it('Should parse/select choices', () => {
       expect(RiTa.evaluate('(|)')).eq('');
       expect(RiTa.evaluate('(a)')).eq('a');
-      expect(RiTa.evaluate('(a | a)')).eq('a');
+      expect(RiTa.evaluate('(a | a)', 0, 0)).eq('a');
       expect(RiTa.evaluate('(a | )')).to.be.oneOf(['a', '']);
       expect(RiTa.evaluate('(a | b)')).to.be.oneOf(['a', 'b']);
       expect(RiTa.evaluate('(a | b | c)'), {}).to.be.oneOf(['a', 'b', 'c']);
@@ -382,20 +406,6 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(a|)')).matches(/a?/);
       expect(RiTa.evaluate('(a|a)')).eq('a');
       expect(RiTa.evaluate('(|a|)')).to.be.oneOf(['a', '']);
-    });
-
-    it('Should parse symbols/choices from an expr', () => {
-      let ctx = { user: { name: 'jen' } }
-      expect(RiTa.evaluate("Was $user.name.ucf() (ok | ok) today?", ctx)).eq('Was Jen ok today?');
-      expect(RiTa.evaluate("$user.name was ok", ctx)).eq('jen was ok');
-      expect(RiTa.evaluate("That was $user.name", ctx)).eq('That was jen');
-      expect(RiTa.evaluate("Was that $user.name.ucf()?", ctx)).eq('Was that Jen?');
-      expect(RiTa.evaluate("$user.name", ctx)).eq('jen');
-      expect(RiTa.evaluate("$user.name", ctx)).eq('jen');
-      expect(RiTa.evaluate("$user.name.toUpperCase()", ctx, 0)).eq('JEN');
-      expect(RiTa.evaluate("$user.name.uc()", ctx, 0)).eq('JEN');
-      expect(RiTa.evaluate("$user.name.ucf()", ctx, 0)).eq('Jen');
-      expect(RiTa.evaluate('Was the $dog.breed (ok | ok) today?', { dog: { breed: 'Corgie' } }, 0)).eq('Was the Corgie ok today?');
     });
   });
 

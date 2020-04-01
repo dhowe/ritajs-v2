@@ -2,6 +2,7 @@ const antlr4 = require('antlr4');
 const { RiScriptVisitor } = require('../lib/RiScriptVisitor');
 const { RiScriptParser } = require('../lib/RiScriptParser');
 const EmptyExpr = new RiScriptParser.ExprContext();
+//EmptyExpr.transforms = [];
 
 String.prototype.uc = function () {
   return this.toUpperCase();
@@ -52,11 +53,79 @@ class Visitor extends RiScriptVisitor {
     return this.context[id];
   }
 
-  /* expand the choices according to specified probabilities */
   visitChoice(ctx) {
-    let options = ctx.expr();
-    this.handleEmptyChoices(ctx, options);
+
+    let options = [];
+
+    // compute all options based on their weights
+    ctx.wexpr().map((w, k) => {
+      let wctx = w.weight();
+      let weight = wctx ? parseInt(wctx.num().getText()) : 1;
+      let expr = w.expr() || EmptyExpr;
+      for (let i = 0; i < weight; i++) {
+        options.push(expr);
+      }
+    });
+
+    /*console.log(ctx.wexpr().length+' wexprs');
+      console.log(options.length +' options');
+      options.forEach(o => console.log('  "'+o.getText()+'"'));*/
+
+    // then pick a random one
+    let token = this.randomElement(options) || EmptyExpr;
+
+    // merge transforms on entire choice and selected option
+    token.transforms = this.inheritTransforms(token, ctx);
+    this.trace && console.log('visitChoice: ' + this.flatten(token),
+      "tfs=" + (token.transforms || "[]"));
+      
+    return this.visit(token);
+  }
+
+  visitChoiceWexpr(ctx) {
+
+    let wexrs = ctx.wexpr();
+    for (let i = 0; i < wexrs.length; i++) {
+      const expr = wexrs[i].expr();
+      const weight = wexrs[i].weight();
+      console.log(expr.getText(), weight ? weight.getText() : 1);
+    }
+    //let weights = ctx.weight();
+    //this.handleEmptyChoices(ctx, options);
+
     let token = this.randomElement(options);
+
+    // merge transforms on entire choice and selected option
+    token.transforms = this.inheritTransforms(token, ctx);
+    this.trace && console.log('visitChoice: ' + this.flatten(token),
+      "tfs=" + (token.transforms || "[]"));
+
+    return this.visit(token);
+  }
+
+  /* expand the choices according to specified probabilities */
+  visitChoiceOld(ctx) {
+    let options = [];
+    for (let i = 0; i < ctx.children.length; i++) {
+      if (ctx.children[i] instanceof RiScriptParser.ExprContext) {
+        let weight = 1;
+        if (i < ctx.children.length - 1 && ctx.children[i + 1] instanceof RiScriptParser.WeightContext) {
+          let weightCtx = ctx.children[i + 1].num();
+          weight = weightCtx && parseInt(weightCtx.getText());
+        }
+        console.log(ctx.children[i].getText().trim(), weight);
+        for (let j = 0; j < weight; j++) {
+          options.push(ctx.children[i]);
+        }
+      }
+    }
+    //let options = ctx.expr();
+    //let weights = ctx.weight();
+
+    this.handleEmptyChoices(ctx, options);
+    let OOO = options;
+    let token = this.randomElement(options);
+
     // merge transforms on entire choice and selected option
     token.transforms = this.inheritTransforms(token, ctx);
     this.trace && console.log('visitChoice: ' + this.flatten(token),
@@ -77,7 +146,7 @@ class Visitor extends RiScriptVisitor {
       + ident + '\']=' + this.context[ident]);
 
     let text = this.context[ident] || '$' + ident;
-    
+
     let textContext = { text, getText: () => text };
     textContext.transforms = ctx.transform().map(t => t.getText());
 

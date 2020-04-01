@@ -13,31 +13,24 @@ grammar RiScript;
 // $hero=&(Jane | Jill) $hero=>(Jane | Jill) $hero=+(Jane | Jill) $hero<-(Jane | Jill)
 // $hero$hero<-(Jane | Jill)
 
-// TODO: Labels
+// TODO: Labels ?
 
 script: (expr | NL)+ EOF;
 transform: TF;
 ident: SYM;
 symbol: ident transform*;
-choice: (
-		(LP (expr weight? OR)* expr weight? RP)
-		| (LP (expr weight? OR)+ RP)
-		| (LP (OR expr weight? )+ RP)
-		| (LP OR RP)
-		| (LP OR expr weight? OR RP)
-		| (LP RP)
-	) transform*;
+wexpr: expr? weight?;
+choice: (LP (wexpr OR)* wexpr RP) transform*;
 inline: LB symbol EQ expr RB;
 assign: symbol EQ expr;
-weight: LB num RB;
-num: NUM;
+weight: WS? LB num RB WS?;
+num: INT;
 expr: (
 		symbol
 		| choice
 		| assign
 		| inline
-		| (CHR | DOT | ENT | NUM)+
-		| WS
+		| (CHR | DOT | ENT | WS | INT)+
 	)+;
 //expr: (symbol | choice | assign | inline | (CHR | DOT | ENT)+)+ (WS+ (symbol | choice | assign | inline | (CHR |  DOT | ENT)+))*;
 
@@ -55,7 +48,8 @@ OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
 TF: ('.' IDENT ( '(' ')')?)+;
 ENT: '&' [A-Za-z0-9#]+ ';';
-NUM: ([0-9]+ | ( [0-9]* '.' [0-9]+));
+//NUM: ([0-9]+ | ( [0-9]* '.' [0-9]+));
+INT: [0-9]+;
 CHR:
 	~(
 		'.'
