@@ -11,7 +11,7 @@ const Transforms = require('../src/transforms');
 
 const VARIABLE_CONCAT = 0;
 
-describe.only('RiTa.RiScript', () => {
+describe/*.only*/('RiTa.RiScript', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
