@@ -27,16 +27,18 @@ class Visitor extends RiScriptVisitor {
   }
 
   visitExpr(ctx) {
-    this.trace && console.log('visitExpr(' + ctx.getText() + ') ');
+    this.trace && console.log('visitExpr(' + ctx.getText() + ')',
+      "tfs=" + (ctx.transforms || "[]"));
     // ctx.children ? ctx.children.length);
     //this.trace && this.printChildren(ctx);
-    return this.visitChildren(ctx);
+    let result = this.visitChildren(ctx);
+    return result;
   }
 
   /* visit value and create a mapping in the symbol table */
   visitAssign(ctx) {
     let token = ctx.expr();
-    let id = this.symbolName(ctx.symbol().getText());
+    let id = symbolName(ctx.symbol().getText());
     this.trace && console.log('visitAssign: $' + id + '=' +
       this.flatten(token) + ' tfs=[' + (token.transforms || '') + ']');
     this.context[id] = token ? this.visit(token) : '';
@@ -45,12 +47,8 @@ class Visitor extends RiScriptVisitor {
 
   /* output expr value and create a mapping in the symbol table */
   visitInline(ctx) {
-    let token = ctx.expr();
-    let id = this.symbolName(ctx.symbol().getText());
-    this.trace && console.log('visitInline: $' + id + '=' +
-      this.flatten(token) + ' tfs=[' + (token.transforms || '') + ']');
-    this.context[id] = token ? this.visit(token) : '';
-    return this.context[id];
+    this.visitAssign(ctx);
+    return this.context[symbolName(ctx.symbol().getText())];
   }
 
   visitChoice(ctx) {
@@ -60,7 +58,7 @@ class Visitor extends RiScriptVisitor {
     // compute all options based on their weights
     ctx.wexpr().map((w, k) => {
       let wctx = w.weight();
-      let weight = wctx ? parseInt(wctx.num().getText()) : 1;
+      let weight = wctx ? parseInt(wctx.INT()) : 1;
       let expr = w.expr() || EmptyExpr;
       for (let i = 0; i < weight; i++) {
         options.push(expr);
@@ -72,7 +70,7 @@ class Visitor extends RiScriptVisitor {
       options.forEach(o => console.log('  "'+o.getText()+'"'));*/
 
     // then pick a random one
-    let token = this.randomElement(options) || EmptyExpr;
+    let token = randomElement(options) || EmptyExpr;
 
     // merge transforms on entire choice and selected option
     token.transforms = this.inheritTransforms(token, ctx);
@@ -81,7 +79,7 @@ class Visitor extends RiScriptVisitor {
       
     return this.visit(token);
   }
-
+/* 
   visitChoiceWexpr(ctx) {
 
     let wexrs = ctx.wexpr();
@@ -93,7 +91,7 @@ class Visitor extends RiScriptVisitor {
     //let weights = ctx.weight();
     //this.handleEmptyChoices(ctx, options);
 
-    let token = this.randomElement(options);
+    let token = randEle(options);
 
     // merge transforms on entire choice and selected option
     token.transforms = this.inheritTransforms(token, ctx);
@@ -103,7 +101,6 @@ class Visitor extends RiScriptVisitor {
     return this.visit(token);
   }
 
-  /* expand the choices according to specified probabilities */
   visitChoiceOld(ctx) {
     let options = [];
     for (let i = 0; i < ctx.children.length; i++) {
@@ -124,7 +121,7 @@ class Visitor extends RiScriptVisitor {
 
     this.handleEmptyChoices(ctx, options);
     let OOO = options;
-    let token = this.randomElement(options);
+    let token = randEle(options);
 
     // merge transforms on entire choice and selected option
     token.transforms = this.inheritTransforms(token, ctx);
@@ -132,23 +129,24 @@ class Visitor extends RiScriptVisitor {
       "tfs=" + (token.transforms || "[]"));
 
     return this.visit(token);
-  }
+  } */
 
   /* simply visit the resolved symbol, don't reparse */
   visitSymbol(ctx) {
 
-    let ident = ctx.ident().getText()
+    let ident = ctx.SYM().getText()
       .replace(/^\$/, '') // strip $
       .replace(/[}{]/g, ''); // strip {}
-
-    this.trace && console.log('visitSymbol: $' + ident
-      + ' tfs=[' + (ctx.transform() || '') + '] ctx[\''
-      + ident + '\']=' + this.context[ident]);
 
     let text = this.context[ident] || '$' + ident;
 
     let textContext = { text, getText: () => text };
-    textContext.transforms = ctx.transform().map(t => t.getText());
+    textContext.transforms = ctx.transforms || [];
+    ctx.transform().map(t => textContext.transforms.push(t.getText()));
+
+    this.trace && console.log('visitSymbol: $' + ident
+      + ' tfs=[' + (textContext.transforms || '') + '] ctx[\''
+      + ident + '\']=' + textContext.text);
 
     /*
     TODO: what if we get choice or symbol or here ...
@@ -237,10 +235,6 @@ class Visitor extends RiScriptVisitor {
 
   // ---------------------- Helpers ---------------------------
 
-  symbolName(text) {
-    return (text.length && text[0] === Visitor.SYM) ? text.substring(1) : text;
-  }
-
   getRuleName(ctx) {
     return ctx.hasOwnProperty('symbol') ?
       this.parent.lexer.symbolicNames[ctx.symbol.type] :
@@ -289,16 +283,20 @@ class Visitor extends RiScriptVisitor {
     }
   }
 
-  randomElement(arr) {
-    return arr[Math.floor((Math.random() * arr.length))];
-  }
-
   visitChildren(ctx) {
     return ctx.children ? ctx.children.reduce((acc, child) => {
-      child.transforms = ctx.transforms;
+      child.transforms = ctx.transforms;//typeof ctx.transform === 'function' ? this.inheritTransforms(child, ctx) : ctx.transforms;
       return acc + this.visit(child);
     }, '') : '';
   }
+}
+
+function randomElement(arr) {
+  return arr[Math.floor((Math.random() * arr.length))];
+}
+
+function symbolName(text) {
+  return (text.length && text[0] === Visitor.SYM) ? text.substring(1) : text;
 }
 
 function mergeArrays(orig, adds) {
@@ -327,7 +325,6 @@ Visitor.OR = 'OR';
 Visitor.SYM = '$';
 Visitor.EOF = '<EOF>';
 Visitor.ASSIGN = '[]';
-Visitor.SASSIGN = '{}';
 Visitor.FUNCTION = '()';
 
 module.exports = Visitor;

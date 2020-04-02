@@ -17,6 +17,7 @@ The weather was (sad | gloomy [2] | depressed[4]).
 
 ### Assignment (?)
 
+Basic assignments do not have output, they simply create/modify a symbol
 ```
 {desc: 'wet and cold'}
 $desc=wet and cold
@@ -27,9 +28,28 @@ The weather was $desc
 
 ### Inline Assignment
 
+Inline assignments create/modify a symbol _and_ output its contents
+
+| | | 
+|-|-|
+| `Jane was from [$place=(New York | Berlin | Shanghai)]. $place is cold and wet.` | `Jane was from Berlin. Berlin is cold and wet.` |
+| `$place=(New York | Berlin | Shanghai)`<br/>`$place is cold and wet in winter.` | `Berlin is cold and wet in the winter.` |
+| `In [$place=(New York | Berlin | Shanghai)] it is cold and wet in winter.` | `In Berlin it is cold and wet in the winter.` |
+
+////////////////////  WORKING HERE /////////////////////////
+
 ```
-Jane was from $place=(New York | Berlin | Shanghai). 
+Jane was from [$place=(New York | Berlin | Shanghai)]. 
 $place is cold and wet in the winter.
+
+$place=(New York | Berlin | Shanghai) 
+$place is cold and wet in the winter.
+
+$place=(New York | Berlin | Shanghai) is cold and wet in the winter.
+
+In [$place=(New York | Berlin | Shanghai)], it is cold and wet in winter.
+
+In [$place=(New York | Berlin | Shanghai) it is cold and wet in winter].
 ```
 
 ### Silent Assignment

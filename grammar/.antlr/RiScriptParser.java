@@ -19,12 +19,12 @@ public class RiScriptParser extends Parser {
 		LP=1, RP=2, LB=3, RB=4, LCB=5, RCB=6, DOT=7, WS=8, NL=9, SYM=10, OR=11, 
 		EQ=12, TF=13, ENT=14, INT=15, CHR=16;
 	public static final int
-		RULE_script = 0, RULE_transform = 1, RULE_ident = 2, RULE_symbol = 3, 
-		RULE_wexpr = 4, RULE_choice = 5, RULE_inline = 6, RULE_assign = 7, RULE_weight = 8, 
-		RULE_num = 9, RULE_expr = 10;
+		RULE_script = 0, RULE_transform = 1, RULE_symbol = 2, RULE_wexpr = 3, 
+		RULE_weight = 4, RULE_choice = 5, RULE_inline = 6, RULE_assign = 7, RULE_chars = 8, 
+		RULE_expr = 9;
 	public static final String[] ruleNames = {
-		"script", "transform", "ident", "symbol", "wexpr", "choice", "inline", 
-		"assign", "weight", "num", "expr"
+		"script", "transform", "symbol", "wexpr", "weight", "choice", "inline", 
+		"assign", "chars", "expr"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
@@ -108,12 +108,12 @@ public class RiScriptParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(24); 
+			setState(22); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
-				setState(24);
+				setState(22);
 				_errHandler.sync(this);
 				switch (_input.LA(1)) {
 				case LP:
@@ -125,13 +125,13 @@ public class RiScriptParser extends Parser {
 				case INT:
 				case CHR:
 					{
-					setState(22);
+					setState(20);
 					expr();
 					}
 					break;
 				case NL:
 					{
-					setState(23);
+					setState(21);
 					match(NL);
 					}
 					break;
@@ -139,11 +139,11 @@ public class RiScriptParser extends Parser {
 					throw new NoViableAltException(this);
 				}
 				}
-				setState(26); 
+				setState(24); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LP) | (1L << LB) | (1L << DOT) | (1L << WS) | (1L << NL) | (1L << SYM) | (1L << ENT) | (1L << INT) | (1L << CHR))) != 0) );
-			setState(28);
+			setState(26);
 			match(EOF);
 			}
 		}
@@ -172,7 +172,7 @@ public class RiScriptParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(30);
+			setState(28);
 			match(TF);
 			}
 		}
@@ -187,39 +187,8 @@ public class RiScriptParser extends Parser {
 		return _localctx;
 	}
 
-	public static class IdentContext extends ParserRuleContext {
-		public TerminalNode SYM() { return getToken(RiScriptParser.SYM, 0); }
-		public IdentContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_ident; }
-	}
-
-	public final IdentContext ident() throws RecognitionException {
-		IdentContext _localctx = new IdentContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_ident);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(32);
-			match(SYM);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
 	public static class SymbolContext extends ParserRuleContext {
-		public IdentContext ident() {
-			return getRuleContext(IdentContext.class,0);
-		}
+		public TerminalNode SYM() { return getToken(RiScriptParser.SYM, 0); }
 		public List<TransformContext> transform() {
 			return getRuleContexts(TransformContext.class);
 		}
@@ -234,24 +203,24 @@ public class RiScriptParser extends Parser {
 
 	public final SymbolContext symbol() throws RecognitionException {
 		SymbolContext _localctx = new SymbolContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_symbol);
+		enterRule(_localctx, 4, RULE_symbol);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
+			setState(30);
+			match(SYM);
 			setState(34);
-			ident();
-			setState(38);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==TF) {
 				{
 				{
-				setState(35);
+				setState(31);
 				transform();
 				}
 				}
-				setState(40);
+				setState(36);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -283,31 +252,99 @@ public class RiScriptParser extends Parser {
 
 	public final WexprContext wexpr() throws RecognitionException {
 		WexprContext _localctx = new WexprContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_wexpr);
+		enterRule(_localctx, 6, RULE_wexpr);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(42);
+			setState(38);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 			case 1:
 				{
-				setState(41);
+				setState(37);
 				expr();
 				}
 				break;
 			}
-			setState(45);
+			setState(41);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==LB || _la==WS) {
 				{
-				setState(44);
+				setState(40);
 				weight();
 				}
 			}
 
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class WeightContext extends ParserRuleContext {
+		public TerminalNode LB() { return getToken(RiScriptParser.LB, 0); }
+		public TerminalNode INT() { return getToken(RiScriptParser.INT, 0); }
+		public TerminalNode RB() { return getToken(RiScriptParser.RB, 0); }
+		public List<TerminalNode> WS() { return getTokens(RiScriptParser.WS); }
+		public TerminalNode WS(int i) {
+			return getToken(RiScriptParser.WS, i);
+		}
+		public WeightContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_weight; }
+	}
+
+	public final WeightContext weight() throws RecognitionException {
+		WeightContext _localctx = new WeightContext(_ctx, getState());
+		enterRule(_localctx, 8, RULE_weight);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(46);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==WS) {
+				{
+				{
+				setState(43);
+				match(WS);
+				}
+				}
+				setState(48);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			setState(49);
+			match(LB);
+			setState(50);
+			match(INT);
+			setState(51);
+			match(RB);
+			setState(55);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==WS) {
+				{
+				{
+				setState(52);
+				match(WS);
+				}
+				}
+				setState(57);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -355,42 +392,42 @@ public class RiScriptParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(47);
+			setState(58);
 			match(LP);
-			setState(53);
+			setState(64);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,7,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(48);
+					setState(59);
 					wexpr();
-					setState(49);
+					setState(60);
 					match(OR);
 					}
 					} 
 				}
-				setState(55);
+				setState(66);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,7,_ctx);
 			}
-			setState(56);
+			setState(67);
 			wexpr();
-			setState(57);
+			setState(68);
 			match(RP);
 			}
-			setState(62);
+			setState(73);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==TF) {
 				{
 				{
-				setState(59);
+				setState(70);
 				transform();
 				}
 				}
-				setState(64);
+				setState(75);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -429,15 +466,15 @@ public class RiScriptParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(65);
+			setState(76);
 			match(LB);
-			setState(66);
+			setState(77);
 			symbol();
-			setState(67);
+			setState(78);
 			match(EQ);
-			setState(68);
+			setState(79);
 			expr();
-			setState(69);
+			setState(80);
 			match(RB);
 			}
 		}
@@ -472,11 +509,11 @@ public class RiScriptParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(71);
+			setState(82);
 			symbol();
-			setState(72);
+			setState(83);
 			match(EQ);
-			setState(73);
+			setState(84);
 			expr();
 			}
 		}
@@ -491,84 +528,69 @@ public class RiScriptParser extends Parser {
 		return _localctx;
 	}
 
-	public static class WeightContext extends ParserRuleContext {
-		public TerminalNode LB() { return getToken(RiScriptParser.LB, 0); }
-		public NumContext num() {
-			return getRuleContext(NumContext.class,0);
+	public static class CharsContext extends ParserRuleContext {
+		public List<TerminalNode> CHR() { return getTokens(RiScriptParser.CHR); }
+		public TerminalNode CHR(int i) {
+			return getToken(RiScriptParser.CHR, i);
 		}
-		public TerminalNode RB() { return getToken(RiScriptParser.RB, 0); }
+		public List<TerminalNode> DOT() { return getTokens(RiScriptParser.DOT); }
+		public TerminalNode DOT(int i) {
+			return getToken(RiScriptParser.DOT, i);
+		}
+		public List<TerminalNode> ENT() { return getTokens(RiScriptParser.ENT); }
+		public TerminalNode ENT(int i) {
+			return getToken(RiScriptParser.ENT, i);
+		}
 		public List<TerminalNode> WS() { return getTokens(RiScriptParser.WS); }
 		public TerminalNode WS(int i) {
 			return getToken(RiScriptParser.WS, i);
 		}
-		public WeightContext(ParserRuleContext parent, int invokingState) {
+		public List<TerminalNode> INT() { return getTokens(RiScriptParser.INT); }
+		public TerminalNode INT(int i) {
+			return getToken(RiScriptParser.INT, i);
+		}
+		public CharsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_weight; }
+		@Override public int getRuleIndex() { return RULE_chars; }
 	}
 
-	public final WeightContext weight() throws RecognitionException {
-		WeightContext _localctx = new WeightContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_weight);
+	public final CharsContext chars() throws RecognitionException {
+		CharsContext _localctx = new CharsContext(_ctx, getState());
+		enterRule(_localctx, 16, RULE_chars);
 		int _la;
 		try {
+			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(76);
+			setState(87); 
 			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if (_la==WS) {
-				{
-				setState(75);
-				match(WS);
+			_alt = 1;
+			do {
+				switch (_alt) {
+				case 1:
+					{
+					{
+					setState(86);
+					_la = _input.LA(1);
+					if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << DOT) | (1L << WS) | (1L << ENT) | (1L << INT) | (1L << CHR))) != 0)) ) {
+					_errHandler.recoverInline(this);
+					}
+					else {
+						if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+						_errHandler.reportMatch(this);
+						consume();
+					}
+					}
+					}
+					break;
+				default:
+					throw new NoViableAltException(this);
 				}
-			}
-
-			setState(78);
-			match(LB);
-			setState(79);
-			num();
-			setState(80);
-			match(RB);
-			setState(82);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if (_la==WS) {
-				{
-				setState(81);
-				match(WS);
-				}
-			}
-
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class NumContext extends ParserRuleContext {
-		public TerminalNode INT() { return getToken(RiScriptParser.INT, 0); }
-		public NumContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_num; }
-	}
-
-	public final NumContext num() throws RecognitionException {
-		NumContext _localctx = new NumContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_num);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(84);
-			match(INT);
+				setState(89); 
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,9,_ctx);
+			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
 			}
 		}
 		catch (RecognitionException re) {
@@ -607,25 +629,11 @@ public class RiScriptParser extends Parser {
 		public InlineContext inline(int i) {
 			return getRuleContext(InlineContext.class,i);
 		}
-		public List<TerminalNode> CHR() { return getTokens(RiScriptParser.CHR); }
-		public TerminalNode CHR(int i) {
-			return getToken(RiScriptParser.CHR, i);
+		public List<CharsContext> chars() {
+			return getRuleContexts(CharsContext.class);
 		}
-		public List<TerminalNode> DOT() { return getTokens(RiScriptParser.DOT); }
-		public TerminalNode DOT(int i) {
-			return getToken(RiScriptParser.DOT, i);
-		}
-		public List<TerminalNode> ENT() { return getTokens(RiScriptParser.ENT); }
-		public TerminalNode ENT(int i) {
-			return getToken(RiScriptParser.ENT, i);
-		}
-		public List<TerminalNode> WS() { return getTokens(RiScriptParser.WS); }
-		public TerminalNode WS(int i) {
-			return getToken(RiScriptParser.WS, i);
-		}
-		public List<TerminalNode> INT() { return getTokens(RiScriptParser.INT); }
-		public TerminalNode INT(int i) {
-			return getToken(RiScriptParser.INT, i);
+		public CharsContext chars(int i) {
+			return getRuleContext(CharsContext.class,i);
 		}
 		public ExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -635,76 +643,49 @@ public class RiScriptParser extends Parser {
 
 	public final ExprContext expr() throws RecognitionException {
 		ExprContext _localctx = new ExprContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_expr);
-		int _la;
+		enterRule(_localctx, 18, RULE_expr);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(95); 
+			setState(96); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
 				switch (_alt) {
 				case 1:
 					{
-					setState(95);
+					setState(96);
 					_errHandler.sync(this);
 					switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
 					case 1:
 						{
-						setState(86);
+						setState(91);
 						symbol();
 						}
 						break;
 					case 2:
 						{
-						setState(87);
+						setState(92);
 						choice();
 						}
 						break;
 					case 3:
 						{
-						setState(88);
+						setState(93);
 						assign();
 						}
 						break;
 					case 4:
 						{
-						setState(89);
+						setState(94);
 						inline();
 						}
 						break;
 					case 5:
 						{
-						setState(91); 
-						_errHandler.sync(this);
-						_alt = 1;
-						do {
-							switch (_alt) {
-							case 1:
-								{
-								{
-								setState(90);
-								_la = _input.LA(1);
-								if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << DOT) | (1L << WS) | (1L << ENT) | (1L << INT) | (1L << CHR))) != 0)) ) {
-								_errHandler.recoverInline(this);
-								}
-								else {
-									if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-									_errHandler.reportMatch(this);
-									consume();
-								}
-								}
-								}
-								break;
-							default:
-								throw new NoViableAltException(this);
-							}
-							setState(93); 
-							_errHandler.sync(this);
-							_alt = getInterpreter().adaptivePredict(_input,9,_ctx);
-						} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
+						setState(95);
+						chars();
 						}
 						break;
 					}
@@ -713,7 +694,7 @@ public class RiScriptParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(97); 
+				setState(98); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -731,31 +712,32 @@ public class RiScriptParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\22f\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4"+
-		"\f\t\f\3\2\3\2\6\2\33\n\2\r\2\16\2\34\3\2\3\2\3\3\3\3\3\4\3\4\3\5\3\5"+
-		"\7\5\'\n\5\f\5\16\5*\13\5\3\6\5\6-\n\6\3\6\5\6\60\n\6\3\7\3\7\3\7\3\7"+
-		"\7\7\66\n\7\f\7\16\79\13\7\3\7\3\7\3\7\3\7\7\7?\n\7\f\7\16\7B\13\7\3\b"+
-		"\3\b\3\b\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\n\5\nO\n\n\3\n\3\n\3\n\3\n\5\n"+
-		"U\n\n\3\13\3\13\3\f\3\f\3\f\3\f\3\f\6\f^\n\f\r\f\16\f_\6\fb\n\f\r\f\16"+
-		"\fc\3\f\2\2\r\2\4\6\b\n\f\16\20\22\24\26\2\3\4\2\t\n\20\22\2i\2\32\3\2"+
-		"\2\2\4 \3\2\2\2\6\"\3\2\2\2\b$\3\2\2\2\n,\3\2\2\2\f\61\3\2\2\2\16C\3\2"+
-		"\2\2\20I\3\2\2\2\22N\3\2\2\2\24V\3\2\2\2\26a\3\2\2\2\30\33\5\26\f\2\31"+
-		"\33\7\13\2\2\32\30\3\2\2\2\32\31\3\2\2\2\33\34\3\2\2\2\34\32\3\2\2\2\34"+
-		"\35\3\2\2\2\35\36\3\2\2\2\36\37\7\2\2\3\37\3\3\2\2\2 !\7\17\2\2!\5\3\2"+
-		"\2\2\"#\7\f\2\2#\7\3\2\2\2$(\5\6\4\2%\'\5\4\3\2&%\3\2\2\2\'*\3\2\2\2("+
-		"&\3\2\2\2()\3\2\2\2)\t\3\2\2\2*(\3\2\2\2+-\5\26\f\2,+\3\2\2\2,-\3\2\2"+
-		"\2-/\3\2\2\2.\60\5\22\n\2/.\3\2\2\2/\60\3\2\2\2\60\13\3\2\2\2\61\67\7"+
-		"\3\2\2\62\63\5\n\6\2\63\64\7\r\2\2\64\66\3\2\2\2\65\62\3\2\2\2\669\3\2"+
-		"\2\2\67\65\3\2\2\2\678\3\2\2\28:\3\2\2\29\67\3\2\2\2:;\5\n\6\2;<\7\4\2"+
-		"\2<@\3\2\2\2=?\5\4\3\2>=\3\2\2\2?B\3\2\2\2@>\3\2\2\2@A\3\2\2\2A\r\3\2"+
-		"\2\2B@\3\2\2\2CD\7\5\2\2DE\5\b\5\2EF\7\16\2\2FG\5\26\f\2GH\7\6\2\2H\17"+
-		"\3\2\2\2IJ\5\b\5\2JK\7\16\2\2KL\5\26\f\2L\21\3\2\2\2MO\7\n\2\2NM\3\2\2"+
-		"\2NO\3\2\2\2OP\3\2\2\2PQ\7\5\2\2QR\5\24\13\2RT\7\6\2\2SU\7\n\2\2TS\3\2"+
-		"\2\2TU\3\2\2\2U\23\3\2\2\2VW\7\21\2\2W\25\3\2\2\2Xb\5\b\5\2Yb\5\f\7\2"+
-		"Zb\5\20\t\2[b\5\16\b\2\\^\t\2\2\2]\\\3\2\2\2^_\3\2\2\2_]\3\2\2\2_`\3\2"+
-		"\2\2`b\3\2\2\2aX\3\2\2\2aY\3\2\2\2aZ\3\2\2\2a[\3\2\2\2a]\3\2\2\2bc\3\2"+
-		"\2\2ca\3\2\2\2cd\3\2\2\2d\27\3\2\2\2\16\32\34(,/\67@NT_ac";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\22g\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\3"+
+		"\2\3\2\6\2\31\n\2\r\2\16\2\32\3\2\3\2\3\3\3\3\3\4\3\4\7\4#\n\4\f\4\16"+
+		"\4&\13\4\3\5\5\5)\n\5\3\5\5\5,\n\5\3\6\7\6/\n\6\f\6\16\6\62\13\6\3\6\3"+
+		"\6\3\6\3\6\7\68\n\6\f\6\16\6;\13\6\3\7\3\7\3\7\3\7\7\7A\n\7\f\7\16\7D"+
+		"\13\7\3\7\3\7\3\7\3\7\7\7J\n\7\f\7\16\7M\13\7\3\b\3\b\3\b\3\b\3\b\3\b"+
+		"\3\t\3\t\3\t\3\t\3\n\6\nZ\n\n\r\n\16\n[\3\13\3\13\3\13\3\13\3\13\6\13"+
+		"c\n\13\r\13\16\13d\3\13\2\2\f\2\4\6\b\n\f\16\20\22\24\2\3\4\2\t\n\20\22"+
+		"\2k\2\30\3\2\2\2\4\36\3\2\2\2\6 \3\2\2\2\b(\3\2\2\2\n\60\3\2\2\2\f<\3"+
+		"\2\2\2\16N\3\2\2\2\20T\3\2\2\2\22Y\3\2\2\2\24b\3\2\2\2\26\31\5\24\13\2"+
+		"\27\31\7\13\2\2\30\26\3\2\2\2\30\27\3\2\2\2\31\32\3\2\2\2\32\30\3\2\2"+
+		"\2\32\33\3\2\2\2\33\34\3\2\2\2\34\35\7\2\2\3\35\3\3\2\2\2\36\37\7\17\2"+
+		"\2\37\5\3\2\2\2 $\7\f\2\2!#\5\4\3\2\"!\3\2\2\2#&\3\2\2\2$\"\3\2\2\2$%"+
+		"\3\2\2\2%\7\3\2\2\2&$\3\2\2\2\')\5\24\13\2(\'\3\2\2\2()\3\2\2\2)+\3\2"+
+		"\2\2*,\5\n\6\2+*\3\2\2\2+,\3\2\2\2,\t\3\2\2\2-/\7\n\2\2.-\3\2\2\2/\62"+
+		"\3\2\2\2\60.\3\2\2\2\60\61\3\2\2\2\61\63\3\2\2\2\62\60\3\2\2\2\63\64\7"+
+		"\5\2\2\64\65\7\21\2\2\659\7\6\2\2\668\7\n\2\2\67\66\3\2\2\28;\3\2\2\2"+
+		"9\67\3\2\2\29:\3\2\2\2:\13\3\2\2\2;9\3\2\2\2<B\7\3\2\2=>\5\b\5\2>?\7\r"+
+		"\2\2?A\3\2\2\2@=\3\2\2\2AD\3\2\2\2B@\3\2\2\2BC\3\2\2\2CE\3\2\2\2DB\3\2"+
+		"\2\2EF\5\b\5\2FG\7\4\2\2GK\3\2\2\2HJ\5\4\3\2IH\3\2\2\2JM\3\2\2\2KI\3\2"+
+		"\2\2KL\3\2\2\2L\r\3\2\2\2MK\3\2\2\2NO\7\5\2\2OP\5\6\4\2PQ\7\16\2\2QR\5"+
+		"\24\13\2RS\7\6\2\2S\17\3\2\2\2TU\5\6\4\2UV\7\16\2\2VW\5\24\13\2W\21\3"+
+		"\2\2\2XZ\t\2\2\2YX\3\2\2\2Z[\3\2\2\2[Y\3\2\2\2[\\\3\2\2\2\\\23\3\2\2\2"+
+		"]c\5\6\4\2^c\5\f\7\2_c\5\20\t\2`c\5\16\b\2ac\5\22\n\2b]\3\2\2\2b^\3\2"+
+		"\2\2b_\3\2\2\2b`\3\2\2\2ba\3\2\2\2cd\3\2\2\2db\3\2\2\2de\3\2\2\2e\25\3"+
+		"\2\2\2\16\30\32$(+\609BK[bd";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

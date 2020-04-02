@@ -78,10 +78,19 @@ describe('RiScript.KnownIssues', () => {
 
   return; // remove to work
 
+  it('Should allow transforms on assignments', () => {
+    //return;
+
+    let ctx = {};
+
+    expect(RiTa.evaluate('[$a=a].toUpperCase()', ctx, 1)).eq('');
+    expect(ctx.a).eq('A')
+  });
+
   it('Should be fixed to pass', () => {
     //return;
 
-    ctx = {};
+    let ctx = {};
     expect(RiScript.evaluate('$foo=().toUpperCase()', ctx, 0)).eq('');
     expect(ctx.foo).eq('');
   });

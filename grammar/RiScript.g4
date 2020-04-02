@@ -1,6 +1,6 @@
 grammar RiScript;
 
-// NOTE: changing this file require a re-compile: use $ npm run watch-grammar
+// --------- NOTE: changing this file require a re-compile: use $ npm run watch-grammar --------- 
 
 // TODO: silent assigns single and double quotes numbers/arithmetic (++, etc) line breaks in vars
 // (&#13; (or &#10; for newline)) adjacent vars: $me$me, $me$me=hello, $me$me$me=hello
@@ -13,26 +13,20 @@ grammar RiScript;
 // $hero=&(Jane | Jill) $hero=>(Jane | Jill) $hero=+(Jane | Jill) $hero<-(Jane | Jill)
 // $hero$hero<-(Jane | Jill)
 
-// TODO: Labels ?
+// line extensions /
+
+// conditionals with number vars in rs (need to parseFloat)
 
 script: (expr | NL)+ EOF;
 transform: TF;
-ident: SYM;
-symbol: ident transform*;
+symbol: SYM transform*;
 wexpr: expr? weight?;
+weight: WS* LB INT RB WS*;
 choice: (LP (wexpr OR)* wexpr RP) transform*;
-inline: LB symbol EQ expr RB;
-assign: symbol EQ expr;
-weight: WS? LB num RB WS?;
-num: INT;
-expr: (
-		symbol
-		| choice
-		| assign
-		| inline
-		| (CHR | DOT | ENT | WS | INT)+
-	)+;
-//expr: (symbol | choice | assign | inline | (CHR | DOT | ENT)+)+ (WS+ (symbol | choice | assign | inline | (CHR |  DOT | ENT)+))*;
+inline: LB symbol EQ expr RB; //transform*
+assign: symbol EQ expr; //transform*
+chars: (CHR | DOT | ENT | WS | INT)+;
+expr: (symbol | choice | assign | inline | chars)+;
 
 LP: '(';
 RP: ')';
@@ -41,15 +35,15 @@ RB: ']';
 LCB: '{';
 RCB: '}';
 DOT: '.';
-WS: [ \t]+;
+WS: [ \t];
 NL: '\r'? '\n';
-SYM: ('$' IDENT) | ('$' '{' IDENT '}');
+SYM: ('$' IDENT);
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
 TF: ('.' IDENT ( '(' ')')?)+;
 ENT: '&' [A-Za-z0-9#]+ ';';
 //NUM: ([0-9]+ | ( [0-9]* '.' [0-9]+));
-INT: [0-9]+;
+INT: WS* [0-9]+ WS*;
 CHR:
 	~(
 		'.'
