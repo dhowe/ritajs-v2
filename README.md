@@ -32,16 +32,23 @@ Jane was from $place=(New York | Berlin | Shanghai).
 $place is cold and wet in the winter.
 ```
 
+### Silent Assignment
 
 ```
-Jane was from [$place=(New York | Berlin | Shanghai)]. 
+$place=(New York | Berlin | Shanghai)
+Jane was from $place. 
 $place is cold and wet in the winter.
 ```
 
 ### Symbols
 
 ```
-/* 'desc' defined in JS or RS */
+$desc=dark and gloomy
+The weather was $desc
+```
+&nbsp;&nbsp;&nbsp;&nbsp;or 
+```
+/* 'desc' defined in JS */
 The weather was $desc
 ```
 
@@ -59,14 +66,22 @@ How many (tooth | menu | child).norepeat() do you have?
 How many (tooth | menu | child).seq() do you have
 ```
 
-### Conditionals
+### Conditionals: If
 
 ```
 /* 'desc' defined in JS or RS */
 {desc='party'} The party was happening
 {desc='party', user=$john} The party was happening and John was wearing $John.color.
+```
+### Conditionals: If-else
 
+```
 {adj='positive'} The party was happening :: The party was not happening.
+```
+&nbsp;&nbsp;&nbsp;&nbsp;or 
+```
+{adj='positive'} The party was happening.
+{adj!='positive'} The party was not happening.
 ```
 
 ### Labels

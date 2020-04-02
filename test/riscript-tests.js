@@ -9,8 +9,6 @@ const Transforms = require('../src/transforms');
 // handle multipliers in cfg-s
 // variable concatenation
 
-const VARIABLE_CONCAT = 0;
-
 describe/*.only*/('RiTa.RiScript', () => {
 
   if (typeof module !== 'undefined') require('./before');
@@ -60,7 +58,7 @@ describe/*.only*/('RiTa.RiScript', () => {
       expect(RiScript.multeval('$s', ctx)).eq('c');
     });
 
-    /*     it('Should throw on infinite recursions', () => {
+    /* it('Should throw on infinite recursions', () => {
           let ctx, exp;
           ctx = { a: 'a', b: 'b' };
           expr = '(a|a)';
@@ -83,7 +81,7 @@ describe/*.only*/('RiTa.RiScript', () => {
     
           expr = { s: '$a', a: '$b', c: '$d', d: 'c' };
           expect(RiScript.multeval('$s', ctx)).eq('c');
-        }); */
+      }); */
   })
 
 
@@ -97,15 +95,15 @@ describe/*.only*/('RiTa.RiScript', () => {
     });
   });
 
-  VARIABLE_CONCAT && describe('Variable Concatenation', () => {
+  describe('Variable Concatenation', () => {
     it('Should concatenate variables', () => {
       let ctx = {};
-      expect(RiTa.evaluate('{$foo=(h | h)} ${foo}ello', ctx, 0)).eq('hello'); // TODO
+      expect(RiTa.evaluate('$foo=(h | h)\n($foo)ello', ctx, 0)).eq('hello'); 
       expect(ctx.foo).eq('h');
-      expect(RiTa.evaluate('[$foo=(a | a)]', ctx, 0)).eq('a');
-      expect(ctx.foo).eq('a');
-      expect(RiTa.evaluate('${foo} b c', ctx, 0)).eq('a b c');
-      expect(RiTa.evaluate('${foo}bc', ctx, 0)).eq('abc');
+      expect(RiTa.evaluate('$foo b c', ctx, 0)).eq('h b c');
+      expect(RiTa.evaluate('($foo) b c', ctx, 0)).eq('h b c');
+      expect(RiTa.evaluate('($foo)bc', ctx, 0)).eq('hbc'); 
+      expect(ctx.foo).eq('h');
     });
   });
 
@@ -350,10 +348,21 @@ describe/*.only*/('RiTa.RiScript', () => {
 
     it('Should resolve previously defined symbols', () => {
 
+      expect(RiTa.evaluate('the $dog ate', { dog: 'terrier' }, 0)).eq('the terrier ate');
+      expect(RiTa.evaluate('the $dog $verb', { dog: 'terrier', verb: 'ate' }, 0)).eq('the terrier ate');
+
+      expect(RiTa.evaluate('$foo=bar\n$foo',{}, 0)).eq('bar');
+      expect(RiTa.evaluate('$dog=terrier\na $dog', {})).eq('a terrier');
+      expect(RiTa.evaluate('$dog=beagle\nI ate the $dog', { }, 0)).eq('I ate the beagle');
+      expect(RiTa.evaluate('$dog=lab\nThe $dog today.', { }, 0)).eq('The lab today.');
+      expect(RiTa.evaluate('$dog=lab\nI ate the $dog.', { }, 0)).eq('I ate the lab.');
+      expect(RiTa.evaluate('$dog=lab\nThe $dog\ntoday.', {  }, 0)).eq('The lab today.');
+      expect(RiTa.evaluate('$dog=lab\nI ate the\n$dog.', {  }, 0)).eq('I ate the lab.');
+
       expect(RiTa.evaluate('$foo=bar\n$foo', {}, 0)).eq('bar');
       expect(RiTa.evaluate('$foo=baz\n$bar=$foo\n$bar', {}, 0)).eq('baz');
 
-      // TODO: symbols that resolve to other symbols (symbols in context are not resolved?)
+      // TODO: symbols that resolve to other symbols (symbols in context are not resolved? use multeval)
       //expect(RiTa.evaluate('$bar', { foo: 'baz', bar: '$foo' }, 1)).eq('baz');
     });
 
