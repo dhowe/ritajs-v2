@@ -10,7 +10,7 @@ const PosTagger = require('./tagger');
 const Analyzer = require('./analyzer');
 const Concorder = require('./concorder');
 const Conjugator = require('./conjugator');
-const Pluralizer = require('./pluralizer');
+const Inflector = require('./inflector');
 const LetterToSound = require('./rita_lts');
 
 const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
@@ -123,7 +123,7 @@ class RiTa {
   }
 
   static pluralize() {
-    return RiTa.pluralizer.pluralize(...arguments);
+    return RiTa.inflector.pluralize(...arguments);
   }
 
   static presentParticiple(verb) {
@@ -171,7 +171,7 @@ class RiTa {
   }
 
   static singularize() {
-    return RiTa.pluralizer.singularize(...arguments);
+    return RiTa.inflector.singularize(...arguments);
   }
 
   static sentences(text) {
@@ -233,7 +233,7 @@ RiTa.stemmer = new Stemmer(RiTa);
 RiTa.tagger = new PosTagger(RiTa);
 RiTa.concorder = new Concorder(RiTa);
 RiTa.tokenizer = new Tokenizer(RiTa);
-RiTa.pluralizer = new Pluralizer(RiTa);
+RiTa.inflector = new Inflector(RiTa);
 RiTa.conjugator = new Conjugator(RiTa);
 
 // LAZY-LOADS

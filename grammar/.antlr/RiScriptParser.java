@@ -454,6 +454,12 @@ public class RiScriptParser extends Parser {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public TerminalNode RB() { return getToken(RiScriptParser.RB, 0); }
+		public List<TransformContext> transform() {
+			return getRuleContexts(TransformContext.class);
+		}
+		public TransformContext transform(int i) {
+			return getRuleContext(TransformContext.class,i);
+		}
 		public InlineContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -463,6 +469,7 @@ public class RiScriptParser extends Parser {
 	public final InlineContext inline() throws RecognitionException {
 		InlineContext _localctx = new InlineContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_inline);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
@@ -476,6 +483,20 @@ public class RiScriptParser extends Parser {
 			expr();
 			setState(80);
 			match(RB);
+			setState(84);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==TF) {
+				{
+				{
+				setState(81);
+				transform();
+				}
+				}
+				setState(86);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -509,11 +530,11 @@ public class RiScriptParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(82);
+			setState(87);
 			symbol();
-			setState(83);
+			setState(88);
 			match(EQ);
-			setState(84);
+			setState(89);
 			expr();
 			}
 		}
@@ -563,7 +584,7 @@ public class RiScriptParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(87); 
+			setState(92); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -571,7 +592,7 @@ public class RiScriptParser extends Parser {
 				case 1:
 					{
 					{
-					setState(86);
+					setState(91);
 					_la = _input.LA(1);
 					if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << DOT) | (1L << WS) | (1L << ENT) | (1L << INT) | (1L << CHR))) != 0)) ) {
 					_errHandler.recoverInline(this);
@@ -587,9 +608,9 @@ public class RiScriptParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(89); 
+				setState(94); 
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,9,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,10,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
 			}
 		}
@@ -648,43 +669,43 @@ public class RiScriptParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(96); 
+			setState(101); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
 				switch (_alt) {
 				case 1:
 					{
-					setState(96);
+					setState(101);
 					_errHandler.sync(this);
-					switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
+					switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
 					case 1:
 						{
-						setState(91);
+						setState(96);
 						symbol();
 						}
 						break;
 					case 2:
 						{
-						setState(92);
+						setState(97);
 						choice();
 						}
 						break;
 					case 3:
 						{
-						setState(93);
+						setState(98);
 						assign();
 						}
 						break;
 					case 4:
 						{
-						setState(94);
+						setState(99);
 						inline();
 						}
 						break;
 					case 5:
 						{
-						setState(95);
+						setState(100);
 						chars();
 						}
 						break;
@@ -694,9 +715,9 @@ public class RiScriptParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(98); 
+				setState(103); 
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,12,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
 			}
 		}
@@ -712,32 +733,33 @@ public class RiScriptParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\22g\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\22l\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\3"+
 		"\2\3\2\6\2\31\n\2\r\2\16\2\32\3\2\3\2\3\3\3\3\3\4\3\4\7\4#\n\4\f\4\16"+
 		"\4&\13\4\3\5\5\5)\n\5\3\5\5\5,\n\5\3\6\7\6/\n\6\f\6\16\6\62\13\6\3\6\3"+
 		"\6\3\6\3\6\7\68\n\6\f\6\16\6;\13\6\3\7\3\7\3\7\3\7\7\7A\n\7\f\7\16\7D"+
 		"\13\7\3\7\3\7\3\7\3\7\7\7J\n\7\f\7\16\7M\13\7\3\b\3\b\3\b\3\b\3\b\3\b"+
-		"\3\t\3\t\3\t\3\t\3\n\6\nZ\n\n\r\n\16\n[\3\13\3\13\3\13\3\13\3\13\6\13"+
-		"c\n\13\r\13\16\13d\3\13\2\2\f\2\4\6\b\n\f\16\20\22\24\2\3\4\2\t\n\20\22"+
-		"\2k\2\30\3\2\2\2\4\36\3\2\2\2\6 \3\2\2\2\b(\3\2\2\2\n\60\3\2\2\2\f<\3"+
-		"\2\2\2\16N\3\2\2\2\20T\3\2\2\2\22Y\3\2\2\2\24b\3\2\2\2\26\31\5\24\13\2"+
-		"\27\31\7\13\2\2\30\26\3\2\2\2\30\27\3\2\2\2\31\32\3\2\2\2\32\30\3\2\2"+
-		"\2\32\33\3\2\2\2\33\34\3\2\2\2\34\35\7\2\2\3\35\3\3\2\2\2\36\37\7\17\2"+
-		"\2\37\5\3\2\2\2 $\7\f\2\2!#\5\4\3\2\"!\3\2\2\2#&\3\2\2\2$\"\3\2\2\2$%"+
-		"\3\2\2\2%\7\3\2\2\2&$\3\2\2\2\')\5\24\13\2(\'\3\2\2\2()\3\2\2\2)+\3\2"+
-		"\2\2*,\5\n\6\2+*\3\2\2\2+,\3\2\2\2,\t\3\2\2\2-/\7\n\2\2.-\3\2\2\2/\62"+
-		"\3\2\2\2\60.\3\2\2\2\60\61\3\2\2\2\61\63\3\2\2\2\62\60\3\2\2\2\63\64\7"+
-		"\5\2\2\64\65\7\21\2\2\659\7\6\2\2\668\7\n\2\2\67\66\3\2\2\28;\3\2\2\2"+
-		"9\67\3\2\2\29:\3\2\2\2:\13\3\2\2\2;9\3\2\2\2<B\7\3\2\2=>\5\b\5\2>?\7\r"+
-		"\2\2?A\3\2\2\2@=\3\2\2\2AD\3\2\2\2B@\3\2\2\2BC\3\2\2\2CE\3\2\2\2DB\3\2"+
-		"\2\2EF\5\b\5\2FG\7\4\2\2GK\3\2\2\2HJ\5\4\3\2IH\3\2\2\2JM\3\2\2\2KI\3\2"+
-		"\2\2KL\3\2\2\2L\r\3\2\2\2MK\3\2\2\2NO\7\5\2\2OP\5\6\4\2PQ\7\16\2\2QR\5"+
-		"\24\13\2RS\7\6\2\2S\17\3\2\2\2TU\5\6\4\2UV\7\16\2\2VW\5\24\13\2W\21\3"+
-		"\2\2\2XZ\t\2\2\2YX\3\2\2\2Z[\3\2\2\2[Y\3\2\2\2[\\\3\2\2\2\\\23\3\2\2\2"+
-		"]c\5\6\4\2^c\5\f\7\2_c\5\20\t\2`c\5\16\b\2ac\5\22\n\2b]\3\2\2\2b^\3\2"+
-		"\2\2b_\3\2\2\2b`\3\2\2\2ba\3\2\2\2cd\3\2\2\2db\3\2\2\2de\3\2\2\2e\25\3"+
-		"\2\2\2\16\30\32$(+\609BK[bd";
+		"\7\bU\n\b\f\b\16\bX\13\b\3\t\3\t\3\t\3\t\3\n\6\n_\n\n\r\n\16\n`\3\13\3"+
+		"\13\3\13\3\13\3\13\6\13h\n\13\r\13\16\13i\3\13\2\2\f\2\4\6\b\n\f\16\20"+
+		"\22\24\2\3\4\2\t\n\20\22\2q\2\30\3\2\2\2\4\36\3\2\2\2\6 \3\2\2\2\b(\3"+
+		"\2\2\2\n\60\3\2\2\2\f<\3\2\2\2\16N\3\2\2\2\20Y\3\2\2\2\22^\3\2\2\2\24"+
+		"g\3\2\2\2\26\31\5\24\13\2\27\31\7\13\2\2\30\26\3\2\2\2\30\27\3\2\2\2\31"+
+		"\32\3\2\2\2\32\30\3\2\2\2\32\33\3\2\2\2\33\34\3\2\2\2\34\35\7\2\2\3\35"+
+		"\3\3\2\2\2\36\37\7\17\2\2\37\5\3\2\2\2 $\7\f\2\2!#\5\4\3\2\"!\3\2\2\2"+
+		"#&\3\2\2\2$\"\3\2\2\2$%\3\2\2\2%\7\3\2\2\2&$\3\2\2\2\')\5\24\13\2(\'\3"+
+		"\2\2\2()\3\2\2\2)+\3\2\2\2*,\5\n\6\2+*\3\2\2\2+,\3\2\2\2,\t\3\2\2\2-/"+
+		"\7\n\2\2.-\3\2\2\2/\62\3\2\2\2\60.\3\2\2\2\60\61\3\2\2\2\61\63\3\2\2\2"+
+		"\62\60\3\2\2\2\63\64\7\5\2\2\64\65\7\21\2\2\659\7\6\2\2\668\7\n\2\2\67"+
+		"\66\3\2\2\28;\3\2\2\29\67\3\2\2\29:\3\2\2\2:\13\3\2\2\2;9\3\2\2\2<B\7"+
+		"\3\2\2=>\5\b\5\2>?\7\r\2\2?A\3\2\2\2@=\3\2\2\2AD\3\2\2\2B@\3\2\2\2BC\3"+
+		"\2\2\2CE\3\2\2\2DB\3\2\2\2EF\5\b\5\2FG\7\4\2\2GK\3\2\2\2HJ\5\4\3\2IH\3"+
+		"\2\2\2JM\3\2\2\2KI\3\2\2\2KL\3\2\2\2L\r\3\2\2\2MK\3\2\2\2NO\7\5\2\2OP"+
+		"\5\6\4\2PQ\7\16\2\2QR\5\24\13\2RV\7\6\2\2SU\5\4\3\2TS\3\2\2\2UX\3\2\2"+
+		"\2VT\3\2\2\2VW\3\2\2\2W\17\3\2\2\2XV\3\2\2\2YZ\5\6\4\2Z[\7\16\2\2[\\\5"+
+		"\24\13\2\\\21\3\2\2\2]_\t\2\2\2^]\3\2\2\2_`\3\2\2\2`^\3\2\2\2`a\3\2\2"+
+		"\2a\23\3\2\2\2bh\5\6\4\2ch\5\f\7\2dh\5\20\t\2eh\5\16\b\2fh\5\22\n\2gb"+
+		"\3\2\2\2gc\3\2\2\2gd\3\2\2\2ge\3\2\2\2gf\3\2\2\2hi\3\2\2\2ig\3\2\2\2i"+
+		"j\3\2\2\2j\25\3\2\2\2\17\30\32$(+\609BKV`gi";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

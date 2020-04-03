@@ -92,7 +92,7 @@ const PLURAL_RULES = [
 
 let RiTa;
 
-class Pluralizer {
+class Inflector {
 
   constructor(parent) {
     RiTa = parent;
@@ -189,4 +189,4 @@ class Pluralizer {
   }
 }
 
-module && (module.exports = Pluralizer);
+module && (module.exports = Inflector);

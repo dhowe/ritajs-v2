@@ -17,7 +17,7 @@ describe('RiTa.KnownIssues', () => {
 
     res1 = RiTa.singularize(testPairs[i], { dbug: dbug });
     res2 = RiTa.pluralize(testPairs[i + 1], { dbug: dbug });
-    res3 = RiTa.pluralizer.isPlural(testPairs[i], { dbug: dbug });
+    res3 = RiTa.inflector.isPlural(testPairs[i], { dbug: dbug });
 
     eq(res1, testPairs[i + 1], 'FAIL: singularize(' + testPairs[i]
       + ') was ' + res1 + ', but expected ' + testPairs[i + 1] + '\n        '

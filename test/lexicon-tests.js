@@ -47,11 +47,11 @@ describe('RiTa.Lexicon', function() {
   it('Should correctly call randomWord.nns', () => {
     for (let i = 0; i < 20; i++) {
       let result = RiTa.randomWord({ pos: "nns" });
-      if (!RiTa.pluralizer.isPlural(result)) {
+      if (!RiTa.inflector.isPlural(result)) {
 
         // For now, just warn here as there are too many edge cases (see #521)
         console.warn("Pluralize/Singularize problem: randomWord(nns) was '" + result + "' (" +
-          "isPlural=" + RiTa.pluralizer.isPlural(result) + "), singularized is '" + RiTa.singularize(result) + "'");
+          "isPlural=" + RiTa.inflector.isPlural(result) + "), singularized is '" + RiTa.singularize(result) + "'");
       }
       //ok(RiTa._isPlural(result), "randomWord nns: " + result);
 

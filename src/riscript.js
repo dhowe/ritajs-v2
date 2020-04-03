@@ -35,7 +35,8 @@ class RiScript {
       last = expr;
       expr = rs.lexParseVisit(expr, ctx, showParse, true);
       showParse && console.log(i + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
-      if (i >= MaxTries - 1) throw Error('Failed to resolve: ' + stmt);
+      if (i >= MaxTries - 1) throw Error('Unable to resolve: "' 
+        + input + '" after '+MaxTries + ' tries - an infinite loop?');
     }
     if (!silent && !RiTa.SILENT && expr.includes('$')) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');

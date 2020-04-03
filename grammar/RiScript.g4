@@ -23,7 +23,7 @@ symbol: SYM transform*;
 wexpr: expr? weight?;
 weight: WS* LB INT RB WS*;
 choice: (LP (wexpr OR)* wexpr RP) transform*;
-inline: LB symbol EQ expr RB; //transform*
+inline: LB symbol EQ expr RB transform*;
 assign: symbol EQ expr; //transform*
 chars: (CHR | DOT | ENT | WS | INT)+;
 expr: (symbol | choice | assign | inline | chars)+;
