@@ -10,7 +10,7 @@ $ yarn test
 ```
 &nbsp;
 
-## Language Elements
+## RiTaScript
 
 ### Choice
 
@@ -25,7 +25,7 @@ I'm (very | super | really) glad to ((meet | know) you | learn about you).
 The weather was (sad | gloomy [2] | depressed[4]).
 ```
 
-### Assignment (?)
+### Assignment
 
 Basic assignments do not have output, they simply create/modify a symbol
 ```
