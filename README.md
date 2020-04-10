@@ -1,15 +1,59 @@
-# RitaScript
 
-## Language Elements
+
+# RiTa v2
+
+## Building
+
+```
+$ yarn install 
+$ yarn test
+```
+&nbsp;
+
+## RiTaScript
 
 ### Choice
 
+```
+The weather was (sad | gloomy | depressed).  ->  The weather was gloomy. 
+| I'm (very | super | really) glad to ((meet | know) you | learn about you).  ->  I'm very glad to know you. 
+```
+
+### Weighted Choice
+```
+The weather was (sad | gloomy [2] | depressed[4]).  ->  The weather was depressed. 
+```
+
+### Assignment
+Basic assignments do not have output, they simply create or update a symbol
+
+```
+$desc=wet and cold
+The weather was $desc  ->  The weather was wet and cold 
+```
+
+### Inline Assignment
+
+Inline assignments create/modify a symbol _and_ output its contents
+
+```
+Jane was from [$place=(New York | Berlin | Shanghai)]. $place is cold and wet. 
+     ->  Jane was from Berlin. Berlin is cold and wet.
+
+$place=(New York | Berlin | Shanghai)`<br/>`$place is cold and wet in winter. 
+     ->  Berlin is cold and wet in the winter.
+    
+In [$place=(New York | Berlin | Shanghai)] it is cold and wet in winter. 
+     ->  In Berlin it is cold and wet in the winter.
+```
+
+<!--
+### Choice
 
 | | | 
 |-|-|
 | The weather was (sad &#124; gloomy &#124; depressed). | The weather was depressed. |
 | I'm (very &#124; super &#124; really) glad to ((meet &#124; know) you &#124; learn about you). | I'm very glad to know you. |
-
 
 
 ### Weighted Choice
@@ -35,7 +79,6 @@ Inline assignments create/modify a symbol _and_ output its contents
 | `$place=(New York | Berlin | Shanghai)`<br/>`$place is cold and wet in winter.` | `Berlin is cold and wet in the winter.` |
 | `In [$place=(New York | Berlin | Shanghai)] it is cold and wet in winter.` | `In Berlin it is cold and wet in the winter.` |
 
-////////////////////  WORKING HERE /////////////////////////
 
 ```
 Jane was from [$place=(New York | Berlin | Shanghai)]. 
@@ -51,7 +94,7 @@ In [$place=(New York | Berlin | Shanghai)], it is cold and wet in winter.
 In [$place=(New York | Berlin | Shanghai) it is cold and wet in winter].
 
 ```
-
+-->
 ### Symbols
 
 ```
@@ -78,13 +121,14 @@ How many (tooth | menu | child).norepeat() do you have?
 How many (tooth | menu | child).seq() do you have
 ```
 
-### Conditionals: If
+### Conditionals
 
 ```
-/* 'desc' defined in JS or RS */
+// 'desc' can be defined in JS or RS */
 {desc='party'} The party was happening
 {desc='party', user=$john} The party was happening and John was wearing $John.color.
 ```
+<!--
 ### Conditionals: If-else
 
 ```
@@ -95,7 +139,7 @@ How many (tooth | menu | child).seq() do you have
 {adj='positive'} The party was happening.
 {adj!='positive'} The party was not happening.
 ```
-
+<!--
 ### Labels
 ```
 #Opening {
