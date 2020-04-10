@@ -1,6 +1,6 @@
 
 
-# Rita v2
+# RiTa v2
 
 ## Building
 
