@@ -1,33 +1,32 @@
 grammar RiScript;
 
-// --------- NOTE: changing this file require a re-compile: use $ npm run watch-grammar --------- 
+// --------- NOTE: changing this file require a re-compile: use $ yarn run watch-grammar --------- 
 
-// TODO: silent assigns single and double quotes numbers/arithmetic (++, etc) line breaks in vars
-// (&#13; (or &#10; for newline)) adjacent vars: $me$me, $me$me=hello, $me$me$me=hello
-
-// TODO: store custom transforms in context
-
-// IDEA: variable assigments are normally SILENT, we add an operator to make them output (reverse
-// what we have now): $hero=(Jane | Jill) -> silent [$hero=(Jane | Jill)] -> spoken
-
-// $hero=&(Jane | Jill) $hero=>(Jane | Jill) $hero=+(Jane | Jill) $hero<-(Jane | Jill)
-// $hero$hero<-(Jane | Jill)
-
-// line extensions /
-
-// conditionals with number vars in rs (need to parseFloat)
+// TODO: custom transforms (store in context?) conditionals with number vars (need to
+// parseFloat,parseBool,etc)
 
 script: (expr | NL)+ EOF;
-transform: TF;
-symbol: SYM transform*;
-wexpr: expr? weight?;
+//prod: (symbol | choice | assign | inline | chars)+;
+//expr: cond? prod;
+expr: (symbol | choice | assign | inline | chars)+;
+cond: WS* LCB SYM op chars RCB WS*;
 weight: WS* LB INT RB WS*;
 choice: (LP (wexpr OR)* wexpr RP) transform*;
 inline: LB symbol EQ expr RB transform*;
 assign: symbol EQ expr; //transform*
-chars: (CHR | DOT | ENT | WS | INT)+;
-expr: (symbol | choice | assign | inline | chars)+;
+chars: (
+		CHR
+		| ENT
+		| INT
+		| (DOT | WS | EXC | AST | GT | LT | DOL | HAT))+;
+symbol: SYM transform*;
+wexpr: expr? weight?;
+//wexpr: prod? weight?;
+transform: TF;
+op: OP? EQ | LT | GT;
 
+GT: '>';
+LT: '<';
 LP: '(';
 RP: ')';
 LB: '[';
@@ -36,6 +35,10 @@ LCB: '{';
 RCB: '}';
 DOT: '.';
 WS: [ \t];
+EXC: '!';
+AST: '*';
+HAT: '^';
+DOL: '$';
 NL: '\r'? '\n';
 SYM: ('$' IDENT);
 OR: WS* '|' WS*;
@@ -44,9 +47,15 @@ TF: ('.' IDENT ( '(' ')')?)+;
 ENT: '&' [A-Za-z0-9#]+ ';';
 //NUM: ([0-9]+ | ( [0-9]* '.' [0-9]+));
 INT: WS* [0-9]+ WS*;
+OP: [!*$^<>];
 CHR:
 	~(
 		'.'
+		| '>'
+		| '<'
+		| '^'
+		| '*'
+		| '!'
 		| '['
 		| ']'
 		| '{'

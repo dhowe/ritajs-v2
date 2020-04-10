@@ -1,8 +1,8 @@
 const antlr4 = require('antlr4');
+const Operator = require('./operator');
 const { RiScriptVisitor } = require('../lib/RiScriptVisitor');
 const { RiScriptParser } = require('../lib/RiScriptParser');
 const EmptyExpr = new RiScriptParser.ExprContext();
-//EmptyExpr.transforms = [];
 
 String.prototype.uc = function () {
   return this.toUpperCase();
@@ -29,17 +29,32 @@ class Visitor extends RiScriptVisitor {
   visitExpr(ctx) {
     this.trace && console.log('visitExpr(' + ctx.getText() + ')',
       "tfs=" + (ctx.transforms || "[]"));
-    // ctx.children ? ctx.children.length);
-    //this.trace && this.printChildren(ctx);
-    let result = this.visitChildren(ctx);
-    return result;
+    return this.visitChildren(ctx);
+  }
+
+  visitExprNew(ctx) {
+    this.trace && console.log('visitExpr(' + ctx.getText() + ')',
+      "tfs=" + (ctx.transforms || "[]"));
+    let prod = ctx.prod() || EmptyExpr;q
+    let cond = ctx.cond();
+    //if (!prod) throw Error('null prod for:"' + ctx.getText()+'"');
+    if (cond) {
+      let ident = cond.getChild(1).getSymbol().text.replace(/^\$/, '');
+      let op = Operator.fromString(cond.getChild(2).getText());
+      let val = cond.getChild(3).getText();
+      let accept = op.invoke(this.context[ident], val);
+      this.trace && console.log('cond(' + ctx.getText() + ')', ident, op.toString(), val, '->', accept);
+      if (!accept) prod = EmptyExpr;
+    }
+    prod.transforms = this.inheritTransforms(prod, ctx);
+    return this.visitChildren(prod);
   }
 
   /* visit value and create a mapping in the symbol table */
   visitAssign(ctx) {
     let token = ctx.expr();
     let id = symbolName(ctx.symbol().getText());
-    this.trace && console.log('visitAssign: ' 
+    this.trace && console.log('visitAssign: '
       + id + '=' + this.flatten(token) + ']');
     this.context[id] = token ? this.visit(token) : '';
     return ''; // no output on vanilla assign
@@ -50,8 +65,8 @@ class Visitor extends RiScriptVisitor {
     //this.visitAssign(ctx);
     let token = ctx.expr();
     let id = symbolName(ctx.symbol().getText());
-/*     let tfs = ctx.transform();
-    if (tfs) tfs = tfs.map(t => t.getText()) */
+    /*     let tfs = ctx.transform();
+        if (tfs) tfs = tfs.map(t => t.getText()) */
     token.transforms = this.inheritTransforms(token, ctx);
     this.trace && console.log('visitInline: ' + id + '=' +
       this.flatten(token) + ' tfs=[' + (token.transforms || '') + ']');
@@ -67,6 +82,7 @@ class Visitor extends RiScriptVisitor {
     ctx.wexpr().map((w, k) => {
       let wctx = w.weight();
       let weight = wctx ? parseInt(wctx.INT()) : 1;
+      //let expr = w.prod() || EmptyExpr;
       let expr = w.expr() || EmptyExpr;
       for (let i = 0; i < weight; i++) {
         options.push(expr);
@@ -92,8 +108,8 @@ class Visitor extends RiScriptVisitor {
   visitSymbol(ctx) {
 
     let ident = ctx.SYM().getText()
-      .replace(/^\$/, '') // strip $
-      .replace(/[}{]/g, ''); // strip {}
+      .replace(/^\$/, ''); // strip $
+    //.replace(/[}{]/g, ''); // strip {}
 
     let text = this.context[ident] || '$' + ident;
 
@@ -130,12 +146,14 @@ class Visitor extends RiScriptVisitor {
 
     if (typeof term === 'string') {
       if (term === Visitor.EOF) return '';
+      term = term.replace(/\r/, ''); // normalise
+      term = term.replace(/\\n/, ''); // continuations
       term = term.replace(/\r?\n/, ' '); // no line-breaks
 
       this.trace && console.log('visitTerminal: "'
         + term + '" tfs=[' + (tfs || '') + ']');
 
-      if (term.includes('$')) { // Unresolved symbols
+      if (/\$[A-Za-z_][A-Za-z_0-9-]*/.test(term)) { // Unresolved symbols
 
         if (!RiTa.SILENT && !this.ignoreMissingSymbols) {
           console.warn('[WARN] Unresolved symbol(s): ' + term);
@@ -225,9 +243,9 @@ class Visitor extends RiScriptVisitor {
 
 
   inheritTransforms(token, ctx) {
-    let ctxTransforms = ctx.transform().map(t => t.getText());
-    // NOTE: there may be 3 sets needed here instead of 2
+    let ctxTransforms = ctx.transform ? ctx.transform().map(t => t.getText()) : [];
     ctxTransforms = mergeArrays(ctxTransforms, ctx.transforms);
+    if (typeof token.transforms === 'undefined') return ctxTransforms;
     return mergeArrays(token.transforms, ctxTransforms);
   }
 

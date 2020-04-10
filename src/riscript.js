@@ -8,12 +8,6 @@ const Lexer = require('../lib/RiScriptLexer');
 const Parser = require('../lib/RiScriptParser');
 const MaxTries = 100;
 
-/*
-NEXT:
-  inline assignments
-  weightings for choices
- */
-
 class RiScript {
 
   constructor() {

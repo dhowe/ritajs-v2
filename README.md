@@ -4,27 +4,26 @@
 
 ### Choice
 
-```
-The weather was (sad | gloomy | depressed).
-I'm (very | super | really) glad to ((meet | know) you | learn about you).
-```
+
+| | | 
+|-|-|
+| The weather was (sad &#124; gloomy &#124; depressed). | The weather was depressed. |
+| I'm (very &#124; super &#124; really) glad to ((meet &#124; know) you &#124; learn about you). | I'm very glad to know you. |
+
+
 
 ### Weighted Choice
+| | | 
+|-|-|
+| The weather was (sad &#124; gloomy [2] &#124; depressed[4]). | The weather was gloomy. |
 
-```
-The weather was (sad | gloomy [2] | depressed[4]).
-```
+### Assignment
 
-### Assignment (?)
-
-Basic assignments do not have output, they simply create/modify a symbol
-```
-{desc: 'wet and cold'}
-$desc=wet and cold
-$desc=(wet and cold)
-
-The weather was $desc
-```
+Basic assignments do not have output, they simply create/update a symbol
+| | | 
+|-|-|
+|$desc=wet and cold||
+|The weather was $desc|The weather was wet and cold|
 
 ### Inline Assignment
 
@@ -50,14 +49,7 @@ $place=(New York | Berlin | Shanghai) is cold and wet in the winter.
 In [$place=(New York | Berlin | Shanghai)], it is cold and wet in winter.
 
 In [$place=(New York | Berlin | Shanghai) it is cold and wet in winter].
-```
 
-### Silent Assignment
-
-```
-$place=(New York | Berlin | Shanghai)
-Jane was from $place. 
-$place is cold and wet in the winter.
 ```
 
 ### Symbols

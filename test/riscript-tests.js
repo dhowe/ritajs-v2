@@ -1,19 +1,31 @@
 const RiScript = require('../src/riscript');
 const Transforms = require('../src/transforms');
+const Operator = require('../src/operator');
 
-// SOLUTION 1:
-// Unenclosed variables on a line, include the whole line and can have nothing else
-// other you need to use {} or [] or ()
-
-describe/*.only*/('RiTa.RiScript', () => {
+describe.only('RiTa.RiScript', () => {
 
   if (typeof module !== 'undefined') require('./before');
+
+/*   describe('Conditionals', () => {
+    it('Should handle conditionals', () => {
+      // TODO: more tests
+      expect(RiTa.evaluate('{$a>1} foo', { a: 2 },0)).eq('foo');
+      expect(RiTa.evaluate('{$a=hello} foo', { a: 'hello' }, 0)).eq('foo');
+      expect(RiTa.evaluate('{$a=goodbye} foo', { a: 'hello' }, 0)).eq('');
+    });
+  }); */
 
   describe('Evaluation', () => {
     it('Should eval simple expressions', () => {
       expect(RiTa.evaluate('foo', {}, 0)).eq('foo');
       expect(RiTa.evaluate('foo.', {}, 0)).eq('foo.');
+      expect(RiTa.evaluate('"foo"', {}, 0)).eq('"foo"');
+      expect(RiTa.evaluate("'foo'", {}, 0)).eq("'foo'");
       expect(RiTa.evaluate('foo\nbar', {}, 0)).eq('foo bar');
+      expect(RiTa.evaluate('foo&#10;bar', {}, 0)).eq('foo\nbar');
+      expect(RiTa.evaluate('$foo=bar \\nbaz\n$foo', {}, 0)).eq('bar baz'); ``
+      expect(RiTa.evaluate('$foo=bar\nbaz', {}, 0)).eq('baz');
+      expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {}, 0)).eq('baz bar');
 
       let ctx, exp;
       ctx = { a: 'a', b: 'b' };
@@ -229,7 +241,7 @@ describe/*.only*/('RiTa.RiScript', () => {
       expect(RiTa.evaluate('[$stored=((a | a).toUpperCase())] dog is a mammal', ctx)).eq(exp);
       expect(ctx.stored).eq('A');
 
-      expect(RiTa.evaluate('$stored=(a | a)\n$stored.toUpperCase() dog is a mammal', ctx)).eq(exp);
+      expect(RiTa.evaluate('$stored=(a | a)\n$stored.toUpperCase() dog is a mammal', ctx,0)).eq(exp);
       expect(ctx.stored).eq('a');
 
       expect(RiTa.evaluate('$stored=(a | a)\n($stored).toUpperCase() dog is a mammal', ctx)).eq(exp);
@@ -286,10 +298,10 @@ describe/*.only*/('RiTa.RiScript', () => {
     });
 
     it('Should assign a silent variable to code', () => {
-      expect(RiTa.evaluate('A [$stored=($animal | $animal)] is a mammal', { animal: 'dog' }, 0)).eq('A dog is a mammal');
-      expect(RiTa.evaluate('[$b=(a | a).toUpperCase()] dog is a $b.', 0, 0)).eq('A dog is a A.');
-      expect(RiTa.evaluate('[$b=(a | a)].toUpperCase() dog is a ($b).toLowerCase().', 0, 0)).eq('A dog is a a.');
+/*       expect(RiTa.evaluate('A [$stored=($animal | $animal)] is a mammal', { animal: 'dog' }, 0)).eq('A dog is a mammal');
+      expect(RiTa.evaluate('[$b=(a | a).toUpperCase()] dog is a $b.', 0, 0)).eq('A dog is a A.'); */
       expect(RiTa.evaluate('[$b=(a | a)].toUpperCase() dog is a $b.toLowerCase().', 0, 0)).eq('A dog is a a.');
+      expect(RiTa.evaluate('[$b=(a | a)].toUpperCase() dog is a ($b).toLowerCase().', 0, 0)).eq('A dog is a a.');
     });
 
     it('Should reuse silent assigned variables', () => {
@@ -301,10 +313,10 @@ describe/*.only*/('RiTa.RiScript', () => {
   });
   describe('Symbol', () => {
 
-    it('Should throw on bad symbols', () => {
+/*     it('Should throw on bad symbols', () => {
       expect(() => RiTa.evaluate('$', 0, 0, 1)).to.throw();
     });
-
+ */
     it('Should eval linebreak-defined variables', () => {
       let res;
       res = RiTa.evaluate('$foo=hello\n$start=I said $foo to her\n$start', {}, 0);
@@ -333,6 +345,12 @@ describe/*.only*/('RiTa.RiScript', () => {
       expect(RiTa.evaluate('I ate\nthe $dog', { dog: 'beagle' }, 0)).eq('I ate the beagle');
       expect(RiTa.evaluate('The $dog\ntoday.', { dog: 'lab' }, 0)).eq('The lab today.');
       expect(RiTa.evaluate('I ate the\n$dog.', { dog: 'lab' }, 0)).eq('I ate the lab.');
+
+      expect(RiTa.evaluate('$100 is a lot of $dog.', { dog: 'terrier' }, 0)).eq('$100 is a lot of terrier.');
+      expect(RiTa.evaluate('the $dog cost $100', { dog: 'terrier' }, 0)).eq('the terrier cost $100');
+      expect(RiTa.evaluate('the $dog cost $100!', { dog: 'terrier' }, 0)).eq('the terrier cost $100!');
+      expect(RiTa.evaluate('the $dog cost ***lots***', { dog: 'terrier' }, 0)).eq('the terrier cost ***lots***');
+      expect(RiTa.evaluate('the $dog^1 was a footnote.', { dog: 'terrier' }, 0)).eq('the terrier^1 was a footnote.');
     });
 
     it('Should resolve previously defined symbols', () => {
@@ -421,7 +439,7 @@ describe/*.only*/('RiTa.RiScript', () => {
       expect(RiTa.evaluate('( a [2] |a [3] )', {}, 0)).eq('a');
 
       let result = { b: 0, a: 0 };
-      for (let i = 0; i < 1000; i++) {
+      for (let i = 0; i < 100; i++) {
         result[RiTa.evaluate('(a | b [2])')]++;
       } //console.log(result);
       expect(result.b).gt(result.a);
@@ -521,7 +539,7 @@ describe/*.only*/('RiTa.RiScript', () => {
       let rs = RiScript.multeval('$foo=$bar.ucf\n$bar=baz\n$foo', {}, 0);
       expect(rs).eq('baz.ucf');
     });
-
+  
     it('Should evaluate symbols even with one bad func transform', () => {
       let rs = RiScript.multeval('$foo=$bar.toUpperCase().ucf\n$bar=baz\n$foo', {}, 0);
       expect(rs).eq('BAZ.ucf');
@@ -604,5 +622,115 @@ describe/*.only*/('RiTa.RiScript', () => {
       expect(ctx.foo).eq('h');
     });
   });
+  describe('Operators', () => {
+    it('Should invoke assignment operators', () => {
 
+      expect(Operator.EQ.invoke("hello", "hello")).eq(true);
+      expect(Operator.EQ.invoke("hello", "")).eq(false);
+      expect(Operator.EQ.invoke("hello", null)).eq(false);
+
+      expect(Operator.NE.invoke("hello", "hello")).eq(false);
+      expect(Operator.NE.invoke("hello", "")).eq(true);
+      expect(Operator.NE.invoke("hello", null)).eq(true);
+
+      expect(Operator.EQ.invoke("true", "false")).eq(false);
+      expect(Operator.EQ.invoke("false", "false")).eq(true);
+      expect(Operator.EQ.invoke("false", null)).eq(false);
+
+      expect(Operator.NE.invoke("hello", "")).eq(true);
+      expect(Operator.NE.invoke("hello", "false")).eq(true);
+
+      expect(() => Operator.NE.invoke(null, null)).to.throw();
+    });
+
+    it('Should invoke equality operators', () => {
+
+      expect(Operator.EQ.invoke("hello", "hello")).eq(true);
+      expect(Operator.EQ.invoke("hello", "")).eq(false);
+      expect(Operator.EQ.invoke("hello", null)).eq(false);
+
+      expect(Operator.NE.invoke("hello", "hello")).eq(false);
+      expect(Operator.NE.invoke("hello", "")).eq(true);
+      expect(Operator.NE.invoke("hello", null)).eq(true);
+
+      expect(Operator.EQ.invoke("true", "false")).eq(false);
+      expect(Operator.EQ.invoke("false", "false")).eq(true);
+      expect(Operator.EQ.invoke("false", null)).eq(false);
+
+      expect(Operator.NE.invoke("hello", "")).eq(true);
+      expect(Operator.NE.invoke("hello", "false")).eq(true);
+
+      expect(() => Operator.NE.invoke(null, null)).to.throw();
+    });
+
+    it('Should invoke comparison operators', () => {
+
+      expect(Operator.GT.invoke("2", "1")).eq(true);
+      expect(Operator.GT.invoke("1", "2")).eq(false);
+      expect(Operator.GT.invoke("1", "1")).eq(false);
+      expect(Operator.GT.invoke("2.0", "1")).eq(true);
+      expect(Operator.GT.invoke("1.0", "2")).eq(false);
+      expect(Operator.GT.invoke("1.0", "1")).eq(false);
+      expect(Operator.GT.invoke("2.0", "1.00")).eq(true);
+      expect(Operator.GT.invoke("1.0", "2.00")).eq(false);
+      expect(Operator.GT.invoke("1.0", "1.00")).eq(false);
+
+      expect(Operator.LT.invoke("2", "1")).eq(false);
+      expect(Operator.LT.invoke("1", "2")).eq(true);
+      expect(Operator.LT.invoke("1", "1")).eq(false);
+      expect(Operator.LT.invoke("2.0", "1")).eq(false);
+      expect(Operator.LT.invoke("1.0", "2")).eq(true);
+      expect(Operator.LT.invoke("1.0", "1")).eq(false);
+      expect(Operator.LT.invoke("2.0", "1.00")).eq(false);
+      expect(Operator.LT.invoke("1.0", "2.00")).eq(true);
+      expect(Operator.LT.invoke("1.0", "1.00")).eq(false);
+
+      expect(Operator.LE.invoke("2", "1")).eq(false);
+      expect(Operator.LE.invoke("1", "2")).eq(true);
+      expect(Operator.LE.invoke("1", "1")).eq(true);
+      expect(Operator.LE.invoke("2.0", "1")).eq(false);
+      expect(Operator.LE.invoke("1.0", "2")).eq(true);
+      expect(Operator.LE.invoke("1.0", "1")).eq(true);
+      expect(Operator.LE.invoke("2.0", "1.00")).eq(false);
+      expect(Operator.LE.invoke("1.0", "2.00")).eq(true);
+      expect(Operator.LE.invoke("1.0", "1.00")).eq(true); 
+
+      expect(() => Operator.GT.invoke("2", "")).to.throw();
+      expect(() => Operator.LT.invoke("2", null)).to.throw();
+      expect(() => Operator.LE.invoke("2", "h")).to.throw();
+      expect(() => Operator.GE.invoke("", "")).to.throw();
+    });
+
+    it('Should invoke matching operators', () => {
+
+      expect(Operator.SW.invoke("Hello", "He")).eq(true);
+      expect(Operator.SW.invoke("Hello", "Hello")).eq(true);
+      expect(Operator.SW.invoke("Hello", "Hej")).eq(false);
+      expect(Operator.SW.invoke("Hello", null)).eq(false);
+      expect(Operator.SW.invoke("Hello", "")).eq(true);
+
+      expect(Operator.EW.invoke("Hello", "o")).eq(true);
+      expect(Operator.EW.invoke("Hello", "Hello")).eq(true);
+      expect(Operator.EW.invoke("Hello", "l1o")).eq(false);
+      expect(Operator.EW.invoke("Hello", null)).eq(false);
+      expect(Operator.EW.invoke("Hello", "")).eq(true);
+
+      expect(Operator.RE.invoke("Hello", "ll")).eq(true);
+      expect(Operator.RE.invoke("Hello", "e")).eq(true);
+      expect(Operator.RE.invoke("Hello", "l1")).eq(false);
+      expect(Operator.RE.invoke("Hello", null)).eq(false);
+      expect(Operator.RE.invoke("Hello", "")).eq(true);
+
+
+      expect(Operator.SW.invoke("$Hello", "$")).eq(true);
+      expect(Operator.EW.invoke("$Hello", "$")).eq(false);
+      expect(Operator.RE.invoke("$Hello", "$")).eq(true);
+      expect(Operator.RE.invoke("hello", "(hello|bye)")).eq(true);
+      expect(Operator.RE.invoke("bye", "(hello|bye)")).eq(true);
+      expect(Operator.RE.invoke("by", "(hello|bye)")).eq(false);
+
+      expect(() => Operator.SW.invoke(null, "hello")).to.throw();
+      expect(() => Operator.SW.invoke(null, null)).to.throw();
+    });
+  })
 });
