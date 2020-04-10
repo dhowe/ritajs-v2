@@ -1,6 +1,6 @@
 
 
-# RitaScript
+# Rita v2
 
 ## Building
 
