@@ -1,4 +1,13 @@
+
+
 # RitaScript
+
+## Building
+
+```
+$ yarn install 
+$ yarn test
+```
 
 ## Language Elements
 
