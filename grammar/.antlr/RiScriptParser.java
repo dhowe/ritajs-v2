@@ -148,7 +148,7 @@ public class RiScriptParser extends Parser {
 				setState(31); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GT) | (1L << LT) | (1L << LP) | (1L << LB) | (1L << LCB) | (1L << DOT) | (1L << WS) | (1L << EXC) | (1L << AST) | (1L << HAT) | (1L << DOL) | (1L << NL) | (1L << SYM) | (1L << ENT) | (1L << INT) | (1L << CHR))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GT) | (1L << LT) | (1L << LP) | (1L << LB) | (1L << LCB) | (1L << DOT) | (1L << WS) | (1L << EXC) | (1L << AST) | (1L << HAT) | (1L << DOL) | (1L << COM) | (1L << NL) | (1L << SYM) | (1L << ENT) | (1L << INT) | (1L << CHR))) != 0) );
 			setState(33);
 			match(EOF);
 			}
@@ -768,6 +768,10 @@ public class RiScriptParser extends Parser {
 		public TerminalNode HAT(int i) {
 			return getToken(RiScriptParser.HAT, i);
 		}
+		public List<TerminalNode> COM() { return getTokens(RiScriptParser.COM); }
+		public TerminalNode COM(int i) {
+			return getToken(RiScriptParser.COM, i);
+		}
 		public CharsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -818,10 +822,11 @@ public class RiScriptParser extends Parser {
 					case AST:
 					case HAT:
 					case DOL:
+					case COM:
 						{
 						setState(140);
 						_la = _input.LA(1);
-						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GT) | (1L << LT) | (1L << DOT) | (1L << WS) | (1L << EXC) | (1L << AST) | (1L << HAT) | (1L << DOL))) != 0)) ) {
+						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GT) | (1L << LT) | (1L << DOT) | (1L << WS) | (1L << EXC) | (1L << AST) | (1L << HAT) | (1L << DOL) | (1L << COM))) != 0)) ) {
 						_errHandler.recoverInline(this);
 						}
 						else {
@@ -1059,7 +1064,7 @@ public class RiScriptParser extends Parser {
 		"\b\3\b\7\b\u0083\n\b\f\b\16\b\u0086\13\b\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3"+
 		"\n\6\n\u0090\n\n\r\n\16\n\u0091\3\13\3\13\7\13\u0096\n\13\f\13\16\13\u0099"+
 		"\13\13\3\f\5\f\u009c\n\f\3\f\5\f\u009f\n\f\3\r\3\r\3\16\3\16\5\16\u00a5"+
-		"\n\16\3\16\2\2\17\2\4\6\b\n\f\16\20\22\24\26\30\32\2\4\4\2\3\4\13\20\4"+
+		"\n\16\3\16\2\2\17\2\4\6\b\n\f\16\20\22\24\26\30\32\2\4\4\2\3\4\13\21\4"+
 		"\2\3\4\25\25\2\u00b5\2\37\3\2\2\2\4*\3\2\2\2\6\61\3\2\2\2\bC\3\2\2\2\n"+
 		"^\3\2\2\2\fj\3\2\2\2\16|\3\2\2\2\20\u0087\3\2\2\2\22\u008f\3\2\2\2\24"+
 		"\u0093\3\2\2\2\26\u009b\3\2\2\2\30\u00a0\3\2\2\2\32\u00a4\3\2\2\2\34 "+

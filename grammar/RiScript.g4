@@ -19,7 +19,7 @@ chars: (
 		CHR
 		| ENT
 		| INT
-		| (DOT | WS | EXC | AST | GT | LT | DOL | HAT))+;
+		| (DOT | WS | EXC | AST | GT | LT | DOL | HAT | COM))+;
 symbol: SYM transform*;
 wexpr: expr? weight?;
 //wexpr: prod? weight?;

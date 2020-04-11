@@ -1,7 +1,8 @@
 const antlr4 = require('antlr4');
 const Operator = require('./operator');
-const { RiScriptVisitor } = require('../lib/RiScriptVisitor');
-const { RiScriptParser } = require('../lib/RiScriptParser');
+const RiTa = ('./rita');
+const { RiScriptVisitor } = require('../grammar/.antlr/RiScriptVisitor');
+const { RiScriptParser } = require('../grammar/.antlr/RiScriptParser');
 const EmptyExpr = new RiScriptParser.ExprContext();
 
 String.prototype.uc = function () {
@@ -27,21 +28,19 @@ class Visitor extends RiScriptVisitor {
   }
 
   visitCexpr(ctx) {
-    this.trace && console.log('visitCexpr(' + ctx.getText() + ')',
-      "tfs=" + (ctx.transforms || "[]"));
     let conds = ctx.cond();
+    this.trace && console.log('visitCexpr(' + ctx.expr().getText() + ')',
+      'cond={' + conds.map(c => c.getText().replace(',', '')) + '}');
     for (let i = 0; i < conds.length; i++) {
       let id = conds[i].SYM().getText().replace(/^\$/, '');
       let op = Operator.fromString(conds[i].op().getText());
       let val = conds[i].chars().getText();
       let sym = this.context[id];
-      let accept = sym ? op.invoke(sym, val) : false; 
-      this.trace && console.log(i,'cond(' + ctx.getText() + ')', ident, op.toString(), val, '->', accept);
-      if (!accept) return this.visitExpr(EmptyExpr); 
+      let accept = sym ? op.invoke(sym, val) : false;
+      /* this.trace && console.log('  cond(' + ctx.getText() + ')',
+        id, op.toString(), val, '->', accept); */
+      if (!accept) return this.visitExpr(EmptyExpr);
     }
-    //if (!prod) throw Error('null prod for:"' + ctx.getText()+'"');
-
-    //if (!accept) prod = EmptyExpr;
     return this.visitExpr(ctx.expr());
   }
 
@@ -51,23 +50,6 @@ class Visitor extends RiScriptVisitor {
     return this.visitChildren(ctx);
   }
 
-  visitExprNew(ctx) {
-    this.trace && console.log('visitExpr(' + ctx.getText() + ')',
-      "tfs=" + (ctx.transforms || "[]"));
-    let prod = ctx.prod() || EmptyExpr; q
-    let cond = ctx.cond();
-    //if (!prod) throw Error('null prod for:"' + ctx.getText()+'"');
-    if (cond) {
-      let ident = cond.getChild(1).getSymbol().text.replace(/^\$/, '');
-      let op = Operator.fromString(cond.getChild(2).getText());
-      let val = cond.getChild(3).getText();
-      let accept = op.invoke(this.context[ident], val);
-      this.trace && console.log('cond(' + ctx.getText() + ')', ident, op.toString(), val, '->', accept);
-      if (!accept) prod = EmptyExpr;
-    }
-    prod.transforms = this.inheritTransforms(prod, ctx);
-    return this.visitChildren(prod);
-  }
 
   /* visit value and create a mapping in the symbol table */
   visitAssign(ctx) {
@@ -84,8 +66,6 @@ class Visitor extends RiScriptVisitor {
     //this.visitAssign(ctx);
     let token = ctx.expr();
     let id = symbolName(ctx.symbol().getText());
-    /*     let tfs = ctx.transform();
-        if (tfs) tfs = tfs.map(t => t.getText()) */
     token.transforms = this.inheritTransforms(token, ctx);
     this.trace && console.log('visitInline: ' + id + '=' +
       this.flatten(token) + ' tfs=[' + (token.transforms || '') + ']');
@@ -108,10 +88,6 @@ class Visitor extends RiScriptVisitor {
       }
     });
 
-    /*console.log(ctx.wexpr().length+' wexprs');
-      console.log(options.length +' options');
-      options.forEach(o => console.log('  "'+o.getText()+'"'));*/
-
     // then pick a random one
     let token = randomElement(options) || EmptyExpr;
 
@@ -128,10 +104,10 @@ class Visitor extends RiScriptVisitor {
 
     let ident = ctx.SYM().getText()
       .replace(/^\$/, ''); // strip $
-    //.replace(/[}{]/g, ''); // strip {}
 
     let text = this.context[ident] || '$' + ident;
 
+    // hack
     let textContext = { text, getText: () => text };
     textContext.transforms = ctx.transforms || [];
     ctx.transform().map(t => textContext.transforms.push(t.getText()));
@@ -151,17 +127,16 @@ class Visitor extends RiScriptVisitor {
     // attempt to resolve it immediately ***
 
     return this.visitTerminal(textContext);
-    //return this.visitTerminal(text, ctx.transform());
   }
 
-  visitTerminal(ctx/*, tforms*/) {
+  visitTerminal(ctx) {
 
     let term = ctx;
     if (typeof ctx.getText === 'function') {
       term = ctx.getText();
     }
 
-    let tfs = /*tforms || */ctx.transforms;
+    let tfs = ctx.transforms;
 
     if (typeof term === 'string') {
       if (term === Visitor.EOF) return '';

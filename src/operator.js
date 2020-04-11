@@ -24,8 +24,6 @@ class Operator {
   }
 
   static fromString(op) {
-    console.log();
-    
     switch (op) {
       case ">": return GT;
       case "<": return LT;
@@ -46,7 +44,7 @@ class Operator {
   }
 
   invoke(s1, s2) {
-    if (s1 == null) throw Error('Null first operand: ' + s1 + ' ' + s2);
+    if (s1 == null) throw Error('No first operand: ' + s1 + ' ' + s2);
     if (this.type === OpType.EQUALITY) {
       if (this === EQ) return s1 === s2;
       if (this === NE) return s1 !== s2;
@@ -68,7 +66,8 @@ class Operator {
         if (this === LE) return o1 <= o2;
       }
       catch (e) {
-        throw Error("Expected numeric operands, but found [" + s1 + "," + s2 + "]\n" + e);
+        throw Error("Expected numeric operands, found ["
+           + s1 + "," + s2 + "]\n" + e);
       }
     }
   }

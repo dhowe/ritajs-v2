@@ -110,7 +110,7 @@ The weather was $desc
 ### Transforms
 
 ```
-The group of boys (to run).conjugate()
+The group of boys (to run).conjugate().
 How many (tooth | menu | child).pluralize() do you have?
 How many (tooth | menu | child).pluralize().toUpper() do you have?
 
@@ -118,7 +118,7 @@ How many (tooth | menu | child).pluralize().toUpper() do you have?
 How many (tooth | menu | child).norepeat() do you have?
 
 // Resolves choice in sequence
-How many (tooth | menu | child).seq() do you have
+How many (tooth | menu | child).seq() do you have?
 ```
 
 ### Conditionals

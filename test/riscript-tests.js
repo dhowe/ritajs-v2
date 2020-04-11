@@ -6,23 +6,57 @@ describe('RiTa.RiScript', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  describe.only('Conditionals', () => {
-    // TODO: more tests
-    // all types, multiple key/vals
-    it('Should handle conditionals', () => {
+  describe('Conditionals', () => {
 
+/*     it.only('XXX', () => {
+      expect(RiTa.evaluate('$start=$foo\n$foo=hello\n$start', {}, 1)).eq('hello');
+    }); */
+
+    it('Should throw on bad conditionals', () => {
+      expect(() => RiTa.evaluate('{$a<hello} foo', { a: 2 })).to.throw();
+      expect(() => RiTa.evaluate('{$a<} foo', { a: 2 }, 0, 1)).to.throw();
+    });
+
+    it('Should handle conditionals', () => {
       expect(RiTa.evaluate('{$a<1} foo', { a: 2 }, 0)).eq('');
       expect(RiTa.evaluate('{$a>1} foo', { a: 2 }, 0)).eq('foo');
       expect(RiTa.evaluate('{$a=hello} foo', { a: 'hello' }, 0)).eq('foo');
       expect(RiTa.evaluate('{$a=goodbye} foo', { a: 'hello' }, 0)).eq('');
     });
 
-    it('Should handle multi-value conditionals', () => {
+    it('Should handle float conditionals', () => {
+      expect(RiTa.evaluate('{$a<1.1} foo', { a: 2 }, 0)).eq('');
+      expect(RiTa.evaluate('{$a>1.1} foo', { a: 2 }, 0)).eq('foo');
+      expect(RiTa.evaluate('{$a<.1} foo', { a: 2 }, 0)).eq('');
+      expect(RiTa.evaluate('{$a>.1} foo', { a: 2 }, 0)).eq('foo');
+      expect(RiTa.evaluate('{$a<0.1} foo', { a: 2 }, 0)).eq('');
+      expect(RiTa.evaluate('{$a>0.1} foo', { a: 2 }, 0)).eq('foo');
+      expect(RiTa.evaluate('{$a>0.1} foo', { a: .1 }, 0)).eq('');
+      expect(RiTa.evaluate('{$a>=0.1} foo', { a: .1 }, 0)).eq('foo');
+    });
+
+    it('Should handle multi-val conditionals', () => {
       expect(RiTa.evaluate('{$a<1,$b<1} foo', { a: 2 }, 0)).eq('');
       expect(RiTa.evaluate('{$a>1,$b<1} foo', { a: 2 }, 0)).eq('');
-      expect(RiTa.evaluate('{$a>1,$b<1} foo', { a: 2, b:2 }, 0)).eq('');
+      expect(RiTa.evaluate('{$a>1,$b<1} foo', { a: 2, b: 2 }, 0)).eq('');
       expect(RiTa.evaluate('{$a=ok,$b>=1} foo', { a: 2, b: 2 }, 0)).eq('');
       expect(RiTa.evaluate('{$a>1,$b>=1} foo', { a: 2, b: 2 }, 0)).eq('foo');
+    });
+
+    it('Should handle matching conditionals', () => {
+      expect(RiTa.evaluate('{$a!=ell} foo', { a: 'hello' }, 0)).eq('foo');
+      expect(RiTa.evaluate('{$a*=ell} foo', { a: 'hello' }, 0)).eq('foo');
+      expect(RiTa.evaluate('{$a^=ell} foo', { a: 'ello' }, 0)).eq('foo');
+      expect(RiTa.evaluate('{$a$=ell} foo', { a: 'helloell' }, 0)).eq('foo');
+      expect(RiTa.evaluate('{$a$=ell} foo', { a: 'helloellx' }, 0)).eq('');
+    });
+
+    it('Should rs-defined matching conditionals', () => {
+      expect(RiTa.evaluate('$a=hello\n{$a!=ell} foo', {}, 0)).eq('foo');
+      expect(RiTa.evaluate('$a=hello\n{$a*=ell} foo', {}, 0)).eq('foo');
+      expect(RiTa.evaluate('$a=ello\n{$a^=ell} foo', {}, 0)).eq('foo');
+      expect(RiTa.evaluate('$a=helloell\n{$a$=ell} foo', {}, 0)).eq('foo');
+      expect(RiTa.evaluate('$a=helloellx\n{$a$=ell} foo', {}, 0)).eq('');
     });
   });
 
@@ -223,6 +257,10 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('');
     });
 
+    it('Should correctly handle transforms on literals', function () {
+      expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many "teeth" do you have?');
+      expect(RiTa.evaluate('That is (ant).articlize().')).eq('That is an ant.');
+    });
     /*     it.only('Should handle silents', () => {
           expect(RiTa.evaluate('The $hero=blue (dog | dog)', ctx = {}, 0)).eq('The blue dog');
           expect(ctx.foo).eq('blue');
@@ -407,6 +445,16 @@ describe('RiTa.RiScript', () => {
       rs = RiTa.evaluate('$bar.color', ctx);
       expect(rs).eq('blue')
     });
+
+    it('Should concatenate variables in parens', () => {
+      let ctx = {};
+      expect(RiTa.evaluate('$foo=(h | h)\n($foo)ello', ctx, 0)).eq('hello');
+      expect(ctx.foo).eq('h');
+      expect(RiTa.evaluate('$foo b c', ctx, 0)).eq('h b c');
+      expect(RiTa.evaluate('($foo) b c', ctx, 0)).eq('h b c');
+      expect(RiTa.evaluate('($foo)bc', ctx, 0)).eq('hbc');
+      expect(ctx.foo).eq('h');
+    });
   });
 
   describe('Choice', () => {
@@ -550,7 +598,7 @@ describe('RiTa.RiScript', () => {
       let rs = RiScript.multeval('$foo=$bar.ucf\n$bar=baz\n$foo', {}, 0);
       expect(rs).eq('baz.ucf');
     });
-  
+   
     it('Should evaluate symbols even with one bad func transform', () => {
       let rs = RiScript.multeval('$foo=$bar.toUpperCase().ucf\n$bar=baz\n$foo', {}, 0);
       expect(rs).eq('BAZ.ucf');
@@ -608,8 +656,8 @@ describe('RiTa.RiScript', () => {
     it('Should allow basic punctuation', () => {
       expect(RiTa.evaluate("The -;:.!?'`", {}, 0)).eq("The -;:.!?'`");
       expect(RiTa.evaluate('The -;:.!?"`', {})).eq('The -;:.!?"`');
-      expect(RiTa.evaluate(",.;:\\'?!-_`“”’‘…‐–—―", {}, 0)).eq(",.;:\\'?!-_`“”’‘…‐–—―");
-      expect(RiTa.evaluate(',.;:\\"?!-_`“”’‘…‐–—―', {}, 0)).eq(',.;:\\"?!-_`“”’‘…‐–—―');
+      expect(RiTa.evaluate(",.;:\\'?!-_`“”’‘…‐–—―^*", {}, 0)).eq(",.;:\\'?!-_`“”’‘…‐–—―^*");
+      expect(RiTa.evaluate(',.;:\\"?!-_`“”’‘…‐–—―^*', {}, 0)).eq(',.;:\\"?!-_`“”’‘…‐–—―^*');
       expect(RiTa.evaluate("/&%©@*")).eq("/&%©@*");
     });
 
@@ -622,17 +670,6 @@ describe('RiTa.RiScript', () => {
     });
   });
 
-  describe('Concatenation', () => {
-    it('Should concatenate variables', () => {
-      let ctx = {};
-      expect(RiTa.evaluate('$foo=(h | h)\n($foo)ello', ctx, 0)).eq('hello');
-      expect(ctx.foo).eq('h');
-      expect(RiTa.evaluate('$foo b c', ctx, 0)).eq('h b c');
-      expect(RiTa.evaluate('($foo) b c', ctx, 0)).eq('h b c');
-      expect(RiTa.evaluate('($foo)bc', ctx, 0)).eq('hbc');
-      expect(ctx.foo).eq('h');
-    });
-  });
   describe('Operators', () => {
     it('Should invoke assignment operators', () => {
 

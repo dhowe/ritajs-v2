@@ -32,6 +32,6 @@ module.exports = {
   watchOptions: {
     ignored: /node_modules/
   },
-  externals: ['he', 'colors', 'antlr4', /^antlr4\/.+$/ ],
+  externals: ['he', 'colors', 'deepmerge', 'antlr4', /^antlr4\/.+$/ ],
   entry: './src/rita.js'
 };

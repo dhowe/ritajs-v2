@@ -33,7 +33,7 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\f\u0005\f\u009c\n\f\u0003\f\u0005\f\u009f\n\f\u0003\r\u0003\r\u0003",
     "\u000e\u0003\u000e\u0005\u000e\u00a5\n\u000e\u0003\u000e\u0002\u0002",
     "\u000f\u0002\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0016\u0018\u001a",
-    "\u0002\u0004\u0004\u0002\u0003\u0004\u000b\u0010\u0004\u0002\u0003\u0004",
+    "\u0002\u0004\u0004\u0002\u0003\u0004\u000b\u0011\u0004\u0002\u0003\u0004",
     "\u0015\u0015\u0002\u00b5\u0002\u001f\u0003\u0002\u0002\u0002\u0004*",
     "\u0003\u0002\u0002\u0002\u00061\u0003\u0002\u0002\u0002\bC\u0003\u0002",
     "\u0002\u0002\n^\u0003\u0002\u0002\u0002\fj\u0003\u0002\u0002\u0002\u000e",
@@ -300,7 +300,7 @@ RiScriptParser.prototype.script = function() {
             this.state = 31; 
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-        } while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << RiScriptParser.GT) | (1 << RiScriptParser.LT) | (1 << RiScriptParser.LP) | (1 << RiScriptParser.LB) | (1 << RiScriptParser.LCB) | (1 << RiScriptParser.DOT) | (1 << RiScriptParser.WS) | (1 << RiScriptParser.EXC) | (1 << RiScriptParser.AST) | (1 << RiScriptParser.HAT) | (1 << RiScriptParser.DOL) | (1 << RiScriptParser.NL) | (1 << RiScriptParser.SYM) | (1 << RiScriptParser.ENT) | (1 << RiScriptParser.INT) | (1 << RiScriptParser.CHR))) !== 0));
+        } while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << RiScriptParser.GT) | (1 << RiScriptParser.LT) | (1 << RiScriptParser.LP) | (1 << RiScriptParser.LB) | (1 << RiScriptParser.LCB) | (1 << RiScriptParser.DOT) | (1 << RiScriptParser.WS) | (1 << RiScriptParser.EXC) | (1 << RiScriptParser.AST) | (1 << RiScriptParser.HAT) | (1 << RiScriptParser.DOL) | (1 << RiScriptParser.COM) | (1 << RiScriptParser.NL) | (1 << RiScriptParser.SYM) | (1 << RiScriptParser.ENT) | (1 << RiScriptParser.INT) | (1 << RiScriptParser.CHR))) !== 0));
         this.state = 33;
         this.match(RiScriptParser.EOF);
     } catch (re) {
@@ -1337,6 +1337,18 @@ CharsContext.prototype.HAT = function(i) {
 };
 
 
+CharsContext.prototype.COM = function(i) {
+	if(i===undefined) {
+		i = null;
+	}
+    if(i===null) {
+        return this.getTokens(RiScriptParser.COM);
+    } else {
+        return this.getToken(RiScriptParser.COM, i);
+    }
+};
+
+
 CharsContext.prototype.enterRule = function(listener) {
     if(listener instanceof RiScriptListener ) {
         listener.enterChars(this);
@@ -1398,9 +1410,10 @@ RiScriptParser.prototype.chars = function() {
         		case RiScriptParser.AST:
         		case RiScriptParser.HAT:
         		case RiScriptParser.DOL:
+        		case RiScriptParser.COM:
         		    this.state = 140;
         		    _la = this._input.LA(1);
-        		    if(!((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << RiScriptParser.GT) | (1 << RiScriptParser.LT) | (1 << RiScriptParser.DOT) | (1 << RiScriptParser.WS) | (1 << RiScriptParser.EXC) | (1 << RiScriptParser.AST) | (1 << RiScriptParser.HAT) | (1 << RiScriptParser.DOL))) !== 0))) {
+        		    if(!((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << RiScriptParser.GT) | (1 << RiScriptParser.LT) | (1 << RiScriptParser.DOT) | (1 << RiScriptParser.WS) | (1 << RiScriptParser.EXC) | (1 << RiScriptParser.AST) | (1 << RiScriptParser.HAT) | (1 << RiScriptParser.DOL) | (1 << RiScriptParser.COM))) !== 0))) {
         		    this._errHandler.recoverInline(this);
         		    }
         		    else {

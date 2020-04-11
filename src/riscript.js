@@ -4,8 +4,8 @@ const { decode } = require('he');
 const LexerErrors = require('./errors').LexerErrors;
 const ParserErrors = require('./errors').ParserErrors;
 const Visitor = require('./visitor');
-const Lexer = require('../lib/RiScriptLexer');
-const Parser = require('../lib/RiScriptParser');
+const Lexer = require('../grammar/.antlr/RiScriptLexer');
+const Parser = require('../grammar/.antlr//RiScriptParser');
 const MaxTries = 100;
 
 class RiScript {
@@ -17,7 +17,8 @@ class RiScript {
   }
 
   static eval(input, context, showParse, silent) {
-    let res = new RiScript().lexParseVisit(input, context || {}, showParse, silent);
+    let evaluator = new RiScript();
+    let res = evaluator.lexParseVisit(input, context || {}, showParse, silent);
     return resolveEntities(res);
   }
 

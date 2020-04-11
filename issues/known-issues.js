@@ -1,13 +1,8 @@
 const expect = require('chai').expect;
-const RiTa = require('../src/rita_api');
+const RiTa = require('../src/rita');
 const RiScript = require('../src/riscript');
 
 describe('RiTa.KnownIssues', () => {
-
-  it('0: Should correctly handle transforms on literals', function() {
-    expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many "teeth" do you have?');
-    expect(RiTa.evaluate('That is (ant).articlize().')).eq('That is an ant.');
-  });
 
   it('1: pluralize or singularize fails', () => { // ok
     let testPairs = [ ]; // ADD FAILING ITEMS HERE
@@ -44,7 +39,8 @@ describe('RiTa.KnownIssues', () => {
 describe('RiScript.KnownIssues', () => {
 
   it('simple evaluations', function() {
-    expect(RiTa.evaluate('foo.bar', {}, 0)).eq('foo.bar');
+    // should this throw? maybe yes: can do foo&dot;bar - need better error
+    expect(RiTa.evaluate('foo.bar', {}, 1)).eq('foo.bar'); 
   });
 
   it('Symbols that resolve to other elements', () =>{
@@ -62,10 +58,9 @@ describe('RiScript.KnownIssues', () => {
     expect(RiTa.evaluate('$bar', { foo: 'baz', bar: '$foo starts with (b | b)' }, 1)).eq('baz starts with b');
   });
 
-  it('Should eval post-defined variables', () =>{
+  it.only('Should eval post-defined variables', () =>{
 
-    let rc = RiScript.compile('$start=$foo\n$foo=hello\n$start', 1);
-    let res = rc.run();
+    let rc = RiScript.eval('$start=$foo\n$foo=hello\n$start', 1);
     expect(res).eq('hello');
 
     let script = [
@@ -73,7 +68,7 @@ describe('RiScript.KnownIssues', () => {
       '$noun = hello',
       '$start'
     ];
-    0 && expect(RiScript.compile(script).run()).eq('hello');
+    0&&expect(RiScript.eval(script).run()).eq('hello');
   });
 
   return; // remove to work
