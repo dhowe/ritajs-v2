@@ -26,6 +26,25 @@ class Visitor extends RiScriptVisitor {
     this.ignoreMissingSymbols = silent;
   }
 
+  visitCexpr(ctx) {
+    this.trace && console.log('visitCexpr(' + ctx.getText() + ')',
+      "tfs=" + (ctx.transforms || "[]"));
+    let conds = ctx.cond();
+    for (let i = 0; i < conds.length; i++) {
+      let id = conds[i].SYM().getText().replace(/^\$/, '');
+      let op = Operator.fromString(conds[i].op().getText());
+      let val = conds[i].chars().getText();
+      let sym = this.context[id];
+      let accept = sym ? op.invoke(sym, val) : false; 
+      this.trace && console.log(i,'cond(' + ctx.getText() + ')', ident, op.toString(), val, '->', accept);
+      if (!accept) return this.visitExpr(EmptyExpr); 
+    }
+    //if (!prod) throw Error('null prod for:"' + ctx.getText()+'"');
+
+    //if (!accept) prod = EmptyExpr;
+    return this.visitExpr(ctx.expr());
+  }
+
   visitExpr(ctx) {
     this.trace && console.log('visitExpr(' + ctx.getText() + ')',
       "tfs=" + (ctx.transforms || "[]"));
@@ -35,7 +54,7 @@ class Visitor extends RiScriptVisitor {
   visitExprNew(ctx) {
     this.trace && console.log('visitExpr(' + ctx.getText() + ')',
       "tfs=" + (ctx.transforms || "[]"));
-    let prod = ctx.prod() || EmptyExpr;q
+    let prod = ctx.prod() || EmptyExpr; q
     let cond = ctx.cond();
     //if (!prod) throw Error('null prod for:"' + ctx.getText()+'"');
     if (cond) {

@@ -6,14 +6,25 @@ describe('RiTa.RiScript', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-/*   describe('Conditionals', () => {
+  describe.only('Conditionals', () => {
+    // TODO: more tests
+    // all types, multiple key/vals
     it('Should handle conditionals', () => {
-      // TODO: more tests
-      expect(RiTa.evaluate('{$a>1} foo', { a: 2 },0)).eq('foo');
+
+      expect(RiTa.evaluate('{$a<1} foo', { a: 2 }, 0)).eq('');
+      expect(RiTa.evaluate('{$a>1} foo', { a: 2 }, 0)).eq('foo');
       expect(RiTa.evaluate('{$a=hello} foo', { a: 'hello' }, 0)).eq('foo');
       expect(RiTa.evaluate('{$a=goodbye} foo', { a: 'hello' }, 0)).eq('');
     });
-  }); */
+
+    it('Should handle multi-value conditionals', () => {
+      expect(RiTa.evaluate('{$a<1,$b<1} foo', { a: 2 }, 0)).eq('');
+      expect(RiTa.evaluate('{$a>1,$b<1} foo', { a: 2 }, 0)).eq('');
+      expect(RiTa.evaluate('{$a>1,$b<1} foo', { a: 2, b:2 }, 0)).eq('');
+      expect(RiTa.evaluate('{$a=ok,$b>=1} foo', { a: 2, b: 2 }, 0)).eq('');
+      expect(RiTa.evaluate('{$a>1,$b>=1} foo', { a: 2, b: 2 }, 0)).eq('foo');
+    });
+  });
 
   describe('Evaluation', () => {
     it('Should eval simple expressions', () => {
@@ -241,7 +252,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('[$stored=((a | a).toUpperCase())] dog is a mammal', ctx)).eq(exp);
       expect(ctx.stored).eq('A');
 
-      expect(RiTa.evaluate('$stored=(a | a)\n$stored.toUpperCase() dog is a mammal', ctx,0)).eq(exp);
+      expect(RiTa.evaluate('$stored=(a | a)\n$stored.toUpperCase() dog is a mammal', ctx, 0)).eq(exp);
       expect(ctx.stored).eq('a');
 
       expect(RiTa.evaluate('$stored=(a | a)\n($stored).toUpperCase() dog is a mammal', ctx)).eq(exp);
@@ -298,8 +309,8 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should assign a silent variable to code', () => {
-/*       expect(RiTa.evaluate('A [$stored=($animal | $animal)] is a mammal', { animal: 'dog' }, 0)).eq('A dog is a mammal');
-      expect(RiTa.evaluate('[$b=(a | a).toUpperCase()] dog is a $b.', 0, 0)).eq('A dog is a A.'); */
+      /*       expect(RiTa.evaluate('A [$stored=($animal | $animal)] is a mammal', { animal: 'dog' }, 0)).eq('A dog is a mammal');
+            expect(RiTa.evaluate('[$b=(a | a).toUpperCase()] dog is a $b.', 0, 0)).eq('A dog is a A.'); */
       expect(RiTa.evaluate('[$b=(a | a)].toUpperCase() dog is a $b.toLowerCase().', 0, 0)).eq('A dog is a a.');
       expect(RiTa.evaluate('[$b=(a | a)].toUpperCase() dog is a ($b).toLowerCase().', 0, 0)).eq('A dog is a a.');
     });
@@ -313,10 +324,10 @@ describe('RiTa.RiScript', () => {
   });
   describe('Symbol', () => {
 
-/*     it('Should throw on bad symbols', () => {
-      expect(() => RiTa.evaluate('$', 0, 0, 1)).to.throw();
-    });
- */
+    /*     it('Should throw on bad symbols', () => {
+          expect(() => RiTa.evaluate('$', 0, 0, 1)).to.throw();
+        });
+     */
     it('Should eval linebreak-defined variables', () => {
       let res;
       res = RiTa.evaluate('$foo=hello\n$start=I said $foo to her\n$start', {}, 0);
@@ -693,7 +704,7 @@ describe('RiTa.RiScript', () => {
       expect(Operator.LE.invoke("1.0", "1")).eq(true);
       expect(Operator.LE.invoke("2.0", "1.00")).eq(false);
       expect(Operator.LE.invoke("1.0", "2.00")).eq(true);
-      expect(Operator.LE.invoke("1.0", "1.00")).eq(true); 
+      expect(Operator.LE.invoke("1.0", "1.00")).eq(true);
 
       expect(() => Operator.GT.invoke("2", "")).to.throw();
       expect(() => Operator.LT.invoke("2", null)).to.throw();
