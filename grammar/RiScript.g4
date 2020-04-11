@@ -2,12 +2,11 @@ grammar RiScript;
 
 // --------- NOTE: changing this file require a re-compile: use $ yarn run watch-grammar --------- 
 
-// TODO: custom transforms (store in context?) conditionals with number vars (need to
-// parseFloat,parseBool,etc)
+// TODO: 3rd arg to RiTa.evaluate() should be opts(recursive[0,1,2],silent,trace,?) Custom
+// transforms (store in context?) conditionals with number vars (need to OPS: test booleans,
+// objects, etc.
 
 script: (expr | cexpr | NL)+ EOF;
-//prod: (symbol | choice | assign | inline | chars)+;
-//expr: cond? prod;
 expr: (symbol | choice | assign | inline | chars)+;
 cexpr: WS* LCB cond+ RCB WS* expr;
 cond: SYM WS* op WS* chars WS* COM?;
@@ -16,10 +15,11 @@ choice: (LP (wexpr OR)* wexpr RP) transform*;
 inline: LB symbol EQ expr RB transform*;
 assign: symbol EQ expr; //transform*
 chars: (
-		CHR
+		(DOT | WS | EXC | AST | GT | LT | DOL | HAT | COM)
+		| CHR
 		| ENT
 		| INT
-		| (DOT | WS | EXC | AST | GT | LT | DOL | HAT | COM))+;
+	)+;
 symbol: SYM transform*;
 wexpr: expr? weight?;
 //wexpr: prod? weight?;
