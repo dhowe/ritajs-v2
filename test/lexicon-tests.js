@@ -84,16 +84,16 @@ describe('RiTa.Lexicon', function() {
       result = RiTa.randomWord({ syllables: 3 });
       syllables = RiTa.syllables(result);
       num = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
-      ok(result.length > 0);
-      ok(num == 3, result + ": " + syllables); // "3 syllables: "
+      ok(result.length > 0, 'failed1 on: '+result);
+      ok(num === 3, result + ": " + syllables); // "3 syllables: "
     }
 
     for (i = 0; i < 10; i++) {
       result = RiTa.randomWord({ syllables: 5 });
       syllables = RiTa.syllables(result);
       num = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
-      ok(result.length > 0); // "3 syllables: "
-      ok(num == 5); // "3 syllables: "
+      ok(result.length > 0), 'failed2 on ' + result;
+      ok(num === 5, result + ": " + syllables); // "5 syllables: "
     }
   });
 
