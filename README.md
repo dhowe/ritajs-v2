@@ -6,6 +6,7 @@
 
 ```
 $ yarn install 
+$ yarn compile
 $ yarn test
 ```
 &nbsp;
