@@ -16,20 +16,24 @@ class RiScript {
     this.visitor = undefined;
   }
 
-  static eval(input, context, showParse, silent) {
+  static eval(input, context, opts) {
     let evaluator = new RiScript();
-    let res = evaluator.lexParseVisit(input, context || {}, showParse, silent);
+    let res = evaluator.lexParseVisit(input, context || {}, opts);
     return resolveEntities(res);
   }
 
-  static multeval(input, context, showParse, silent) {
+  static multeval(input, context, opts) {
     let last, expr = input;
     let rs = new RiScript();
     let ctx = context || {};
+    opts = opts || {};
+    let trace = opts.trace;
+    let silent = opts.silent;
+    opts.silent = true; // always true, handled after    
     for (let i = 0; i < MaxTries && expr !== last; i++) {
       last = expr;
-      expr = rs.lexParseVisit(expr, ctx, showParse, true);
-      showParse && console.log(i + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
+      expr = rs.lexParseVisit(expr, ctx, opts);
+      trace && console.log(i + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
       if (i >= MaxTries - 1) throw Error('Unable to resolve: "' 
         + input + '" after '+MaxTries + ' tries - an infinite loop?');
     }
@@ -39,7 +43,7 @@ class RiScript {
     return resolveEntities(expr);
   }
 
-  lex(input, showTokens, silent) {
+  lex(input, opts) {
 
     // create the lexer
     let stream = new antlr4.InputStream(input);
@@ -47,14 +51,17 @@ class RiScript {
     this.lexer.removeErrorListeners();
     this.lexer.addErrorListener(new LexerErrors());
 
+    let silent = opts && opts.silent;
+    let trace = opts && opts.trace;
+
     // try the lexing
-    let tokens;
+    let tokenStream;
     try {
-      tokens = new antlr4.CommonTokenStream(this.lexer);
-      if (showTokens) {
+      tokenStream = new antlr4.CommonTokenStream(this.lexer);
+      if (trace) {
         console.log('-------------------------------------------------------');
-        tokens.fill();
-        tokens.tokens.forEach(t => console.log(this.tokenToString(t)));
+        tokenStream.fill();
+        tokenStream.tokens.forEach(t => console.log(this.tokenToString(t)));
         console.log();
       }
     } catch (e) {
@@ -62,7 +69,7 @@ class RiScript {
         (colors.red("LEXER: " + input + '\n' + e.message + "\n"));
       throw e;
     }
-    return tokens;
+    return tokenStream;
   }
 
   tokenToString(t) {
@@ -75,40 +82,42 @@ class RiScript {
     return "[" + t.line + "." + t.column + ": '" + txt + "' -> " + type + "]";
   }
 
-  parse(tokens, input, showParse, silent) {
+  parse(tokens, input, opts) {
 
     // create the parser
     this.parser = new Parser.RiScriptParser(tokens);
     this.parser.removeErrorListeners();
     this.parser.addErrorListener(new ParserErrors());
 
+    let silent = opts && opts.silent;
+    let trace = opts && opts.trace;
+
     // try the parsing
     let tree;
     try {
       tree = this.parser.script();
     } catch (e) {
-      if (!silent) {
-        console.error(colors.red("PARSER: " + input + '\n' + e.message + '\n'));
-      }
+      if (!silent) console.error(colors.red
+          ("PARSER: " + input + '\n' + e.message + '\n'));
       throw e;
     }
-    if (showParse) console.log(tree.toStringTree(this.parser.ruleNames), '\n');
+    if (trace) console.log(tree.toStringTree(this.parser.ruleNames), '\n');
 
     return tree;
   }
 
-  lexParse(input, showParse, silent) {
-    let tokens = this.lex(input, showParse, silent);
-    return this.parse(tokens, input, showParse, silent);
+  lexParse(input, opts) {
+    let tokens = this.lex(input, opts);
+    return this.parse(tokens, input, opts);
   }
 
-  lexParseVisit(input, context, showParse, silent) {
-    let tree = this.lexParse(input, showParse, silent);
-    return this.createVisitor(context, showParse, silent).start(tree);
+  lexParseVisit(input, context, opts) {
+    let tree = this.lexParse(input, opts);
+    return this.createVisitor(context, opts).start(tree);
   }
 
-  createVisitor(context, showParse, silent) {
-    return new Visitor(this, context, showParse, silent);
+  createVisitor(context, opts) {
+    return new Visitor(this, context, opts);
   }
 }
 

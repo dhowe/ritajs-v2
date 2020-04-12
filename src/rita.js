@@ -53,7 +53,7 @@ class RiTa {
     return Util.isNode() ? RiTa.NODE : RiTa.JS;
   }
 
-  static evaluate(input, context, showParse, silent) { // runScript ? evalScript?
+  static evaluate(input, context, opts) { // runScript ? evalScript?
     return RiScript.eval(...arguments);
   }
 

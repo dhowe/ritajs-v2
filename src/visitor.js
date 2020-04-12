@@ -19,12 +19,12 @@ String.prototype.ucf = function () {
  */
 class Visitor extends RiScriptVisitor {
 
-  constructor(parent, context, trace, silent) {
+  constructor(parent, context, opts) {
     super();
-    this.trace = trace;
     this.parent = parent;
     this.context = context || {};
-    this.ignoreMissingSymbols = silent;
+    this.trace = opts && opts.trace;
+    this.ignoreMissingSymbols = opts && opts.silent;
   }
 
   visitCexpr(ctx) {
