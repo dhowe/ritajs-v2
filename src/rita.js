@@ -53,8 +53,14 @@ class RiTa {
     return Util.isNode() ? RiTa.NODE : RiTa.JS;
   }
 
-  static evaluate(input, context, opts) { // runScript ? evalScript?
+  static evaluate(input, context, opts) { // runScript,evalScript,execute,parse?
+    //return RiScript.eval(...arguments); // much faster, why?
+    //return ((opts && opts.singlePass) ? RiScript.eval : RiScript.multeval)(...arguments);
     return RiScript.eval(...arguments);
+  }
+
+  static addTransform(theName, theFunction) {
+    return RiScript.addTransform(...arguments);
   }
 
   static hasWord(word) {

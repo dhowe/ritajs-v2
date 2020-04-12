@@ -24,7 +24,7 @@ class Visitor extends RiScriptVisitor {
     this.parent = parent;
     this.context = context || {};
     this.trace = opts && opts.trace;
-    this.ignoreMissingSymbols = opts && opts.silent;
+    //this.ignoreMissingSymbols = opts && opts.silent;
   }
 
   visitCexpr(ctx) {
@@ -149,9 +149,9 @@ class Visitor extends RiScriptVisitor {
 
       if (/\$[A-Za-z_][A-Za-z_0-9-]*/.test(term)) { // Unresolved symbols
 
-        if (!RiTa.SILENT && !this.ignoreMissingSymbols) {
+  /*       if (!RiTa.SILENT && !this.ignoreMissingSymbols) {
           console.warn('[WARN] Unresolved symbol(s): ' + term);
-        }
+        } */
         return term + (tfs ? tfs.reduce((acc, val) => acc +
           (typeof val === 'string' ? val : val.getText()), '') : '');
       }

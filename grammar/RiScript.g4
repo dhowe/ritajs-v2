@@ -2,9 +2,9 @@ grammar RiScript;
 
 // --------- NOTE: changing this file require a re-compile: use $ yarn run watch-grammar --------- 
 
-// TODO: 3rd arg to RiTa.evaluate() should be opts(recursive[0,1,2],silent,trace,?) Custom
-// transforms (store in context?) conditionals with number vars (need to OPS: test booleans,
-// objects, etc.
+// TODO: Add recursive arg, and call multeval when recursive || unrseolved symbol
+// 			 Transforms: (store in riscript, static?) conditionals with number vars (need to OPS: test booleans,
+//       Apply to String before each run (including builtins), then remove at end ?
 
 script: (expr | cexpr | NL)+ EOF;
 expr: (symbol | choice | assign | inline | chars)+;

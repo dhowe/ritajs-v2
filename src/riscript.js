@@ -14,33 +14,78 @@ class RiScript {
     this.lexer = undefined;
     this.parser = undefined;
     this.visitor = undefined;
+    this.applied = {};
+  }
+
+  static addTransform(name, func) {
+    RiScript.transforms[name] = func;
+  }
+
+  pushTransforms() {
+    Object.keys(RiScript.transforms).forEach(t => {
+      this.applied[t] = String.prototype[t];
+      String.prototype[t] = RiScript.transforms[t];
+    });
+    return this;
+  }
+
+  popTransforms() {
+    Object.keys(RiScript.transforms).forEach(t => {
+      String.prototype[t] = this.applied[t];
+    });
+    return this;
+  }
+
+  static evalNew(input, context, opts) { // TODO: optimize
+    opts = opts || {};
+    let trace = opts.trace;
+    let singlePass = opts.singlePass;
+    let ctx = context || {};
+    let riscript = new RiScript().pushTransforms();
+    let last = input;
+    let expr = riscript.lexParseVisit(input, ctx, opts);
+    if (!singlePass || /(\$[A-Za-z_][A-Za-z_0-9-]*|\(|\))/.test(expr)) {
+      for (let i = 0; i < MaxTries && expr !== last; i++) {
+        last = expr;
+        expr = riscript.lexParseVisit(expr, ctx, opts);
+        trace && console.log(i + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
+        if (i >= MaxTries - 1) throw Error('Unable to resolve: "'
+          + input + '" after ' + MaxTries + ' tries - an infinite loop?');
+      }
+    }
+    if (!opts.silent && !RiTa.SILENT && /\$[A-Za-z_][A-Za-z_0-9-]*/.test(expr)) {
+      console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
+    }
+    return riscript.popTransforms().resolveEntities(expr);
   }
 
   static eval(input, context, opts) {
-    let evaluator = new RiScript();
-    let res = evaluator.lexParseVisit(input, context || {}, opts);
-    return resolveEntities(res);
+    let riscript = new RiScript().pushTransforms();
+    let expr = riscript.lexParseVisit(input, context || {}, opts);
+    if (/*singlePass || */!/(\$[A-Za-z_][A-Za-z_0-9-]*|\(|\))/.test(expr)) {
+      return riscript.popTransforms().resolveEntities(expr);
+    }
+    return RiScript.multeval(...arguments);
   }
 
+  // TODO: should only repeat if symbols or choices remain
   static multeval(input, context, opts) {
-    let last, expr = input;
-    let rs = new RiScript();
-    let ctx = context || {};
     opts = opts || {};
-    let trace = opts.trace;
-    let silent = opts.silent;
-    opts.silent = true; // always true, handled after    
+    let trace = opts.trace, silent = opts.silent;
+    let last, expr = input, ctx = context || {};
+    opts.silent = true; // always true, handled after loop
+    let riscript = new RiScript().pushTransforms();
     for (let i = 0; i < MaxTries && expr !== last; i++) {
       last = expr;
-      expr = rs.lexParseVisit(expr, ctx, opts);
+      expr = riscript.lexParseVisit(expr, ctx, opts);
       trace && console.log(i + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
-      if (i >= MaxTries - 1) throw Error('Unable to resolve: "' 
-        + input + '" after '+MaxTries + ' tries - an infinite loop?');
+      if (i >= MaxTries - 1) throw Error('Unable to resolve: "'
+        + input + '" after ' + MaxTries + ' tries - an infinite loop?');
     }
-    if (!silent && !RiTa.SILENT && expr.includes('$')) {
+    if (!silent && !RiTa.SILENT && /\$[A-Za-z_][A-Za-z_0-9-]*/.test(expr)) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
     }
-    return resolveEntities(expr);
+    return riscript.popTransforms().resolveEntities(expr);
   }
 
   lex(input, opts) {
@@ -98,7 +143,7 @@ class RiScript {
       tree = this.parser.script();
     } catch (e) {
       if (!silent) console.error(colors.red
-          ("PARSER: " + input + '\n' + e.message + '\n'));
+        ("PARSER: " + input + '\n' + e.message + '\n'));
       throw e;
     }
     if (trace) console.log(tree.toStringTree(this.parser.ruleNames), '\n');
@@ -119,12 +164,53 @@ class RiScript {
   createVisitor(context, opts) {
     return new Visitor(this, context, opts);
   }
+
+  resolveEntities(result) {
+    return decode(result.replace(/ +/g, ' '))
+      .replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
+  }
 }
 
-function resolveEntities(result) {
-  return decode(result.replace(/ +/g, ' '))
-    .replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
+// -------------------- Default Transforms ----------------------
+
+/// <summary>
+/// Prefixes the string with 'a' or 'an' as appropriate.
+/// </summary>
+function articlise() {
+  return ("aeiou".indexOf(this[0].toLowerCase() > -1) ? "an " : "a ") + this;
 }
+
+/// <summary>
+/// Capitalizes the first character.
+/// </summary>
+function capitalise() {
+  return this[0].toUpperCase() + this.substring(1);
+}
+
+/// <summary>
+/// Capitalizes the first character.
+/// </summary>
+function toUpper() {
+  return this.toUpperCase();
+}
+
+/// <summary>
+/// Wraps the given string in double-quotes.
+/// </summary>
+function quotify() {
+  return "&quot;" + this + "&quot;";
+}
+
+/// <summary>
+/// Pluralizes the word according to english regular/irregular rules.
+/// </summary>
+function pluralise() {
+  if (this.indexOf(' ') > -1) throw Error
+    ('pluralize expected a single word, got "' + this + '"');
+  return RiTa.pluralize(this);
+}
+
+RiScript.transforms = { capitalise, articlise, quotify, pluralise, qq: quotify, uc: toUpper, ucf: capitalise };
 
 module && (module.exports = RiScript);
   ////////////// NEW //////////////////////////////////////////// // not used...
