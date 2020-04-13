@@ -1,8 +1,7 @@
 const RiScript = require('../src/riscript');
-//const Transforms = require('../src/transforms');
 const Operator = require('../src/operator');
 
-describe.only('RiTa.RiScript', () => {
+describe('RiTa.RiScript', () => {
 
   if (typeof module !== 'undefined') require('./before');
 

@@ -199,22 +199,22 @@ describe('RiTa.Lexicon', function() {
 
   it('Should correctly call similarBy.letter', () => {
     let result;
-    result = RiTa.similarBy("banana", { preserveLength: true });
+    result = RiTa.similarBy("banana", { minWordLength: 6, maxWordLength: 6 });
     eql(result, ["cabana"]);
 
     result = RiTa.similarBy("");
     eql(result, []);
 
-    result = RiTa.similarBy("banana", { preserveLength: false });
+    result = RiTa.similarBy("banana");
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
     result = RiTa.similarBy("banana");
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
-    result = RiTa.similarBy("banana", { minAllowedDistance: 1, preserveLength: true });
+    result = RiTa.similarBy("banana", { minAllowedDistance: 1, minWordLength: 6, maxWordLength: 6 });
     eql(result, ["cabana"]);
 
-    result = RiTa.similarBy("banana", { minAllowedDistance: 1, preserveLength: false });
+    result = RiTa.similarBy("banana", { minAllowedDistance: 1 });
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
     result = RiTa.similarBy("tornado");
@@ -226,13 +226,13 @@ describe('RiTa.Lexicon', function() {
     result = RiTa.similarBy("ice", { minAllowedDistance: 1 });
     eql(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
 
-    result = RiTa.similarBy("ice", { minAllowedDistance: 2, preserveLength: true });
+    result = RiTa.similarBy("ice", { minAllowedDistance: 2, minWordLength: 3, maxWordLength: 3 });
     ok(result.length > 10);
 
-    result = RiTa.similarBy("ice", { minAllowedDistance: 0, preserveLength: true }); // defaults to 1
+    result = RiTa.similarBy("ice", { minAllowedDistance: 0, minWordLength: 3, maxWordLength: 3 }); // defaults to 1
     eql(result, ["ace", "icy", "ire"]);
 
-    result = RiTa.similarBy("ice", { minAllowedDistance: 1, preserveLength: true });
+    result = RiTa.similarBy("ice", { minAllowedDistance: 1, minWordLength: 3, maxWordLength: 3 });
     eql(result, ["ace", "icy", "ire"]);
 
     result = RiTa.similarBy("worngword");

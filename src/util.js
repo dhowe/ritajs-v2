@@ -46,52 +46,6 @@ class Util {
     }
   }
 
-  // med for 2 strings (or 2 arrays)
-  static minEditDist(source, target) {
-
-    let i, j, matrix = []; // matrix
-    let cost; // cost
-    let sI; // ith character of s
-    let tJ; // jth character of t
-
-    // Step 1 ----------------------------------------------
-
-    for (i = 0; i <= source.length; i++) {
-      matrix[i] = [];
-      matrix[i][0] = i;
-    }
-
-    for (j = 0; j <= target.length; j++) {
-      matrix[0][j] = j;
-    }
-
-    // Step 2 ----------------------------------------------
-
-    for (i = 1; i <= source.length; i++) {
-      sI = source[i - 1];
-
-      // Step 3 --------------------------------------------
-
-      for (j = 1; j <= target.length; j++) {
-        tJ = target[j - 1];
-
-        // Step 4 ------------------------------------------
-
-        cost = (sI == tJ) ? 0 : 1;
-
-        // Step 5 ------------------------------------------
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j - 1] + cost);
-      }
-    }
-
-    // Step 6 ----------------------------------------------
-
-    return matrix[source.length][target.length];
-  }
-
   // Takes a syllabification and turns it into a string of phonemes,
   // delimited with dashes, with spaces between syllables
   static syllablesToPhones(syllables) {

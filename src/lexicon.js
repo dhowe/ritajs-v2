@@ -60,6 +60,12 @@ class Lexicon {
     return results;
   }
 
+  /*
+    opts:
+      minWordLength: return only words whose length is greater than this num
+      maxWordLength: return only words whose length is less than this num
+      minAllowedDistance: disregard words with distance less than this num
+  */
   similarBy(word, opts) {
 
     if (!word || !word.length) return [];
@@ -68,74 +74,8 @@ class Lexicon {
     opts.type = opts.type || 'letter';
 
     return (opts.type === 'soundAndLetter') ?
-      this.similarBySoundAndLetter(word, opts)
-      : this.similarByType(word, opts);
-  }
-
-  similarByType(word, opts) {
-
-    // TODO: optimize
-    let minLen = opts && opts.minimumWordLen || 2;
-    let preserveLength = opts && opts.preserveLength || 0;
-    let minAllowedDist = opts && opts.minAllowedDistance || 1;
-
-    let result = [];
-    let dict = this._dict(true);
-    let sound = (opts.type === 'sound');
-
-    let input = word.toLowerCase();
-    let words = Object.keys(dict);
-    let variations = [input, input + 's', input + 'es'];
-
-    let compareA = sound ? this._toPhoneArray
-      (this._rawPhones(input)) : input;
-
-    let minVal = Number.MAX_VALUE;
-    for (let i = 0; i < words.length; i++) {
-
-      let entry = words[i];
-
-      if ((entry.length < minLen) ||
-        (preserveLength && (entry.length !== input.length)) ||
-        variations.includes(entry)) {
-        continue;
-      }
-
-      let compareB = sound ? dict[entry][0]
-        .replace(/[01]/g,'')
-        .replace(/ /g, '-')
-        .split('-') : entry;
-
-      let med = Util.minEditDist(compareA, compareB);
-
-      // found something even closer
-      if (med >= minAllowedDist && med < minVal) {
-        minVal = med;
-        result = [entry];
-        //console.log("BEST(" + med + ")" + entry + " -> " + phonesArr);
-      }
-
-      // another best to add
-      else if (med === minVal) {
-        //console.log("TIED(" + med + ")" + entry + " -> " + phonesArr);
-        result.push(entry);
-      }
-    }
-
-    return result;
-  }
-
-  similarBySoundAndLetter(word, opts) {
-
-    opts.type = 'letter';
-    let simLetter = this.similarByType(word, opts);
-    if (simLetter.length < 1) return [];
-
-    opts.type = 'sound';
-    let simSound = this.similarByType(word, opts);
-    if (simSound.length < 1) return [];
-
-    return this._intersect(simSound, simLetter);
+      this._similarBySoundAndLetter(word, opts)
+      : this._similarByType(word, opts);
   }
 
   hasWord(word, fatal) {
@@ -249,10 +189,71 @@ class Lexicon {
     return p1 && p2 && p1 === p2;
   }
 
-  //////////////////////////////////////////////////////////////////////
+  //////////////////////////// helpers /////////////////////////////////
+
+  _similarByType(word, opts) { // NIAPI
+
+    // TODO: optimize? cache?
+    let minLen = opts.minWordLength || 2;
+    let maxLen = opts.maxWordLength || Number.MAX_VALUE;
+    let minMed = opts.minAllowedDistance || 1;
+
+    let result = [], dict = this._dict(true);
+    let sound = opts.type === 'sound'; // default: letter 
+
+    let input = word.toLowerCase(), words = Object.keys(dict);
+    let variations = [input, input + 's', input + 'es'];
+
+    let compareA = sound ? this._toPhoneArray
+      (this._rawPhones(input)) : input;
+
+    let minVal = Number.MAX_VALUE;
+    for (let i = 0; i < words.length; i++) {
+
+      let entry = words[i];
+
+      if (entry.length < minLen || entry.length > maxLen || variations.includes(entry)) {
+        continue;
+      }
+    
+      let compareB = sound ? dict[entry][0]
+        .replace(/[01]/g, '')
+        .replace(/ /g, '-')
+        .split('-') : entry;
+
+      let med = this._minEditDist(compareA, compareB);
+
+      // found something even closer
+      if (med >= minMed && med < minVal) {
+        minVal = med;
+        result = [entry];
+        //console.log("BEST(" + med + ")" + entry + " -> " + phonesArr);
+      }
+
+      // another best to add
+      else if (med === minVal) {
+        //console.log("TIED(" + med + ")" + entry + " -> " + phonesArr);
+        result.push(entry);
+      }
+    }
+    return result;
+  }
+
+  _similarBySoundAndLetter(word, opts) {
+
+    opts.type = 'letter';
+    let simLetter = this._similarByType(word, opts);
+    if (simLetter.length < 1) return [];
+
+    opts.type = 'sound';
+    let simSound = this._similarByType(word, opts);
+    if (simSound.length < 1) return [];
+
+    return this._intersect(simSound, simLetter);
+  }
 
   _toPhoneArray(raw) {
-    return raw.replace(/[01]/g,'').replace(/ /g, '-').split('-');
+    return raw.replace(/[01]/g, '').replace(/ /g, '-').split('-');
   }
 
   _isVowel(c) {
@@ -401,6 +402,52 @@ class Lexicon {
       }
     }
     return this.dict || {};
+  }
+
+  // med for 2 strings (or 2 arrays)
+  _minEditDist(source, target) {
+
+    let i, j, matrix = []; // matrix
+    let cost; // cost
+    let sI; // ith character of s
+    let tJ; // jth character of t
+
+    // Step 1 ----------------------------------------------
+
+    for (i = 0; i <= source.length; i++) {
+      matrix[i] = [];
+      matrix[i][0] = i;
+    }
+
+    for (j = 0; j <= target.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    // Step 2 ----------------------------------------------
+
+    for (i = 1; i <= source.length; i++) {
+      sI = source[i - 1];
+
+      // Step 3 --------------------------------------------
+
+      for (j = 1; j <= target.length; j++) {
+        tJ = target[j - 1];
+
+        // Step 4 ------------------------------------------
+
+        cost = (sI == tJ) ? 0 : 1;
+
+        // Step 5 ------------------------------------------
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j - 1] + cost);
+      }
+    }
+
+    // Step 6 ----------------------------------------------
+
+    return matrix[source.length][target.length];
   }
 }
 

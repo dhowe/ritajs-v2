@@ -14,7 +14,7 @@ class RiScript {
     this.lexer = undefined;
     this.parser = undefined;
     this.visitor = undefined;
-    this.applied = {};
+    this.appliedTransforms = {};
   }
 
   static addTransform(name, func) {
@@ -23,7 +23,7 @@ class RiScript {
 
   pushTransforms() {
     Object.keys(RiScript.transforms).forEach(t => {
-      this.applied[t] = String.prototype[t];
+      this.appliedTransforms[t] = String.prototype[t];
       String.prototype[t] = RiScript.transforms[t];
     });
     return this;
@@ -31,45 +31,43 @@ class RiScript {
 
   popTransforms() {
     Object.keys(RiScript.transforms).forEach(t => {
-      String.prototype[t] = this.applied[t];
+      String.prototype[t] = this.appliedTransforms[t];
     });
     return this;
   }
 
-  static evalNew(input, context, opts) { // TODO: optimize
+  static eval(input, context, opts) { // TODO: optimize
     opts = opts || {};
     let trace = opts.trace;
-    let singlePass = opts.singlePass;
-    let ctx = context || {};
-    let riscript = new RiScript().pushTransforms();
-    let last = input;
-    let expr = riscript.lexParseVisit(input, ctx, opts);
-    if (!singlePass || /(\$[A-Za-z_][A-Za-z_0-9-]*|\(|\))/.test(expr)) {
+    let onepass = opts.onepass;
+    let ctx = context || {}, last = input;
+    let rs = new RiScript().pushTransforms();
+    let expr = rs.lexParseVisit(input, ctx, opts);
+    if (!onepass || /(\$[A-Za-z_]|[()])/.test(expr)) {
       for (let i = 0; i < MaxTries && expr !== last; i++) {
         last = expr;
-        expr = riscript.lexParseVisit(expr, ctx, opts);
+        if (!expr) break;
+        expr = rs.lexParseVisit(expr, ctx, opts);
         trace && console.log(i + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
         if (i >= MaxTries - 1) throw Error('Unable to resolve: "'
           + input + '" after ' + MaxTries + ' tries - an infinite loop?');
       }
     }
-    if (!opts.silent && !RiTa.SILENT && /\$[A-Za-z_][A-Za-z_0-9-]*/.test(expr)) {
+    if (!opts.silent && !RiTa.SILENT && /\$[A-Za-z_]/.test(expr)) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
     }
+    return rs.popTransforms().resolveEntities(expr);
+  }
+
+  /*
+  static evalOld(input, context, opts) { // remove
+    let riscript = new RiScript().pushTransforms();
+    let expr = riscript.lexParseVisit(input, context || {}, opts);
     return riscript.popTransforms().resolveEntities(expr);
   }
 
-  static eval(input, context, opts) {
-    let riscript = new RiScript().pushTransforms();
-    let expr = riscript.lexParseVisit(input, context || {}, opts);
-    if (/*singlePass || */!/(\$[A-Za-z_][A-Za-z_0-9-]*|\(|\))/.test(expr)) {
-      return riscript.popTransforms().resolveEntities(expr);
-    }
-    return RiScript.multeval(...arguments);
-  }
-
   // TODO: should only repeat if symbols or choices remain
-  static multeval(input, context, opts) {
+  static multeval(input, context, opts) { // remove
     opts = opts || {};
     let trace = opts.trace, silent = opts.silent;
     let last, expr = input, ctx = context || {};
@@ -82,11 +80,11 @@ class RiScript {
       if (i >= MaxTries - 1) throw Error('Unable to resolve: "'
         + input + '" after ' + MaxTries + ' tries - an infinite loop?');
     }
-    if (!silent && !RiTa.SILENT && /\$[A-Za-z_][A-Za-z_0-9-]*/.test(expr)) {
+    if (!silent && !RiTa.SILENT && /(\$[A-Za-z_]|[()])/.test(expr)) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
     }
     return riscript.popTransforms().resolveEntities(expr);
-  }
+  }*/
 
   lex(input, opts) {
 
@@ -143,7 +141,7 @@ class RiScript {
       tree = this.parser.script();
     } catch (e) {
       if (!silent) console.error(colors.red
-        ("PARSER: " + input + '\n' + e.message + '\n'));
+        ("PARSER: '" + input + '\'\n' + e.message + '\n'));
       throw e;
     }
     if (trace) console.log(tree.toStringTree(this.parser.ruleNames), '\n');

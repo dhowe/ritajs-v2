@@ -1,4 +1,13 @@
 
+// TODO: should always check original for novel output sentences
+
+// Additional methods (see markovify)
+//   toJSON -> for saving to disk
+//   fromJSON -> for reading from disk
+//   add tries argument to generate (default 10?)
+//   retainOriginal opt to constructor
+//   compile ? combine ?
+
 // TODO:
 /* add 'temperature' arg
   2 methods (n = number of elements):
@@ -33,9 +42,8 @@ class Markov {
   }
 
   loadTokens(tokens) {
-    if (!Array.isArray(tokens)) {
-      throw Error('loadTokens() expects an array of tokens');
-    }
+    if (!Array.isArray(tokens)) throw Error
+      ('loadTokens() expects an array of tokens');
     this._treeify(tokens);
     this.mlm && this.input.push(...tokens);
   }
