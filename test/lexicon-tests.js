@@ -1,46 +1,41 @@
 // const expect = require('chai').expect;
 // const RiTa = require('../src/rita_api');
 
-describe('RiTa.Lexicon', function() {
+describe.only('RiTa.Lexicon', function () {
 
   this.timeout(5000); // TODO: why is mocha slow with dist/node file
 
   if (typeof module !== 'undefined') require('./before');
 
   it('Should correctly call hasWord', () => {
-    eq(RiTa.hasWord("random"), true);
+    expect(RiTa.hasWord("random")).to.be.true;
   });
 
   it('Should correctly call randomWord', () => {
 
-    let result;
+    expect(() => RiTa.randomWord({ pos: "xxx" })).to.throw;
 
+    let result;
     result = RiTa.randomWord();
-    ok(result.length > 0, "randomWord: " + result);
+    expect(result.length > 0, "randomWord: " + result).to.be.true;
 
     result = RiTa.randomWord({ pos: "nn" });
-    ok(result.length > 0, "randomWord nn: " + result);
+    expect(result.length > 0, "randomWord nn: " + result).to.be.true;
 
     result = RiTa.randomWord({ pos: "nns" });
-    ok(result.length > 0, "randomWord nns=" + result);
+    expect(result.length > 0, "randomWord nns=" + result).to.be.true;
 
-    //wordNet Tag
     result = RiTa.randomWord({ pos: "n" });
-    ok(result.length > 0, "randomWord n=" + result);
+    expect(result.length > 0, "randomWord n=" + result).to.be.true;
 
     result = RiTa.randomWord({ pos: "v" });
-    ok(result.length > 0, "randomWord v=" + result);
+    expect(result.length > 0, "randomWord v=" + result).to.be.true;
 
-    // no result
-    result = RiTa.randomWord({ pos: "xxx" });
-    ok(result.length < 1, "randomWord rp=" + result);
+    result = RiTa.randomWord({ numSyllables: 3 });
+    expect(result.length > 0, "3 syllables: " + result).to.be.true;
 
-    //int
-    result = RiTa.randomWord({ syllables: 3 });
-    ok(result.length > 0, "3 syllables: " + result);
-
-    result = RiTa.randomWord({ syllables: 5 });
-    ok(result.length > 0, "5 syllables: " + result);
+    result = RiTa.randomWord({ numSyllables: 5 });
+    expect(result.length > 0, "5 syllables: " + result).to.be.true;
 
   });
 
@@ -53,14 +48,14 @@ describe('RiTa.Lexicon', function() {
         console.warn("Pluralize/Singularize problem: randomWord(nns) was '" + result + "' (" +
           "isPlural=" + RiTa.inflector.isPlural(result) + "), singularized is '" + RiTa.singularize(result) + "'");
       }
-      //ok(RiTa._isPlural(result), "randomWord nns: " + result);
+      //expect(RiTa._isPlural(result), "randomWord nns: " + result).to.be.true;
 
       //No nn & vbg
       //No -ness, -ism
       let pos = RiTa.lexicon._posData(result);
-      ok(pos.indexOf("vbg") < 0, "randomWord nns: " + result);
-      ok(!result.endsWith("ness"), "randomWord nns: " + result);
-      ok(!result.endsWith("isms"), "randomWord nns: " + result);
+      expect(pos.indexOf("vbg") < 0, "randomWord nns: " + result).to.be.true;
+      expect(!result.endsWith("ness"), "randomWord nns: " + result).to.be.true;
+      expect(!result.endsWith("isms"), "randomWord nns: " + result).to.be.true;
     }
   });
 
@@ -72,7 +67,7 @@ describe('RiTa.Lexicon', function() {
         let result = RiTa.randomWord({ pos: pos[j] });
         let best = RiTa.lexicon._bestPos(result);
         //console.log(result+": "+pos[j]+" ?= "+best);
-        eq(pos[j], best, result);
+        expect(pos[j]).eq(best, result);
       }
     }
   });
@@ -81,51 +76,45 @@ describe('RiTa.Lexicon', function() {
   it('Should correctly call randomWord.syls', () => {
     let i, result, syllables, num;
     for (i = 0; i < 10; i++) {
-      result = RiTa.randomWord({ syllables: 3 });
+      result = RiTa.randomWord({ numSyllables: 3 });
       syllables = RiTa.syllables(result);
       num = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
-      ok(result.length > 0, 'failed1 on: '+result);
-      ok(num === 3, result + ": " + syllables); // "3 syllables: "
+      expect(result.length > 0, 'failed1 on: ' + result).to.be.true;
+      expect(num === 3, result + ": " + syllables).to.be.true; // "3 syllables: "
     }
 
     for (i = 0; i < 10; i++) {
-      result = RiTa.randomWord({ syllables: 5 });
+      result = RiTa.randomWord({ numSyllables: 5 });
       syllables = RiTa.syllables(result);
       num = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
-      ok(result.length > 0), 'failed2 on ' + result;
-      ok(num === 5, result + ": " + syllables); // "5 syllables: "
+      expect(result.length).gt(0, 'failed2 on ' + result);
+      expect(num === 5, result + ": " + syllables).to.be.true; // "5 syllables: "
     }
   });
 
   it('Should correctly call randomWord.pos.syls', () => {
     let result, syllables;
     for (let i = 0; i < 5; i++) {
-      result = RiTa.randomWord({ syllables: 3, pos: "vbz" });
-      ok(result.length > 0, "randomWord vbz: " + result);
+      result = RiTa.randomWord({ numSyllables: 3, pos: "vbz" });
+      expect(result.length > 0, "randomWord vbz: " + result).to.be.true;
       syllables = RiTa.syllables(result);
-      eq(3, syllables.split(RiTa.SYLLABLE_BOUNDARY).length, "GOT: " +result);
-      eq("vbz", RiTa.lexicon._bestPos(result), "GOT: " +result);
-
-      result = RiTa.randomWord({ syllables: 1, pos: "n" });
-      ok(result.length > 0, "randomWord n: " + result);
+      expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(3, "GOT: " + result);
+      expect(RiTa.lexicon._bestPos(result)).eq("vbz", "GOT: " + result);
+      result = RiTa.randomWord({ numSyllables: 1, pos: "n" });
+      expect(result.length > 0, "randomWord n: " + result).to.be.true;
       syllables = RiTa.syllables(result);
       //console.log("n: ",result,syllables.split(RiTa.SYLLABLE_BOUNDARY));
-      eq(1, syllables.split(RiTa.SYLLABLE_BOUNDARY).length, "GOT: " + result);
-      eq(RiTa.posTags(result, { simple: true })[0], "n", "GOT: " + result);
-    }
+      expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result);
+      expect(RiTa.lexicon._bestPos(result)[0]).eq("n");
+    } 
 
-    result = RiTa.randomWord({ syllables: 5, pos: "nns" });
-    ok(result.length > 0, "randomWord nns: " + result);
+    result = RiTa.randomWord({ numSyllables: 5, pos: "nns" });
+    expect(result.length > 0, "randomWord nns: " + result).to.be.true;
     syllables = RiTa.syllables(result);
     let count = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
     if (count !== 5) console.warn("Syllabifier problem: " // see #2
       + result + ".syllables was " + count + ', expected 5');
   });
-
-  // it('Should correctly call toPhoneArray', () => {
-  //   let result = RiTa._lexicon().toPhoneArray(RiTa._lexicon()._rawPhones("tornado"));
-  //   eql(result, ['t', 'ao', 'r', 'n', 'ey', 'd', 'ow'], 'got:' + result);
-  // });
 
   it('Should correctly call alliterations', () => {
 
@@ -133,68 +122,66 @@ describe('RiTa.Lexicon', function() {
 
     // TODO: make sure we have LTS cases in here
 
-    result = RiTa.alliterations("");
-    ok(result.length < 1);
+    result = RiTa.alliterations("", { silent: 1 });
+    expect(result.length < 1).to.be.true;
 
-    result = RiTa.alliterations("#$%^&*");
-    ok(result.length < 1);
+    result = RiTa.alliterations("#$%^&*", { silent: 1 });
+    expect(result.length < 1).to.be.true;
 
-    result = RiTa.alliterations("umbrella");
-    ok(result.length < 1, "failed on 'umbrella'");
+    result = RiTa.alliterations("umbrella", { silent: 1 });
+    expect(result.length < 1, "failed on 'umbrella'").to.be.true;
 
     result = RiTa.alliterations("cat stress");
-    ok(result.length > 2000, "failed on 'cat stress'");
+    expect(result.length > 2000, "failed on 'cat stress'").to.be.true;
 
     result = RiTa.alliterations("cat");
-    ok(result.length > 2000, "failed on 'cat'");
+    expect(result.length > 2000, "failed on 'cat'").to.be.true;
     for (let i = 0; i < result.length; i++) {
-      ok(RiTa.isAlliteration(result[i], "cat"));
+      expect(RiTa.isAlliteration(result[i], "cat")).to.be.true;
     }
 
     result = RiTa.alliterations("dog");
-    ok(result.length > 1000, "failed on 'dog'");
+    expect(result.length > 1000, "failed on 'dog'").to.be.true;
     for (let i = 0; i < result.length; i++) {
-      ok(RiTa.isAlliteration(result[i], "dog"));
+      expect(RiTa.isAlliteration(result[i], "dog")).to.be.true;
     }
 
-    result = RiTa.alliterations("dog", { matchMinLength: 15 });
-    ok(result.length < 5, "got length=" + result.length);
+    result = RiTa.alliterations("dog", { minWordLength: 15 });
+    expect(result.length < 5, "got length=" + result.length).to.be.true;
     for (let i = 0; i < result.length; i++) {
-      ok(RiTa.isAlliteration(result[i], "dog"), 'FAIL1: ' + result[i]);
+      expect(RiTa.isAlliteration(result[i], "dog"), 'FAIL1: ' + result[i]).to.be.true;
     }
 
-    result = RiTa.alliterations("cat", { matchMinLength: 16 });
-    ok(result.length < 15, "failed on 'dog'");
+    result = RiTa.alliterations("cat", { minWordLength: 16 });
+    expect(result.length < 15, "failed on 'dog'").to.be.true;
     for (let i = 0; i < result.length; i++) {
-      ok(RiTa.isAlliteration(result[i], "cat"), 'FAIL2: ' + result[i]);
+      expect(RiTa.isAlliteration(result[i], "cat"), 'FAIL2: ' + result[i]).to.be.true;
     }
   });
 
   // NEXT
   it('Should correctly call rhymes', () => {
+    
+    expect(RiTa.rhymes("cat").includes("hat")).to.be.true;
+    expect(RiTa.rhymes("yellow").includes("mellow")).to.be.true;
+    expect(RiTa.rhymes("toy").includes("boy")).to.be.true;
+    expect(RiTa.rhymes("sieve").includes("give")).to.be.true;
 
-    // TODO: add more tests
+    expect(RiTa.rhymes("tense").includes("sense")).to.be.true;
+    expect(RiTa.rhymes("crab").includes("drab")).to.be.true;
+    expect(RiTa.rhymes("shore").includes("more")).to.be.true;
 
-    ok(RiTa.rhymes("cat").includes("hat"));
-    ok(RiTa.rhymes("yellow").includes("mellow"));
-    ok(RiTa.rhymes("toy").includes("boy"));
-    ok(RiTa.rhymes("sieve").includes("give"));
+    expect(RiTa.rhymes("mouse").includes("house")).to.be.true;
 
-    ok(RiTa.rhymes("tense").includes("sense"));
-    ok(RiTa.rhymes("crab").includes("drab"));
-    ok(RiTa.rhymes("shore").includes("more"));
+    expect(RiTa.rhymes("weight").includes("eight")).to.be.true;
+    expect(RiTa.rhymes("eight").includes("weight")).to.be.true;
 
-    ok(RiTa.rhymes("mouse").includes("house"));
+    expect(!RiTa.rhymes("apple").includes("polo")).to.be.true;
+    expect(!RiTa.rhymes("this").includes("these")).to.be.true;
 
-    ok(RiTa.rhymes("weight").includes("eight"));
-    ok(RiTa.rhymes("eight").includes("weight"));
-
-    ok(!RiTa.rhymes("apple").includes("polo"));
-    ok(!RiTa.rhymes("this").includes("these"));
-
-    ok(!RiTa.rhymes("hose").includes("house"));
-    ok(!RiTa.rhymes("sieve").includes("mellow"));
-    ok(!RiTa.rhymes("swag").includes("grab"));
+    expect(!RiTa.rhymes("hose").includes("house")).to.be.true;
+    expect(!RiTa.rhymes("sieve").includes("mellow")).to.be.true;
+    expect(!RiTa.rhymes("swag").includes("grab")).to.be.true;
   });
 
   it('Should correctly call similarBy.letter', () => {
@@ -227,9 +214,9 @@ describe('RiTa.Lexicon', function() {
     eql(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
 
     result = RiTa.similarBy("ice", { minAllowedDistance: 2, minWordLength: 3, maxWordLength: 3 });
-    ok(result.length > 10);
+    expect(result.length > 10).to.be.true;
 
-    result = RiTa.similarBy("ice", { minAllowedDistance: 0, minWordLength: 3, maxWordLength: 3 }); // defaults to 1
+    result = RiTa.similarBy("ice", { minAllowedDistance: 0, minWordLength: 3, maxWordLength: 3 });
     eql(result, ["ace", "icy", "ire"]);
 
     result = RiTa.similarBy("ice", { minAllowedDistance: 1, minWordLength: 3, maxWordLength: 3 });
@@ -239,7 +226,7 @@ describe('RiTa.Lexicon', function() {
     eql(result, ["foreword", "wormwood"]);
 
     result = RiTa.similarBy("123");
-    ok(result.length > 400);
+    expect(result.length > 400).to.be.true;
   });
 
   it('Should correctly call similarBy.sound', () => {
@@ -252,21 +239,21 @@ describe('RiTa.Lexicon', function() {
     eql(result, answer);
 
     result = RiTa.similarBy("try", { type: 'sound', minAllowedDistance: 2 });
-    ok(result.length > answer.length); // more
+    expect(result.length > answer.length).to.be.true; // more
 
     result = RiTa.similarBy("happy", { type: 'sound' });
     answer = ["happier", "hippie"];
     eql(result, answer);
 
     result = RiTa.similarBy("happy", { type: 'sound', minAllowedDistance: 2 });
-    ok(result.length > answer.length); // more
+    expect(result.length > answer.length).to.be.true; // more
 
     result = RiTa.similarBy("cat", { type: 'sound' });
     answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "can\'t", "cap", "capped", "cash", "cashed", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
     eql(result, answer);
 
     result = RiTa.similarBy("cat", { type: 'sound', minAllowedDistance: 2 });
-    ok(result.length > answer.length);
+    expect(result.length > answer.length).to.be.true;
 
     result = RiTa.similarBy("worngword", { type: 'sound' });
     eql(result, ["watchword", "wayward", "wormwood"]);
@@ -288,87 +275,85 @@ describe('RiTa.Lexicon', function() {
   });
 
   it('Should correctly call isRhyme', () => {
-    ok(!RiTa.isRhyme("apple", "polo"));
-    ok(!RiTa.isRhyme("this", "these"));
+    expect(!RiTa.isRhyme("apple", "polo")).to.be.true;
+    expect(!RiTa.isRhyme("this", "these")).to.be.true;
 
-    ok(RiTa.isRhyme("cat", "hat"));
-    ok(RiTa.isRhyme("yellow", "mellow"));
-    ok(RiTa.isRhyme("toy", "boy"));
+    expect(RiTa.isRhyme("cat", "hat")).to.be.true;
+    expect(RiTa.isRhyme("yellow", "mellow")).to.be.true;
+    expect(RiTa.isRhyme("toy", "boy")).to.be.true;
 
 
-    ok(RiTa.isRhyme("solo", "tomorrow"));
-    ok(RiTa.isRhyme("tense", "sense"));
-    ok(RiTa.isRhyme("crab", "drab"));
-    ok(RiTa.isRhyme("shore", "more"));
-    ok(!RiTa.isRhyme("hose", "house"));
-    ok(!RiTa.isRhyme("sieve", "mellow"));
+    expect(RiTa.isRhyme("solo", "tomorrow")).to.be.true;
+    expect(RiTa.isRhyme("tense", "sense")).to.be.true;
+    expect(RiTa.isRhyme("crab", "drab")).to.be.true;
+    expect(RiTa.isRhyme("shore", "more")).to.be.true;
+    expect(!RiTa.isRhyme("hose", "house")).to.be.true;
+    expect(!RiTa.isRhyme("sieve", "mellow")).to.be.true;
 
-    ok(RiTa.isRhyme("mouse", "house")); //why??
-    // ok(!RiTa.isRhyme("solo", "yoyo"));
-    // ok(!RiTa.isRhyme("yoyo", "jojo")); -> Known Issues
+    expect(RiTa.isRhyme("mouse", "house")).to.be.true; //why??
+    // expect(!RiTa.isRhyme("solo", "yoyo")).to.be.true;
+    // expect(!RiTa.isRhyme("yoyo", "jojo")).to.be.true; -> Known Issues
 
-    ok(RiTa.isRhyme("yo", "bro"));
-    ok(!RiTa.isRhyme("swag", "grab"));
-    ok(!RiTa.isRhyme("", ""));
+    expect(RiTa.isRhyme("yo", "bro")).to.be.true;
+    expect(!RiTa.isRhyme("swag", "grab")).to.be.true;
+    expect(!RiTa.isRhyme("", "")).to.be.true;
 
-    ok(RiTa.isRhyme("weight", "eight"));
-    ok(RiTa.isRhyme("eight", "weight"));
+    expect(RiTa.isRhyme("weight", "eight")).to.be.true;
+    expect(RiTa.isRhyme("eight", "weight")).to.be.true;
 
     // fail without lexicon
     if (typeof NOLEX !== 'undefined') {
-      ok(RiTa.isRhyme("sieve", "give"));
+      expect(RiTa.isRhyme("sieve", "give")).to.be.true;
     }
   });
 
   it('Should correctly call isAlliteration', () => {
 
-    ok(RiTa.isAlliteration("knife", "gnat")); // gnat=lts
-    ok(RiTa.isAlliteration("knife", "naughty"));
+    expect(RiTa.isAlliteration("knife", "gnat")).to.be.true; // gnat=lts
+    expect(RiTa.isAlliteration("knife", "naughty")).to.be.true;
 
-    ok(RiTa.isAlliteration("sally", "silly"));
-    ok(RiTa.isAlliteration("sea", "seven"));
-    ok(RiTa.isAlliteration("silly", "seven"));
-    ok(RiTa.isAlliteration("sea", "sally"));
+    expect(RiTa.isAlliteration("sally", "silly")).to.be.true;
+    expect(RiTa.isAlliteration("sea", "seven")).to.be.true;
+    expect(RiTa.isAlliteration("silly", "seven")).to.be.true;
+    expect(RiTa.isAlliteration("sea", "sally")).to.be.true;
 
-    ok(RiTa.isAlliteration("big", "bad"));
-    ok(RiTa.isAlliteration("bad", "big")); // swap position
+    expect(RiTa.isAlliteration("big", "bad")).to.be.true;
+    expect(RiTa.isAlliteration("bad", "big")).to.be.true; // swap position
 
-    ok(RiTa.isAlliteration("BIG", "bad")); // CAPITAL LETTERS
-    ok(RiTa.isAlliteration("big", "BAD")); // CAPITAL LETTERS
-    ok(RiTa.isAlliteration("BIG", "BAD")); // CAPITAL LETTERS
+    expect(RiTa.isAlliteration("BIG", "bad")).to.be.true; // CAPITAL LETTERS
+    expect(RiTa.isAlliteration("big", "BAD")).to.be.true; // CAPITAL LETTERS
+    expect(RiTa.isAlliteration("BIG", "BAD")).to.be.true; // CAPITAL LETTERS
 
     // False
-    ok(!RiTa.isAlliteration("", ""));
-    ok(!RiTa.isAlliteration("wind", "withdraw"));
-    ok(!RiTa.isAlliteration("solo", "tomorrow"));
-    ok(!RiTa.isAlliteration("solo", "yoyo"));
-    ok(!RiTa.isAlliteration("yoyo", "jojo"));
-    ok(!RiTa.isAlliteration("cat", "access"));
+    expect(!RiTa.isAlliteration("", "")).to.be.true;
+    expect(!RiTa.isAlliteration("wind", "withdraw")).to.be.true;
+    expect(!RiTa.isAlliteration("solo", "tomorrow")).to.be.true;
+    expect(!RiTa.isAlliteration("solo", "yoyo")).to.be.true;
+    expect(!RiTa.isAlliteration("yoyo", "jojo")).to.be.true;
+    expect(!RiTa.isAlliteration("cat", "access")).to.be.true;
 
-    ok(RiTa.isAlliteration("unsung", "sine"));
-    ok(RiTa.isAlliteration("job", "gene"));
-    ok(RiTa.isAlliteration("jeans", "gentle"));
+    expect(RiTa.isAlliteration("unsung", "sine")).to.be.true;
+    expect(RiTa.isAlliteration("job", "gene")).to.be.true;
+    expect(RiTa.isAlliteration("jeans", "gentle")).to.be.true;
 
-    ok(RiTa.isAlliteration("abet", "better"));
-    ok(RiTa.isAlliteration("never", "knight"));
-    ok(RiTa.isAlliteration("knight", "navel"));
-    ok(RiTa.isAlliteration("cat", "kitchen"));
+    expect(RiTa.isAlliteration("abet", "better")).to.be.true;
+    expect(RiTa.isAlliteration("never", "knight")).to.be.true;
+    expect(RiTa.isAlliteration("knight", "navel")).to.be.true;
+    expect(RiTa.isAlliteration("cat", "kitchen")).to.be.true;
 
     // not counting assonance
-    ok(!RiTa.isAlliteration("octopus", "oblong"));
-    ok(!RiTa.isAlliteration("omen", "open"));
-    ok(!RiTa.isAlliteration("amicable", "atmosphere"));
+    expect(!RiTa.isAlliteration("octopus", "oblong")).to.be.true;
+    expect(!RiTa.isAlliteration("omen", "open")).to.be.true;
+    expect(!RiTa.isAlliteration("amicable", "atmosphere")).to.be.true;
 
     // fail without lexicon
     if (typeof NOLEX !== 'undefined') {
-      ok(RiTa.isAlliteration("this", "these"));
-      ok(RiTa.isAlliteration("psychology", "cholera"));
-      ok(RiTa.isAlliteration("consult", "sultan"));
-      ok(RiTa.isAlliteration("monsoon", "super"));
+      expect(RiTa.isAlliteration("this", "these")).to.be.true;
+      expect(RiTa.isAlliteration("psychology", "cholera")).to.be.true;
+      expect(RiTa.isAlliteration("consult", "sultan")).to.be.true;
+      expect(RiTa.isAlliteration("monsoon", "super")).to.be.true;
     }
   });
 
   function eql(output, expected, msg) { expect(output).eql(expected, msg); }
-  function eq(a, b, msg) { expect(a).eq(b, msg); }
-  function ok(a, msg) { expect(a, msg).to.be.true; }
 });

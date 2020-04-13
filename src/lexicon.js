@@ -10,102 +10,98 @@ class Lexicon {
     this.lexWarned = false;
   }
 
-  alliterations(word, { matchMinLength = 4 } = {}) {
-
-    word = word.includes(' ') ? word.substring(0, word.indexOf(' ')) : word;
-
-    if (RiTa.VOWELS.includes(word.charAt(0))) return [];
-
-    let results = [];
-    let words = Object.keys(this._dict(true));
-    let fss = this._firstStressedSyl(word);
-    let c1 = this._firstPhone(fss);
-
-    if (!c1 || !c1.length) return [];
-
-    for (let i = 0; i < words.length; i++) {
-
-      if (words[i].length < matchMinLength) continue;
-
-      let c2 = this._firstPhone(this._firstStressedSyl(words[i]));
-
-      if (RiTa.VOWELS.includes(word.charAt(0))) return []; // ????
-
-      if (c1 === c2) results.push(words[i]);
-    }
-
-    return Util.shuffle(results, RiTa);
-  }
-
-  rhymes(theWord) {
-
-    if (!theWord || !theWord.length) return [];
-
-    let dict = this._dict(true);
-    let word = theWord.toLowerCase();
-
-    let results = [];
-    let words = Object.keys(this._dict(true));
-    let p = this._lastStressedPhoneToEnd(word);
-
-    for (let i = 0; i < words.length; i++) {
-
-      if (words[i] === word) continue;
-
-      if (dict[words[i]][0].endsWith(p)) {
-        results.push(words[i]);
-      }
-    }
-
-    return results;
-  }
-
   /*
     opts:
       minWordLength: return only words whose length is greater than this num
       maxWordLength: return only words whose length is less than this num
-      minAllowedDistance: disregard words with distance less than this num
   */
-  similarBy(word, opts) {
-
-    if (!word || !word.length) return [];
+  alliterations(word, opts) {
 
     opts = opts || {};
-    opts.type = opts.type || 'letter';
+    let silent = opts.silent;
+    let minLen = opts.minWordLength || 4;
+    let maxLen = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
 
-    return (opts.type === 'soundAndLetter') ?
-      this._similarBySoundAndLetter(word, opts)
-      : this._similarByType(word, opts);
+    // if multiple words, just use the first
+    if (word.includes(' ')) word = word.replace(/ .*/, '');
+
+    // only allow consonant inputs ?
+    if (RiTa.VOWELS.includes(word.charAt(0))) {
+      if (!RiTa.SILENT) console.warn
+      if (!silent && !RiTa.SILENT) console.warn
+        ('Expects a word starting with a consonant, got: ' + word);
+      return [];
+    }
+
+    let results = [];
+    let words = Object.keys(this._dict(true));
+    let fss = this._firstStressedSyl(word);
+    let phone = this._firstPhone(fss);
+
+    // make sure we parsed first phoneme
+    if (!phone || !phone.length) {
+      if (!silent && !RiTa.SILENT) console.warn
+        ('Failed parsing first phone in "' + word + '"');
+      return [];
+    }
+
+    for (let i = 0; i < words.length; i++) {
+      if (words[i] !== word && words[i].length >= minLen
+        && words[i].length <= maxLen) {
+        let c2 = this._firstPhone(this._firstStressedSyl(words[i]));
+        if (phone === c2) results.push(words[i]);
+      }
+    }
+    return results;//Util.shuffle(results, RiTa);
   }
 
-  hasWord(word, fatal) {
-    if (!word || !word.length) return false;
-    return this._dict(fatal).hasOwnProperty(word.toLowerCase());
-  }
+  /*
+  opts:
+    minWordLength: return only words whose length is greater than this num
+    maxWordLength: return only words whose length is less than this num
+  */
+  rhymes(word, opts) {
 
-  words() {
-    return Object.keys(this._dict(true));
-  }
+    opts = opts || {};
+    let minLen = opts.minWordLength || 3;
+    let maxLen = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
 
-  size() {
-    let dict = this._dict(false);
-    return dict ? Object.keys(dict).length : 0;
+    if (!word || !word.length) return [];
+    word = word.toLowerCase();
+
+    let results = [];
+    let dict = this._dict(true);
+    let words = Object.keys(dict);
+    let phone = this._lastStressedPhoneToEnd(word);
+
+    for (let i = 0; i < words.length; i++) {
+      if (words[i] !== word && words[i].length >= minLen && words[i].length <= maxLen) {
+        if (dict[words[i]][0].endsWith(phone)) {
+          results.push(words[i]);
+        }
+      }
+    }
+    return results;
   }
 
   randomWord(opts) {
 
-    let pluralize = false;
-    let words = Object.keys(this._dict(true));
-    let ran = Math.floor(RiTa.random(words.length));
+    opts = opts || {};
+    let targetPos = opts.pos || 0;
+    let minLen = opts.minWordLength || 4;
+    let numSyls = opts.numSyllables || 0;
+    let maxLen = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
 
-    let targetPos = opts && opts.pos;
-    let targetSyls = opts && opts.syllables || 0;
-
+    let pluralize = false, conjugate = false;
+    let dict = this._dict(true), words = Object.keys(dict);
+    //let ran = Math.floor(RiTa.random(words.length));
     let massNouns = ['dive', 'people', 'salespeople'];
+    //let targetPos = arguments[0].pos;
 
     let isMassNoun = (w, pos) => {
       return w.endsWith("ness") ||
-        w.endsWith("ism") || pos.indexOf("vbg") > 0 ||
+        w.endsWith("ism") ||
+        pos.indexOf("vbg") > 0 ||
         massNouns.includes(w);
     }
 
@@ -118,12 +114,17 @@ class Lexicon {
       else if (targetPos === "a") targetPos = "jj";
     }
 
-    for (let i = 0; i < words.length; i++) {
-      let j = (ran + i) % words.length;
-      let rdata = this._dict()[words[j]];
+    for (let j = 0; j < words.length; j++) {
+      //let j = (ran + i) % words.length;
+      
+      if (words[j].length > maxLen || words[j].length < minLen) {
+        continue;
+      }
+      
+      let rdata = dict[words[j]];
 
       // match the syls if supplied
-      if (targetSyls && targetSyls !== rdata[0].split(' ').length) {
+      if (numSyls && numSyls !== rdata[0].split(' ').length) {
         continue;
       }
 
@@ -143,8 +144,38 @@ class Lexicon {
         return words[j]; // no pos to match
       }
     }
+    throw Error('Unable to find word with specified options');
+  }
 
-    return []; // TODO: failed, should throw here
+  /*
+  opts:
+    minWordLength: return only words whose length is greater than this num
+    maxWordLength: return only words whose length is less than this num
+    minAllowedDistance: disregard words with distance less than this num
+  */
+  similarBy(word, opts) {
+
+    if (!word || !word.length) return [];
+
+    opts = opts || {};
+    opts.type = opts.type || 'letter';
+    return (opts.type === 'soundAndLetter') ?
+      this._similarBySoundAndLetter(word, opts)
+      : this._similarByType(word, opts);
+  }
+
+  hasWord(word, fatal) {
+    if (!word || !word.length) return false;
+    return this._dict(fatal).hasOwnProperty(word.toLowerCase());
+  }
+
+  words() {
+    return Object.keys(this._dict(true));
+  }
+
+  size() {
+    let dict = this._dict(false);
+    return dict ? Object.keys(dict).length : 0;
   }
 
   isAlliteration(word1, word2) {
@@ -171,11 +202,9 @@ class Lexicon {
 
   isRhyme(word1, word2) {
 
-
     if (!word1 || !word2 || word1.toUpperCase() === word2.toUpperCase()) {
       return false;
     }
-
     this._dict(true); // throw if no lexicon
 
     let phones1 = this._rawPhones(word1),
@@ -191,48 +220,36 @@ class Lexicon {
 
   //////////////////////////// helpers /////////////////////////////////
 
-  _similarByType(word, opts) { // NIAPI
-
-    // TODO: optimize? cache?
+  _similarByType(word, opts) { // NIAPI, optimize? cache?
+    
     let minLen = opts.minWordLength || 2;
     let maxLen = opts.maxWordLength || Number.MAX_VALUE;
     let minMed = opts.minAllowedDistance || 1;
 
     let result = [], dict = this._dict(true);
     let sound = opts.type === 'sound'; // default: letter 
-
     let input = word.toLowerCase(), words = Object.keys(dict);
     let variations = [input, input + 's', input + 'es'];
-
-    let compareA = sound ? this._toPhoneArray
+    let phonesA = sound ? this._toPhoneArray
       (this._rawPhones(input)) : input;
 
-    let minVal = Number.MAX_VALUE;
+    let entry, phonesB, med, minVal = Number.MAX_VALUE;
     for (let i = 0; i < words.length; i++) {
-
-      let entry = words[i];
-
+      entry = words[i];
       if (entry.length < minLen || entry.length > maxLen || variations.includes(entry)) {
         continue;
       }
-    
-      let compareB = sound ? dict[entry][0]
-        .replace(/[01]/g, '')
-        .replace(/ /g, '-')
-        .split('-') : entry;
-
-      let med = this._minEditDist(compareA, compareB);
+      phonesB = sound ? dict[entry][0].replace(/1/g, '').replace(/ /g, '-').split('-') : entry;
+      med = this._minEditDist(phonesA, phonesB);
 
       // found something even closer
       if (med >= minMed && med < minVal) {
         minVal = med;
         result = [entry];
-        //console.log("BEST(" + med + ")" + entry + " -> " + phonesArr);
       }
 
       // another best to add
       else if (med === minVal) {
-        //console.log("TIED(" + med + ")" + entry + " -> " + phonesArr);
         result.push(entry);
       }
     }
