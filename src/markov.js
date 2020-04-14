@@ -5,7 +5,7 @@
 //   toJSON -> for saving to disk
 //   fromJSON -> for reading from disk
 //   add tries argument to generate (default 10?)
-//   retainOriginal opt to constructor
+//   retainOriginal opt to constructor (or part of optimize)
 //   compile ? combine ?
 
 // TODO:
@@ -14,7 +14,6 @@
     P[k] = lerp(P[k], [Pn-k], temp);
     P[k] = P[int(k+t*n)%n], then interpolate between 2 steps
 */
-// allow for real-time weighting ala atken
 
 // TODO:
 // ERROR: loadTokens and loadSentences ?
@@ -26,18 +25,26 @@
 
 // TODO:
 // startTokens can take a regex for first token?
-// load functions must take callbacks ?
+// load functions must take callbacks or be async ?
 
 const ST = '<s/>';
 
+/*
+API:
+ */
 class Markov {
 
   constructor(n, opts) {
     this.n = n;
-    this.input = [];
     this.root = new Node(null, 'ROOT');
     this.mlm = opts && opts.maxLengthMatch || 0;
     this.optimizeMemory = opts && opts.optimizeMemory || 0;
+
+    // we store inputs to verify we don't duplicate them
+    this.input = [];
+
+    // we use this to in generateWith, to find the path from a 
+    // specific terminal, back up the tree to a sentence start
     if (!this.optimizeMemory) this.inverse = new Node(null, 'REV');
   }
 
@@ -352,7 +359,6 @@ class Markov {
           result.push(sent.replace(/ +/, ' ')); // got one
         }
       }
-
       fail(tokens);
     }
     return result;

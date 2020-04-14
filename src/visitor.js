@@ -24,7 +24,6 @@ class Visitor extends RiScriptVisitor {
     this.parent = parent;
     this.context = context || {};
     this.trace = opts && opts.trace;
-    //this.ignoreMissingSymbols = opts && opts.silent;
   }
 
   visitCexpr(ctx) {
@@ -81,7 +80,6 @@ class Visitor extends RiScriptVisitor {
     ctx.wexpr().map((w, k) => {
       let wctx = w.weight();
       let weight = wctx ? parseInt(wctx.INT()) : 1;
-      //let expr = w.prod() || EmptyExpr;
       let expr = w.expr() || EmptyExpr;
       for (let i = 0; i < weight; i++) {
         options.push(expr);
@@ -135,9 +133,7 @@ class Visitor extends RiScriptVisitor {
     if (typeof ctx.getText === 'function') {
       term = ctx.getText();
     }
-
     let tfs = ctx.transforms;
-
     if (typeof term === 'string') {
       if (term === Visitor.EOF) return '';
       term = term.replace(/\r/, ''); // normalise
@@ -147,11 +143,8 @@ class Visitor extends RiScriptVisitor {
       this.trace && console.log('visitTerminal: "'
         + term + '" tfs=[' + (tfs || '') + ']');
 
-      if (/\$[A-Za-z_][A-Za-z_0-9-]*/.test(term)) { // Unresolved symbols
-
-  /*       if (!RiTa.SILENT && !this.ignoreMissingSymbols) {
-          console.warn('[WARN] Unresolved symbol(s): ' + term);
-        } */
+      // Handle unresolved symbols
+      if (/\$[A-Za-z_][A-Za-z_0-9-]*/.test(term)) { 
         return term + (tfs ? tfs.reduce((acc, val) => acc +
           (typeof val === 'string' ? val : val.getText()), '') : '');
       }
@@ -160,7 +153,6 @@ class Visitor extends RiScriptVisitor {
       this.trace && console.log('visitTerminal2(' + (typeof term) + '): "'
         + JSON.stringify(term) + '" tfs=[' + (tfs || '') + ']');
     }
-
     return this.handleTransforms(term, tfs);
   }
 

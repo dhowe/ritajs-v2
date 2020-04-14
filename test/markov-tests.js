@@ -26,15 +26,6 @@ describe('RiTa.Markov', () => {
     ok(typeof RiTa.createMarkov(3) !== 'undefined');
   });
 
-  it('should correctly call loadTokens', () => {
-    let rm, txt;
-    rm = new Markov(4);
-    txt = "The young boy ate it. The fat boy gave up.";
-    let tokens = RiTa.tokenize(txt);
-    rm.loadTokens(tokens);
-    eq(rm.size(), tokens.length);
-  });
-  //
   // it('should correctly load a large model', async () => {
   //   let rm = new Markov(4, { optimizeMemory: true });
   //   let content = fs.readFileSync('/Users/dhowe/Desktop/dracula.txt', 'utf8');
@@ -42,7 +33,6 @@ describe('RiTa.Markov', () => {
   //   console.log('loaded');
   //   //try {
   //      var result = await rm.generateSentenceAsync();
-  //
   //      ok(result);
   //  //     done();
   //  // } catch(err) {
@@ -50,7 +40,7 @@ describe('RiTa.Markov', () => {
   //  // }
   // });
 
-  it('should correctly call initSentence', () => {
+  it('should correctly call initSentence', () => { // remove
     let rm, txt;
     rm = new Markov(4);
     txt = "The young boy ate it. The fat boy gave up.";
@@ -79,19 +69,6 @@ describe('RiTa.Markov', () => {
     return dist;
   }
 
-  it('should correctly call generateTokens.temp', () => {
-    let rm, txt, pd;
-    rm = new Markov(1);
-    txt = "aaabbbbccd";
-    rm.loadTokens(Array.from(txt));
-    //console.log(rm.toString());
-    let res = rm.generateTokens(10000);
-    pd = distribution(res);
-    ok(pd['b'] > .35, 'got ' + pd['b']);
-    res = rm.generateTokens(10000, { temperature: 1 });
-    pd = distribution(res);
-    ok(pd['b'] < .15, 'got ' + pd['b']);
-  });
 
   it('should correctly call generateTokens', () => {
     let toks, res, rm, txt, part
@@ -115,7 +92,6 @@ describe('RiTa.Markov', () => {
       return;
     }
 
-
     rm = new Markov(4);
     rm.loadTokens(RiTa.tokenize(sample));
     for (i = 0; i < 10; i++) {
@@ -133,6 +109,30 @@ describe('RiTa.Markov', () => {
       eq(toks.length, 20);
       //console.log(i, res);
     }
+
+    rm = new Markov(4);
+    rm.loadTokens(RiTa.tokenize(sample));
+    rm.loadTokens(RiTa.tokenize(sample2));
+    for (i = 0; i < 10; i++) {
+      toks = rm.generateTokens(20);
+      res = RiTa.untokenize(toks);
+      eq(toks.length, 20);
+      //console.log(i, res);
+    }
+  });
+
+  it('should correctly call generateTokens.temperature', () => {
+    let rm, txt, pd;
+    rm = new Markov(1);
+    txt = "aaabbbbccd";
+    rm.loadTokens(Array.from(txt));
+    //console.log(rm.toString());
+    let res = rm.generateTokens(10000);
+    pd = distribution(res);
+    ok(pd['b'] > .35, 'got ' + pd['b']);
+    res = rm.generateTokens(10000, { temperature: 1 });
+    pd = distribution(res);
+    ok(pd['b'] < .15, 'got ' + pd['b']);
   });
 
   it('should correctly call generateTokens.regex', () => {
@@ -194,27 +194,6 @@ describe('RiTa.Markov', () => {
     }
 
     // TODO: add more
-  });
-
-  it('should correctly call generateTokens.start', () => {
-
-    let rm, start, txt;
-
-    rm = new Markov(2);
-    start = "The";
-    txt = "The young boy ate it. The fat boy gave up.";
-
-    rm.loadTokens(RiTa.tokenize(txt));
-
-    for (let i = 0; i < 1; i++) {
-
-      let toks = rm.generateTokens(4, { startTokens: start });
-      //console.log(i, toks);
-      if (!toks || !toks.length) throw Error('no tokens');
-
-      let joined = RiTa.untokenize(toks);
-      ok(joined.startsWith("The young") || joined.startsWith("The fat"));
-    }
   });
 
   it('should correctly call generateTokens.startArray', () => {
@@ -402,15 +381,6 @@ describe('RiTa.Markov', () => {
     }
     RiTa.SILENT = silent;
   });
-
-  // it('should correctly call _initSentenceWith', () => {
-  //   let rm = new Markov(3);
-  //   let include = ['power'];
-  //   rm.loadSentences("You have power.");
-  //   rm.print(rm.inverse);
-  //   let toks = rm._initSentenceWith(include);
-  //   console.log(rm._flatten(toks));
-  // });
 
   it('should correctly call generateSentencesWith', () => {
     let rm, include, s;
@@ -979,11 +949,18 @@ describe('RiTa.Markov', () => {
   });
 
   it('should correctly call loadTokens', () => {
+
     //TODO: revise tests
+    let rm, txt;
+    rm = new Markov(4);
+    txt = "The young boy ate it. The fat boy gave up.";
+    let tokens = RiTa.tokenize(txt);
+    rm.loadTokens(tokens);
+    eq(rm.size(), tokens.length);
 
     let words = 'The dog ate the cat'.split(' ');
 
-    let rm = new Markov(3);
+    rm = new Markov(3);
     rm.loadTokens(words);
     eq(rm.probability("The"), 0.2);
 
@@ -1010,6 +987,18 @@ describe('RiTa.Markov', () => {
     let rm2 = new Markov(3);
     rm2.loadTokens(RiTa.tokenize(sample));
     ok(rm2.probability("One") !== rm.probability("one"));
+  });
+
+  it('should correctly call loadTokens multiple', () => {
+    let rm, txt1, txt2;
+    rm = new Markov(4);
+    txt1 = "The young boy ate it. The fat boy gave up.";
+    txt2 = "The young girl ate it. The fat girl gave up.";
+    let tokens = RiTa.tokenize(txt1);
+    rm.loadTokens(tokens);
+    //let tokens2 = ;
+    rm.loadTokens(RiTa.tokenize(txt2));
+    eq(rm.size(), tokens.length * 2);
   });
 
   it('should correctly call toString', () => {
