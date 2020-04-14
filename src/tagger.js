@@ -1,4 +1,4 @@
-const MODALS = require("./util").MODALS;
+const { MODALS } = require("./util");
 
 const ADJ = ['jj', 'jjr', 'jjs'];
 const ADV = ['rb', 'rbr', 'rbs', 'rp'];

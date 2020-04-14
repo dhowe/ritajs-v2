@@ -1,49 +1,7 @@
 class Util {
 
-  static trim(str) { // remove?
-    if (!str || !str.length) return str;
-    return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-  }
-
-  static titleCase(input) {
-    if (!input || !input.length) return input;
-    return input.substring(0, 1).toUpperCase() + input.substring(1);
-  }
-
-  static equalsIgnoreCase(str1, str2) { // remove?
-    return (str1 && str2 && str1.toLowerCase() === str2.toLowerCase());
-  }
-
   static isNode() {
     return (typeof module != 'undefined' && module.exports);
-  }
-
-  static isNum(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-  }
-
-  static last(word) { // remove?
-    if (!word || !word.length) return '';
-    return word.charAt(word.length - 1);
-  }
-
-  static shuffle(arr, randomable) { // shuffle array
-    let newArray = arr.slice(),
-      len = newArray.length,
-      i = len;
-    while (i--) {
-      let p = parseInt(randomable.random() * len),
-        t = newArray[i];
-      newArray[i] = newArray[p];
-      newArray[p] = t;
-    }
-    return newArray;
-  }
-
-  static extend(l1, l2) { // remove?
-    for (let i = 0; i < l2.length; i++) {
-      l1.push(l2[i]);
-    }
   }
 
   // Takes a syllabification and turns it into a string of phonemes,
@@ -75,20 +33,17 @@ class Util {
 
     if (!input || !input.length) return '';
 
-    let dbug, none;
-    let internuclei = [];
+    let dbug, none, internuclei = [];
     let syllables = []; // returned data structure
     let sylls = typeof input == 'string' ? input.split('-') : input;
 
     for (let i = 0; i < sylls.length; i++) {
 
-      let phoneme = sylls[i].trim(),
-        stress = none;
-
+      let phoneme = sylls[i].trim(), stress = none;
       if (!phoneme.length) continue;
 
-      let last = Util.last(phoneme);
-      if (Util.isNum(last)) {
+      let last = phoneme.charAt(phoneme.length - 1);
+      if (isNum(last)) {
         stress = parseInt(last);
         phoneme = phoneme.substring(0, phoneme.length - 1);
       }
@@ -98,8 +53,7 @@ class Util {
       if (Util.Phones.vowels.includes(phoneme)) {
 
         // Split the consonants seen since the last nucleus into coda and onset.
-        let coda = none,
-          onset = none;
+        let coda = none, onset = none;
 
         // Make the largest onset we can. The 'split' variable marks the break point.
         for (let split = 0; split < internuclei.length + 1; split++) {
@@ -124,7 +78,7 @@ class Util {
         // Tack the coda onto the coda of the last syllable.
         // Can't do it if this is the first syllable.
         if (syllables.length > 0) {
-          Util.extend(syllables[syllables.length - 1][3], coda);
+          extend(syllables[syllables.length - 1][3], coda);
           if (dbug) log('  tack: ' + coda + ' -> len=' +
             syllables[syllables.length - 1][3].length + " [" +
             syllables[syllables.length - 1][3] + "]");
@@ -149,12 +103,19 @@ class Util {
       if (syllables.length === 0) {
         syllables.push([[none], internuclei, [], []]);
       } else {
-        Util.extend(syllables[syllables.length - 1][3], internuclei);
+        extend(syllables[syllables.length - 1][3], internuclei);
       }
     }
-
     return Util.syllablesToPhones(syllables);
   }
+}
+
+function isNum(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function extend(l1, l2) {
+  for (let i = 0; i < l2.length; i++) l1.push(l2[i]);
 }
 
 // CLASSES ////////////////////////////////////////////////////////////////////

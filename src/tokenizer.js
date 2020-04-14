@@ -48,7 +48,7 @@ class Tokenizer {
 
     if (regex) return words.split(regex);
 
-    words = Util.trim(words); // ???
+    words = words.trim(); // ???
     words = words.replace(/([Ee])[.]([Gg])[.]/g, "_$1$2_"); // E.©G.
     words = words.replace(/([Ii])[.]([Ee])[.]/g, "_$1$2_"); // I.E.
 
@@ -85,7 +85,7 @@ class Tokenizer {
     words = words.replace(/_([Ee])([Gg])_/g, "$1.$2."); // E.G.
     words = words.replace(/_([Ii])([Ee])_/g, "$1.$2."); // I.E.
 
-    return Util.trim(words).split(/\s+/);
+    return words.trim().split(/\s+/);
   }
 
   untokenize(arr, delim) { // TODO: should be state machine
@@ -156,7 +156,7 @@ class Tokenizer {
       }
     }
 
-    return Util.trim(result);
+    return result.trim();
   }
 }
 

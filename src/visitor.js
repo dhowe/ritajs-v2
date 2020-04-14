@@ -1,9 +1,9 @@
 const antlr4 = require('antlr4');
 const Operator = require('./operator');
-const RiTa = ('./rita');
 const { RiScriptVisitor } = require('../grammar/.antlr/RiScriptVisitor');
 const { RiScriptParser } = require('../grammar/.antlr/RiScriptParser');
 const EmptyExpr = new RiScriptParser.ExprContext();
+const RiTa = ('./rita');
 
 String.prototype.uc = function () {
   return this.toUpperCase();

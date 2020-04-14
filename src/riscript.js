@@ -1,11 +1,10 @@
 const antlr4 = require('antlr4');
 const colors = require('colors');
 const { decode } = require('he');
-const LexerErrors = require('./errors').LexerErrors;
-const ParserErrors = require('./errors').ParserErrors;
 const Visitor = require('./visitor');
 const Lexer = require('../grammar/.antlr/RiScriptLexer');
 const Parser = require('../grammar/.antlr//RiScriptParser');
+const { LexerErrors, ParserErrors } = require('./errors');
 const MaxTries = 100;
 
 class RiScript {

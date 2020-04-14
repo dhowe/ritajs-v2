@@ -1,4 +1,4 @@
-const MODALS = require("./util").MODALS;
+const { MODALS } = require("./util");
 
 /* Words that are both singular and plural (now taken from Util)*/
 //['acoustics', 'aesthetics', 'aquatics', 'basics', 'ceramics', 'classics', 'cosmetics', 'dialectics', 'deer', 'dynamics', 'ethics', 'harmonics', 'heroics', 'mechanics', 'metrics', 'optics', 'people', 'physics', 'polemics', 'pyrotechnics', 'quadratics', 'quarters', 'salespeople', 'statistics', 'tactics', 'tropics'];
