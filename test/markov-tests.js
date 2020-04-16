@@ -2,7 +2,7 @@
 // TODO: validate case where startTokens is longer than n
 
 // BUG: I could. <s/> being alone to-night, or he'll have to be buried together.
-describe('RiTa.Markov', () => {
+describe.only('RiTa.Markov', () => {
 
   if (typeof module !== 'undefined') {
     require('./before');
@@ -29,7 +29,7 @@ describe('RiTa.Markov', () => {
   // it('should correctly load a large model', async () => {
   //   let rm = new Markov(4, { optimizeMemory: true });
   //   let content = fs.readFileSync('/Users/dhowe/Desktop/dracula.txt', 'utf8');
-  //   rm.loadSentences(content);//.then(console.log('done'));
+  //   rm.addSentences(content);//.then(console.log('done'));
   //   console.log('loaded');
   //   //try {
   //      var result = await rm.generateSentenceAsync();
@@ -40,17 +40,17 @@ describe('RiTa.Markov', () => {
   //  // }
   // });
 
-  it('should correctly call initSentence', () => { // remove
+  it('should correctly call initSentence', () => { // remove?
     let rm, txt;
     rm = new Markov(4);
     txt = "The young boy ate it. The fat boy gave up.";
-    rm.loadSentences(txt);
+    rm.addSentences(txt);
     let toks = rm._initSentence();
     eq(toks.length, 1);
     eq(toks[0].token, 'The');
 
     rm = new Markov(4);
-    rm.loadSentences(RiTa.sentences(sample));
+    rm.addSentences(RiTa.sentences(sample));
     eq(rm._flatten(rm._initSentence(['I', 'also'])), "I also");
   });
 
@@ -76,7 +76,7 @@ describe('RiTa.Markov', () => {
     rm = new Markov(4);
     txt = "The young boy ate it. The fat boy gave up.";
 
-    rm.loadTokens(RiTa.tokenize(txt));
+    rm.addTokens(RiTa.tokenize(txt));
 
     for (let i = 0; i < 5; i++) {
 
@@ -93,7 +93,7 @@ describe('RiTa.Markov', () => {
     }
 
     rm = new Markov(4);
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
     for (i = 0; i < 10; i++) {
       toks = rm.generateTokens(4);
       res = RiTa.untokenize(toks);
@@ -102,7 +102,7 @@ describe('RiTa.Markov', () => {
     }
 
     rm = new Markov(4);
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
     for (i = 0; i < 10; i++) {
       toks = rm.generateTokens(20);
       res = RiTa.untokenize(toks);
@@ -111,8 +111,8 @@ describe('RiTa.Markov', () => {
     }
 
     rm = new Markov(4);
-    rm.loadTokens(RiTa.tokenize(sample));
-    rm.loadTokens(RiTa.tokenize(sample2));
+    rm.addTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample2));
     for (i = 0; i < 10; i++) {
       toks = rm.generateTokens(20);
       res = RiTa.untokenize(toks);
@@ -125,12 +125,12 @@ describe('RiTa.Markov', () => {
     let rm, txt, pd;
     rm = new Markov(1);
     txt = "aaabbbbccd";
-    rm.loadTokens(Array.from(txt));
+    rm.addTokens(Array.from(txt));
     //console.log(rm.toString());
-    let res = rm.generateTokens(10000);
+    let res = rm.generateTokens(1000);
     pd = distribution(res);
     ok(pd['b'] > .35, 'got ' + pd['b']);
-    res = rm.generateTokens(10000, { temperature: 1 });
+    res = rm.generateTokens(1000, { temperature: 1 });
     pd = distribution(res);
     ok(pd['b'] < .15, 'got ' + pd['b']);
   });
@@ -138,7 +138,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call generateTokens.regex', () => {
     let toks, expected = ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although'];
     let rm = new Markov(4);
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
 
     for (let i = 0; i < 10; i++) {
       toks = rm.generateTokens(1, { startTokens: /^[A-Z][a-z]*$/ });
@@ -158,7 +158,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call generateToken.regex', () => {
     let expected = ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although'];
     let rm = new Markov(4);
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
     for (let i = 0; i < expected.length; i++) {
       let tok = rm.generateToken({ startTokens: expected[i] });
       //console.log(i, tok);
@@ -171,7 +171,7 @@ describe('RiTa.Markov', () => {
     let mlms = 3, rm = new Markov(2, { maxLengthMatch: mlms });
     let txt = "The young boy ate it! The old boy ran away.";
     // example: The young girl ate,
-    rm.loadTokens(RiTa.tokenize(txt));
+    rm.addTokens(RiTa.tokenize(txt));
     //console.log(rm.toString());
     for (let i = 0; i < 5; i++) {
 
@@ -204,7 +204,7 @@ describe('RiTa.Markov', () => {
     start = ["The"];
     txt = "The young boy ate it. The fat boy gave up.";
 
-    rm.loadTokens(RiTa.tokenize(txt));
+    rm.addTokens(RiTa.tokenize(txt));
 
     for (let i = 0; i < 5; i++) {
 
@@ -227,7 +227,7 @@ describe('RiTa.Markov', () => {
     start = ["The", "young"];
     txt = "The young boy ate it. The young girl gave up.";
 
-    rm.loadTokens(RiTa.tokenize(txt));
+    rm.addTokens(RiTa.tokenize(txt));
 
     for (let i = 0; i < 5; i++) {
 
@@ -255,7 +255,7 @@ describe('RiTa.Markov', () => {
     let start = "The";
     let txt = "The young boy ate it. The fat boy gave up.";
 
-    rm.loadTokens(RiTa.tokenize(txt));
+    rm.addTokens(RiTa.tokenize(txt));
 
     for (let i = 0; i < 5; i++) {
 
@@ -274,7 +274,7 @@ describe('RiTa.Markov', () => {
     }
 
     rm = new Markov(4);
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
     for (let i = 0; i < 10; i++) {
       toks = rm.generateTokens(4, { startTokens: "I" });
       eq(toks.length, 4);
@@ -291,7 +291,7 @@ describe('RiTa.Markov', () => {
     let start = "The";
     let txt = "The young boy ate it. The fat boy gave up.";
 
-    rm.loadTokens(RiTa.tokenize(txt));
+    rm.addTokens(RiTa.tokenize(txt));
 
     for (let i = 0; i < 5; i++) {
 
@@ -316,13 +316,14 @@ describe('RiTa.Markov', () => {
   });
 
 
+
   it('should correctly call generateTokens.mlm.startArray', () => {
     let part, toks, res, mlms = 4;
     let rm = new Markov(3, { maxLengthMatch: mlms });
     let start = ["The", "young"];
     let txt = "The young boy ate it. A young boy gave up.";
 
-    rm.loadTokens(RiTa.tokenize(txt));
+    rm.addTokens(RiTa.tokenize(txt));
 
     for (let i = 0; i < 5; i++) {
 
@@ -347,13 +348,22 @@ describe('RiTa.Markov', () => {
     }
   });
 
+  it('should still generate tokens in sentence mode', () => {
+    let rm = new Markov(4), len = 10;
+    rm.addSentences(RiTa.sentences(sample));
+    for (let i = 0; i < 10; i++) {
+      let s = rm.generateTokens(len);
+      //console.log(i + ") " + s.join(' '));
+      ok(s.length === len);
+    }
+  });
+
   ////////////////////////////////////////////////////////////////////////
 
   it('should correctly call generateSentence', () => {
-    let silent = RiTa.SILENT;
-    RiTa.SILENT = true;// supress duplicate messages
+
     let rm = new Markov(4);
-    rm.loadSentences(RiTa.sentences(sample));
+    rm.addSentences(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
       let s = rm.generateSentence();
       //console.log(i + ") " + s);
@@ -362,16 +372,12 @@ describe('RiTa.Markov', () => {
       let num = RiTa.tokenize(s).length;
       ok(num >= 5 && num <= 35 + i);
     }
-    RiTa.SILENT = silent;
   });
 
   it('should correctly call generateSentences', () => {
-    let silent = RiTa.SILENT;
-    RiTa.SILENT = true;// supress duplicate messages
+
     let rm = new Markov(4);
-
-    rm.loadSentences(RiTa.sentences(sample));
-
+    rm.addSentences(RiTa.sentences(sample));
     let sents = rm.generateSentences(5);
     eq(sents.length, 5);
     for (let i = 0; i < sents.length; i++) {
@@ -379,26 +385,25 @@ describe('RiTa.Markov', () => {
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
     }
-    RiTa.SILENT = silent;
   });
 
-  it('should correctly call generateSentencesWith', () => {
+  it('should correctly call generateWith', () => {
     let rm, include, s;
     rm = new Markov(4);
     include = 'power';
-    rm.loadSentences("You have power.");
-    s = rm.generateSentencesWith(1, include)[0];
+    rm.addSentences("You have power.");
+    s = rm.generateWith(1, include)[0];
     //eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
     ok(/^[A-Z].*[!?.]$/.test(s), "FAIL: invalid sentence: '" + s + "'");
     ok(s.includes(include), "FAIL: include='" + include + "' not found in '" + s + "'");
 
     rm = new Markov(4);
     include = 'power';
-    rm.loadSentences(RiTa.sentences(sample));
-    let sents = rm.generateSentencesWith(2, include);
+    rm.addSentences(RiTa.sentences(sample));
+    let sents = rm.generateWith(2, include);
     eq(sents.length, 2);
     for (let i = 0; i < sents.length; i++) {
-      let s = sents[i];
+      s = sents[i];
       // /console.log(i, s);
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
@@ -407,13 +412,12 @@ describe('RiTa.Markov', () => {
   });
 
   it('should correctly call generateSentences.minMaxLength', () => {
-    let silent = RiTa.SILENT;
-    RiTa.SILENT = true;// supress duplicate messages
+
     let rm = new Markov(4), minLength = 7, maxLength = 20;
 
-    rm.loadSentences(RiTa.sentences(sample));
+    rm.addSentences(RiTa.sentences(sample));
 
-    let sents = rm.generateSentences(5, { minLength: minLength, maxLength: maxLength });
+    let sents = rm.generateSentences(5, { minLength, maxLength });
     eq(sents.length, 5);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
@@ -424,7 +428,7 @@ describe('RiTa.Markov', () => {
     }
 
     rm = new Markov(4);
-    rm.loadSentences(RiTa.sentences(sample));
+    rm.addSentences(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
       minLength = (3 + i), maxLength = (10 + i);
       let s = rm.generateSentence({ minLength: minLength, maxLength: maxLength });
@@ -434,16 +438,14 @@ describe('RiTa.Markov', () => {
       let num = RiTa.tokenize(s).length;
       ok(num >= minLength && num <= maxLength);
     }
-    RiTa.SILENT = silent;
   });
 
   it('should correctly call generateSentence.start', () => {
-    let silent = RiTa.SILENT;
-    RiTa.SILENT = true;// supress duplicate messages
+
 
     let rm = new Markov(4);
     let start = 'One';
-    rm.loadSentences(RiTa.sentences(sample));
+    rm.addSentences(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
       let s = rm.generateSentence({ startTokens: start });
       //console.log(i + ") " + s);
@@ -463,16 +465,14 @@ describe('RiTa.Markov', () => {
       eq(arr.length, 2);
       ok(arr[0].startsWith(start));
     }
-    RiTa.SILENT = silent;
   });
 
   it('should correctly call generateSentence.startArray', () => {
-    let silent = RiTa.SILENT;
-    RiTa.SILENT = true;// supress duplicate messages
+
 
     let rm = new Markov(4);
     let start = ['One'];
-    rm.loadSentences(RiTa.sentences(sample));
+    rm.addSentences(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
       let s = rm.generateSentence({ startTokens: start });
       //console.log(i + ") " + s);
@@ -494,7 +494,7 @@ describe('RiTa.Markov', () => {
     }
 
     rm = new Markov(4);
-    rm.loadSentences(RiTa.sentences(sample));
+    rm.addSentences(RiTa.sentences(sample));
     start = ['One', 'reason'];
     for (let i = 0; i < 1; i++) {
       let s = rm.generateSentence({ startTokens: start });
@@ -515,14 +515,12 @@ describe('RiTa.Markov', () => {
       ok(arr[0].startsWith(start.join(' ')));
     }
 
-    RiTa.SILENT = silent;
   });
 
   it('should correctly call generateSentence.mlm', () => {
-    let silent = RiTa.SILENT;
-    RiTa.SILENT = true;// supress duplicate messages
-    let mlms = 6, rm = new Markov(3, { maxLengthMatch: mlms });
-    rm.loadSentences(RiTa.sentences(sample3));
+
+    let mlms = 6, rm = new Markov(3, { maxLengthMatch: mlms, maxAttempts: 999 });
+    rm.addSentences(RiTa.sentences(sample3));
     //console.log(rm.toString());
     for (let i = 0; i < 5; i++) {
 
@@ -547,14 +545,12 @@ describe('RiTa.Markov', () => {
     }
     // TODO: add more
 
-    RiTa.SILENT = silent;
   });
 
   it('should correctly call generateSentences.mlm', () => {
-    let silent = RiTa.SILENT;
-    RiTa.SILENT = true;// supress duplicate messages
+
     let mlms = 10, rm = new Markov(3, { maxLengthMatch: mlms });
-    rm.loadSentences(RiTa.sentences(sample3));
+    rm.addSentences(RiTa.sentences(sample3));
     let sents = rm.generateSentences(5);
     for (let i = 0; i < sents.length; i++) {
       let sent = sents[i];
@@ -578,7 +574,6 @@ describe('RiTa.Markov', () => {
     }
     // TODO: add more
 
-    RiTa.SILENT = silent;
   });
 
   ////////////////////////////////////////////////////////////////////////
@@ -586,7 +581,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call generateUntil', () => {
 
     let rm = new Markov(3);
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
 
     for (let i = 0; i < 5; i++) {
       let arr = rm.generateUntil(/[.?!]/);
@@ -607,7 +602,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call generateUntil.start', () => {
 
     let rm = new Markov(3), startTokens = "Achieving";
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
 
     for (let i = 0; i < 10; i++) {
       let arr = rm.generateUntil(/[.?!]/, { startTokens: startTokens });
@@ -628,7 +623,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call generateUntil.startArray', () => {
 
     let rm = new Markov(3), startTokens = ["Achieving"];
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
 
     for (let i = 0; i < 5; i++) {
       let arr = rm.generateUntil(/[.?!]/, { startTokens: startTokens });
@@ -650,7 +645,7 @@ describe('RiTa.Markov', () => {
   it('should correctly generate sentence token by token', () => {
 
     let rm = new Markov(3);
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
 
     for (let i = 0; i < 5; i++) {
       let res = rm.generateSentenceTokens();
@@ -664,7 +659,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call generateUntil.maxLength', () => {
 
     let rm = new Markov(3), maxLength = 4;
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
 
     let arr = rm.generateUntil(/[.?!]/, { maxLength: maxLength });
     let res = RiTa.untokenize(arr);
@@ -685,7 +680,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call generateUntil.minMaxLength', () => {
 
     let rm = new Markov(3), minLength = 6, maxLength = 10;
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
 
     for (let i = 0; i < 5; i++) {
       let arr = rm.generateUntil(/[.?!]/, { minLength: minLength, maxLength: maxLength });
@@ -709,7 +704,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call generateUntil.start.minMaxLength', () => {
 
     let rm = new Markov(3), minLength = 6, maxLength = 10;
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
 
     for (let i = 0; i < 5; i++) {
       let arr = rm.generateUntil(/[.?!]/, { minLength: minLength, maxLength: maxLength, startTokens: 'Achieving' });
@@ -732,7 +727,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call generateUntil.startArray.minMaxLength', () => {
 
     let rm = new Markov(3), minLength = 6, maxLength = 10;
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
 
     for (let i = 0; i < 5; i++) {
       let arr = rm.generateUntil(/[.?!]/, { minLength: minLength, maxLength: maxLength, startTokens: ['Achieving'] });
@@ -756,7 +751,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call completions', () => {
 
     let rm = new Markov(4);
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
 
     let res = rm.completions("people lie is".split(' '));
     eql(res, ["to"]);
@@ -782,7 +777,7 @@ describe('RiTa.Markov', () => {
     ///////////////////// ///////////////////// /////////////////////
 
     rm = new Markov(4);
-    rm.loadTokens(RiTa.tokenize(sample2));
+    rm.addTokens(RiTa.tokenize(sample2));
 
     res = rm.completions(['I'], ['not']);
     eql(res, ["did"]);
@@ -810,7 +805,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call probabilities', () => {
 
     let rm = new Markov(3);
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
 
     let checks = ["reason", "people", "personal", "the", "is", "XXX"];
     let expected = [{
@@ -838,7 +833,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call probabilities.array', () => {
 
     let rm = new Markov(4);
-    rm.loadTokens(RiTa.tokenize(sample2));
+    rm.addTokens(RiTa.tokenize(sample2));
 
     let res = rm.probabilities("the".split(" "));
     let expec = {
@@ -894,7 +889,7 @@ describe('RiTa.Markov', () => {
 
     let tokens = RiTa.tokenize('the dog ate the boy the');
     let rm = new Markov(3);
-    rm.loadTokens(tokens);
+    rm.addTokens(tokens);
     //rm.print();
 
     eq(rm.probability("the"), .5);
@@ -903,7 +898,7 @@ describe('RiTa.Markov', () => {
 
     tokens = RiTa.tokenize('the dog ate the boy that the dog found.');
     rm = new Markov(3);
-    rm.loadTokens(tokens);
+    rm.addTokens(tokens);
     //rm.print();
 
     eq(rm.probability("the"), .3);
@@ -911,7 +906,7 @@ describe('RiTa.Markov', () => {
     eq(rm.probability("cat"), 0);
 
     rm = new Markov(3);
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
     eq(rm.probability("power"), 0.017045454545454544);
   });
 
@@ -919,7 +914,7 @@ describe('RiTa.Markov', () => {
 
 
     let rm = new Markov(3);
-    rm.loadTokens(RiTa.tokenize(sample));
+    rm.addTokens(RiTa.tokenize(sample));
 
     let check = 'personal power is'.split(' ');
     eq(rm.probability(check), 1 / 3);
@@ -933,79 +928,84 @@ describe('RiTa.Markov', () => {
     eq(rm.probability([]), 0);
   });
 
-  it('should correctly call loadSentences', () => {
+  it('should correctly call addSentences', () => {
     let rm = new Markov(4);
     let sents = RiTa.sentences(sample);
-    let count = 0;
+    let count = sents.length; // sentence-end tokens
     for (i = 0; i < sents.length; i++) {
       let words = RiTa.tokenize(sents[i]);
       count += words.length;
     }
-    rm.loadSentences(sents);
-    eq(rm.size(), count);
+    rm.addSentences(sents);
 
-    let ss = rm.root.child('<s/>');
-    eql(Object.keys(ss.children),['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although' ]);
+    eq(rm.size(), count + sents.length);
+
+    let ss = rm.root.child(Markov.SS);
+    eql(Object.keys(ss.children), ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although']);
+
+    let se = rm.root.child(Markov.SE);
+    eql(Object.keys(se.children), [Markov.SS]);
   });
 
-  it('should correctly call loadTokens', () => {
+  it('should correctly call addTokens', () => {
 
     //TODO: revise tests
     let rm, txt;
     rm = new Markov(4);
     txt = "The young boy ate it. The fat boy gave up.";
     let tokens = RiTa.tokenize(txt);
-    rm.loadTokens(tokens);
+    rm.addTokens(tokens);
     eq(rm.size(), tokens.length);
 
     let words = 'The dog ate the cat'.split(' ');
 
     rm = new Markov(3);
-    rm.loadTokens(words);
+    rm.addTokens(words);
     eq(rm.probability("The"), 0.2);
 
     rm = new Markov(3);
-    rm.loadTokens(words);
+    rm.addTokens(words);
     eq(rm.probability("dog"), 0.2);
 
     rm = new Markov(3);
-    rm.loadTokens(words);
+    rm.addTokens(words);
     eq(rm.probability("Dhe"), 0);
 
     rm = new Markov(3);
-    rm.loadTokens(words);
+    rm.addTokens(words);
     eq(rm.probability("Dog"), 0);
 
     rm = new Markov(3);
-    rm.loadTokens(words);
+    rm.addTokens(words);
     eq(rm.probability(""), 0);
 
     rm = new Markov(3);
-    rm.loadTokens(words);
+    rm.addTokens(words);
     eq(rm.probability(" "), 0);
 
     let rm2 = new Markov(3);
-    rm2.loadTokens(RiTa.tokenize(sample));
+    rm2.addTokens(RiTa.tokenize(sample));
     ok(rm2.probability("One") !== rm.probability("one"));
   });
 
-  it('should correctly call loadTokens multiple', () => {
+  it('should correctly call addTokens multiple', () => {
     let rm, txt1, txt2;
     rm = new Markov(4);
     txt1 = "The young boy ate it. The fat boy gave up.";
     txt2 = "The young girl ate it. The fat girl gave up.";
     let tokens = RiTa.tokenize(txt1);
-    rm.loadTokens(tokens);
+    rm.addTokens(tokens);
     //let tokens2 = ;
-    rm.loadTokens(RiTa.tokenize(txt2));
+    rm.addTokens(RiTa.tokenize(txt2));
     eq(rm.size(), tokens.length * 2);
   });
+
 
   it('should correctly call toString', () => {
 
     let rm = new Markov(2);
     let exp = "ROOT { 'The' [1,p=0.200] { 'dog' [1,p=1.000] } 'dog' [1,p=0.200] { 'ate' [1,p=1.000] } 'ate' [1,p=0.200] { 'the' [1,p=1.000] } 'the' [1,p=0.200] { 'cat' [1,p=1.000] } 'cat' [1,p=0.200] }";
-    rm.loadTokens('The dog ate the cat'.split(' '));
+    rm.addTokens('The dog ate the cat'.split(' '));
     //console.log(rm.toString().replace(/\n/g, " ").replace(/\s+/g, " "));
     eq(exp, rm.toString().replace(/\n/g, " ").replace(/\s+/g, " "));
   });
@@ -1017,7 +1017,7 @@ describe('RiTa.Markov', () => {
 
     let tokens = RiTa.tokenize(sample);
     rm = new Markov(3);
-    rm.loadTokens(tokens);
+    rm.addTokens(tokens);
     eq(rm.size(), tokens.length);
   });
 
