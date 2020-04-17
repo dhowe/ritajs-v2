@@ -374,22 +374,30 @@ describe.only('RiTa.Markov', () => {
     }
   });
 
-  it('should correctly call generateSentences', () => {
+  it('should throw on failed generateSentences', () => {
 
     let rm = new Markov(4);
+    rm.addSentences(RiTa.sentences(sample));
+    expect(() => rm.generateSentences(5)).to.throw;
+  });
+
+  it('should correctly call generateSentences', () => {
+
+    let rm = new Markov(4, { discardInputs: 1 });
     rm.addSentences(RiTa.sentences(sample));
     let sents = rm.generateSentences(5);
     eq(sents.length, 5);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
+      //console.log(i, s);
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
     }
   });
 
-  it('should correctly call generateWith', () => {
+  it.only('should correctly call generateWith', () => {
     let rm, include, s;
-    rm = new Markov(4);
+    rm = new Markov(4, { discardInputs: 1 });
     include = 'power';
     rm.addSentences("You have power.");
     s = rm.generateWith(1, include)[0];
@@ -397,14 +405,15 @@ describe.only('RiTa.Markov', () => {
     ok(/^[A-Z].*[!?.]$/.test(s), "FAIL: invalid sentence: '" + s + "'");
     ok(s.includes(include), "FAIL: include='" + include + "' not found in '" + s + "'");
 
-    rm = new Markov(4);
+    // NEXT: Working here -- this is hanging
+    rm = new Markov(4, { trace: 1, discardInputs: 0});
     include = 'power';
     rm.addSentences(RiTa.sentences(sample));
     let sents = rm.generateWith(2, include);
     eq(sents.length, 2);
     for (let i = 0; i < sents.length; i++) {
       s = sents[i];
-      // /console.log(i, s);
+      console.log(i, s);
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
       ok(s.includes(include), "FAIL: include='" + include + "' not found in '" + s + "'");
@@ -1021,6 +1030,44 @@ describe.only('RiTa.Markov', () => {
     eq(rm.size(), tokens.length);
   });
 
+  it('should correctly serialize in token mode', () => {
+
+    let rm = new Markov(4);
+    rm.addTokens(RiTa.tokenize('I ate the dog.'));
+    let copy = Markov.fromJSON(rm.toJSON());
+    markovEquals(rm, copy);
+    let gen = rm.generateTokens(5, { startTokens: 'I' });
+    let cgen = copy.generateTokens(5, { startTokens: 'I' });
+    expect(gen).eql(cgen);
+  });
+
+  it('should fail when sentence is in inputs', () => {
+
+    let rm = new Markov(4);
+    rm.addSentences(['I ate the dog.']);
+    expect(() => rm.generateSentence()).to.throw;
+  });
+
+  it('should correctly serialize in sentence mode', () => {
+
+    let rm = new Markov(4, { discardInputs: 1});
+    rm.addSentences(['I ate the dog.']);
+    console.log(rm.generateSentence());
+    let copy = Markov.fromJSON(rm.toJSON());
+    markovEquals(rm, copy);
+    console.log(copy.generateSentence());
+  });
+
+  function markovEquals(rm, copy) {
+    Object.keys(rm) // check each non-object key
+      .filter(k => !/(root|input|inverse)/.test(k))
+      .forEach(k => expect(rm[k]).eq(copy[k]));
+    expect(rm.toString()).eq(copy.toString());
+    expect(rm.root.toString()).eq(copy.root.toString());
+    expect(rm.inverse.toString()).eq(copy.inverse.toString());
+    expect(rm.input).eql(copy.input);
+    expect(rm.size()).eql(copy.size());
+  }
   function eql(a, b, c) { expect(a).eql(b, c); }
   function eq(a, b, c) { expect(a).eq(b, c); }
   function ok(a, m) { expect(a, m).to.be.true; }

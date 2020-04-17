@@ -1,12 +1,9 @@
-
+const { parse, stringify } = require('flatted/cjs');
 // TODO: should always check original for novel output sentences (link with mlm)
 // TODO: async methods
 // TODO: Additional methods (see markovify)
 //   toJSON -> for saving to disk
 //   fromJSON -> for reading from disk
-//   add tries argument to generate (default 10?)
-//   discardInput: opt to constructor (or part of optimize) [discardInputs]
-//   optimiseMemory: dont build inverse tree
 //   generateWith (should also apply to tokens?)
 
 
@@ -15,9 +12,6 @@
     P[k] = lerp(P[k], [Pn-k], temperature);
     P[k] = P[int(k+t*n)%n], then interpolate between 2 steps
 */
-
-// TODO:
-// startTokens can take a regex for first token?
 
 /*
 API:
@@ -44,20 +38,36 @@ class Markov {
 
     // options
     this.trace = opts && opts.trace;
+    this.mlm = opts && opts.maxLengthMatch;
     this.discardInputs = opts && opts.discardInputs;
     this.logDuplicates = opts && opts.logDuplicates;
-    this.optimizeMemory = opts && opts.optimizeMemory;
+    this.optimiseMemory = opts && opts.optimiseMemory;
     this.maxAttempts = opts && opts.maxAttempts || 99;
-    this.mlm = opts && opts.maxLengthMatch || 0;
 
-    if (this.mlm <= this.n) throw Error('maxLengthMatch must be < N') 
+    if (this.mlm && this.mlm <= this.n) throw Error('maxLengthMatch must be < N')
 
     // we store inputs to verify we don't duplicate sentences
     if (!this.discardInputs) this.input = [];
 
     // we use this to in generateWith, to find the path from a 
     // specific terminal, back up the tree to a sentence start
-    if (!this.optimizeMemory) this.inverse = new Node(null, 'REV');
+    if (!this.optimiseMemory) this.inverse = new Node(null, 'REV');
+  }
+
+  toJSON() {
+    return stringify(Object.keys(this).reduce(
+      (acc, k) => Object.assign(acc, { [k]: this[k] }), {}));
+  }
+
+  static fromJSON(json) {
+    // parse the json and merge with new object
+    let rm = Object.assign(new Markov(), parse(json));
+    let jsonRoot = rm.root, jsonInverse = rm.inverse;
+    // then recreate the n-gram tree with Node objects
+    populate(rm.root = new Node(null, 'ROOT'), jsonRoot);
+    // and do the same for the reverse tree if it exists
+    populate(rm.inverse = new Node(null, 'REV'), jsonInverse);
+    return rm;
   }
 
   addTokens(tokens) {
@@ -69,13 +79,6 @@ class Markov {
     this._treeify(tokens);
     this.mlm && this.input.push(...tokens);
   }
-
-  /*async generateSentenceAsync() {
-    return this.generateSentence(...arguments);
-  }
-  async addSentencesAsync() {
-    return this.addSentences(...arguments);
-  }*/
 
   addSentences(sentences) {
 
@@ -103,7 +106,7 @@ class Markov {
       (tokens.slice().reverse(), this.inverse);
 
     // TODO: deal with sentence checking
-    this.mlm && this.input.push(...tokens);
+    if (!this.discardInputs || this.mlm) this.input.push(...tokens);
   }
 
   generateToken() {
@@ -111,10 +114,9 @@ class Markov {
   }
 
   generateTokens(num, { startTokens, temperature = 0 } = {}) {
-    let tokens, tries = 0, fail = () => {
-      this.trace && console.log(tries + 1, 'FAIL: ' + this._flatten(tokens));
+    let tokens, tries = 0, fail = (msg) => {
+      this.logError(++tries, tokens, msg);
       tokens = undefined;
-      tries++;
       return 1;
     }
 
@@ -167,79 +169,6 @@ class Markov {
     throwError(tries);
   }
 
-  generateSentence() {
-    return this.generateSentences(1, ...arguments)[0];
-  }
-
-  generateSentences(num, { minLength = 5, maxLength = 35, startTokens, allowDuplicates, temperature = 0 } = {}) {
-    let result = [], tokens, tries = 0, fail = () => {
-      tokens = undefined;
-      if (++tries >= this.maxAttempts) throwError(tries);
-      return 1;
-    }
-
-    if (typeof startTokens === 'string') {
-      startTokens = RiTa().tokenize(startTokens);
-    }
-
-    while (result.length < num) {
-
-      if (!tokens) {
-        tokens = this._initSentence(startTokens);
-        if (!tokens) throw Error('No sentence starting with: "' + startTokens + '"');
-      }
-
-      while (tokens && tokens.length < maxLength) {
-
-        let parent = this._findNode(tokens);
-        if ((!parent || parent.isLeaf()) && fail(tokens)) continue;
-
-        let next = this._selectNext(parent, temperature, tokens);
-        if (!next && fail(tokens)) continue; // possible if all children excluded
-
-        tokens.push(next);
-        if (next.token === Markov.SE) {
-          tokens.pop();
-          if (tokens.length >= minLength) {
-            let sent = this._flatten(tokens);
-            if (allowDuplicates || !result.includes(sent)) {
-              result.push(sent.replace(/ +/g, ' '));
-              break;
-            }
-          }
-          fail(tokens);
-        }
-      }
-      fail(tokens);
-    }
-    /*        if (tokens.length >= minLength) {
-             if (next.token === Markov.SE) {
-               tokens.pop();
-               let sent = this._flatten(tokens);
-               if (allowDuplicates || !result.includes(sent)) {
-                 //fail(tokens); // was a dup
-                 result.push(sent.replace(/ +/g, ' '));
-                 break;
-               } 
-               fail(tokens); // was dup
-             }
-        /*      let sent = this._validateSentence(result, tokens, allowDuplicates);
-             if (sent) {
-               result.push(sent.replace(/ +/g, ' '));
-               break;
-             } 
-           }
-           else if (/^[.!?]$/.test(next.token)) {
-             fail(tokens);
-           } */
-
-
-    //console.log("FAIL(" + result.length + ")", (tokens ? tokens.length + "" : "0") + " words",
-    //tries + " tries\n------------------------------------------");
-
-    return result;
-  }
-
   // tokens only (call generateTokensUntil)
   generateUntil(regex, { minLength = 3, maxLength = Number.MAX_VALUE, startTokens, temperature = 0 } = {}) {
 
@@ -271,17 +200,73 @@ class Markov {
     throwError(tries);
   }
 
-  generateWith(num, includeTokens, { minLength = 5,
-    maxLength = 35, allowDuplicates, temperature = 0 } = {}) {
+  generateSentence() {
+    return this.generateSentences(1, ...arguments)[0];
+  }
+
+  generateSentences(num, { minLength = 5, maxLength = 35, startTokens, allowDuplicates, temperature = 0 } = {}) {
+    let result = [], tokens, tries = 0, fail = (msg) => {
+      this.logError(++tries, tokens, msg);
+      if (tries >= this.maxAttempts) throwError(tries);
+      tokens = undefined;
+      return 1;
+    }
+
+    if (typeof startTokens === 'string') {
+      startTokens = RiTa().tokenize(startTokens);
+    }
+
+    while (result.length < num) {
+
+      if (!tokens) {
+        tokens = this._initSentence(startTokens);
+        if (!tokens) throw Error('No sentence starting with: "' + startTokens + '"');
+      }
+
+      while (tokens && tokens.length < maxLength) {
+
+        let parent = this._findNode(tokens);
+        if ((!parent || parent.isLeaf()) && fail('no parent')) continue;
+
+        let next = this._selectNext(parent, temperature, tokens);
+        if (!next && fail('no next')) continue; // possible if all children excluded
+
+        tokens.push(next);
+        if (next.token === Markov.SE) {
+          tokens.pop();
+          if (tokens.length >= minLength) {
+            let rawtoks = tokens.map(t => t.token);
+            if (isSubArray(rawtoks, this.input) && fail('in input')) continue;
+            let sent = this._flatten(tokens);
+            if (!allowDuplicates && result.includes(sent) && fail('is dup')) continue;
+            this.trace && console.log('-- GOOD', sent.replace(/ +/g, ' '));
+            result.push(sent.replace(/ +/g, ' '));
+            break;
+          }
+          fail('too short');
+        }
+      }
+      if (tokens && tokens.length > maxLength) fail('too long');
+    }
+    return result;
+  }
+
+  generateWith(num, includeTokens, { minLength = 5, maxLength = 35, allowDuplicates, temperature = 0 } = {}) {
+
+    // NEXT: WORKING HERE -> Debug to see how it gets up to 99 fails
+    // Just remove for now?
 
     if (this.mode === 'tokens') throw Error
       ('generateWith() can only be used with sentences');
 
-    let result = [], tokens, tries = 0, fail = () => {
+    let result = [], tokens, tries = 0, fail = (msg) => {
+      this.logError(++tries, tokens, msg);
+      if (tries >= this.maxAttempts) throwError(tries, result);
       tokens = undefined;
-      if (++tries >= this.maxAttempts) throwError(tries, result);
       return 1;
     }
+
+    let startAttempts = [];
 
     if (typeof includeTokens === 'string') {
       includeTokens = RiTa().tokenize(includeTokens);
@@ -299,24 +284,39 @@ class Markov {
       while (tokens && tokens.length < maxLength) {
 
         let parent = this._findNode(tokens, this.inverse);
-        if ((!parent || parent.isLeaf()) && fail(tokens)) continue;
+        if ((!parent || parent.isLeaf()) && fail('null parent')) break;
 
         let next = this._selectNext(parent, temperature, tokens);
-        if (!next && fail(tokens)) continue; // possible if all children excluded
+        if (!next && fail('null next')) break; // possible if all children excluded
 
         tokens.push(next);
 
         if (next.child(Markov.SS)) {
           let start = tokens.reverse().map(t => t.token);
-
+          if (isSubArray(start, startAttempts) && fail('repeat start attempt')) break;
+          startAttempts.push(...start);
           // now generate the rest of the sentence
-          let sent = this.generateSentence({ startTokens: start, minLength: start.length });
-          if (!sent || result.includes(sent) && fail(tokens)) continue;
+          let sent;
+          try {
+            this.trace = false;
+            console.log('Trying "'+RiTa().untokenize(start)+"'");
+            sent = this.generateSentence({ startTokens: start, minLength: start.length });
+            this.trace = true;
+          }
+          catch (e) {
+            //tries += 10;
+            /* if (tries > this.maxAttempts) throw Error
+              ('Could not complete after ' + (5 * this.maxAttempts) + ' tries'); */
+            fail('could not complete');
+            break;
+          }
+          if (!sent || result.includes(sent) && fail('is dup')) break;
 
           result.push(sent.replace(/ +/, ' ')); // got one
+          break;
         }
       }
-      fail(tokens);
+      if (tokens && tokens.length > maxLength) fail('too long');
     }
     return result;
   }
@@ -369,18 +369,25 @@ class Markov {
     return p;
   }
 
-  toString() {
-    return this.root.asTree().replace(/{}/g, '');
+  toString(root) {
+    root = root || this.root;
+    return root.asTree().replace(/{}/g, '');
   }
 
   size() {
     return this.root.childCount();
   }
 
-  print(root) {
-    root = root || this.root;
-    console && console.log(root.asTree().replace(/{}/g, ''));
+  logError(tries, toks, msg) {
+    this.trace && console.log(tries + ' FAIL' +
+      (msg ? '(' + msg + ')' : '') + ': ' + this._flatten(toks));
   }
+
+  /* 
+    print(root) {
+      root = root || this.root;
+      console && console.log(root.toString());
+    } */
 
   ////////////////////////////// end API ////////////////////////////////
 
@@ -529,33 +536,15 @@ class Markov {
     return RiTa().untokenize(this._nodesToTokens(nodes));
   }
 
-  /* create a sentence string from an array of nodes */
-  _validateSentence(result, nodes, allowDups) {
-
-    let sent = this._flatten(nodes);
-    if (!sent.match(/^[A-Z].*[!?.]$/)) {
-      //console.log("Skipping invalid: '" + sent + "'");
-      return false;
-    }
-    if (allowDups || result.includes(sent)) {
-      if (!this.logDuplicates) console.log
-        ("Skipping duplicate: '" + sent + "' after " + result.length);
-      return false;
-    }
-    return sent;
-  }
-
   _nodesToTokens(nodes) {
     return nodes.map(n => n.token);
   }
 
-
   // temp: for js workbench only
   generateSentenceTokens({ minLength = 5, maxLength = 25, temperature = 0, startTokens } = {}) {
-    let words, tries = 0, fail = () => {
-      //console.log('FAIL: ' + this._flatten(words));
+    let words, tries = 0, fail = (msg) => {
+      this.logError(++tries, words, msg);
       words = undefined;
-      tries++;
     }
 
     startTokens = startTokens || /^[A-Z][a-z]*$/;
@@ -587,7 +576,7 @@ class Node {
     this.parent = parent;
     this.token = word;
     this.count = count || 0;
-    this.numChildren = -1;
+    this.numChildren = -1; // for cache
   }
 
   // Find a (direct) child node with matching token, given a word or node
@@ -658,7 +647,6 @@ class Node {
     }
 
     node.count += count;
-
     return node;
   }
 
@@ -715,6 +703,16 @@ class Node {
 
 // --------------------------------------------------------------
 
+function populate(objNode, jsonNode) {
+  if (!jsonNode) return;
+  let children = Object.values(jsonNode.children);
+  for (let i = 0; i < children.length; i++) {
+    let child = children[i];
+    let newNode = objNode.addChild(child.token, child.count);
+    populate(newNode, child); // recurse
+  }
+}
+
 function RiTa() { return Markov.parent; }
 
 function lerp(start, stop, amt) {
@@ -725,14 +723,8 @@ function isWordToken(node) {
   return node.token !== Markov.SS && node.token !== Markov.SE;
 }
 
-function shiftArray(arr, num) {
-  num = num || 1;
-  for (let i = 0; i < num; i++) {
-    arr.push(arr.shift());
-  }
-}
-
 function isSubArray(find, arr) {
+  if (!arr || !arr.length) return false;
   OUT: for (let i = find.length - 1; i < arr.length; i++) {
     for (let j = 0; j < find.length; j++) {
       if (find[find.length - j - 1] !== arr[i - j]) continue OUT;
@@ -743,9 +735,9 @@ function isSubArray(find, arr) {
 }
 
 function throwError(tries, oks) {
-  throw Error('\n\nFailed after ' + tries + ' tries'
-    + (oks ? ' and ' + oks.length + ' successes;' : ';')
-    + ' you may need to adjust options or add more text');
+  throw Error('\nFailed after ' + tries + ' tries'
+    + (oks ? ' and ' + oks.length + ' successes' : '')
+    + ', you may need to adjust options or add more text');
 }
 
 module && (module.exports = Markov);

@@ -31,6 +31,7 @@
     "@types/antlr4": "^4.7.0",
     "antlr4": "^4.7.2",
     "deepmerge": "^4.2.2",
+    "flatted": "^2.0.2",
     "he": "^1.2.0"
   },
   "devDependencies": {
