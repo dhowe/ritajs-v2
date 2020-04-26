@@ -681,7 +681,7 @@ class Conjugator {
   // !@# TODO: add handling of past tense modals.
   conjugate(theVerb, args) {
 
-    if (!theVerb || !theVerb.length) return '';
+    if (!theVerb || !theVerb.length) throw Error('No verb');
 
     if (!args) return theVerb;
 

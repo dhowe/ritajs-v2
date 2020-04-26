@@ -67,6 +67,7 @@ describe('RiTa.Conjugator', () => {
   it('Should correctly call conjugate', () => {
     let args, s, a;
 
+
     equal("swum", RiTa.pastParticiple("swim"));
 
     equal(RiTa.conjugate("be", { form: RiTa.GERUND, }), "being");
@@ -79,6 +80,10 @@ describe('RiTa.Conjugator', () => {
       number: RiTa.SINGULAR,
       person: RiTa.THIRD_PERSON
     };
+
+    expect(() => RiTa.conjugate(args)).to.throw;
+    expect(() => RiTa.conjugate("", args)).to.throw;
+
 
     for (let i = 0; i < s.length; i++) {
       let c = RiTa.conjugate(s[i], args);
@@ -105,8 +110,8 @@ describe('RiTa.Conjugator', () => {
 
     equal(RiTa.conjugate("swim", args), "swam");
 
-    s = ["swim", "need", "open", ""];
-    a = ["swam", "needed", "opened", ""];
+    s = ["swim", "need", "open"];
+    a = ["swam", "needed", "opened"];
 
     ok(a.length === s.length);
 
@@ -121,7 +126,7 @@ describe('RiTa.Conjugator', () => {
       tense: RiTa.PAST_TENSE
     };
 
-    a = ["swam", "needed", "opened", ""];
+    a = ["swam", "needed", "opened"];
     ok(a.length === s.length);
 
     for (let i = 0; i < s.length; i++) {
@@ -133,7 +138,7 @@ describe('RiTa.Conjugator', () => {
       person: RiTa.SECOND_PERSON,
       tense: RiTa.FUTURE_TENSE
     };
-    a = ["will swim", "will need", "will open", ""];
+    a = ["will swim", "will need", "will open"];
     ok(a.length === s.length);
 
     for (let i = 0; i < s.length; i++) {
@@ -145,7 +150,7 @@ describe('RiTa.Conjugator', () => {
       number: RiTa.SINGULAR,
       person: RiTa.THIRD_PERSON
     };
-    a = ["swam", "needed", "opened", ""];
+    a = ["swam", "needed", "opened"];
 
     ok(a.length === s.length);
 
@@ -160,7 +165,7 @@ describe('RiTa.Conjugator', () => {
       person: RiTa.THIRD_PERSON,
       form: RiTa.INFINITIVE
     };
-    a = ["to swim", "to need", "to open", ""];
+    a = ["to swim", "to need", "to open"];
     ok(a.length === s.length);
     for (let i = 0; i < s.length; i++) {
       c = RiTa.conjugate(s[i], args);
@@ -174,15 +179,15 @@ describe('RiTa.Conjugator', () => {
       passive: true
     };
 
-    s = ["scorch", "burn", "hit", ""];
-    a = ["was scorched", "was burned", "was hit", ""];
+    s = ["scorch", "burn", "hit"];
+    a = ["was scorched", "was burned", "was hit"];
     ok(a.length === s.length);
     for (let i = 0; i < s.length; i++) {
       c = RiTa.conjugate(s[i], args);
       equal(c, a[i]);
     }
 
-    s = ["swim", "need", "open", ""];
+    s = ["swim", "need", "open"];
     args = {
       tense: RiTa.PRESENT_TENSE,
       number: RiTa.SINGULAR,
@@ -190,7 +195,7 @@ describe('RiTa.Conjugator', () => {
       form: RiTa.INFINITIVE,
       progressive: true
     };
-    a = ["to be swimming", "to be needing", "to be opening", ""];
+    a = ["to be swimming", "to be needing", "to be opening"];
     ok(a.length === s.length);
     for (let i = 0; i < s.length; i++) {
       c = RiTa.conjugate(s[i], args);
@@ -205,7 +210,7 @@ describe('RiTa.Conjugator', () => {
       perfect: true
     };
 
-    a = ["to have swum", "to have needed", "to have opened", ""];
+    a = ["to have swum", "to have needed", "to have opened"];
     ok(a.length === s.length);
     for (let i = 0; i < s.length; i++) {
       c = RiTa.conjugate(s[i], args);

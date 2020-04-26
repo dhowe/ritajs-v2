@@ -1,11 +1,6 @@
 const { parse, stringify } = require('flatted/cjs');
-// TODO: should always check original for novel output sentences (link with mlm)
-// TODO: async methods
-// TODO: Additional methods (see markovify)
-//   toJSON -> for saving to disk
-//   fromJSON -> for reading from disk
-//   generateWith (should also apply to tokens?)
 
+// TODO: async methods
 
 /* 'temperature' arg
   2 methods (n = number of elements):
@@ -15,7 +10,8 @@ const { parse, stringify } = require('flatted/cjs');
 
 /*
 API:
-  toJson
+  toJsonbe
+  
   fromJson
   addText()
   addSentences()

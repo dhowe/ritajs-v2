@@ -120,11 +120,13 @@ class RiTa {
     return RiTa._analyzer().analyze(text).phonemes;
   }
 
+  // partOfSpeech()
   static posTags(words, { simple = false, inline = false } = {}) {
     return RiTa.tagger.tag(words, simple, inline, true);
   }
 
-  static posTagsInline(words, { simple = false } = {}) {
+  // partOfSpeechInline()
+  static posTagsInline(words, { simple = false } = {}) { // java only?
     return RiTa.tagger.tag(words, simple, true, true);
   }
 
@@ -138,6 +140,10 @@ class RiTa {
 
   static random() {
     return RandGen.random(...arguments);
+  }
+
+  static randInt() {
+    return Math.floor(RandGen.random(...arguments));
   }
 
   static randomOrdering(num) {

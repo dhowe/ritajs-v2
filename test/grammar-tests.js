@@ -100,11 +100,15 @@ describe('RiTa.Grammar', () => {
         }
     });
 
+    it("should correctly call toString", () => {
+        // TODO
+    });
+
     it("should correctly call expand", () => {
         let rg = new Grammar();
         rg.addRule("$start", "pet");
         eq(rg.expand(), "pet");
-        rg.reset();
+        rg = new Grammar();
         rg.addRule("$start", "$pet");
         rg.addRule("$pet", "dog");
         eq(rg.expand(), "dog");

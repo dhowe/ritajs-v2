@@ -87,16 +87,25 @@ class Lexicon {
   randomWord(opts) {
 
     opts = opts || {};
-    let targetPos = opts.pos || 0;
-    let minLen = opts.minWordLength || 4;
-    let numSyls = opts.numSyllables || 0;
-    let maxLen = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
+    const minLen = opts.minWordLength || 4;
+    const numSyls = opts.numSyllables || 0;
+    const maxLen = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
+    const dict = this._dict(true), words = Object.keys(dict);
+    const ran = Math.floor(RiTa.randInt(words.length));
+    const massNouns = ['dive', 'people', 'salespeople'];
 
+    let targetPos = opts.pos || false;
     let pluralize = false, conjugate = false;
-    let dict = this._dict(true), words = Object.keys(dict);
-    //let ran = Math.floor(RiTa.random(words.length));
-    let massNouns = ['dive', 'people', 'salespeople'];
-    //let targetPos = arguments[0].pos;
+
+    if (targetPos && targetPos.length) {
+      targetPos = targetPos.trim().toLowerCase();
+      pluralize = (targetPos === "nns");
+      conjugate = (targetPos[0] === "v" && targetPos.length > 2);
+      if (targetPos[0] === "n") targetPos = "nn";
+      else if (targetPos[0] === "v") targetPos = "vb";
+      else if (targetPos === "r") targetPos = "rb";
+      else if (targetPos === "a") targetPos = "jj";
+    }
 
     let isMassNoun = (w, pos) => {
       return w.endsWith("ness") ||
@@ -105,46 +114,89 @@ class Lexicon {
         massNouns.includes(w);
     }
 
-    if (targetPos && targetPos.length) {
-      targetPos = targetPos.trim().toLowerCase();
-      pluralize = (targetPos === "nns");
-      if (targetPos[0] === "n") targetPos = "nn";
-      else if (targetPos === "v") targetPos = "vb";
-      else if (targetPos === "r") targetPos = "rb";
-      else if (targetPos === "a") targetPos = "jj";
-    }
+    for (let k = 0; k < words.length; k++) {
+      let j = (ran + k) % words.length;
 
-    for (let j = 0; j < words.length; j++) {
-      //let j = (ran + i) % words.length;
-      
       if (words[j].length > maxLen || words[j].length < minLen) {
         continue;
       }
-      
-      let rdata = dict[words[j]];
+
+      let word = words[j], rdata = dict[word];
 
       // match the syls if supplied
       if (numSyls && numSyls !== rdata[0].split(' ').length) {
         continue;
       }
 
-      if (targetPos) { // match the pos if supplied
-        if (targetPos === rdata[1].split(' ')[0]) {
+      // match the pos if supplied (may need to inflect)
+      if (targetPos) {
 
-          // match any pos but plural noun
-          if (!pluralize) return words[j];
+        let result = words[j];
+        let firstPos = rdata[1].split(' ')[0];
+        if (targetPos !== firstPos) continue;
+
+        // we've matched our part-of-speech
+
+        if (pluralize) { // try to pluralize
 
           // match plural noun
-          if (!isMassNoun(words[j], rdata[1])) {
-            return RiTa.pluralize(words[j]);
+          if (isMassNoun(words[j], rdata[1])) continue;
+          result = RiTa.pluralize(words[j]);
+        }
+        /*
+        VBD 	Verb, past tense
+        VBG 	Verb, gerund or present participle
+        VBN 	Verb, past participle
+        VBP 	Verb, non-3rd person singular present
+        VBZ 	Verb, 3rd person singular present
+        */
+        else if (conjugate) { // try to inflect
+          switch (opts.pos) {
+            case 'vbd':
+              result = RiTa.conjugate(verb, {
+                number: RiTa.SINGULAR,
+                person: RiTa.FIRST_PERSON,
+                tense: RiTa.PAST_TENSE
+              });
+              break;
+            case 'vbg':
+              result = RiTa.presentParticiple(words[j]);
+              break;
+            case 'vbn':
+              result = RiTa.pastParticiple(words[j]);
+              break;
+            case 'vbp':
+              result = RiTa.conjugate(words[j]); // no args
+              break;
+            case 'vbz':
+              result = RiTa.conjugate(words[j], {
+                number: RiTa.SINGULAR,
+                person: RiTa.THIRD_PERSON,
+                tense: RiTa.PRESENT_TENSE
+              });
+              break;
+            default: throw Error('Unexpected pos: ' + targetPos);
           }
         }
+        if (numSyls) { // Need to make sure we dont change syllable count
+          
+          let tmp = RiTa.SILENCE_LTS;
+          RiTa.SILENCE_LTS = true;
+          let count = RiTa.syllables(result).split(RiTa.SYLLABLE_BOUNDARY).length;
+          RiTa.SILENCE_LTS = tmp;
+          if (count !== numSyls) {
+            //console.log('skip: ' + verb);
+            continue;
+          }
+        }
+
+        return result;
       }
       else {
         return words[j]; // no pos to match
       }
     }
-    throw Error('Unable to find word with specified options');
+    throw Error('No word with specified options: ' + JSON.stringify(opts));
   }
 
   /*
@@ -221,7 +273,7 @@ class Lexicon {
   //////////////////////////// helpers /////////////////////////////////
 
   _similarByType(word, opts) { // NIAPI, optimize? cache?
-    
+
     let minLen = opts.minWordLength || 2;
     let maxLen = opts.maxWordLength || Number.MAX_VALUE;
     let minMed = opts.minAllowedDistance || 1;
@@ -348,15 +400,12 @@ class Lexicon {
   _firstStressedSyl(word) {
 
     let raw = this._rawPhones(word);
-
     if (!raw || !raw.length) return ''; // return null?
 
     let idx = raw.indexOf(RiTa.STRESSED);
-
     if (idx < 0) return ''; // no stresses... return null?
 
     let c = raw.charAt(--idx);
-
     while (c != ' ') {
       if (--idx < 0) {
         // single-stressed syllable
@@ -380,9 +429,8 @@ class Lexicon {
 
   _posArr(word, fatal) {
 
-    let pl = this._posData(word, fatal);
-    if (!pl || !pl.length) return [];
-    return pl.split(' ');
+    let rdata = this._lookupRaw(word, fatal);
+    return (rdata && rdata.length === 2) ? rdata[1].split(' ') : [];
   }
 
   _bestPos(word) {

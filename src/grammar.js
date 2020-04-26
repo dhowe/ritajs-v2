@@ -2,6 +2,15 @@ const RiScript = require('./riscript');
 const deepmerge = require('deepmerge');
 const maxTries = 100;
 
+/*
+API:
+  addRule
+  removeRule
+  load (addRules?)
+  expand
+  expandFrom
+  toString (add)
+ */
 class Grammar {
 
   constructor(rules) {
@@ -23,7 +32,7 @@ class Grammar {
     return this;
   }
 
-  addRule(name, theRule) { 
+  addRule(name, theRule /*,weight?*/) { 
     if (name.startsWith('$')) name = name.substring(1);
     if (/[|\[\]]/.test(theRule) && !(/^\(.*\)$/.test(theRule))) {
       theRule = '(' + theRule + ')';
@@ -47,9 +56,8 @@ class Grammar {
     return lookup[rule];
   }
 
-  reset() {
-    this.rules = {};
-    return this;
+  toString() { // TODO
+    return this + "";
   }
 
   removeRule(name) {

@@ -1,7 +1,7 @@
 // const expect = require('chai').expect;
 // const RiTa = require('../src/rita_api');
 
-describe('RiTa.Tagger', () => {
+describe.only('RiTa.Tagger', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
@@ -21,8 +21,8 @@ describe('RiTa.Tagger', () => {
   it('Should correctly call simple posTags.array', () => {
     eql(RiTa.posTags([], { simple: true }), []);
     eql(RiTa.posTags(["freed"], { simple: true }), ["a"]);
-    eql(RiTa.posTags(["the"],{ simple: true }), ["-"]);
-    eql(RiTa.posTags(["a"],{ simple: true }), ["-"]);
+    eql(RiTa.posTags(["the"], { simple: true }), ["-"]);
+    eql(RiTa.posTags(["a"], { simple: true }), ["-"]);
     eql(RiTa.posTags("the top seed".split(/ /), { simple: true }), ["-", "a", "n"]);
     eql(RiTa.posTags("by illegal means".split(/ /), { simple: true }), ["-", "a", "n"]);
     eql(RiTa.posTags("He outnumbers us".split(/ /), { simple: true }), ["-", "v", "-"]);
@@ -58,6 +58,29 @@ describe('RiTa.Tagger', () => {
     result = RiTa.posTags(RiTa.tokenize(txt), { inline: true, simple: true });
     answer = "The/- dog/n ran/v faster/r than/- the/- other/a dog/n . But/- the/- other/a dog/n was/v prettier/a .";
     eq(result, answer);
+  });
+
+  it('Should correctly handle inflected verbs', () => {
+    eql(RiTa.posTags("disbelieves"), ["vbz"]);
+    eql(RiTa.posTags("disbelieves", { simple: 1 }), ["v"]);
+
+    eql(RiTa.posTags("fates"), ["nns"]);
+    eql(RiTa.posTags("fates", { simple: 1 }), ["n"]);
+
+    eql(RiTa.posTags("hates"), ["vbz"]);
+    eql(RiTa.posTags("hates", { simple: 1 }), ["v"]);
+
+    eql(RiTa.posTags("hated"), ["vbd"]);
+    eql(RiTa.posTags("hated", { simple: 1 }), ["v"]);
+
+    eql(RiTa.posTags("hating"), ["vbg"]);
+    eql(RiTa.posTags("hating", { simple: 1 }), ["v"]);
+
+    eql(RiTa.posTags("He rode the horse"), ['prp', 'vbd', 'dt', 'nn']);
+    eql(RiTa.posTags("He has ridden the horse"), ['prp', 'vbz', 'vbn', 'dt', 'nn']);
+
+    eql(RiTa.posTags("He rowed the boat"), ['prp', 'vbd', 'dt', 'nn']);
+    eql(RiTa.posTags("He has rowed the boat"), ['prp', 'vbz', 'vbn', 'dt', 'nn']);
   });
 
   it('Should correctly call posTags', () => {
@@ -103,9 +126,8 @@ describe('RiTa.Tagger', () => {
     answer = ["nns"];
     eql(result, answer);
 
-    eql(RiTa.posTags("flunks"), ["vbz"]);
-
-    eql(RiTa.posTags("outnumbers"), ["vbz"]);
+    eql(RiTa.posTags("flunks"), ["vbz"], 'Failed: flunks');
+    eql(RiTa.posTags("outnumbers"), ["vbz"], 'Failed: outnumbers');
     eql(RiTa.posTags("He outnumbers us"), ["prp", "vbz", "prp"]);
     eql(RiTa.posTags("I outnumber you"), ["prp", "vbp", "prp"]);
 
@@ -134,7 +156,7 @@ describe('RiTa.Tagger', () => {
     eql(result, answer);
 
     result = RiTa.posTags("assenting");
-    answer = ["nn"];
+    answer = ["vbg"];
     eql(result, answer);
 
     result = RiTa.posTags("Dave");
@@ -184,10 +206,9 @@ describe('RiTa.Tagger', () => {
 
     eql(RiTa.posTags("he"), ["prp"]);
     eql(RiTa.posTags("outnumber"), ["vb"]);
-    eql(RiTa.posTags("I outnumbered you"), ["prp", "vbd", "prp"]);
-    eql(RiTa.posTags("She outnumbered us"), ["prp", "vbd", "prp"]);
-
-    eql(RiTa.posTags("I outnumbered them"), ["prp", "vbd", "prp"]);
+    eql(RiTa.posTags("I outnumbered you"), ["prp", "vbn", "prp"]);
+    eql(RiTa.posTags("She outnumbered us"), ["prp", "vbn", "prp"]);
+    eql(RiTa.posTags("I am outnumbering you"), ["prp", "vbp", "vbg", "prp"]);
 
     let checks = ["emphasis", "stress", "discus", "colossus", "fibrosis", "digitalis", "pettiness", "mess", "cleanliness", "orderliness", "bronchitis", "preparedness", "highness"];
     for (let i = 0, j = checks.length; i < j; i++) {
@@ -372,7 +393,7 @@ describe('RiTa.Tagger', () => {
 
   it('Should correctly call isNoun', () => {
 
-    ok(!RiTa.isNoun(""), );
+    ok(!RiTa.isNoun(""));
     ok(RiTa.isNoun("boxes"));
     ok(RiTa.isNoun("swim"));
     ok(RiTa.isNoun("walk"));
@@ -422,7 +443,8 @@ describe('RiTa.Tagger', () => {
     ok(RiTa.isNoun("flower"));
     ok(RiTa.isNoun("fish"));
     ok(RiTa.isNoun("wet")); //+v/adj
-    ok(RiTa.isNoun("ducks"));
+    ok(RiTa.isNoun("ducks")); // +v
+    ok(RiTa.isNoun("flowers")); // +v
 
     //adv
     ok(!RiTa.isNoun("truthfully"));
@@ -469,7 +491,8 @@ describe('RiTa.Tagger', () => {
     //n
     ok(!RiTa.isVerb("dolls"));
     ok(!RiTa.isVerb("frogs"));
-    ok(!RiTa.isVerb("flowers"));
+    ok(RiTa.isVerb("flowers"));
+    ok(RiTa.isVerb("ducks"));
 
     //adv
     ok(!RiTa.isVerb("truthfully"));
@@ -527,8 +550,8 @@ describe('RiTa.Tagger', () => {
     ok(!RiTa.isAdjective("energetically"));
   });
 
-  function eql(a, b,m) { expect(a).eql(b,m); }
-  function eq(a, b,m) { expect(a).eq(b,m); }
+  function eql(a, b, m) { expect(a).eql(b, m); }
+  function eq(a, b, m) { expect(a).eq(b, m); }
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }
 });

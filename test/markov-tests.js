@@ -447,11 +447,9 @@ describe('RiTa.Markov', () => {
 
     let rm = new Markov(4, { disableInputChecks: 1 });
     rm.addSentences(['I ate the dog.']);
-    console.log(rm.generate());
     let copy = Markov.fromJSON(rm.toJSON());
-    console.log(typeof copy);
     markovEquals(rm, copy);
-    console.log(copy.generate());
+    expect(copy.generate()).eq(rm.generate());
   });
 
   /////////////////////////// helpers ////////////////////////////

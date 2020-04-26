@@ -37,6 +37,9 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.randomWord({ numSyllables: 5 });
     expect(result.length > 0, "5 syllables: " + result).to.be.true;
 
+    result = RiTa.randomWord({ pos: "v" });
+    expect(result.length > 0, "randomWord v=" + result).to.be.true;
+
   });
 
   it('Should correctly call randomWord.nns', () => {
@@ -56,6 +59,29 @@ describe('RiTa.Lexicon', function () {
       expect(pos.indexOf("vbg") < 0, "randomWord nns: " + result).to.be.true;
       expect(!result.endsWith("ness"), "randomWord nns: " + result).to.be.true;
       expect(!result.endsWith("isms"), "randomWord nns: " + result).to.be.true;
+    }
+  });
+
+
+  /*
+  VB 	  Verb, base form
+  VBD 	Verb, past tense
+  VBG 	Verb, gerund or present participle
+  VBN 	Verb, past participle
+  VBP 	Verb, non-3rd person singular present
+  VBZ 	Verb, 3rd person singular present
+  */
+  0 && it('Should correctly parse random verb phrases', () => {
+
+    // Not sure how to test this
+    let tags = ['vb', 'vbd', 'vbg', 'vbn', 'vbp', 'vbz'];
+    let subj = ['I', 'We', 'I am', 'They have', 'You', 'She'];
+    let exps = ['walk', 'walked', 'walking', 'walked', 'walk', 'walks'];
+
+    for (let i = 0; i < tags.length; i++) {
+      let result = RiTa.randomWord({ pos: tags[i] });
+      //console.log(i, tags[i], subj[i] + ' "' + result + '"');
+      //expect(!result.endsWith("ness"), "randomWord nns: " + result).to.be.true;
     }
   });
 
@@ -93,20 +119,38 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should correctly call randomWord.pos.syls', () => {
-    let result, syllables;
+
+    let pos, result, syllables;
+
+    result = RiTa.randomWord({ numSyllables: 1, pos: "nns" });
+    expect(result.length > 0, "randomWord n: " + result).to.be.true;
+    syllables = RiTa.syllables(result);
+    expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
+    pos = RiTa.posTags(result, {simple:1})[0];
+    expect(pos).eq('n', "GOT: " + result + ' (' + pos + ')');
+
     for (let i = 0; i < 5; i++) {
       result = RiTa.randomWord({ numSyllables: 3, pos: "vbz" });
       expect(result.length > 0, "randomWord vbz: " + result).to.be.true;
       syllables = RiTa.syllables(result);
-      expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(3, "GOT: " + result);
-      expect(RiTa.lexicon._bestPos(result)).eq("vbz", "GOT: " + result);
+      expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(3, "GOT: " + result + ' (' + syllables + ')');
+      pos = RiTa.posTags(result, { simple: 1 })[0];
+      expect(pos).eq('v', "GOT: " + result + ' (' + pos + ')');
+
       result = RiTa.randomWord({ numSyllables: 1, pos: "n" });
       expect(result.length > 0, "randomWord n: " + result).to.be.true;
       syllables = RiTa.syllables(result);
-      //console.log("n: ",result,syllables.split(RiTa.SYLLABLE_BOUNDARY));
-      expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result);
-      expect(RiTa.lexicon._bestPos(result)[0]).eq("n");
-    } 
+      expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
+      pos = RiTa.posTags(result)[0];
+      expect(pos).eq('nn', "GOT: " + result + ' (' + pos + ')');
+
+      result = RiTa.randomWord({ numSyllables: 1, pos: "nns" });
+      expect(result.length > 0, "randomWord nns: " + result).to.be.true;
+      syllables = RiTa.syllables(result);
+      expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
+      pos = RiTa.posTags(result)[0];
+      expect(pos).eq('nns', "GOT: " + result + ' (' + pos + ')');
+    }
 
     result = RiTa.randomWord({ numSyllables: 5, pos: "nns" });
     expect(result.length > 0, "randomWord nns: " + result).to.be.true;
@@ -114,6 +158,8 @@ describe('RiTa.Lexicon', function () {
     let count = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
     if (count !== 5) console.warn("Syllabifier problem: " // see #2
       + result + ".syllables was " + count + ', expected 5');
+    pos = RiTa.posTags(result)[0];
+    expect(pos).eq('nns', "GOT: " + result + ' (' + pos + ')');
   });
 
   it('Should correctly call alliterations', () => {
@@ -161,7 +207,7 @@ describe('RiTa.Lexicon', function () {
 
   // NEXT
   it('Should correctly call rhymes', () => {
-    
+
     expect(RiTa.rhymes("cat").includes("hat")).to.be.true;
     expect(RiTa.rhymes("yellow").includes("mellow")).to.be.true;
     expect(RiTa.rhymes("toy").includes("boy")).to.be.true;
