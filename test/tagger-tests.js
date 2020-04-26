@@ -1,7 +1,7 @@
 // const expect = require('chai').expect;
 // const RiTa = require('../src/rita_api');
 
-describe('RiTa.Tagger', () => {
+describe.only('RiTa.Tagger', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
@@ -458,6 +458,11 @@ describe('RiTa.Tagger', () => {
   });
 
   it('Should correctly call isVerb', () => {
+
+    // inflections (add more)
+    ok(RiTa.isVerb("hates"));
+    ok(RiTa.isVerb("hated"));
+    ok(RiTa.isVerb("hating"));
 
     ok(RiTa.isVerb("dance"));
     ok(RiTa.isVerb("swim"));

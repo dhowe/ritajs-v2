@@ -17,6 +17,8 @@ class PosTagger {
 
     // ****** WORKING HERE  *****
 
+    // need failing tests
+
     // TODO: verb inflections
     // Instead fill the posData array in a function
     // then check it here (and for nouns?)
