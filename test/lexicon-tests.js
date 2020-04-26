@@ -56,7 +56,7 @@ describe('RiTa.Lexicon', function () {
       //No nn & vbg
       //No -ness, -ism
       let pos = RiTa.lexicon._posData(result);
-      expect(pos.indexOf("vbg") < 0, "randomWord nns: " + result).to.be.true;
+      expect(!pos || pos.indexOf("vbg") < 0, "randomWord nns: " + result).to.be.true;
       expect(!result.endsWith("ness"), "randomWord nns: " + result).to.be.true;
       expect(!result.endsWith("isms"), "randomWord nns: " + result).to.be.true;
     }
@@ -121,13 +121,17 @@ describe('RiTa.Lexicon', function () {
   it('Should correctly call randomWord.pos.syls', () => {
 
     let pos, result, syllables;
+    let tmp = RiTa.SILENCE_LTS;
+    RiTa.SILENCE_LTS = true;
 
     result = RiTa.randomWord({ numSyllables: 1, pos: "nns" });
     expect(result.length > 0, "randomWord n: " + result).to.be.true;
     syllables = RiTa.syllables(result);
     expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
     pos = RiTa.posTags(result, {simple:1})[0];
-    expect(pos).eq('n', "GOT: " + result + ' (' + pos + ')');
+
+    // include verbs here as many are both
+    expect(['n', 'v'].includes(pos), "GOT: " + result + ' (' + pos + ')').to.be.true;
 
     for (let i = 0; i < 5; i++) {
       result = RiTa.randomWord({ numSyllables: 3, pos: "vbz" });
@@ -135,7 +139,10 @@ describe('RiTa.Lexicon', function () {
       syllables = RiTa.syllables(result);
       expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(3, "GOT: " + result + ' (' + syllables + ')');
       pos = RiTa.posTags(result, { simple: 1 })[0];
-      expect(pos).eq('v', "GOT: " + result + ' (' + pos + ')');
+
+      // include nouns here as many are both
+      expect(['n', 'v'].includes(pos), "GOT: " + result + ' (' + pos + ')').to.be.true;
+
 
       result = RiTa.randomWord({ numSyllables: 1, pos: "n" });
       expect(result.length > 0, "randomWord n: " + result).to.be.true;
@@ -149,7 +156,9 @@ describe('RiTa.Lexicon', function () {
       syllables = RiTa.syllables(result);
       expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
       pos = RiTa.posTags(result)[0];
-      expect(pos).eq('nns', "GOT: " + result + ' (' + pos + ')');
+
+      // include verbs here as many are both (also nn for singular/plural like 'prose')
+      expect(['nns', 'vbz', 'nn'].includes(pos), "GOT: " + result + ' (' + pos + ')').to.be.true;
     }
 
     result = RiTa.randomWord({ numSyllables: 5, pos: "nns" });
@@ -160,6 +169,8 @@ describe('RiTa.Lexicon', function () {
       + result + ".syllables was " + count + ', expected 5');
     pos = RiTa.posTags(result)[0];
     expect(pos).eq('nns', "GOT: " + result + ' (' + pos + ')');
+
+    RiTa.SILENCE_LTS = tmp;
   });
 
   it('Should correctly call alliterations', () => {

@@ -422,21 +422,18 @@ class Lexicon {
   }
 
   _posData(word, fatal) {
-
     let rdata = this._lookupRaw(word, fatal);
-    return (rdata && rdata.length === 2) ? rdata[1] : '';
+    if (rdata && rdata.length === 2) return rdata[1];
   }
 
   _posArr(word, fatal) {
-
     let rdata = this._lookupRaw(word, fatal);
-    return (rdata && rdata.length === 2) ? rdata[1].split(' ') : [];
+    if (rdata && rdata.length === 2) return rdata[1].split(' ');
   }
 
   _bestPos(word) {
-
     let pl = this._posArr(word);
-    return (pl.length > 0) ? pl[0] : [];
+    if (pl) return pl[0];
   }
 
   _lookupRaw(word, fatal) {

@@ -1,7 +1,7 @@
 // const expect = require('chai').expect;
 // const RiTa = require('../src/rita_api');
 
-describe.only('RiTa.Tagger', () => {
+describe('RiTa.Tagger', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
@@ -16,6 +16,7 @@ describe.only('RiTa.Tagger', () => {
     eql(RiTa.posTags("I outnumber you".split(/ /)), ["prp", "vbp", "prp"]);
     eql(RiTa.posTags("Elephants dance".split(/ /)), ["nns", "vbp"]);
     eql(RiTa.posTags("the boy dances".split(/ /)), ["dt", "nn", "vbz"]);
+    eql(RiTa.posTags("Dave dances".split(/ /)), ["nnp", "vbz"]);
   });
 
   it('Should correctly call simple posTags.array', () => {
@@ -317,9 +318,9 @@ describe.only('RiTa.Tagger', () => {
 
   it('Should correctly call posTagsInline.simple', () => {
     let result, answer, txt;
+    eql(RiTa.posTagsInline("asdfaasd", { inline: true, simple: true }), "asdfaasd/n");
 
     eql(RiTa.posTagsInline("", { inline: true, simple: true }), "");
-    eql(RiTa.posTagsInline("asdfaasd", { inline: true, simple: true }), "asdfaasd/n");
 
     result = RiTa.posTagsInline("clothes", { inline: true, simple: true });
     answer = "clothes/n";
