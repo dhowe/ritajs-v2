@@ -34,10 +34,10 @@ class Grammar {
 
   addRule(name, theRule /*,weight?*/) { 
     if (name.startsWith('$')) name = name.substring(1);
+    if (Array.isArray(theRule)) theRule = joinChoice(theRule);
     if (/[|\[\]]/.test(theRule) && !(/^\(.*\)$/.test(theRule))) {
       theRule = '(' + theRule + ')';
     }
-    if (Array.isArray(theRule)) theRule = joinChoice(theRule);
     this.rules[name] = theRule;
     return this;
   }

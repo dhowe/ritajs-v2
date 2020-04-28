@@ -11,37 +11,29 @@ class PosTagger {
 
   constructor(parent) {
     RiTa = parent;
+    this.lex = RiTa._lexicon();
   }
 
   isVerb(word) {
-
-    // ****** WORKING HERE  *****
-
-    // need failing tests
-
-    // TODO: verb inflections
-    // Instead fill the posData array in a function
-    // then check it here (and for nouns?)
-    return this.checkType(word, VERBS);
+    let pos = this.posOptions(word);
+    return pos && pos.filter(p => VERBS.includes(p)).length > 0;
   }
 
   isNoun(word) {
-    let result = this.checkType(word, NOUNS);
-    if (!result) {
-      let singular = RiTa.singularize(word);
-      if (singular !== word) {
-        result = this.checkType(singular, NOUNS);
-      }
-    }
-    return result;
+    let pos = this.posOptions(word);
+    return pos && pos.filter(p => NOUNS.includes(p)).length > 0;
   }
 
   isAdverb(word) {
-    return this.checkType(word, ADVS);
+    let pos = this.posOptions(word);
+    return pos && pos.filter(p => ADVS.includes(p)).length > 0;
+    //return this.checkType(word, ADVS);
   }
 
   isAdjective(word) {
-    return this.checkType(word, ADJS);
+    let pos = this.posOptions(word);
+    return pos && pos.filter(p => ADJS.includes(p)).length > 0;
+    //return this.checkType(word, ADJS);
   }
 
   hasTag(choices, tag) {
@@ -70,10 +62,16 @@ class PosTagger {
     return sb.trim();
   }
 
-  tag(words, simple, inline, fatal) {
+  posOptions(word/*, fatal*/) {
+    if (word && word.length) {
+      let posData = this.lex._posArr(word);//, fatal); // fail if no lexicon
+      return posData || this._derivePosData(word);
+    }
+  }
 
-    let dbug = 0, lexicon = RiTa._lexicon();
-    let result = [], choices2d = [];
+  tag(words, simple, inline/*, fatal*/) {
+
+    let dbug = 0, result = [], choices2d = [];
 
     if (!words || !words.length) {
       return inline ? '' : [];
@@ -96,70 +94,8 @@ class PosTagger {
         continue;
       }
 
-      let posData = lexicon._posArr(word, fatal); // fail if no lexicon
-      if (!posData && /^(the|a)$/.test(word)) posData = ['dt'];
-
-      /*
-      VBD 	Verb, past tense
-      VBG 	Verb, gerund or present participle
-      VBN 	Verb, past participle
-      VBP 	Verb, non-3rd person singular present
-      VBZ 	Verb, 3rd person singular present
-      NNS   Noun, plural
-      */
-      if (!posData) { // check inflections  (REFACTOR)
-        let stem, pos;
-        if (word.endsWith('s')) {  // (s$ || es$) plural noun or vbz
-          // verb or noun
-          stem = word.substring(0, word.length - 1);
-          if (stem) {
-            pos = lexicon._posArr(stem);
-            if (pos) {
-              if (pos.includes('nn')) posData = ['nns'];  // fates
-              if (pos.includes('vb')) posData = ['vbz']; // hates
-            }
-          }
-        }
-        else if (word.endsWith('ed')) { // simple past or past participle
-          stem = word.substring(0, word.length - 1);
-          if (stem) {
-            pos = lexicon._posArr(stem);
-            if (pos && pos.includes('vb')) {
-              posData = ['vbd', 'vbn']; // hated
-            }
-          }
-        }
-        else if (word.endsWith('ing')) {
-          stem = word.substring(0, word.length - 3);
-          if (stem) {
-            pos = lexicon._posArr(stem);
-            if (pos && pos.includes('vb')) {
-              posData = ['vbg']; // assenting
-            }
-            else {
-              pos = lexicon._posArr(stem + 'e'); // hate
-              if (pos && pos.includes('vb')) {
-                posData = ['vbg'];  // hating
-              }
-            }
-          }
-        }
-      }
-
-      if (!posData) {
-        let sing = RiTa.singularize(word);
-        if (this._lexHas("n", sing)) {
-          posData = ['nns'];
-        } else if (RiTa.stemmer.checkPluralWithoutLexicon(word)) {
-          posData = ['nns']; // common plurals
-        }
-      }
-
-      // give up with a best guess
-      if (!posData) posData = [words[i].endsWith('s') ? 'nns' : 'nn'];
-
-      result.push(posData[0]);
-      choices2d[i] = posData;
+      choices2d[i] = this.posOptions(word);//, fatal);
+      result.push(choices2d[i][0]);
     }
 
     // Adjust pos according to transformation rules
@@ -178,164 +114,71 @@ class PosTagger {
     return inline ? this.inlineTags(words, tags) : tags;
   }
 
-  // Returns an array of parts-of-speech from the Penn tagset,
-  // each corresponding to one word of input
-  tagOK(words, simple, inline, fatal) {
+  //////////////////////////////////////////////////////////////////
 
-    let dbug = 0, lexicon = RiTa._lexicon();
-    let result = [], choices2d = [];
+  _derivePosData(word) {
 
-    if (!words || !words.length) return inline ? '' : [];
-    if (!Array.isArray(words)) words = RiTa.tokenizer.tokenize(words);
+    /*
+      Try for a verb or noun inflection 
 
-    for (let i = 0, l = words.length; i < l; i++) {
-
-      if (words[i].length < 1) {
-        result.push('');
-        continue;
-      }
-
-      if (words[i].length == 1) {
-        result.push(this._handleSingleLetter(words[i]));
-        continue;
-      }
-
-      let posData = lexicon._posArr(words[i], fatal); // fail if no lexicon
-
-      /*
       VBD 	Verb, past tense
       VBG 	Verb, gerund or present participle
       VBN 	Verb, past participle
       VBP 	Verb, non-3rd person singular present
       VBZ 	Verb, 3rd person singular present
       NNS   Noun, plural
-      */
-      if (!posData.length) { // check inflections  (REFACTOR)
-        let stem;
-        if (words[i].endsWith('es')) {  // plural noun or vbz
-          // verb or noun
-          stem = words[i].substring(0, words[i].length - 1);
-        }
-        else if (words[i].endsWith('s')) { // plural noun or vbz
-          // verb or noun
-          stem = words[i].substring(0, words[i].length);
-        }
-        else if (words[i].endsWith('ed')) { // simple past or past participle
-          stem = words[i].substring(0, words[i].length - 1);
-        }
-        else if (words[i].endsWith('ing')) {
-          stem = words[i].substring(0, words[i].length - 2);
-        }
-
-        if (stem) {
-          let pos = lexicon._posArr(stem);
-          if (pos) {
-            dbug && console.log(words[i], 'stem=\'' + stem + "'", pos);
-            if (words[i].endsWith('s')) {
-              if (pos.includes('n')) posData.push('nns');  // fates
-              if (pos.includes('vb')) posData.push('vbz'); // hates
-            }
-            else if (words[i].endsWith('ed')) {
-              stem = words[i].substring(0, words[i].length - 1);
-              if (pos.includes('vb')) posData.push('vbd', 'vbn'); // hated
-            }
-            else if (words[i].endsWith('ing')) {
-              stem = words[i].substring(0, words[i].length - 2);
-              if (pos.includes('vb')) posData.push('vbg'); // hating
-            }
+    */
+    if (word.endsWith('s')/* or 'es'*/) {  // plural noun or vbz
+      let stem = word.substring(0, word.length - 1);
+      if (stem) {
+        let pos = this.lex._posArr(stem);
+        if (pos) {
+          let result;
+          if (pos.includes('nn')) {
+            result = ['nns'];  // fates
           }
+          if (pos.includes('vb')) {
+            result = result || [];
+            result.push('vbz'); // hates
+          }
+          if (result) return result;
         }
       }
-
-      if (!posData.length) {
-        let word = words[i];
-        //console.log(word);
-        //throw Error('no posData for "'+words[i]+'"');
-
-        // TODO: use stemmer categories if no lexicon
-
-        choices2d[i] = [];
-        let tag = 'nn';
-        if (words[i].endsWith('s')) {
-          tag = 'nns';
+    }
+    else if (word.endsWith('ed')) { // simple past or past participle
+      let stem = word.substring(0, word.length - 1);
+      if (stem) {
+        let pos = this.lex._posArr(stem);
+        if (pos && pos.includes('vb')) {
+          return ['vbd', 'vbn']; // hated
         }
-        else if (/^(the|a)$/i.test(words[i])) {
-          tag = 'dt';
+      }
+    }
+    else if (word.endsWith('ing')) {
+      let stem = word.substring(0, word.length - 3);
+      if (stem) {
+        let pos = this.lex._posArr(stem);
+        if (pos && pos.includes('vb')) {
+          return ['vbg']; // assenting
         }
-
-        if (words[i].endsWith('s')) {
-          let sub2, sub = words[i].substring(0, words[i].length - 1);
-
-          if (words[i].endsWith('es'))
-            sub2 = words[i].substring(0, words[i].length - 2)
-
-          if (this._lexHas("n", sub) || (sub2 && this._lexHas("n", sub2))) {
-            choices2d[i].push("nns");
-          } else {
-            let sing = RiTa.singularize(words[i]);
-            if (this._lexHas("n", sing)) choices2d.push("nns");
-          }
-
-        } else {
-
-          let sing = RiTa.singularize(words[i]);
-
-          if (this._lexHas("n", sing)) {
-            choices2d.push("nns");
-            tag = 'nns';
-          } else if (RiTa.stemmer.checkPluralWithoutLexicon(words[i])) {
-            tag = 'nns';
-            //common plurals
+        else {
+          pos = this.lex._posArr(stem + 'e'); // hate
+          if (pos && pos.includes('vb')) {
+            return ['vbg'];  // hating
           }
         }
-
-        result.push(tag);
-
-      } else {
-
-        result.push(posData[0]);
-        choices2d[i] = posData;
       }
     }
 
-    // Adjust pos according to transformation rules
-    let tags = this._applyContext(words, result, choices2d, dbug);
+    // Check for plural noun with singularizer 
+    if (this._lexHas("n", RiTa.singularize(word))) return ['nns']; // common plurals
 
-    if (simple) { // convert to simple tags
-      for (let i = 0; i < tags.length; i++) {
-        if (NOUNS.includes(tags[i])) tags[i] = 'n';
-        else if (VERBS.includes(tags[i])) tags[i] = 'v';
-        else if (ADJS.includes(tags[i])) tags[i] = 'a';
-        else if (ADVS.includes(tags[i])) tags[i] = 'r';
-        else tags[i] = '-'; // default: other
-      }
-    }
+    // Check plural noun with stemmer
+    if (RiTa.stemmer.checkPluralWithoutLexicon(word)) return ['nns'];
 
-    return inline ? this.inlineTags(words, tags) : tags;
+    // Give up with a best guess
+    return word.endsWith('ly') ? ['rb'] : (word.endsWith('s') ? ['nns'] : ['nn']);
   }
-
-  checkType(word, tagArray) {
-
-    if (typeof word === 'undefined' || word.includes(' ')) {
-      throw Error("checkType() expects word, found: '" + typeof word + "'");
-    }
-
-    if (!word.length) return false;
-
-    let lex = RiTa._lexicon();
-    let psa = lex._posArr(word); // try dictionary
-
-    if (!psa) {
-      if (RiTa.LEX_WARN && lex.size() <= 1000) {
-        console.warn(RiTa.LEX_WARN);
-        RiTa.LEX_WARN = 0; // only once
-      }
-      psa = RiTa.posTags(word); // try lts-engine
-    }
-
-    return psa.filter(p => tagArray.includes(p)).length > 0;
-  }
-
 
   _handleSingleLetter(c) {
     if (c === 'a' || c === 'A') return 'dt';
@@ -501,7 +344,7 @@ class PosTagger {
 
     if (typeof word !== 'string') throw Error('Expects string');
     //for (let i = 0; i < words.length; i++) {
-    let tags = RiTa.lexicon._posArr(word);
+    let tags = this.lex._posArr(word);
     if (tags) {
       for (let j = 0; j < tags.length; j++) {
         if (pos === tags[j]) return true;

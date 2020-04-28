@@ -346,12 +346,6 @@ class Markov {
     this.trace && console.log(tries + ' FAIL' +
       (msg ? '(' + msg + ')' : '') + ': ' + this._flatten(toks));
   }
-
-  _throwError(tries, oks) {
-    throw Error('\nFailed after ' + tries + ' tries'
-      + (oks ? ' and ' + oks.length + ' successes' : '')
-      + ', you may need to adjust options or add more text:\n');
-  }
 }
 
 Markov.SS = '<s>';
@@ -506,9 +500,15 @@ function RiTa() { return Markov.parent; }
 function lerp(start, stop, amt) {
   return amt * (stop - start) + start;
 }
-
+/* 
 function isWordToken(node) {
   return node.token !== Markov.SS && node.token !== Markov.SE;
+} */
+
+function throwError(tries, oks) {
+  throw Error('\nFailed after ' + tries + ' tries'
+    + (oks ? ' and ' + oks.length + ' successes' : '')
+    + ', you may need to adjust options or add more text:\n');
 }
 
 function isSubArray(find, arr) {

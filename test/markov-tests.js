@@ -73,14 +73,12 @@ describe('RiTa.Markov', () => {
 
     rm = new Markov(4);
     rm.addText(sample);
-    for (let i = 0; i < 5; i++) {
-      let s = rm.generate();
-      //console.log(i + ") " + s);
-      ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
-      ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
-      let num = RiTa.tokenize(s).length;
-      ok(num >= 5 && num <= 35 + i);
-    }
+    let s = rm.generate();
+    //console.log(i + ") " + s);
+    ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
+    ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
+    let num = RiTa.tokenize(s).length;
+    ok(num >= 5 && num <= 35);
   });
 
   it('should correctly call generate.minMaxLength', () => {
