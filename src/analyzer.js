@@ -36,7 +36,7 @@ class Analyzer {
       // if no phones yet, try the lts-engine
       if (!phones) {
 
-        let ltsPhones = RiTa.lts.getPhones(word);
+        let ltsPhones = RiTa.lts && RiTa.lts.getPhones(word);
         if (ltsPhones && ltsPhones.length > 0) {
 
           if (!RiTa.SILENT && !RiTa.SILENCE_LTS && RiTa.hasLexicon() && word.match(/[a-zA-Z]+/)) {

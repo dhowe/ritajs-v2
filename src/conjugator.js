@@ -488,42 +488,40 @@ const PRESENT_TENSE_RULES = [
 ];
 
 const VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", "adlib",
-  "admit", "aerobat", "aerosol", "agendaset", "allot", "alot", "anagram",
+  "admit", "aerobat", "aerosol", "allot", "alot", "anagram",
   "annul", "appal", "apparel", "armbar", "aver", "babysit", "airdrop", "appal",
-  "blackleg", "bobsled", "bur", "chum", "confab", "counterplot", "curet", "dib",
+  "blackleg", "bobsled", "bur", "chum", "confab", "counterplot",  "dib",
   "backdrop", "backfil", "backflip", "backlog", "backpedal", "backslap",
   "backstab", "bag", "balfun", "ballot", "ban", "bar", "barbel", "bareleg",
-  "barrel", "bat", "bayonet", "becom", "bed", "bedevil", "bedwet", "beenhop",
-  "befit", "befog", "beg", "beget", "begin", "bejewel", "bemedal", "benefit",
-  "benum", "beset", "besot", "bestir", "bet", "betassel", "bevel", "bewig",
+  "barrel", "bat", "bayonet", "becom", "bed", "bedevil", "bedwet",
+  "befit", "befog", "beg", "beget", "begin", "bejewel", "benefit",
+  "beset", "besot", "bet", "bevel", "bewig",
   "bib", "bid", "billet", "bin", "bip", "bit", "bitmap", "blab", "blag", "blam",
   "blan", "blat", "bles", "blim", "blip", "blob", "bloodlet", "blot", "blub",
-  "blur", "bob", "bodypop", "bog", "booby-trap", "boobytrap", "booksel",
+  "blur", "bob", "bog", "booby-trap", "boobytrap", "booksel",
   "bootleg", "bop", "bot", "bowel", "bracket", "brag", "brig", "brim", "bud",
   "buffet", "bug", "bullshit", "bum", "bun", "bus", "but", "cab", "cabal", "cam",
-  "can", "cancel", "cap", "caracol", "caravan", "carburet", "carnap", "carol",
-  "carpetbag", "castanet", "cat", "catcal", "catnap", "cavil", "chan", "chanel",
-  "channel", "chap", "char", "chargecap", "chat", "chin", "chip", "chir",
+  "can", "cancel", "cap", "caravan", "carburet", "carnap", "carol",
+  "carpetbag", "castanet", "cat", "catcal", "catnap", "chanel",
+  "channel", "chap", "char", "chat", "chin", "chip", "chir",
   "chirrup", "chisel", "chop", "chug", "chur", "clam", "clap", "clearcut",
-  "clip", "clodhop", "clog", "clop", "closet", "clot", "club", "co-occur",
-  "co-program", "co-refer", "co-run", "co-star", "cob", "cobweb", "cod", "coif",
+  "clip", "clodhop", "clog", "clop", "closet", "clot", "club", "co-star", "cob", "cobweb", "cod", "coif",
   "com", "combat", "comit", "commit", "compel", "con", "concur", "confer",
-  "confiscat", "control", "cop", "coquet", "coral", "corbel", "corral", "cosset",
+  "confiscat", "control", "cop", "coquet", "coral", "corral", "cosset",
   "cotransmit", "councel", "council", "counsel", "court-martial", "crab", "cram",
   "crap", "crib", "crop", "crossleg", "cub", "cudgel", "cum", "cun", "cup",
-  "cut", "dab", "dag", "dam", "dan", "dap", "daysit", "de-control", "de-gazet",
-  "de-hul", "de-instal", "de-mob", "de-program", "de-rig", "de-skil", "deadpan",
+  "cut", "dab", "dag", "dam", "dan", "dap", "daysit", "deadpan",
   "debag", "debar", "log", "decommit", "decontrol", "defer", "defog", "deg",
-  "degas", "deinstal", "demit", "demob", "demur", "den", "denet", "depig",
+  "degas", "deinstal", "demur", "den", "denet", "depig",
   "depip", "depit", "der", "deskil", "deter", "devil", "diagram", "dial", "dig",
   "dim", "din", "dip", "disbar", "disbud", "discomfit", "disembed", "disembowel",
-  "dishevel", "disinter", "dispel", "disprefer", "distil", "dog", "dognap",
+  "dishevel", "disinter", "dispel", "distil", "dog", "dognap",
   "don", "doorstep", "dot", "dowel", "drag", "drat", "driftnet", "distil",
-  "egotrip", "enrol", "enthral", "extol", "fulfil", "gaffe", "golliwog", "idyl",
+  "egotrip", "enrol", "enthral", "extol", "fulfil", "gaffe", "idyl",
   "inspan", "drip", "drivel", "drop", "drub", "drug", "drum", "dub", "duel",
-  "dun", "dybbuk", "earwig", "eavesdrop", "ecolabel", "eitherspigot",
-  "electroblot", "embed", "emit", "empanel", "enamel", "endlabel", "endtrim",
-  "enrol", "enthral", "entrammel", "entrap", "enwrap", "equal", "equip", "estop",
+  "dun",  "earwig", "eavesdrop", "ecolabel", 
+  "embed", "emit", "enamel", "endlabel", "endtrim",
+  "enrol", "enthral", "entrap", "enwrap", "equal", "equip",
   "exaggerat", "excel", "expel", "extol", "fag", "fan", "farewel", "fat",
   "featherbed", "feget", "fet", "fib", "fig", "fin", "fingerspel", "fingertip",
   "fit", "flab", "flag", "flap", "flip", "flit", "flog", "flop", "fob", "focus",
@@ -533,19 +531,19 @@ const VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", 
   "furpul", "gab", "gad", "gag", "gam", "gambol", "gap", "garot", "garrot",
   "gas", "gat", "gel", "gen", "get", "giftwrap", "gig", "gimbal", "gin", "glam",
   "glenden", "glendin", "globetrot", "glug", "glut", "gob", "goldpan", "goostep",
-  "gossip", "grab", "gravel", "grid", "grin", "grip", "grit", "groundhop",
+  "gossip", "grab", "gravel", "grid", "grin", "grip", "grit",
   "grovel", "grub", "gum", "gun", "gunrun", "gut", "gyp", "haircut", "ham",
   "han", "handbag", "handicap", "handknit", "handset", "hap", "hareleg", "hat",
   "headbut", "hedgehop", "hem", "hen", "hiccup", "highwal", "hip", "hit",
   "hobnob", "hog", "hop", "horsewhip", "hostel", "hot", "hotdog", "hovel", "hug",
-  "hum", "humbug", "hup", "hushkit", "hut", "illfit", "imbed", "immunblot",
-  "immunoblot", "impannel", "impel", "imperil", "incur", "infer", "infil",
+  "hum", "humbug", "hup", "hut", "illfit", "imbed",
+   "impel", "imperil", "incur", "infer", "infil",
   "inflam", "initial", "input", "inset", "instil", "inter", "interbed",
-  "intercrop", "intercut", "interfer", "instal", "instil", "intermit", "japan",
-  "jug", "kris", "manumit", "mishit", "mousse", "mud", "interwar", "jab", "jag",
+  "intercrop", "intercut", "interfer", "instal", "instil", "intermit",
+  "jug", "mousse", "mud", "jab", "jag",
   "jam", "jar", "jawdrop", "jet", "jetlag", "jewel", "jib", "jig", "jitterbug",
-  "job", "jog", "jog-trot", "jot", "jut", "ken", "kennel", "kid", "kidnap",
-  "kip", "kissogram", "kit", "knap", "kneecap", "knit", "knob", "knot", "kor",
+  "job", "jog", "jot", "jut", "ken", "kennel", "kid", "kidnap",
+  "kip", "kit", "knap", "kneecap", "knit", "knob", "knot",
   "label", "lag", "lam", "lap", "lavel", "leafcut", "leapfrog", "leg", "lem",
   "lep", "let", "level", "libel", "lid", "lig", "lip", "lob", "log", "lok",
   "lollop", "longleg", "lop", "lowbal", "lug", "mackerel", "mahom", "man", "map",
@@ -555,34 +553,25 @@ const VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", 
   "monogram", "mop", "mothbal", "mug", "multilevel", "mum", "nab", "nag", "nan",
   "nap", "net", "nightclub", "nightsit", "nip", "nod", "nonplus", "norkop",
   "nostril", "not", "nut", "nutmeg", "occur", "ocur", "offput", "offset", "omit",
-  "ommit", "onlap", "out-general", "out-gun", "out-jab", "out-plan", "out-pol",
-  "out-pul", "out-put", "out-run", "out-sel", "outbid", "outcrop", "outfit",
+  "ommit", "onlap", "out-general", "outbid", "outcrop", "outfit",
   "outgas", "outgun", "outhit", "outjab", "outpol", "output", "outrun",
-  "outship", "outshop", "outsin", "outstrip", "outswel", "outspan", "overcrop",
+  "outship", "outshop", "outstrip", "outswel", "outspan", "overcrop",
   "pettifog", "photostat", "pouf", "preset", "prim", "pug", "ret", "rosin",
-  "outwit", "over-commit", "over-control", "over-fil", "over-fit", "over-lap",
-  "over-model", "over-pedal", "over-pet", "over-run", "over-sel", "over-step",
-  "over-tip", "over-top", "overbid", "overcal", "overcommit", "overcontrol",
+  "outwit", "overbid", "overcal", "overcommit", "overcontrol",
   "overcrap", "overdub", "overfil", "overhat", "overhit", "overlap", "overman",
   "overplot", "overrun", "overshop", "overstep", "overtip", "overtop", "overwet",
   "overwil", "pad", "paintbal", "pan", "panel", "paperclip", "par", "parallel",
-  "parcel", "partiescal", "pat", "patrol", "pedal", "peewit", "peg", "pen",
-  "pencil", "pep", "permit", "pet", "petal", "photoset", "phototypeset", "phut",
+  "parcel", "pat", "patrol", "pedal", "peg", "pen",
+  "pencil", "pep", "permit", "pet", "petal", "photoset",
   "picket", "pig", "pilot", "pin", "pinbal", "pip", "pipefit", "pipet", "pit",
   "plan", "plit", "plod", "plop", "plot", "plug", "plumet", "plummet", "pod",
-  "policyset", "polyfil", "ponytrek", "pop", "pot", "pram", "prebag",
+  "policyset", "polyfil", "pop", "pot", "pram", "prebag",
   "predistil", "predril", "prefer", "prefil", "preinstal", "prep", "preplan",
   "preprogram", "prizewin", "prod", "profer", "prog", "program", "prop",
   "propel", "pub", "pummel", "pun", "pup", "pushfit", "put", "quarel", "quarrel",
   "quickskim", "quickstep", "quickwit", "quip", "quit", "quivertip", "quiz",
   "rabbit", "rabit", "radiolabel", "rag", "ram", "ramrod", "rap", "rat",
-  "ratecap", "ravel", "re-admit", "re-cal", "re-cap", "re-channel", "re-dig",
-  "re-dril", "re-emit", "re-fil", "re-fit", "re-flag", "re-format", "re-fret",
-  "re-hab", "re-instal", "re-inter", "re-lap", "re-let", "re-map", "re-metal",
-  "re-model", "re-pastel", "re-plan", "re-plot", "re-plug", "re-pot",
-  "re-program", "re-refer", "re-rig", "re-rol", "re-run", "re-sel", "re-set",
-  "re-skin", "re-stal", "re-submit", "re-tel", "re-top", "re-transmit",
-  "re-trim", "re-wrap", "readmit", "reallot", "rebel", "rebid", "rebin", "rebut",
+  "ratecap", "ravel", "readmit", "reallot", "rebel", "rebid", "rebin", "rebut",
   "recap", "rechannel", "recommit", "recrop", "recur", "recut", "red", "redril",
   "refer", "refit", "reformat", "refret", "refuel", "reget", "regret", "reinter",
   "rejig", "rekit", "reknot", "relabel", "relet", "rem", "remap", "remetal",
@@ -593,10 +582,9 @@ const VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", 
   "rim", "ringlet", "rip", "rit", "rival", "rivet", "roadrun", "rob", "rocket",
   "rod", "roset", "rot", "rowel", "rub", "run", "runnel", "rut", "sab", "sad",
   "sag", "sandbag", "sap", "scab", "scalpel", "scam", "scan", "scar", "scat",
-  "schlep", "scrag", "scram", "shall", "sled", "smut", "stet", "sulfuret",
+  "schlep", "scrag", "scram", "shall", "sled", "smut", "stet",
   "trepan", "unrip", "unstop", "whir", "whop", "wig", "scrap", "scrat", "scrub",
-  "scrum", "scud", "scum", "scur", "semi-control", "semi-skil", "semi-skim",
-  "semiskil", "sentinel", "set", "shag", "sham", "shed", "shim", "shin", "ship",
+  "scrum", "scud", "scum", "scur", "sentinel", "set", "shag", "sham", "shed", "shim", "shin", "ship",
   "shir", "shit", "shlap", "shop", "shopfit", "shortfal", "shot", "shovel",
   "shred", "shrinkwrap", "shrivel", "shrug", "shun", "shut", "side-step",
   "sideslip", "sidestep", "signal", "sin", "sinbin", "sip", "sit", "skid",
@@ -604,33 +592,32 @@ const VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", 
   "slim", "slip", "slit", "slob", "slog", "slop", "slot", "slowclap", "slug",
   "slum", "slur", "smit", "snag", "snap", "snip", "snivel", "snog", "snorkel",
   "snowcem", "snub", "snug", "sob", "sod", "softpedal", "son", "sop", "spam",
-  "span", "spar", "spat", "spiderweb", "spin", "spiral", "spit", "splat",
-  "split", "spot", "sprag", "spraygun", "sprig", "springtip", "spud", "spur",
+  "span", "spar", "spat", "spin", "spiral", "spit", "splat",
+  "split", "spot", "sprig", "springtip", "spud", "spur",
   "squat", "squirrel", "stab", "stag", "star", "stem", "sten", "stencil", "step",
   "stir", "stop", "storytel", "strap", "strim", "strip", "strop", "strug",
   "strum", "strut", "stub", "stud", "stun", "sub", "subcrop", "sublet", "submit",
-  "subset", "suedetrim", "sum", "summit", "sun", "suntan", "sup", "super-chil",
+  "subset", "sum", "summit", "sun", "suntan", "sup", "super-chil",
   "superad", "swab", "swag", "swan", "swap", "swat", "swig", "swim", "swivel",
   "swot", "tab", "tag", "tan", "tansfer", "tap", "tar", "tassel", "tat", "tefer",
-  "teleshop", "tendril", "terschel", "th'strip", "thermal", "thermostat", "thin",
+  "teleshop", "tendril", "thermal", "thermostat", "thin",
   "throb", "thrum", "thud", "thug", "tightlip", "tin", "tinsel", "tip", "tittup",
   "toecap", "tog", "tom", "tomorrow", "top", "tot", "total", "towel", "traget",
   "trainspot", "tram", "trammel", "transfer", "tranship", "transit", "transmit",
-  "transship", "trap", "travel", "trek", "trendset", "trim", "trip", "tripod",
-  "trod", "trog", "trot", "trousseaushop", "trowel", "trup", "tub", "tug",
+  "trap", "travel", "trek", "trendset", "trim", "trip", "tripod",
+  "trod", "trot", "trowel", "tub", "tug",
   "tunnel", "tup", "tut", "twat", "twig", "twin", "twit", "typeset", "tyset",
   "un-man", "unban", "unbar", "unbob", "uncap", "unclip", "uncompel", "undam",
-  "under-bil", "under-cut", "under-fit", "under-pin", "under-skil", "underbid",
-  "undercut", "underlet", "underman", "underpin", "unfit", "unfulfil", "unknot",
+  "underbid","undercut", "underlet", "underman", "underpin", "unfit", "unfulfil", "unknot",
   "unlip", "unlywil", "unman", "unpad", "unpeg", "unpin", "unplug", "unravel",
   "unrol", "unscrol", "unsnap", "unstal", "unstep", "unstir", "untap", "unwrap",
-  "unzip", "up", "upset", "upskil", "upwel", "ven", "verbal", "vet", "victual",
-  "vignet", "wad", "wag", "wainscot", "wan", "war", "water-log", "waterfal",
+  "unzip", "up", "upset", "upskil", "upwel", "ven", "verbal", "vet", 
+  "vignet", "wad", "wag", "wainscot", "wan", "war", "waterfal",
   "waterfil", "waterlog", "weasel", "web", "wed", "wet", "wham", "whet", "whip",
-  "whir", "whiteskin", "whiz", "whup", "wildcat", "win", "windmil", "wit",
-  "woodchop", "woodcut", "wor", "worship", "wrap", "wiretap", "yen", "yak",
-  "yap", "yarnspin", "yip", "yodel", "zag", "zap", "zig", "zig-zag", "zigzag",
-  "zip", "ztrip", "hand-bag", "hocus", "hocus-pocus"
+  "whir", "whiz", "whup", "wildcat", "win", "windmil", "wit",
+  "woodchop", "woodcut", "worship", "wrap", "wiretap", "yen", "yak",
+  "yap", "yip", "yodel", "zag", "zap", "zig", "zigzag",
+  "zip", "hocus",
 ];
 
 const PAST_PARTICIPLE_RULESET = {
@@ -736,16 +723,12 @@ class Conjugator {
     // Now inflect frontVG (if it exists) and push it on restVG
     if (frontVG) {
       if (this.form === RiTa.GERUND) { // gerund - use ING form
-
         let pp = this.presentParticiple(frontVG);
-
         // !@# not yet implemented! ??? WHAT?
         conjs.push(pp);
       } else if (this.interrogative && frontVG != "be" && conjs.length < 1) {
-
         conjs.push(frontVG);
       } else {
-
         verbForm = this.verbForm(frontVG, this.tense, this.person, this.number);
         conjs.push(verbForm);
       }
@@ -767,37 +750,27 @@ class Conjugator {
 
     theVerb = theVerb.trim();
 
-    let dbug = 0;
-
-    let res, name = ruleSet.name,
-      rules = ruleSet.rules,
-      defRule = ruleSet.defaultRule;
+    let dbug = 0, res, name = ruleSet.name;
+    let rules = ruleSet.rules, defRule = ruleSet.defaultRule;
 
     if (!rules) console.error("no rule: " + ruleSet.name + ' of ' + theVerb);
-
     if (MODALS.includes(theVerb)) return theVerb;
 
     for (let i = 0; i < rules.length; i++) {
-
       dbug && console.log("checkRules(" + name + ").fire(" + i + ")=" + rules[i].regex);
       if (rules[i].applies(theVerb)) {
-
         let got = rules[i].fire(theVerb);
-
         dbug && console.log("HIT(" + name + ").fire(" + i + ")=" + rules[i].regex + "_returns: " + got);
         return got;
       }
     }
     dbug && console.log("NO HIT!");
-
     if (ruleSet.doubling && VERB_CONS_DOUBLING.includes(theVerb)) {
-
       dbug && console.log("doDoubling!");
       theVerb = this.doubleFinalConsonant(theVerb);
     }
 
     res = defRule.fire(theVerb);
-
     dbug && console.log("checkRules(" + name + ").returns: " + res);
 
     return res;
@@ -810,29 +783,21 @@ class Conjugator {
   pastTense(theVerb, pers, numb) {
 
     if (theVerb.toLowerCase() === "be") {
-
       switch (numb) {
-
         case RiTa.SINGULAR:
           switch (pers) {
-
             case RiTa.FIRST_PERSON:
               break;
-
             case RiTa.THIRD_PERSON:
               return "was";
-
             case RiTa.SECOND_PERSON:
               return "were";
-
           }
           break;
-
         case RiTa.PLURAL:
           return "were";
       }
     }
-
     return this.checkRules(PAST_TENSE_RULESET, theVerb);
   }
 
@@ -840,27 +805,19 @@ class Conjugator {
 
     person = person || this.person;
     number = number || this.number;
-
     if ((person === RiTa.THIRD_PERSON) && (number === RiTa.SINGULAR)) {
-
       return this.checkRules(PRESENT_TENSE_RULESET, theVerb);
     }
     else if (theVerb === "be") {
-
       if (number === RiTa.SINGULAR) {
-
         switch (person) {
-
           case RiTa.FIRST_PERSON:
             return "am";
-
           case RiTa.SECOND_PERSON:
             return "are";
-
           case RiTa.THIRD_PERSON:
             return "is";
         }
-
       } else {
         return "are";
       }
@@ -878,7 +835,6 @@ class Conjugator {
   }
 
   verbForm(theVerb, tense, person, number) {
-
     switch (tense) {
       case RiTa.PRESENT_TENSE:
         return this.presentTense(theVerb, person, number);
@@ -896,5 +852,7 @@ class Conjugator {
       this.tense + '\n' + "  ---------------------" + '\n';
   }
 }
+
+Conjugator.VERB_CONS_DOUBLING = VERB_CONS_DOUBLING;
 
 module && (module.exports = Conjugator);

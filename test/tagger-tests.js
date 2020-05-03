@@ -5,7 +5,7 @@ describe('RiTa.Tagger', () => {
   it('Should correctly call posTags.array', () => {
     eql(RiTa.posTags([]), []);
     eql(RiTa.posTags(["freed"]), ["jj"]);
-    eql(RiTa.posTags(["the"]), ["dt"]);
+    eql(RiTa.posTags(["the"]), ["dt"]);  
     eql(RiTa.posTags(["a"]), ["dt"]);
     eql(RiTa.posTags("the top seed".split(/ /)), ["dt", "jj", "nn"]);
     eql(RiTa.posTags("by illegal means".split(/ /)), ["in", "jj", "nn"]);
@@ -204,14 +204,13 @@ describe('RiTa.Tagger', () => {
 
     eql(RiTa.posTags("he"), ["prp"]);
     eql(RiTa.posTags("outnumber"), ["vb"]);
-    eql(RiTa.posTags("I outnumbered you"), ["prp", "vbn", "prp"]);
-    eql(RiTa.posTags("She outnumbered us"), ["prp", "vbn", "prp"]);
-    eql(RiTa.posTags("I am outnumbering you"), ["prp", "vbp", "vbg", "prp"]);
+    eql(RiTa.posTags("I outnumbered you"), ["prp", "vbd", "prp"], "I outnumbered you");
+    eql(RiTa.posTags("She outnumbered us"), ["prp", "vbd", "prp"], "She outnumbered us");
+    eql(RiTa.posTags("I am outnumbering you"), ["prp", "vbp", "vbg", "prp"], "I am outnumbering you");
+    eql(RiTa.posTags("I have outnumbered you"), ["prp", "vbp", "vbd", "prp"], "I have outnumbered you");//?
 
     let checks = ["emphasis", "stress", "discus", "colossus", "fibrosis", "digitalis", "pettiness", "mess", "cleanliness", "orderliness", "bronchitis", "preparedness", "highness"];
     for (let i = 0, j = checks.length; i < j; i++) {
-      //if (RiTa.posTags(checks[i])[0] !== 'nn')
-      //console.log(checks[i] + ": " + RiTa.posTags(checks[i])[0]);
       eql(RiTa.posTags(checks[i]), ["nn"]);
     }
   });
@@ -467,7 +466,7 @@ return;
     ok(!RiTa.isVerb("walker"));
     ok(!RiTa.isVerb("beautiful"));
 
-    ok(RiTa.isVerb("eat"));
+    ok(RiTa.isVerb("eat"),'eat');
     ok(RiTa.isVerb("chew"));
 
     ok(RiTa.isVerb("throw")); // +n

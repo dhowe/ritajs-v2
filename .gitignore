@@ -1,5 +1,4 @@
 grammar/.antlr
-scripts
 web/workbench/texts/*
 node_modules
 hs_err_pid*

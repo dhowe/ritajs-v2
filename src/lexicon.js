@@ -36,13 +36,14 @@ class Lexicon {
     let results = [];
     let words = Object.keys(this._dict(true));
     let fss = this._firstStressedSyl(word);
+    if (!fss) return results;
     let phone = this._firstPhone(fss);
 
     // make sure we parsed first phoneme
-    if (!phone || !phone.length) {
+    if (!phone) {
       if (!silent && !RiTa.SILENT) console.warn
         ('Failed parsing first phone in "' + word + '"');
-      return [];
+      return results;
     }
 
     for (let i = 0; i < words.length; i++) {
@@ -73,11 +74,12 @@ class Lexicon {
     let dict = this._dict(true);
     let words = Object.keys(dict);
     let phone = this._lastStressedPhoneToEnd(word);
-
-    for (let i = 0; i < words.length; i++) {
-      if (words[i] !== word && words[i].length >= minLen && words[i].length <= maxLen) {
-        if (dict[words[i]][0].endsWith(phone)) {
-          results.push(words[i]);
+    if (phone) {
+      for (let i = 0; i < words.length; i++) {
+        if (words[i] !== word && words[i].length >= minLen && words[i].length <= maxLen) {
+          if (dict[words[i]][0].endsWith(phone)) {
+            results.push(words[i]);
+          }
         }
       }
     }
@@ -179,7 +181,7 @@ class Lexicon {
           }
         }
         if (numSyls) { // Need to make sure we dont change syllable count
-          
+
           let tmp = RiTa.SILENCE_LTS;
           RiTa.SILENCE_LTS = true;
           let count = RiTa.syllables(result).split(RiTa.SYLLABLE_BOUNDARY).length;
@@ -245,11 +247,11 @@ class Lexicon {
     let c1 = this._firstPhone(this._firstStressedSyl(word1)),
       c2 = this._firstPhone(this._firstStressedSyl(word2));
 
-    if (this._isVowel(c1.charAt(0)) || this._isVowel(c2.charAt(0))) {
+    if (!c1 || !c2 || this._isVowel(c1.charAt(0)) || this._isVowel(c2.charAt(0))) {
       return false;
     }
 
-    return c1 && c2 && c1 === c2;
+    return c1 === c2;
   }
 
   isRhyme(word1, word2) {
@@ -258,15 +260,11 @@ class Lexicon {
       return false;
     }
     this._dict(true); // throw if no lexicon
-
-    let phones1 = this._rawPhones(word1),
-      phones2 = this._rawPhones(word2);
-
-    if (phones2 === phones1) return false;
-
+    if (this._rawPhones(word1) === this._rawPhones(word2)) {
+      return false;
+    }
     let p1 = this._lastStressedVowelPhonemeToEnd(word1),
       p2 = this._lastStressedVowelPhonemeToEnd(word2);
-
     return p1 && p2 && p1 === p2;
   }
 
@@ -275,34 +273,37 @@ class Lexicon {
   _similarByType(word, opts) { // NIAPI, optimize? cache?
 
     let minLen = opts.minWordLength || 2;
-    let maxLen = opts.maxWordLength || Number.MAX_VALUE;
     let minMed = opts.minAllowedDistance || 1;
-
+    let maxLen = opts.maxWordLength || Number.MAX_VALUE;
+    
     let result = [], dict = this._dict(true);
     let sound = opts.type === 'sound'; // default: letter 
     let input = word.toLowerCase(), words = Object.keys(dict);
     let variations = [input, input + 's', input + 'es'];
-    let phonesA = sound ? this._toPhoneArray
-      (this._rawPhones(input)) : input;
+    let phonesA = sound ? this._toPhoneArray(this._rawPhones(input)) : input;
 
-    let entry, phonesB, med, minVal = Number.MAX_VALUE;
-    for (let i = 0; i < words.length; i++) {
-      entry = words[i];
-      if (entry.length < minLen || entry.length > maxLen || variations.includes(entry)) {
-        continue;
-      }
-      phonesB = sound ? dict[entry][0].replace(/1/g, '').replace(/ /g, '-').split('-') : entry;
-      med = this._minEditDist(phonesA, phonesB);
+    if (phonesA) {
+      let entry, phonesB, med, minVal = Number.MAX_VALUE;
+      for (let i = 0; i < words.length; i++) {
+        entry = words[i];
+        if (entry.length < minLen || entry.length > maxLen || variations.includes(entry)) {
+          continue;
+        }
 
-      // found something even closer
-      if (med >= minMed && med < minVal) {
-        minVal = med;
-        result = [entry];
-      }
+        // TODO: optimise
+        phonesB = sound ? dict[entry][0].replace(/1/g, '').replace(/ /g, '-').split('-') : entry;
+        med = this._minEditDist(phonesA, phonesB);
 
-      // another best to add
-      else if (med === minVal) {
-        result.push(entry);
+        // found something even closer
+        if (med >= minMed && med < minVal) {
+          minVal = med;
+          result = [entry];
+        }
+
+        // another best to add
+        else if (med === minVal) {
+          result.push(entry);
+        }
       }
     }
     return result;
@@ -338,10 +339,10 @@ class Lexicon {
 
   _firstPhone(rawPhones) {
 
-    if (!rawPhones || !rawPhones.length) return '';
-    let phones = rawPhones.split(RiTa.PHONEME_BOUNDARY);
-    if (phones) return phones[0];
-    return ''; // return null?
+    if (rawPhones && rawPhones.length) {
+      let phones = rawPhones.split(RiTa.PHONEME_BOUNDARY);
+      if (phones) return phones[0];
+    }
   }
 
   _intersect(a1, a2) {
@@ -350,75 +351,62 @@ class Lexicon {
 
   _lastStressedPhoneToEnd(word) {
 
-    if (!word || !word.length) return ''; // return null?
-
-    let idx, c, result;
-    let raw = this._rawPhones(word);
-
-    if (!raw || !raw.length) return ''; // return null?
-
-    idx = raw.lastIndexOf(RiTa.STRESSED);
-
-    if (idx < 0) return E; // return null?
-
-    c = raw.charAt(--idx);
-    while (c != '-' && c != ' ') {
-      if (--idx < 0) {
-        return raw; // single-stressed syllable
+    if (word && word.length) {
+      let raw = this._rawPhones(word);
+      if (raw) {
+        let idx = raw.lastIndexOf(RiTa.STRESSED);
+        if (idx >= 0) {
+          let c = raw.charAt(--idx);
+          while (c != '-' && c != ' ') {
+            if (--idx < 0) return raw; // single-stressed syllable
+            c = raw.charAt(idx);
+          }
+        }
+        return raw.substring(idx + 1);
       }
-      c = raw.charAt(idx);
     }
-    result = raw.substring(idx + 1);
-
-    return result;
   }
 
 
   _lastStressedVowelPhonemeToEnd(word) {
 
-    if (!word || !word.length) return ''; // return null?
-
-    let raw = this._lastStressedPhoneToEnd(word);
-    if (!raw || !raw.length) return ''; // return null?
-
-    let syllables = raw.split(' ');
-    let lastSyllable = syllables[syllables.length - 1];
-    lastSyllable = lastSyllable.replace('[^a-z-1 ]', '');
-
-    let idx = -1;
-    for (let i = 0; i < lastSyllable.length; i++) {
-      let c = lastSyllable.charAt(i);
-      if (RiTa.VOWELS.includes(c)) {
-        idx = i;
-        break;
+    if (word && word.length) {
+      let raw = this._lastStressedPhoneToEnd(word);
+      if (raw) {
+        let idx = -1, syllables = raw.split(' ');
+        let lastSyllable = syllables[syllables.length - 1];
+        lastSyllable = lastSyllable.replace('[^a-z-1 ]', '');
+        for (let i = 0; i < lastSyllable.length; i++) {
+          let c = lastSyllable.charAt(i);
+          if (RiTa.VOWELS.includes(c)) {
+            idx = i;
+            break;
+          }
+        }
+        return lastSyllable.substring(idx);
       }
     }
-
-    return lastSyllable.substring(idx);
   }
 
   _firstStressedSyl(word) {
 
     let raw = this._rawPhones(word);
-    if (!raw || !raw.length) return ''; // return null?
-
-    let idx = raw.indexOf(RiTa.STRESSED);
-    if (idx < 0) return ''; // no stresses... return null?
-
-    let c = raw.charAt(--idx);
-    while (c != ' ') {
-      if (--idx < 0) {
-        // single-stressed syllable
-        idx = 0;
-        break;
+    if (raw) {
+      let idx = raw.indexOf(RiTa.STRESSED);
+      if (idx >= 0) {
+        let c = raw.charAt(--idx);
+        while (c != ' ') {
+          if (--idx < 0) {  // single-stressed syllable
+            idx = 0;
+            break;
+          }
+          c = raw.charAt(idx);
+        }
+        let firstToEnd = idx === 0 ? raw : raw.substring(idx).trim();
+        idx = firstToEnd.indexOf(' ');
+        return idx < 0 ? firstToEnd : firstToEnd.substring(0, idx);
       }
-      c = raw.charAt(idx);
     }
-
-    let firstToEnd = idx === 0 ? raw : raw.substring(idx).trim();
-    idx = firstToEnd.indexOf(' ');
-
-    return idx < 0 ? firstToEnd : firstToEnd.substring(0, idx);
   }
 
   _posData(word, fatal) {
@@ -452,7 +440,6 @@ class Lexicon {
       let phones = RiTa.lts && RiTa.lts.getPhones(word);
       return Util.syllablesFromPhones(phones);
     }
-    return '';
   }
 
   _dict(fatal) {

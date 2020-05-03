@@ -11,6 +11,7 @@ class PosTagger {
 
   constructor(parent) {
     RiTa = parent;
+    this.stemmer = RiTa.stemmer;
     this.lex = RiTa._lexicon();
   }
 
@@ -146,12 +147,10 @@ class PosTagger {
       }
     }
     else if (word.endsWith('ed')) { // simple past or past participle
-      let stem = word.substring(0, word.length - 1);
-      if (stem) {
-        let pos = this.lex._posArr(stem);
-        if (pos && pos.includes('vb')) {
-          return ['vbd', 'vbn']; // hated
-        }
+      let pos = this.lex._posArr(word.substring(0, word.length - 1)) 
+        || this.lex._posArr(word.substring(0, word.length - 2));
+      if (pos && pos.includes('vb')) {
+        return ['vbd', 'vbn']; // hate-> hated || row->rowed
       }
     }
     else if (word.endsWith('ing')) {
@@ -326,7 +325,7 @@ class PosTagger {
         }
       }
 
-      //transform 13(cqx): convert a vb/ potential vb to vbp when following nns (Elephants dance, they dance)
+      // transform 13(cqx): convert a vb/ potential vb to vbp when following nns (Elephants dance, they dance)
       if (tag === "vb" || (tag === "nn" && this.hasTag(choices[i], "vb"))) {
         if (i > 0 && result[i - 1].match(/^(nns|nnps|prp)$/)) {
           tag = "vbp";

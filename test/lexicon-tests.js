@@ -189,10 +189,10 @@ describe('RiTa.Lexicon', function () {
     expect(result.length < 1, "failed on 'umbrella'").to.be.true;
 
     result = RiTa.alliterations("cat stress");
-    expect(result.length > 2000, "failed on 'cat stress'").to.be.true;
+    expect(result.length > 1000, "failed on 'cat stress' got "+result).to.be.true;
 
     result = RiTa.alliterations("cat");
-    expect(result.length > 2000, "failed on 'cat'").to.be.true;
+    expect(result.length > 1000, "failed on 'cat'").to.be.true;
     for (let i = 0; i < result.length; i++) {
       expect(RiTa.isAlliteration(result[i], "cat")).to.be.true;
     }
@@ -279,9 +279,6 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.similarBy("ice", { minAllowedDistance: 1, minWordLength: 3, maxWordLength: 3 });
     eql(result, ["ace", "icy", "ire"]);
 
-    result = RiTa.similarBy("worngword");
-    eql(result, ["foreword", "wormwood"]);
-
     result = RiTa.similarBy("123");
     expect(result.length > 400).to.be.true;
   });
@@ -306,14 +303,11 @@ describe('RiTa.Lexicon', function () {
     expect(result.length > answer.length).to.be.true; // more
 
     result = RiTa.similarBy("cat", { type: 'sound' });
-    answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "can\'t", "cap", "capped", "cash", "cashed", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
+    answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "can\'t", "cap", "cash","cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
     eql(result, answer);
 
     result = RiTa.similarBy("cat", { type: 'sound', minAllowedDistance: 2 });
     expect(result.length > answer.length).to.be.true;
-
-    result = RiTa.similarBy("worngword", { type: 'sound' });
-    eql(result, ["watchword", "wayward", "wormwood"]);
   });
 
   it('Should correctly call similarBy.soundAndLetter', () => {
@@ -326,9 +320,6 @@ describe('RiTa.Lexicon', function () {
 
     result = RiTa.similarBy("banana", { type: 'soundAndLetter' });
     eql(result, ["bonanza"]);
-
-    result = RiTa.similarBy("worngword", { type: 'soundAndLetter' });
-    eql(result, ["wormwood"]);
   });
 
   it('Should correctly call isRhyme', () => {

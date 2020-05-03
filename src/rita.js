@@ -214,7 +214,9 @@ class RiTa {
 
   static _lexicon() { // lazy load
     if (typeof RiTa.lexicon === 'undefined') {
-      RiTa.lts = new LetterToSound(RiTa);
+      //if (typeof NOLTS !== 'undefined') { // used by webpack, don't shorten
+        RiTa.lts = new LetterToSound(RiTa);
+      //}
       if (typeof NOLEX !== 'undefined') { // used by webpack, don't shorten
         RiTa.lexicon = new Lexicon(RiTa);
       }

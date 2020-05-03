@@ -10,9 +10,8 @@ const { parse, stringify } = require('flatted/cjs');
 
 /*
 API:
-  toJsonbe
-  
-  fromJson
+  toJson
+  Markov.fromJson
   addText()
   addSentences()
   generate()
