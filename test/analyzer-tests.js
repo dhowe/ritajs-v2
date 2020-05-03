@@ -81,7 +81,6 @@ describe('RiTa.Analyzer', () => {
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
     eq(RiTa.phonemes("mice"), "m-ay-s");
-    RiTa.SILENCE_LTS = silent;
 
     let result, answer;
 
@@ -109,6 +108,8 @@ describe('RiTa.Analyzer', () => {
     eq(RiTa.phonemes("chevrolet"), hasLex ? "sh-eh-v-r-ow-l-ey" : 'ch-eh-v-r-ow-l-ah-t');
     eq(RiTa.phonemes("women"), hasLex ? "w-ih-m-eh-n" : 'w-ow-m-eh-n');
     eq(RiTa.phonemes("genuine"), hasLex ? "jh-eh-n-y-uw-w-ah-n" : 'jh-eh-n-y-ah-ay-n');
+
+    RiTa.SILENCE_LTS = silent;
   });
 
   it('Should correctly call syllables', () => {

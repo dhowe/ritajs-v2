@@ -11,7 +11,6 @@ const Analyzer = require('./analyzer');
 const Concorder = require('./concorder');
 const Conjugator = require('./conjugator');
 const Inflector = require('./inflector');
-const LetterToSound = require('./rita_lts');
 
 const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
 
@@ -214,9 +213,10 @@ class RiTa {
 
   static _lexicon() { // lazy load
     if (typeof RiTa.lexicon === 'undefined') {
-      //if (typeof NOLTS !== 'undefined') { // used by webpack, don't shorten
+      if (typeof NOLTS !== 'undefined') { // used by webpack, don't shorten
+        const LetterToSound = require('./rita_lts');
         RiTa.lts = new LetterToSound(RiTa);
-      //}
+      }
       if (typeof NOLEX !== 'undefined') { // used by webpack, don't shorten
         RiTa.lexicon = new Lexicon(RiTa);
       }

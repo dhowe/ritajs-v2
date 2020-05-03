@@ -7,7 +7,7 @@ module.exports =
   output: {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
-    filename: '[name].js',
+    filename: 'rita.js',
     chunkFilename: 'rita-full.js',
   },
   performance: {
@@ -19,8 +19,7 @@ module.exports =
   node: {
     fs: "empty"
   },
-  //entry: { 'rita': './src/rita.js', 'rita-dict': ['./src/rita_dict.js', './src/rita_lts.js'] }
-  entry: { 'rita': './src/rita.js' },// 'rita-dict': ['./src/rita_dict.js'] },
+  entry: { 'rita': './src/rita.js' },
   plugins: [new (require('webpack').DefinePlugin)({
     NOLEX: JSON.stringify(true),
   })]
