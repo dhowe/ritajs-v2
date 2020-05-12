@@ -169,14 +169,16 @@ class PosTagger {
       }
     }
 
-    // Check for plural noun with singularizer 
-    if (this._lexHas("n", RiTa.singularize(word))) return ['nns']; // common plurals
-
-    // Check plural noun with stemmer
-    if (RiTa.stemmer.checkPluralWithoutLexicon(word)) return ['nns'];
+    // Check if this could be a plural noun form
+    if (this._isLikelyPlural(word)) return ['nns'];
 
     // Give up with a best guess
     return word.endsWith('ly') ? ['rb'] : (word.endsWith('s') ? ['nns'] : ['nn']);
+  }
+
+  _isLikelyPlural(word) { 
+    // Check for plural noun with singularizer and stemmer
+    return RiTa.stemmer.isRawPlural(word) || this._lexHas("n", RiTa.singularize(word));
   }
 
   _handleSingleLetter(c) {
@@ -321,7 +323,6 @@ class PosTagger {
             tag = "vbz";
             dbug && this._log(12, word, tag);
           }
-
         }
       }
 
@@ -340,22 +341,18 @@ class PosTagger {
   }
 
   _lexHas(pos, word) { // takes ([n|v|a|r] or a full tag
-
     if (typeof word !== 'string') throw Error('Expects string');
-    //for (let i = 0; i < words.length; i++) {
     let tags = this.lex._posArr(word);
-    if (tags) {
-      for (let j = 0; j < tags.length; j++) {
-        if (pos === tags[j]) return true;
-        if (pos === 'n' && NOUNS.includes(tags[j]) ||
-          pos === 'v' && VERBS.includes(tags[j]) ||
-          pos === 'r' && ADVS.includes(tags[j]) ||
-          pos === 'a' && ADJS.includes.isAdjTag(tags[j])) {
-          return true;
-        }
+    if (!tags) return false;
+    for (let j = 0; j < tags.length; j++) {
+      if (pos === tags[j]) return true;
+      if (pos === 'n' && NOUNS.includes(tags[j]) ||
+        pos === 'v' && VERBS.includes(tags[j]) ||
+        pos === 'r' && ADVS.includes(tags[j]) ||
+        pos === 'a' && ADJS.includes.isAdjTag(tags[j])) {
+        return true;
       }
     }
-    //}
   }
 }
 

@@ -119,16 +119,12 @@ class Lexicon {
     for (let k = 0; k < words.length; k++) {
       let j = (ran + k) % words.length;
 
-      if (words[j].length > maxLen || words[j].length < minLen) {
-        continue;
-      }
+      if (words[j].length > maxLen || words[j].length < minLen) continue;
 
       let word = words[j], rdata = dict[word];
 
       // match the syls if supplied
-      if (numSyls && numSyls !== rdata[0].split(' ').length) {
-        continue;
-      }
+      if (numSyls && numSyls !== rdata[0].split(' ').length) continue;
 
       // match the pos if supplied (may need to inflect)
       if (targetPos) {
@@ -145,6 +141,7 @@ class Lexicon {
           if (isMassNoun(words[j], rdata[1])) continue;
           result = RiTa.pluralize(words[j]);
         }
+
         /*
         VBD 	Verb, past tense
         VBG 	Verb, gerund or present participle
@@ -180,18 +177,14 @@ class Lexicon {
             default: throw Error('Unexpected pos: ' + targetPos);
           }
         }
-        if (numSyls) { // Need to make sure we dont change syllable count
 
+        if (numSyls) { // Need to make sure we dont change syllable count
           let tmp = RiTa.SILENCE_LTS;
           RiTa.SILENCE_LTS = true;
           let count = RiTa.syllables(result).split(RiTa.SYLLABLE_BOUNDARY).length;
           RiTa.SILENCE_LTS = tmp;
-          if (count !== numSyls) {
-            //console.log('skip: ' + verb);
-            continue;
-          }
+          if (count !== numSyls) continue;
         }
-
         return result;
       }
       else {

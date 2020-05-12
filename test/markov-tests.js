@@ -529,7 +529,7 @@ describe('RiTa.Markov', () => {
   function markovEquals(rm, copy) {
     Object.keys(rm) // check each non-object key
       .filter(k => !/(root|input|inverse)/.test(k))
-      .forEach(k => expect(rm[k]).eq(copy[k]));
+      .forEach(k => expect(rm[k], 'failed on '+k).eq(copy[k]));
     expect(rm.toString()).eq(copy.toString());
     expect(rm.root.toString()).eq(copy.root.toString());
     expect(rm.input).eql(copy.input);

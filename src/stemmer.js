@@ -1,8 +1,5 @@
 const { MODALS } = require("./util");
 
-/* Words that are both singular and plural (now taken from Util)*/
-//['acoustics', 'aesthetics', 'aquatics', 'basics', 'ceramics', 'classics', 'cosmetics', 'dialectics', 'deer', 'dynamics', 'ethics', 'harmonics', 'heroics', 'mechanics', 'metrics', 'optics', 'people', 'physics', 'polemics', 'pyrotechnics', 'quadratics', 'quarters', 'salespeople', 'statistics', 'tactics', 'tropics'];
-
 /* Words that end in '-se' in their plural forms (like 'nurse' etc.) */
 const categorySE_SES = ['abuses', 'apocalypses', 'blouses', 'bruises', 'chaises', 'cheeses', 'chemises', 'clauses', 'corpses', 'courses', 'crazes', 'creases', 'cruises', 'curses', 'databases', 'dazes', 'dives', 'defenses', 'demises', 'discourses', 'diseases', 'doses', 'eclipses', 'enterprises', 'expenses', 'friezes', 'fuses', 'glimpses', 'guises', 'hearses', 'horses', 'houses', 'impasses', 'impulses', 'kamikazes', 'mazes', 'mousses', 'noises', 'nooses', 'noses', 'nurses', 'obverses', 'offenses', 'oozes', 'overdoses', 'phrases', 'posses', 'premises', 'pretenses', 'proteases', 'pulses', 'purposes', 'purses', 'racehorses', 'recluses', 'recourses', 'relapses', 'responses', 'roses', 'ruses', 'spouses', 'stripteases', 'subleases', 'sunrises', 'tortoises', 'trapezes', 'treatises', 'toes', 'universes', 'uses', 'vases', 'verses', 'vises', 'wheelbases', 'wheezes'];
 
@@ -50,6 +47,8 @@ const categoryIE_IES = ['aeries', 'anomies', 'aunties', 'baddies', 'beanies', 'b
 
 /* Maps irregular Germanic English plural nouns to their singular form */
 const categoryIRR = ['blondes', 'blonde', 'teeth', 'tooth', 'beefs', 'beef', 'brethren', 'brother', 'busses', 'bus', 'cattle', 'cow', 'children', 'child', 'corpora', 'corpus', 'femora', 'femur', 'genera', 'genus', 'genies', 'genie', 'genii', 'genie', 'lice', 'louse', 'mice', 'mouse', 'mongooses', 'mongoose', 'monies', 'money', 'octopodes', 'octopus', 'oxen', 'ox', 'people', 'person', 'schemata', 'schema', 'soliloquies', 'soliloquy', 'taxis', 'taxi', 'throes', 'throes', 'trilbys', 'trilby', 'innings', 'inning', 'alibis', 'alibi', 'skis', 'ski', 'safaris', 'safari', 'rabbis', 'rabbi'];
+
+const pluralCATS = [categoryUM_A, categoryON_A, categoryO_I, categoryUS_I, categoryIX_ICES];
 
 class PlingStemmer {
 
@@ -221,17 +220,9 @@ class PlingStemmer {
     return (s);
   }
 
-  checkPluralWithoutLexicon(s) {
-    let cats = [
-      categoryUM_A,
-      categoryON_A,
-      categoryO_I,
-      categoryUS_I,
-      categoryIX_ICES
-    ];
-    for (let i = 0; i < cats.length; i++) {
-      if (cats[i].indexOf(s) > -1)
-        return true;
+  isRawPlural(s) {
+    for (let i = 0; i < pluralCATS.length; i++) {
+      if (pluralCATS[i].includes(s)) return true;
     }
     let idx = categoryIRR.indexOf(s); // plurals at even indices
     return (idx % 2 === 0) ? true : false;

@@ -19,18 +19,17 @@ class Markov {
 
   constructor(n, opts) {
     this.n = n;
+    this.trace = opts && opts.trace;
     this.root = new Node(null, 'ROOT');
 
-    // options
-    this.trace = opts && opts.trace;
+    // options (TODO: clarify/document options)
     this.mlm = opts && opts.maxLengthMatch;
     this.logDuplicates = opts && opts.logDuplicates;
     this.optimiseMemory = opts && opts.optimiseMemory;
     this.maxAttempts = opts && opts.maxAttempts || 99;
     this.discardInputs = opts && opts.disableInputChecks;
 
-    if (this.mlm && this.mlm <= this.n) throw Error
-      ('maxLengthMatch argument must be > N')
+    if (this.mlm && this.mlm <= this.n) throw Error('maxLengthMatch(mlm) must be > N')
 
     // we store inputs to verify we don't duplicate sentences
     if (!this.discardInputs || this.mlm) this.input = [];
@@ -44,7 +43,7 @@ class Markov {
   static fromJSON(json) {
     // parse the json and merge with new object
     let rm = Object.assign(new Markov(), parse(json));
-    
+
     // handle json converting undefined [] to empty []
     if (!json.input) rm.input = undefined;
 
@@ -55,8 +54,7 @@ class Markov {
   }
 
   addText(text) {
-    if (Array.isArray(text)) throw Error
-      ('addText() was expecting a text string');
+    if (Array.isArray(text)) throw Error('addText() expects a string');
     return this.addSentences(RiTa().sentences(text));
   }
 
@@ -115,7 +113,7 @@ class Markov {
           if (tokens.length >= minLength) {
             let rawtoks = tokens.map(t => t.token);
 
-            // TODO: do we need this if checking mlm with each word?
+            // TODO: do we need this if checking mlm with each word? yes
             if (isSubArray(rawtoks, this.input) && fail('in input')) break;
 
             let sent = this._flatten(tokens);
@@ -134,59 +132,47 @@ class Markov {
 
   /* returns array of possible tokens after pre and (optionally) before post */
   completions(pre, post) {
-
     let tn, result = [];
     if (post) { // fill the center
-
       if (pre.length + post.length > this.n) throw Error
         ('Sum of pre.length && post.length must be <= N, was ' + (pre.length + post.length));
-
       if (!(tn = this._pathTo(pre))) {
         if (!RiTa().SILENT) console.warn('Unable to find nodes in pre: ' + pre);
         return;
       }
-
-      let nexts = tn.childNodes();
+      const nexts = tn.childNodes();
       for (let i = 0; i < nexts.length; i++) {
-
         let atest = pre.slice(0);
         atest.push(nexts[i].token, ...post);
         if (this._pathTo(atest)) result.push(nexts[i].token);
       }
-
-      return result;
-
     } else { // fill the end
-
-      let pr = this.probabilities(pre);
-      return Object.keys(pr).sort((a, b) => pr[b] - pr[a]);
+      const pr = this.probabilities(pre);
+      result = Object.keys(pr).sort((a, b) => pr[b] - pr[a]);
     }
+    return result;
   }
 
   /* return an object mapping {string -> prob} */
   probabilities(path, temp) {
     if (!Array.isArray(path)) path = RiTa().tokenize(path);
-    const rand = Markov.parent.randomizer;
     const probs = {};
     const parent = this._pathTo(path);
-    if (!parent) return probs;
-    const children = parent.childNodes();
-    const weights = children.map(n => n.count);
-    const pdist = rand.ndist(weights, temp);
-    for (let i = 0; i < children.length; i++) {
-      let token = children[i].token;
-      probs[token] = pdist[i];
+    if (parent) {
+      const children = parent.childNodes();
+      const weights = children.map(n => n.count);
+      const pdist = Markov.parent.randomizer.ndist(weights, temp);
+      children.forEach((c, i) => probs[c.token] = pdist[i]);
     }
     return probs;
   }
 
   probability(data) {
     let p = 0;
-    let excludeMetaTags = true;
     if (data && data.length) {
       let tn = (typeof data === 'string') ?
         this.root.child(data) : this._pathTo(data);
-      if (tn) p = tn.nodeProb(excludeMetaTags);
+      if (tn) p = tn.nodeProb(true); // no meta
     }
     return p;
   }
@@ -221,7 +207,7 @@ class Markov {
     const pdist = rand.ndist(weights, temp);
     const tries = children.length * 2;
     const selector = rand.random();
-    
+
     // loop 2x here as selector may skip earlier nodes
     for (let i = 0, pTotal = 0; i < tries; i++) {
       let idx = i % children.length;
@@ -234,36 +220,11 @@ class Markov {
     return undefined;
   }
 
-/*   _selectNextOrig(parent, temp, tokens) {
-
-    let pTotal = 0, selector = Markov.parent.randomizer.random();
-    let nodemap = this._computeProbs(parent, temp);
-    let nodes = Object.keys(nodemap);
-    let tries = nodes.length * 2;
-
-    // loop twice here in case we skip earlier nodes based on probability
-    for (let i = 0; i < tries; i++) {
-      let idx = i % nodes.length;
-      let next = nodes[idx];
-      pTotal += nodemap[next];
-      if (selector < pTotal) { // should always be true 2nd time through
-        // console.log(next.token +' -> ' +nodemap[next] + ' temp='+ temp);
-        if (this.mlm && this.mlm <= tokens.length
-          && !this._validateMlms(next, tokens)) {
-          //console.log('FAIL(i='+i+'/'+(nodes.length)+' mlm=' + this.mlm
-          //  + '): ' + this._flatten(tokens) + ' -> ' + next.token);
-          continue;
-        }
-        return parent.children[next];
-      }
-    }
-  } */
-
   _initSentence(initWith, root) {
 
     root = root || this.root;
 
-    let tokens;
+    let tokens = [root.child(Markov.SS).pselect()];
     if (initWith) {
       tokens = [];
       let st = this._pathTo(initWith, root);
@@ -273,70 +234,8 @@ class Markov {
         st = st.parent;
       }
     }
-    else { // no start-tokens
-      tokens = [root.child(Markov.SS).pselect()];
-    }
     return tokens;
   }
-
-  _initTokens(startTokens, root) {
-
-    root = root || this.root;
-
-    let tokens;
-    if (startTokens) {
-
-      // a single regexp to match
-      if (startTokens instanceof RegExp) {
-        let matched = Object.values(root.children).filter(c => startTokens.test(c.token));
-        //console.log(this._flatten(matched).split(' '));
-        if (!matched.length) throw Error('Unable to match Regex:', startTokens);
-        let selector = new Node(null, 'SELECT');
-        matched.forEach(m => selector.addChild(m.token, m.count));
-        tokens = [selector.pselect()];
-      }
-      // a path of tokens to match
-      else {
-        tokens = [];
-        let st = this._pathTo(startTokens, root);
-        if (!st) return false; // fail
-        while (!st.isRoot()) {
-          tokens.unshift(st);
-          st = st.parent;
-        }
-      }
-    }
-    // no start-tokens supplied
-    else {
-      tokens = [this.root.pselect()];
-    }
-    return tokens;
-  }
-
-  /*   _computeProbs(parent, temp) {
-      temp = temp || 0;
-      let probs = {};
-      let nexts = parent.childNodes();
-      for (let i = 0; nexts && i < nexts.length; i++) {
-        probs[next[i].token] = next[i].count;
-      }
-      return probs;
-    } */
-/* 
-  _computeProbs(parent, temp) {
-    temp = temp || 0;
-    let tprobs, probs = {};
-    if (parent) {
-      let nexts = parent.childNodes(temp > 0);
-      if (temp > 0) tprobs = nexts.map(n => n.nodeProb()).slice().reverse();
-      for (let i = 0; nexts && i < nexts.length; i++) {
-        let rawProb = nexts[i].nodeProb();
-        let prob = tprobs ? lerp(rawProb, tprobs[i], temp) : rawProb;
-        if (nexts[i]) probs[nexts[i].token] = prob;
-      }
-    }
-    return probs;
-  } */
 
   /*
    * Follows 'path' (using only the last n-1 tokens) from root and returns
@@ -346,18 +245,13 @@ class Markov {
    * @return {Node} or undefined
    */
   _pathTo(path, root) {
-
     root = root || this.root;
-
     if (!path || !path.length || this.n < 2) return root;
-
     let idx = Math.max(0, path.length - (this.n - 1));
     let node = root.child(path[idx++]);
-
     for (let i = idx; i < path.length; i++) {
       if (node) node = node.child(path[i]);
     }
-
     return node; // can be undefined
   }
 
@@ -414,20 +308,20 @@ class Node {
     return children[rand.pselect(pdist)];
   }
 
- /*  pselectOld() {
-    let sum = 1, pTotal = 0;
-    let nodes = this.childNodes();
-    let selector = Markov.parent.randomizer.random() * sum;
-
-    if (!nodes || !nodes.length) throw Error
-      ("Invalid arg to pselect(no children) " + this);
-
-    for (let i = 0; i < nodes.length; i++) {
-
-      pTotal += nodes[i].nodeProb();
-      if (selector < pTotal) return nodes[i];
-    }
-  } */
+  /*  pselectOld() {
+     let sum = 1, pTotal = 0;
+     let nodes = this.childNodes();
+     let selector = Markov.parent.randomizer.random() * sum;
+ 
+     if (!nodes || !nodes.length) throw Error
+       ("Invalid arg to pselect(no children) " + this);
+ 
+     for (let i = 0; i < nodes.length; i++) {
+ 
+       pTotal += nodes[i].nodeProb();
+       if (selector < pTotal) return nodes[i];
+     }
+   } */
 
   isLeaf() {
     return this.childCount() < 1;
