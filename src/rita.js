@@ -1,6 +1,5 @@
 const Util = require("./util");
 const Markov = require('./markov');
-const RandGen = require('./random');
 const Grammar = require('./grammar');
 const Stemmer = require('./stemmer');
 const Lexicon = require('./lexicon');
@@ -11,6 +10,7 @@ const Analyzer = require('./analyzer');
 const Concorder = require('./concorder');
 const Conjugator = require('./conjugator');
 const Inflector = require('./inflector');
+const SeededRandom = require('./random');
 
 const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
 
@@ -119,12 +119,12 @@ class RiTa {
     return RiTa._analyzer().analyze(text).phonemes;
   }
 
-  // partOfSpeech()
+  // partOfSpeech() ?
   static posTags(words, { simple = false, inline = false } = {}) {
     return RiTa.tagger.tag(words, simple, inline, true);
   }
 
-  // partOfSpeechInline()
+  // partOfSpeechInline() ?
   static posTagsInline(words, { simple = false } = {}) { // java only?
     return RiTa.tagger.tag(words, simple, true, true);
   }
@@ -138,19 +138,19 @@ class RiTa {
   }
 
   static random() {
-    return RandGen.random(...arguments);
+    return RiTa.randomizer.random(...arguments);
   }
 
   static randInt() {
-    return Math.floor(RandGen.random(...arguments));
+    return Math.floor(RiTa.randomizer.random(...arguments));
   }
 
   static randomOrdering(num) {
-    return RandGen.randomOrdering(num);
+    return RiTa.randomizer.randomOrdering(num);
   }
 
   static randomSeed(theSeed) {
-    return RandGen.seed(theSeed);
+    return RiTa.randomizer.seed(theSeed);
   }
 
   static randomWord() {
@@ -158,7 +158,7 @@ class RiTa {
   }
 
   static randomItem() {
-    return RandGen.randomItem(...arguments);
+    return RiTa.randomizer.randomItem(...arguments);
   }
 
   static rhymes() {
@@ -213,10 +213,12 @@ class RiTa {
 
   static _lexicon() { // lazy load
     if (typeof RiTa.lexicon === 'undefined') {
-      if (typeof NOLTS !== 'undefined') { // used by webpack, don't shorten
+      const LetterToSound = require('./rita_lts');
+      RiTa.lts = new LetterToSound(RiTa);
+      /*if (typeof NOLTS !== 'undefined') { // used by webpack, don't shorten
         const LetterToSound = require('./rita_lts');
         RiTa.lts = new LetterToSound(RiTa);
-      }
+      }*/
       if (typeof NOLEX !== 'undefined') { // used by webpack, don't shorten
         RiTa.lexicon = new Lexicon(RiTa);
       }
@@ -249,6 +251,7 @@ RiTa.concorder = new Concorder(RiTa);
 RiTa.tokenizer = new Tokenizer(RiTa);
 RiTa.inflector = new Inflector(RiTa);
 RiTa.conjugator = new Conjugator(RiTa);
+RiTa.randomizer = new SeededRandom(RiTa);
 
 // LAZY-LOADS
 RiTa.analyzer = undefined;
@@ -288,9 +291,6 @@ RiTa.GERUND = 2;
 RiTa.IMPERATIVE = 3;
 RiTa.BARE_INFINITIVE = 4;
 RiTa.SUBJUNCTIVE = 5;
-
-// Warn on words not found in lexicon
-RiTa.LEX_WARN = false;
 
 // For tokenization, Can't -> Can not, etc.
 RiTa.SPLIT_CONTRACTIONS = false;

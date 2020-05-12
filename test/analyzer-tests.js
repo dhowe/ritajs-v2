@@ -80,6 +80,7 @@ describe('RiTa.Analyzer', () => {
 
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
+    
     eq(RiTa.phonemes("mice"), "m-ay-s");
 
     let result, answer;

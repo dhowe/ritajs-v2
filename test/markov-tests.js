@@ -6,6 +6,7 @@ describe('RiTa.Markov', () => {
   }
 
   const Markov = RiTa.Markov;
+  const Random = RiTa.randomizer;
 
   let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
 
@@ -20,6 +21,68 @@ describe('RiTa.Markov', () => {
 
   it('should correctly call createMarkov', () => {
     ok(typeof RiTa.createMarkov(3) !== 'undefined');
+  });
+
+  it('should correctly call Random.pSelect', () => {
+    let weights = [1.0, 2, 6, -2.5, 0];
+    let expected = [2, 2, 1.75, 1.55];
+    let temps = [.5, 1, 2, 10];
+    let distrs = [], results = [];
+    temps.forEach(t => distrs.push(Random.ndist(weights, t)));
+    let i, numTests = 100;
+    distrs.forEach(sm => {
+      let sum = 0;
+      for (let j = 0; j < numTests; j++) {
+        sum += Random.pselect(sm);
+      }
+      results.push(sum / numTests);
+    });
+    expect(results[i = 0], 'failed #' + i + ' temp=' + temps[i]).to.be.closeTo(expected[i], .1);
+    expect(results[i = 1], 'failed #' + i + ' temp=' + temps[i]).to.be.closeTo(expected[i], .2);
+    expect(results[i = 2], 'failed #' + i + ' temp=' + temps[i]).to.be.closeTo(expected[i], .4);
+    expect(results[i = 3], 'failed #' + i + ' temp=' + temps[i]).to.be.closeTo(expected[i], 1);
+    //expect(results[i = 4], 'failed #' + i + ' temp=' + temps[i]).to.be.closeTo(expected[i], .75);
+  });
+
+  it('should correctly call Random.ndist', () => {
+    expect(() => Random.ndist([1.0, 2, 6, -2.5, 0])).to.throw;
+
+    let weights, expected, results;
+    weights = [2, 1];
+    expected = [.666, .333];
+    results = Random.ndist(weights);
+    for (let i = 0; i < results.length; i++) {
+      expect(results[i]).to.be.closeTo(expected[i], 0.01);
+    }
+    weights = [7, 1, 2];
+    expected = [.7, .1, .2];
+    results = Random.ndist(weights);
+    for (let i = 0; i < results.length; i++) {
+      expect(results[i]).to.be.closeTo(expected[i], 0.01);
+    }
+  });
+
+  it('should correctly call Random.ndist.temp', () => {
+    let weights, expected, results;
+    weights = [1.0, 2, 6, -2.5, 0];
+    expected = [
+      [0, 0, 1, 0, 0],
+      [0.0066, 0.018, 0.97, 0.0002, 0.0024],
+      [0.064, 0.11, 0.78, 0.011, 0.039],
+      [0.19, 0.21, 0.31, 0.13, 0.17],
+    ]
+    results = [
+      Random.ndist(weights, 0.5),
+      Random.ndist(weights, 1),
+      Random.ndist(weights, 2),
+      Random.ndist(weights, 10)
+    ];
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i];
+      for (let j = 0; j < result.length; j++) {
+        expect(result[j]).to.be.closeTo(expected[i][j], 0.01);
+      }
+    }
   });
 
   // it('should correctly load a large model', async () => {
@@ -182,13 +245,12 @@ describe('RiTa.Markov', () => {
       ok(typeof res === 'string');
       ok(res.startsWith(start.join(' ')));
     }
-
   });
 
 
   it('should correctly call generate.mlm', () => {
 
-    let mlms = 10, rm = new Markov(3, { maxLengthMatch: mlms });
+    let mlms = 10, rm = new Markov(3, { maxLengthMatch: mlms, trace: 0 });
     rm.addSentences(RiTa.sentences(sample3));
     let sents = rm.generate({ count: 5 });
     for (let i = 0; i < sents.length; i++) {
@@ -207,8 +269,7 @@ describe('RiTa.Markov', () => {
       for (let j = 0; j <= toks.length - (mlms + 1); j++) {
         let part = toks.slice(j, j + (mlms + 1));
         let res = RiTa.untokenize(part);
-        ok(sample3.indexOf(res) < 0, 'Output: "' + sent
-          + '"\nBut "' + res + '" was found in input:\n' + sample + '\n\n' + rm.input);
+        ok(sample3.indexOf(res) < 0, 'Got "' + sent + '"\n\nBut "' + res + '" was found in input:\n\n' + sample + '\n\n' + rm.input);
       }
     }
     // TODO: add more

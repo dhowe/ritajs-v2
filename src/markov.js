@@ -2,24 +2,18 @@ const { parse, stringify } = require('flatted/cjs');
 
 // TODO: async methods
 
-/* 'temperature' arg
-  2 methods (n = number of elements):
-    P[k] = lerp(P[k], [Pn-k], temperature);
-    P[k] = P[int(k+t*n)%n], then interpolate between 2 steps
-*/
-
-/*
-API:
-  toJson
-  Markov.fromJson
-  addText()
-  addSentences()
-  generate()
-  completions()
-  probability()
-  probabilities()
-  toString()
-  size()
+/**
+  API:
+    toJson
+    Markov.fromJson
+    addText()
+    addSentences()
+    generate()
+    completions()
+    probability()
+    probabilities()
+    toString()
+    size()
  */
 class Markov {
 
@@ -50,10 +44,12 @@ class Markov {
   static fromJSON(json) {
     // parse the json and merge with new object
     let rm = Object.assign(new Markov(), parse(json));
+    
     // handle json converting undefined [] to empty []
     if (!json.input) rm.input = undefined;
-    let jsonRoot = rm.root;
+
     // then recreate the n-gram tree with Node objects
+    let jsonRoot = rm.root;
     populate(rm.root = new Node(null, 'ROOT'), jsonRoot);
     return rm;
   }
@@ -106,7 +102,7 @@ class Markov {
 
       while (tokens && tokens.length < maxLength) {
 
-        let parent = this._findNode(tokens);
+        let parent = this._pathTo(tokens);
         if ((!parent || parent.isLeaf()) && fail('no parent')) break;
 
         let next = this._selectNext(parent, temperature, tokens);
@@ -118,7 +114,10 @@ class Markov {
           tokens.pop();
           if (tokens.length >= minLength) {
             let rawtoks = tokens.map(t => t.token);
+
+            // TODO: do we need this if checking mlm with each word?
             if (isSubArray(rawtoks, this.input) && fail('in input')) break;
+
             let sent = this._flatten(tokens);
             if (!allowDuplicates && result.includes(sent) && fail('is dup')) break;
             this.trace && console.log('-- GOOD', sent.replace(/ +/g, ' '));
@@ -142,7 +141,7 @@ class Markov {
       if (pre.length + post.length > this.n) throw Error
         ('Sum of pre.length && post.length must be <= N, was ' + (pre.length + post.length));
 
-      if (!(tn = this._findNode(pre))) {
+      if (!(tn = this._pathTo(pre))) {
         if (!RiTa().SILENT) console.warn('Unable to find nodes in pre: ' + pre);
         return;
       }
@@ -152,7 +151,7 @@ class Markov {
 
         let atest = pre.slice(0);
         atest.push(nexts[i].token, ...post);
-        if (this._findNode(atest)) result.push(nexts[i].token);
+        if (this._pathTo(atest)) result.push(nexts[i].token);
       }
 
       return result;
@@ -167,7 +166,18 @@ class Markov {
   /* return an object mapping {string -> prob} */
   probabilities(path, temp) {
     if (!Array.isArray(path)) path = RiTa().tokenize(path);
-    return this._computeProbs(this._findNode(path), temp);
+    const rand = Markov.parent.randomizer;
+    const probs = {};
+    const parent = this._pathTo(path);
+    if (!parent) return probs;
+    const children = parent.childNodes();
+    const weights = children.map(n => n.count);
+    const pdist = rand.ndist(weights, temp);
+    for (let i = 0; i < children.length; i++) {
+      let token = children[i].token;
+      probs[token] = pdist[i];
+    }
+    return probs;
   }
 
   probability(data) {
@@ -175,7 +185,7 @@ class Markov {
     let excludeMetaTags = true;
     if (data && data.length) {
       let tn = (typeof data === 'string') ?
-        this.root.child(data) : this._findNode(data);
+        this.root.child(data) : this._pathTo(data);
       if (tn) p = tn.nodeProb(excludeMetaTags);
     }
     return p;
@@ -194,7 +204,39 @@ class Markov {
 
   _selectNext(parent, temp, tokens) {
 
-    let pTotal = 0, selector = Math.random();
+    // basic case: just prob. select from children
+    if (!this.mlm || this.mlm > tokens.length) {
+      return parent.pselect();
+    }
+
+    const validateMlms = (word, nodes) => {
+      let check = nodes.slice().map(n => n.token);
+      check.push(word.token); // string
+      return !isSubArray(check.slice(-(this.mlm + 1)), this.input);
+    }
+
+    const rand = Markov.parent.randomizer;
+    const children = parent.childNodes();
+    const weights = children.map(n => n.count);
+    const pdist = rand.ndist(weights, temp);
+    const tries = children.length * 2;
+    const selector = rand.random();
+    
+    // loop 2x here as selector may skip earlier nodes
+    for (let i = 0, pTotal = 0; i < tries; i++) {
+      let idx = i % children.length;
+      pTotal += pdist[idx];
+      let next = children[idx];
+      if (selector < pTotal && validateMlms(next, tokens)) {
+        return next;
+      }
+    }
+    return undefined;
+  }
+
+/*   _selectNextOrig(parent, temp, tokens) {
+
+    let pTotal = 0, selector = Markov.parent.randomizer.random();
     let nodemap = this._computeProbs(parent, temp);
     let nodes = Object.keys(nodemap);
     let tries = nodes.length * 2;
@@ -215,7 +257,7 @@ class Markov {
         return parent.children[next];
       }
     }
-  }
+  } */
 
   _initSentence(initWith, root) {
 
@@ -224,7 +266,7 @@ class Markov {
     let tokens;
     if (initWith) {
       tokens = [];
-      let st = this._findNode(initWith, root);
+      let st = this._pathTo(initWith, root);
       if (!st) return false; // fail
       while (!st.isRoot()) {
         tokens.unshift(st);
@@ -256,7 +298,7 @@ class Markov {
       // a path of tokens to match
       else {
         tokens = [];
-        let st = this._findNode(startTokens, root);
+        let st = this._pathTo(startTokens, root);
         if (!st) return false; // fail
         while (!st.isRoot()) {
           tokens.unshift(st);
@@ -271,8 +313,18 @@ class Markov {
     return tokens;
   }
 
+  /*   _computeProbs(parent, temp) {
+      temp = temp || 0;
+      let probs = {};
+      let nexts = parent.childNodes();
+      for (let i = 0; nexts && i < nexts.length; i++) {
+        probs[next[i].token] = next[i].count;
+      }
+      return probs;
+    } */
+/* 
   _computeProbs(parent, temp) {
-    temp = temp || 0
+    temp = temp || 0;
     let tprobs, probs = {};
     if (parent) {
       let nexts = parent.childNodes(temp > 0);
@@ -284,16 +336,7 @@ class Markov {
       }
     }
     return probs;
-  }
-
-  _validateMlms(word, nodes) {
-    let check = nodes.slice().map(n => n.token);
-    //check.push(typeof word.token === 'string' ? word.token : word);
-    check.push(word); // string
-    check = check.slice(-(this.mlm + 1));
-    //console.log('\nCHECK: '+RiTa().untokenize(check));
-    return !isSubArray(check, this.input);// ? false : check;
-  }
+  } */
 
   /*
    * Follows 'path' (using only the last n-1 tokens) from root and returns
@@ -302,7 +345,7 @@ class Markov {
    * @param  {node} root of tree to search
    * @return {Node} or undefined
    */
-  _findNode(path, root) {
+  _pathTo(path, root) {
 
     root = root || this.root;
 
@@ -334,11 +377,7 @@ class Markov {
   _flatten(nodes) {
     if (!nodes || !nodes.length) return '';
     if (nodes.token) return nodes.token; // single-node
-    return RiTa().untokenize(this._nodesToTokens(nodes));
-  }
-
-  _nodesToTokens(nodes) {
-    return nodes.map(n => n.token);
+    return RiTa().untokenize(nodes.map(n => n.token));
   }
 
   _logError(tries, toks, msg) {
@@ -368,9 +407,17 @@ class Node {
   }
 
   pselect() {
+    const rand = Markov.parent.randomizer;
+    const children = this.childNodes();
+    const weights = children.map(n => n.count);
+    const pdist = rand.ndist(weights);
+    return children[rand.pselect(pdist)];
+  }
+
+ /*  pselectOld() {
     let sum = 1, pTotal = 0;
     let nodes = this.childNodes();
-    let selector = Math.random() * sum;
+    let selector = Markov.parent.randomizer.random() * sum;
 
     if (!nodes || !nodes.length) throw Error
       ("Invalid arg to pselect(no children) " + this);
@@ -380,7 +427,7 @@ class Node {
       pTotal += nodes[i].nodeProb();
       if (selector < pTotal) return nodes[i];
     }
-  }
+  } */
 
   isLeaf() {
     return this.childCount() < 1;
@@ -413,9 +460,7 @@ class Node {
     return this.count / this.parent.childCount(excludeMetaTags);
   }
 
-  /*
-   * Increments count for a child node and returns it
-   */
+  // Increments count for a child node and returns it
   addChild(word, count) {
 
     this.numChildren === -1; // invalidate cache

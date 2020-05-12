@@ -8,7 +8,7 @@ class Concorder {
     this.wordsToIgnore = [];
     this.ignoreCase = false;
     this.ignoreStopWords = false;
-    this.ignorePunctuation = false;
+    this.ignorePunctuation = false; 
   }
 
   concordance(text, options) {
@@ -57,9 +57,7 @@ class Concorder {
   }
 
   _build() {
-
     if (!this.words) throw Error('No text in model');
-
     this.model = {};
     for (let j = 0; j < this.words.length; j++) {
       let word = this.words[j];
@@ -69,7 +67,6 @@ class Concorder {
       // where the string 'watch' comes back from _lookup as a function
       // TODO: resolve in a better way
       if (!_lookup || typeof _lookup !== 'object') {
-
         _lookup = { word: word, key: this._compareKey(word), indexes: [] };
         this.model[_lookup.key] = _lookup;
       }

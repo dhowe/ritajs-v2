@@ -47,6 +47,46 @@ class SeededRandom {
     return y >>> 0;
   }
 
+  /**
+    Returns a single (selected) index from a normalised
+    probability distribution (with probabilities summing to 1)
+  */
+  pselect(probs) {  // probs must sum to 1
+    let point = this.randomFloat(), cutoff = 0;
+    for (let i = 0; i < probs.length - 1; ++i) {
+      cutoff += probs[i];
+      if (point < cutoff) return i;
+    }
+    return probs.length - 1;
+  }
+
+  /**
+    Returns a normalised probability distribution (summing to 1) for arbitrary postive weights
+    If temperature is provideded this is basically the softmax.
+    Temperature parameter: range is between 0 and +Infinity (excluding both).
+    Lower values move the highest-weighted output toward a probability of 1.0.
+    Higher values tend to even out all the probabilities
+  */
+  ndist(weights, temp) {
+    let probs = [], sum = 0;
+    if (!temp) { // no temp here
+      for (let i = 0; i < weights.length; i++) {
+        if (weights[i] < 0) throw Error('Weights must be positive');
+        sum += weights[i];
+        probs.push(weights[i]);
+      }
+    }
+    else { // have temp, do softmax
+      if (temp < 0.01) temp = 0.01;
+      for (let i = 0; i < weights.length; i++) {
+        let pr = Math.exp(weights[i] / temp);
+        sum += pr;
+        probs.push(pr);
+      }
+    }
+    return probs.map(p => p /= sum);
+  }
+
   randomFloat() {
     return this.randInt() * (1.0 / 4294967296.0);
   }
@@ -61,7 +101,7 @@ class SeededRandom {
   }
 
   randomItem(arr, func) {
-    let item = arr[Math.floor(this.random()*arr.length)];
+    let item = arr[Math.floor(this.random() * arr.length)];
     return typeof func === 'function' ? func(item) : item;
   }
 
@@ -77,4 +117,4 @@ class SeededRandom {
 }
 
 
-module && (module.exports = new SeededRandom());
+module && (module.exports = SeededRandom);

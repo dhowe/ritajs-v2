@@ -26,7 +26,7 @@ class Analyzer {
       let phones = this.lexicon._rawPhones(word, { noLts: true });
 
       // if its a simple plural ending in 's',
-      // and the singular is the lexicon, add '-z' to end
+      // and the singular is in the lexicon, add '-z' to end
       if (!phones && word.endsWith('s')) {
         let sing = RiTa.singularize(word);
         phones = this.lexicon._rawPhones(sing, { noLts: true });
