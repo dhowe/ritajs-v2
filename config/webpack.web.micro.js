@@ -21,7 +21,8 @@ module.exports =
   },
   entry: { 'rita': './src/rita.js' },
   plugins: [new (require('webpack').DefinePlugin)({
-    NOLEX: JSON.stringify(true),
-    NOLTS: JSON.stringify(true)
+    __NOLEX__: JSON.stringify(true),
+    __NOLTS__: JSON.stringify(true),
+    __VERSION__: JSON.stringify(require("../package.json").version)
   })]
 };

@@ -1,6 +1,6 @@
 {
-  "name": "rita-script",
-  "version": "1.0.0",
+  "name": "rita",
+  "version": "2.0.01",
   "description": "",
   "private": true,
   "scripts": {
@@ -10,10 +10,10 @@
     "test": "mocha",
     "test.g": "mocha ./test/*.js -g ",
     "test.grammar": "mocha ./test/riscript-tests.js",
-    "test.quick": "mocha './tests/**/!(lexicon-tests).js'",
+    "test.quick": "mocha './test/**/!(lexicon-tests).js'",
     "test.dist": "yarn build && NODE_ENV=dist mocha ./test/*.js",
     "test.prod": "yarn build.prod && NODE_ENV=dist mocha ./test/*.js",
-    "test.watch": "mocha --watch 'src/*.js' './tests/**/!(lexicon-tests).js'",
+    "test.watch": "mocha --watch 'src/*.js' './test/**/!(lexicon-tests).js'",
     "watch.grammar": "npm-watch",
     "compile": "yarn antlr4.js",
     "antlr4.js": "java -Xmx500M -cp '/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH' org.antlr.v4.Tool -Dlanguage=JavaScript -lib grammar -o grammar/.antlr -visitor -Xexact-output-dir grammar/RiScript.g4",

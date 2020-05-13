@@ -215,11 +215,11 @@ class RiTa {
     if (typeof RiTa.lexicon === 'undefined') {
       const LetterToSound = require('./rita_lts');
       RiTa.lts = new LetterToSound(RiTa);
-      /*if (typeof NOLTS !== 'undefined') { // used by webpack, don't shorten
+      /*if (typeof __NOLTS__ !== 'undefined') { // used by webpack, don't shorten
         const LetterToSound = require('./rita_lts');
         RiTa.lts = new LetterToSound(RiTa);
       }*/
-      if (typeof NOLEX !== 'undefined') { // used by webpack, don't shorten
+      if (typeof __NOLEX__ !== 'undefined') { // used by webpack, don't shorten
         RiTa.lexicon = new Lexicon(RiTa);
       }
       else {
@@ -265,7 +265,7 @@ RiTa.SILENCE_LTS = false;
 RiTa.DOWNLOAD_URL = 'https://rednoise.org/rita/downloads';
 
 // CONSTANTS
-RiTa.VERSION = 2;
+RiTa.VERSION = typeof __VERSION__ !== 'undefined' ? __VERSION__ : 'DEV';
 RiTa.NODE = 'node';
 RiTa.BROWSER = 'browser';
 RiTa.FIRST_PERSON = 1;

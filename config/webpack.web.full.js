@@ -18,7 +18,10 @@ module.exports =
   node: {
     fs: "empty"
   },
-  entry: './src/rita.js'
+  entry: './src/rita.js',
+  plugins: [new (require('webpack').DefinePlugin)({
+    __VERSION__: JSON.stringify(require("../package.json").version)
+  })]
   // optimization: {
   //   splitChunks: {
   //     cacheGroups: {
