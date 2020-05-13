@@ -1,6 +1,6 @@
 
 
-# RiTa v2
+# RiTa v2 in javascript
 
 ## Building
 
