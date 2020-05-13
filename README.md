@@ -3,9 +3,8 @@
 # RiTa v2 (javascript)
 
 ## Developing
-
+To build the library and run tests:
 ```
-To build, do:
 $ yarn install 
 $ yarn compile
 $ yarn test
