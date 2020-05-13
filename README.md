@@ -2,8 +2,9 @@
 
 ## RiTa v2 API
 
-**RiTa**
 ```
+RiTa
+------------
 RiTa.VERSION
 RiTa.alliterations()
 RiTa.concordance()
