@@ -44,8 +44,9 @@ RiTa.untokenize()
 RiTa.words()
 ```
 
-**RiGrammar**
 ```
+RiGrammar
+------------
 load()
 addRule()
 expand()
@@ -54,8 +55,9 @@ removeRule()
 toString()
 ```
 
-**RiMarkov**
 ```
+RiMarkov
+------------
 RiMarkov.fromJSON()
 addText()
 addSentences()
