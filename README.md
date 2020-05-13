@@ -14,6 +14,7 @@ $ yarn test
 ## API
 
 **RiTa**
+```
 RiTa.VERSION
 RiTa.alliterations()
 RiTa.concordance()
@@ -51,16 +52,20 @@ RiTa.stem()
 RiTa.tokenize()
 RiTa.untokenize()
 RiTa.words()
+```
 
 **RiGrammar**
+```
 load()
 addRule()
 expand()
 expandFrom()
 removeRule()
 toString()
+```
 
 **RiMarkov**
+```
 RiMarkov.fromJSON()
 addText()
 addSentences()
@@ -72,6 +77,7 @@ probabilities()
 toJSON()
 size()
 toString()
+```
 
 
 ## RiTaScript
