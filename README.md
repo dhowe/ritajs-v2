@@ -1,8 +1,6 @@
 
 
-# RiTa v2 (javascript)
-
-## API
+## RiTa v2 API
 
 **RiTa**
 ```
@@ -215,6 +213,7 @@ $Opening=(
  Institute. The Fellow will also be expected to participate in the intellectual life of the community.
 )
 ```
+-->
 
 ## Developing
 To build the library and run tests:
