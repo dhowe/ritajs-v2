@@ -71,6 +71,9 @@ toString()
 
 ## RiTaScript
 
+RiTaScript can be used as part of any grammar (via RiGrammar) or can be run directly using RiTa.evaluate() 
+
+
 ### Choice
 
 ```
