@@ -45,7 +45,7 @@ RiTa.words()
 ```
 
 ```
-RiGrammar
+RiTa.Grammar
 ------------
 load()
 addRule()
@@ -56,7 +56,7 @@ toString()
 ```
 
 ```
-RiMarkov
+RiTa.Markov
 ------------
 RiMarkov.fromJSON()
 addText()
