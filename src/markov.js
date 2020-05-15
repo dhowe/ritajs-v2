@@ -1,10 +1,5 @@
 const { parse, stringify } = require('flatted/cjs');
 
-// TODO: async methods
-//        define word tokenizer
-//        define sentence tokenizer ?
-//        generateUntil ?
-
 /**
   API:
     toJson
@@ -22,15 +17,17 @@ class Markov {
 
   constructor(n, opts) {
     this.n = n;
-    this.trace = opts && opts.trace;
     this.root = new Node(null, 'ROOT');
 
     // options (TODO: clarify/document options)
+    this.trace = opts && opts.trace;
     this.mlm = opts && opts.maxLengthMatch;
     this.logDuplicates = opts && opts.logDuplicates;
     this.optimiseMemory = opts && opts.optimiseMemory;
     this.maxAttempts = opts && opts.maxAttempts || 99;
     this.discardInputs = opts && opts.disableInputChecks;
+    this.tokenize = opts && opts.tokenize || RiTa().tokenize;
+    this.untokenize = opts && opts.untokenize || RiTa().untokenize;
 
     if (this.mlm && this.mlm <= this.n) throw Error('maxLengthMatch(mlm) must be > N')
 
@@ -62,15 +59,15 @@ class Markov {
   }
 
   addSentences(sentences) {
-
-    if (!Array.isArray(sentences)) throw Error
-      ('addSentences() expects an array of sentences')
+    if (!Array.isArray(sentences)) {
+      throw Error('addSentences() expects an array of sentences');
+    }
 
     // add new tokens for each sentence start/end
     let tokens = [];
     for (let i = 0; i < sentences.length; i++) {
-      let sentence = sentences[i].replace(/\s+/, ' ').trim();
-      let words = RiTa().tokenize(sentence);
+      //let sentence = sentences[i].replace(/\s+/, ' ').trim();
+      let words = this.tokenize(sentences[i]);
       tokens.push(Markov.SS, ...words, Markov.SE);
     }
     this._treeify(tokens);
@@ -85,7 +82,8 @@ class Markov {
     return (count === 1) ? result[0] : result;
   }
 
-  generateSentences(num, { minLength = 5, maxLength = 35, startTokens, allowDuplicates, temperature = 0 } = {}) {
+  generateSentences(num,
+    { minLength = 5, maxLength = 35, startTokens, allowDuplicates, temperature = 0 } = {}) {
 
     let result = [], tokens, tries = 0, fail = (msg) => {
       this._logError(++tries, tokens, msg);
@@ -94,7 +92,7 @@ class Markov {
       return 1;
     }
 
-    if (typeof startTokens === 'string') startTokens = RiTa().tokenize(startTokens);
+    if (typeof startTokens === 'string') startTokens = this.tokenize(startTokens);
 
     while (result.length < num) {
 
@@ -158,7 +156,7 @@ class Markov {
 
   /* return an object mapping {string -> prob} */
   probabilities(path, temp) {
-    if (!Array.isArray(path)) path = RiTa().tokenize(path);
+    if (!Array.isArray(path)) path = this.tokenize(path);
     const probs = {};
     const parent = this._pathTo(path);
     if (parent) {
@@ -274,7 +272,7 @@ class Markov {
   _flatten(nodes) {
     if (!nodes || !nodes.length) return '';
     if (nodes.token) return nodes.token; // single-node
-    return RiTa().untokenize(nodes.map(n => n.token));
+    return this.untokenize(nodes.map(n => n.token));
   }
 
   _logError(tries, toks, msg) {
@@ -311,28 +309,9 @@ class Node {
     return children[rand.pselect(pdist)];
   }
 
-  /*  pselectOld() {
-     let sum = 1, pTotal = 0;
-     let nodes = this.childNodes();
-     let selector = Markov.parent.randomizer.random() * sum;
- 
-     if (!nodes || !nodes.length) throw Error
-       ("Invalid arg to pselect(no children) " + this);
- 
-     for (let i = 0; i < nodes.length; i++) {
- 
-       pTotal += nodes[i].nodeProb();
-       if (selector < pTotal) return nodes[i];
-     }
-   } */
+  isLeaf() { return this.childCount() < 1; }
 
-  isLeaf() {
-    return this.childCount() < 1;
-  }
-
-  isRoot() {
-    return !this.parent;
-  }
+  isRoot() { return !this.parent; }
 
   childNodes(sorted) {
     let kids = Object.values(this.children);
@@ -359,16 +338,13 @@ class Node {
 
   // Increments count for a child node and returns it
   addChild(word, count) {
-
     this.numChildren === -1; // invalidate cache
-
     count = count || 1;
     let node = this.children[word];
     if (!node) {
       node = new Node(this, word);
       this.children[word] = node;
     }
-
     node.count += count;
     return node;
   }
@@ -379,19 +355,12 @@ class Node {
   }
 
   stringify(mn, str, depth, sort) {
-
     sort = sort || false;
-
     let l = [], indent = '\n';
-
     Object.keys(mn.children).map(k => l.push(mn.children[k]));
-
     if (!l.length) return str;
-
     if (sort) l.sort();
-
     for (let j = 0; j < depth; j++) indent += "  ";
-
     for (let i = 0; i < l.length; i++) {
       let node = l[i];
       if (node) {
@@ -401,10 +370,8 @@ class Node {
         str = this.childCount() ? this.stringify(node, str, depth + 1, sort) : str + '}';
       }
     }
-
     indent = '\n';
     for (let j = 0; j < depth - 1; j++) indent += "  ";
-
     return str + indent + "}";
   }
 
@@ -441,10 +408,6 @@ function RiTa() { return Markov.parent; }
 function lerp(start, stop, amt) {
   return amt * (stop - start) + start;
 }
-/* 
-function isWordToken(node) {
-  return node.token !== Markov.SS && node.token !== Markov.SE;
-} */
 
 function throwError(tries, oks) {
   throw Error('\nFailed after ' + tries + ' tries'
