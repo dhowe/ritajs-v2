@@ -1,10 +1,10 @@
 ## Installation
 
-Node (via npm): https://www.npmjs.com/package/rita/v/2.0.0-beta.6
+For node (via npm): https://www.npmjs.com/package/rita/v/2.0.0-beta.6 (1.2mb)
 
-Browser: https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-full.js
+For the browser: https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-full.js (1.4mb)
 
-Browser (no lexicon): https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-nolex.js 
+For the browser (no lexicon): https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-nolex.js (.5mb)
 
 
 ## RiTa v2 API
