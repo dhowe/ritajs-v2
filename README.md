@@ -1,17 +1,80 @@
 
 
-# RiTa v2 in javascript
-
-## Building
+## RiTa v2 API
 
 ```
-$ yarn install 
-$ yarn compile
-$ yarn test
+RiTa
+------------
+RiTa.VERSION
+RiTa.alliterations()
+RiTa.concordance()
+RiTa.conjugate()
+RiTa.evaluate()
+RiTa.hasWord()
+RiTa.isAbbreviation()
+RiTa.isAdjective()
+RiTa.isAdverb()
+RiTa.isAlliteration()
+RiTa.isNoun()
+RiTa.isPunctuation()
+RiTa.isQuestion()
+RiTa.isRhyme()
+RiTa.isVerb()
+RiTa.kwic()
+RiTa.pastParticiple()
+RiTa.phonemes()
+RiTa.posTags()
+RiTa.posTagsInline()
+RiTa.presentParticiple()
+RiTa.pluralize()
+RiTa.random()
+RiTa.randomOrdering()
+RiTa.randomSeed()
+RiTa.randomWord()
+RiTa.rhymes()
+RiTa.similarBy()
+RiTa.singularize()
+RiTa.sentences()
+RiTa.stem()
+RiTa.stresses()
+RiTa.syllables()
+RiTa.tokenize()
+RiTa.untokenize()
+RiTa.words()
 ```
-&nbsp;
+
+```
+RiTa.Grammar
+------------
+addRule()
+load()
+expand()
+expandFrom()
+removeRule()
+toString()
+```
+
+```
+RiTa.Markov
+------------
+RiMarkov.fromJSON()
+addText()
+addSentences()
+completions()
+generate()
+generateSentences()
+probability()
+probabilities()
+size()
+toString()
+toJSON()
+```
+
 
 ## RiTaScript
+
+RiTaScript can be used as part of any grammar (via RiGrammar) or can be run directly using RiTa.evaluate() 
+
 
 ### Choice
 
@@ -46,6 +109,21 @@ $place=(New York | Berlin | Shanghai)`<br/>`$place is cold and wet in winter.
     
 In [$place=(New York | Berlin | Shanghai)] it is cold and wet in winter. 
      ->  In Berlin it is cold and wet in the winter.
+```
+
+
+### Transforms
+
+```
+The group of boys (to run).conjugate().
+How many (tooth | menu | child).pluralize() do you have?
+How many (tooth | menu | child).pluralize().toUpper() do you have?
+
+// Resolves choice without repeating
+How many (tooth | menu | child).norepeat() do you have?
+
+// Resolves choice in sequence
+How many (tooth | menu | child).seq() do you have?
 ```
 
 <!--
@@ -108,20 +186,6 @@ The weather was $desc
 The weather was $desc
 ```
 
-### Transforms
-
-```
-The group of boys (to run).conjugate().
-How many (tooth | menu | child).pluralize() do you have?
-How many (tooth | menu | child).pluralize().toUpper() do you have?
-
-// Resolves choice without repeating
-How many (tooth | menu | child).norepeat() do you have?
-
-// Resolves choice in sequence
-How many (tooth | menu | child).seq() do you have?
-```
-
 ### Conditionals
 
 ```
@@ -155,3 +219,15 @@ $Opening=(
  Institute. The Fellow will also be expected to participate in the intellectual life of the community.
 )
 ```
+-->
+
+&nbsp;
+
+## Developing
+To build the library and run tests:
+```
+$ yarn install 
+$ yarn compile
+$ yarn test
+```
+&nbsp;
