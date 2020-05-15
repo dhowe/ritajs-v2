@@ -47,9 +47,9 @@ RiTa.words()
 RiTa.Grammar
 ------------
 addRule()
-load()
 expand()
 expandFrom()
+loadRules()
 removeRule()
 toString()
 ```
@@ -57,17 +57,16 @@ toString()
 ```
 RiTa.Markov
 ------------
-RiMarkov.fromJSON()
 addText()
 addSentences()
 completions()
 generate()
-generateSentences()
 probability()
 probabilities()
 size()
 toString()
 toJSON()
+RiMarkov.fromJSON()
 ```
 
 
