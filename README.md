@@ -6,6 +6,7 @@
 RiTa
 ------------
 RiTa.VERSION
+RiTa.addTransform()
 RiTa.alliterations()
 RiTa.concordance()
 RiTa.conjugate()
@@ -23,11 +24,10 @@ RiTa.isVerb()
 RiTa.kwic()
 RiTa.pastParticiple()
 RiTa.phonemes()
-RiTa.posTags()
-RiTa.posTagsInline()
+RiTa.pos()
+RiTa.posInline()
 RiTa.presentParticiple()
 RiTa.pluralize()
-RiTa.random()
 RiTa.randomOrdering()
 RiTa.randomSeed()
 RiTa.randomWord()
