@@ -126,7 +126,7 @@ describe('RiTa.Markov', () => {
     result.forEach(r => ok(/^家[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
   });
 
-  it('should correctly apply custom tokenizers', () => {
+  it.only('should correctly apply custom tokenizers', () => {
     let text = '家安春夢家安春夢！家安春夢德安春夢？家安春夢安安春夢。';
     let sentArray = text.match(/[^，；。？！]+[，；。？！]/g);
 
@@ -136,7 +136,7 @@ describe('RiTa.Markov', () => {
     let rm = new Markov(4, { tokenize, untokenize });
     rm.addSentences(sentArray);
     let result = rm.generate(5, { startTokens: '家' });
-    //console.log(result);
+    console.log(result);
 
     eq(result.length, 5);
     result.forEach(r => ok(/^家[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));

@@ -6,8 +6,7 @@
   "description": "RiTa: A toolkit for natural language and computational literature",
   "homepage": "https://rednoise.org/rita",
   "files": [
-    "lib/rita.js",
-    "test/*.js"
+    "lib/rita.js"
   ],
   "scripts": {
     "npmpub": "np --tag beta prerelease",
