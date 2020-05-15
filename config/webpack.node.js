@@ -21,7 +21,7 @@ module.exports = {
   output: {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
-    filename: 'rita-node.js',
+    filename: 'rita.js',
     libraryTarget: 'commonjs2',
   },
   node: {

@@ -1,13 +1,18 @@
 {
   "name": "rita",
   "version": "2.0.0-beta.3",
-  "description": "",
-  "private": true,
+  "author": "Daniel C. Howe",
+  "license": "GPL-3.0",
+  "description": "RiTa: A toolkit for natural language and computational literature",
+  "homepage": "https://rednoise.org/rita",
+  "files": [
+    "dist/rita.js"
+  ],
   "scripts": {
     "bump": "yarn version --no-git-tag-version --prerelease",
     "bump-version": "yarn version --no-git-tag-version --patch",
-    "build": "webpack --display-modules && yarn build.list",
-    "build.prod": "webpack --display-modules --mode production && yarn build.list",
+    "build": "webpack --display-modules && ls -l dist",
+    "build.prod": "webpack --display-modules --mode production && ls -l dist",
     "watch": "webpack --watch",
     "test": "mocha",
     "test.g": "mocha ./test/*.js -g ",
@@ -18,8 +23,7 @@
     "watch.grammar": "npm-watch",
     "compile": "yarn antlr4.js",
     "antlr4.js": "java -Xmx500M -cp '/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH' org.antlr.v4.Tool -Dlanguage=JavaScript -lib grammar -o grammar/.antlr -visitor -Xexact-output-dir grammar/RiScript.g4",
-    "antlr4.java": "java -Xmx500M -cp '/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH' org.antlr.v4.Tool -Dlanguage=Java -lib grammar -o grammar/.antlr -visitor -Xexact-output-dir grammar/RiScript.g4",
-    "build.list": "ls -l dist"
+    "antlr4.java": "java -Xmx500M -cp '/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH' org.antlr.v4.Tool -Dlanguage=Java -lib grammar -o grammar/.antlr -visitor -Xexact-output-dir grammar/RiScript.g4"
   },
   "watch": {
     "compile": {
@@ -27,8 +31,6 @@
       "extensions": "g4"
     }
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@types/antlr4": "^4.7.0",
     "antlr4": "^4.7.2",

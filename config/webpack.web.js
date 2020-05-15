@@ -7,7 +7,7 @@ module.exports =
   output: {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
-    filename: 'rita.js',
+    filename: 'rita-web-nolex.js',
     chunkFilename: 'rita-full.js',
   },
   performance: {

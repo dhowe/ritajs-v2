@@ -7,7 +7,7 @@ module.exports =
   output: {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
-    filename: 'rita-full.js'
+    filename: 'rita-web-full.js'
   },
   performance: {
     hints: false
