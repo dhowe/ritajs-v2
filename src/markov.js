@@ -1,18 +1,5 @@
 const { parse, stringify } = require('flatted/cjs');
 
-/**
-  API:
-    toJson
-    Markov.fromJson
-    addText()
-    addSentences()
-    generate()
-    completions()
-    probability()
-    probabilities()
-    toString()
-    size()
- */
 class Markov {
 
   constructor(n, opts) {
@@ -23,16 +10,15 @@ class Markov {
     this.trace = opts && opts.trace;
     this.mlm = opts && opts.maxLengthMatch;
     this.logDuplicates = opts && opts.logDuplicates;
-    this.optimiseMemory = opts && opts.optimiseMemory;
     this.maxAttempts = opts && opts.maxAttempts || 99;
-    this.discardInputs = opts && opts.disableInputChecks;
+    this.disableInputChecks = opts && opts.disableInputChecks;
     this.tokenize = opts && opts.tokenize || RiTa().tokenize;
     this.untokenize = opts && opts.untokenize || RiTa().untokenize;
 
     if (this.mlm && this.mlm <= this.n) throw Error('maxLengthMatch(mlm) must be > N')
 
     // we store inputs to verify we don't duplicate sentences
-    if (!this.discardInputs || this.mlm) this.input = [];
+    if (!this.disableInputChecks || this.mlm) this.input = [];
   }
 
   toJSON() {
@@ -72,8 +58,7 @@ class Markov {
     }
     this._treeify(tokens);
 
-    // TODO: deal with sentence checking
-    if (!this.discardInputs || this.mlm) this.input.push(...tokens);
+    if (!this.disableInputChecks || this.mlm) this.input.push(...tokens);
   }
 
   generate(count, opts = {}) {
@@ -83,14 +68,15 @@ class Markov {
       count = null;
     }
 
-    let num = count || 1;
-    let minLength = opts.minLength || 5;
-    let maxLength = opts.maxLength || 35;
+    const num = count || 1;
+    const temp = opts.temperature;
+    const minLength = opts.minLength || 5;
+    const maxLength = opts.maxLength || 35;
+    const allowDuplicates = opts.allowDuplicates;
     let startTokens = opts.startTokens;
-    let allowDuplicates = opts.allowDuplicates;
-    let temperature = opts.temperature;
-
-    let result = [], tokens, tries = 0, fail = (msg) => {
+  
+    let result = [], tokens, tries = 0;
+    let fail = (msg) => {
       this._logError(++tries, tokens, msg);
       if (tries >= this.maxAttempts) throwError(tries);
       tokens = undefined;
@@ -109,7 +95,7 @@ class Markov {
         let parent = this._pathTo(tokens);
         if ((!parent || parent.isLeaf()) && fail('no parent')) break;
 
-        let next = this._selectNext(parent, temperature, tokens);
+        let next = this._selectNext(parent, temp, tokens);
         if (!next && fail('no next')) break; // possible if all children excluded
 
         tokens.push(next);

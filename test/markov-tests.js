@@ -1,4 +1,4 @@
-describe.only('RiTa.Markov', () => {
+describe('RiTa.Markov', () => {
 
   if (typeof module !== 'undefined') {
     require('./before');
@@ -129,13 +129,13 @@ describe.only('RiTa.Markov', () => {
   it('should correctly apply custom tokenizers', () => {
     let text = '家安春夢家安春夢！家安春夢德安春夢？家安春夢安安春夢。';
     let sentArray = text.match(/[^，；。？！]+[，；。？！]/g);
-    
+
     let tokenize = (sent) => sent.split("");
     let untokenize = (sents) => sents.join("");
 
     let rm = new Markov(4, { tokenize, untokenize });
     rm.addSentences(sentArray);
-    let result = rm.generate(5, {startTokens: '家' });
+    let result = rm.generate(5, { startTokens: '家' });
     //console.log(result);
 
     eq(result.length, 5);
@@ -521,6 +521,16 @@ describe.only('RiTa.Markov', () => {
     let rm = new Markov(4);
     rm.addSentences(['I ate the dog.']);
     expect(() => rm.generate()).to.throw;
+  });
+
+  it('should handle disableInputChecks option', () => {
+    let rm = new Markov(4, { disableInputChecks: 0 });
+    rm.addText('I ate the dog.');
+    expect(typeof rm.input === 'object').to.be.true;
+
+    rm = new Markov(4, { disableInputChecks: 1 });
+    rm.addText('I ate the dog.');
+    expect(typeof rm.input === 'undefined').to.be.true;
   });
 
   it('should correctly serialize and deserialize', () => {
