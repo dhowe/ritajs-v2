@@ -1,6 +1,9 @@
 ## Beta Testing
+
 Node (via npm): https://www.npmjs.com/package/rita/v/2.0.0-beta.6
+
 Browser: https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-full.js
+
 Browser (no lexicon): https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-nolex.js 
 
 
