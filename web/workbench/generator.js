@@ -1,6 +1,6 @@
 
 if (typeof module !== 'undefined') {
-  RiTa = require('../../dist/rita-node.js');
+  RiTa = require('../../lib/rita.js');
   input = require('fs').readFileSync(require('path').resolve
     ('texts', 'warpeace-2000.txt')).toString('utf8');
 }

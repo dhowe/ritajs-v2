@@ -3,7 +3,7 @@
 
 describe('RiTa.Lexicon', function () {
 
-  this.timeout(5000); // TODO: why is mocha slow with dist/node file
+  this.timeout(5000); // TODO: mocha seems slow with lib/node file
 
   if (typeof module !== 'undefined') require('./before');
 

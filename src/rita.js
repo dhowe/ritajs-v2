@@ -11,6 +11,7 @@ const Concorder = require('./concorder');
 const Conjugator = require('./conjugator');
 const Inflector = require('./inflector');
 const SeededRandom = require('./random');
+const Operator = require('./operator');
 
 const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
 
@@ -244,7 +245,8 @@ class RiTa {
 
 // CLASSES
 RiTa.Grammar = Grammar;
-RiTa.Markov = Markov
+RiTa.Markov = Markov;
+RiTa.Operator = Operator;
 RiTa.Markov.parent = RiTa;
 RiTa.Grammar.parent = RiTa;
 

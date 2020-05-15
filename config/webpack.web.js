@@ -1,14 +1,13 @@
-// web/minimal
+// web/full
 
 module.exports =
 {
   mode: 'development',
   target: 'web',
   output: {
-    path: require('path').resolve(__dirname, '../dist'),
+    path: require('path').resolve(__dirname, '../lib'),
     library: 'RiTa',
-    filename: 'rita-web-nolex.js',
-    chunkFilename: 'rita-full.js',
+    filename: 'rita-web.js'
   },
   performance: {
     hints: false
@@ -19,9 +18,19 @@ module.exports =
   node: {
     fs: "empty"
   },
-  entry: { 'rita': './src/rita.js' },
+  entry: './src/rita.js',
   plugins: [new (require('webpack').DefinePlugin)({
-    __NOLEX__: JSON.stringify(true),
     __VERSION__: JSON.stringify(require("../package.json").version)
   })]
+  // optimization: {
+  //   splitChunks: {
+  //     cacheGroups: {
+  //       commons: {
+  //         test: /[\\/]node_modules[\\/]/,
+  //         name: 'vendors',
+  //         chunks: 'all'
+  //       }
+  //     }
+  //   }
+  // }
 };

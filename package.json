@@ -6,19 +6,19 @@
   "description": "RiTa: A toolkit for natural language and computational literature",
   "homepage": "https://rednoise.org/rita",
   "files": [
-    "dist/rita.js"
+    "lib/rita.js"
   ],
   "scripts": {
     "bump": "yarn version --no-git-tag-version --prerelease",
-    "bump-version": "yarn version --no-git-tag-version --patch",
-    "build": "webpack --display-modules && ls -l dist",
-    "build.prod": "webpack --display-modules --mode production && ls -l dist",
+    "bump.version": "yarn version --no-git-tag-version --patch",
+    "build": "webpack --display-modules && ls -l lib",
+    "build.prod": "webpack --display-modules --mode production && ls -l lib",
     "watch": "webpack --watch",
     "test": "mocha",
     "test.g": "mocha ./test/*.js -g ",
     "test.grammar": "mocha ./test/riscript-tests.js",
     "test.quick": "mocha './test/**/!(lexicon-tests).js'",
-    "test.dist": "NODE_ENV=dist mocha ./test/*.js",
+    "test.prod": "NODE_ENV=dist mocha ./test/*.js",
     "test.watch": "mocha --watch 'src/*.js' './test/**/!(lexicon-tests).js'",
     "watch.grammar": "npm-watch",
     "compile": "yarn antlr4.js",

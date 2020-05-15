@@ -475,7 +475,7 @@ describe('RiTa.Markov', () => {
     let rm = new Markov(4);
     let sents = RiTa.sentences(sample);
     let count = sents.length; // sentence-end tokens
-    for (i = 0; i < sents.length; i++) {
+    for (let i = 0; i < sents.length; i++) {
       let words = RiTa.tokenize(sents[i]);
       count += words.length;
     }

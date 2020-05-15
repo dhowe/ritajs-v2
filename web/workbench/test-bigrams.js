@@ -1,5 +1,5 @@
 if (module) {
-  RiTa = require('../../dist/rita-node.js');
+  RiTa = require('../../lib/rita.js');
   bigrams = require('./bigrams');
 }
 

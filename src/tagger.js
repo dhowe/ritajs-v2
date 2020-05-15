@@ -172,6 +172,8 @@ class PosTagger {
     // Check if this could be a plural noun form
     if (this._isLikelyPlural(word)) return ['nns'];
 
+    if (word === 'the' || word === 'a') return ['dt'];
+
     // Give up with a best guess
     return word.endsWith('ly') ? ['rb'] : (word.endsWith('s') ? ['nns'] : ['nn']);
   }

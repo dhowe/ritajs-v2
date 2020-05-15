@@ -1,5 +1,4 @@
-const Grammar = require('../src/grammar');
-
+const Grammar = RiTa.Grammar;
 describe('RiTa.Grammar', () => {
 
     if (typeof module !== 'undefined') require('./before');
@@ -114,13 +113,13 @@ describe('RiTa.Grammar', () => {
         eq(rg.expand(), "dog");
     });
 
-   it("should correctly call expand.weights", () => {
+    it("should correctly call expand.weights", () => {
         let rg = new Grammar();
         rg.addRule("$start", "$rule1 [3]");
         rg.addRule("$rule1", "cat | dog | boy");
-        found1 = false;
-        found2 = false;
-        found3 = false;
+        let found1 = false;
+        let found2 = false;
+        let found3 = false;
         for (let i = 0; i < 30; i++) {
             let res = rg.expand();
             ok(res === ("cat") || res === ("dog") || res === ("boy"));
@@ -144,11 +143,11 @@ describe('RiTa.Grammar', () => {
         let hawks = 0, dogs = 0;
         for (let i = 0; i < 30; i++) {
             let res = rg.expandFrom("$pet");
-            ok(res === "hawk" || res === 'dog', 'got '+res);
+            ok(res === "hawk" || res === 'dog', 'got ' + res);
             if (res == "dog") dogs++;
             if (res == "hawk") hawks++;
         }
-        ok(hawks > dogs * 2), 'got h='+hawks+', '+dogs;
+        ok(hawks > dogs * 2), 'got h=' + hawks + ', ' + dogs;
     });
 
     it("should correctly handle transforms", () => {
@@ -173,7 +172,7 @@ describe('RiTa.Grammar', () => {
         //console.log(res);
         ok(res === "hello | name");
 
-return;
+        return;
 
         s = "{ \"$start\": \"hello: name\" }";
         rg = new Grammar(s);

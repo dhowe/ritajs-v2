@@ -1,15 +1,10 @@
-const RiScript = require('../src/riscript');
-const Operator = require('../src/operator');
+const Operator = RiTa.Operator;
 
 describe('RiTa.RiScript', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
   describe('Conditionals', () => {
-
-/*     it.only('XXX', () => {
-      expect(RiTa.evaluate('$start=$foo\n$foo=hello\n$start', {}, 1)).eq('hello');
-    }); */
 
     it('Should throw on bad conditionals', () => {
       //expect(() => RiTa.evaluate('{$a<hello} foo', { a: 2 })).to.throw();
@@ -71,7 +66,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$foo=bar\nbaz', {}, {trace:0})).eq('baz');
       expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {}, {trace:0})).eq('baz bar');
 
-      let ctx, exp;
+      let ctx, expr;
       ctx = { a: 'a', b: 'b' };
       expr = '(a|a)';
       expect(RiTa.evaluate(expr, ctx)).eq('a');
@@ -79,7 +74,7 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should eval recursive expressions', () => {
-
+      let ctx, expr;
       ctx = { a: 'a', b: 'b' };
       expr = '(a|a)';
       expect(RiTa.evaluate(expr, ctx)).eq('a');
