@@ -23,7 +23,7 @@ class SeededRandom {
     }
   }
 
-  randInt() {
+  _randInt() {
     let y, kk, mag01 = new Array(0x0, this.MATRIX_A);
     if (this.mti >= this.N) {
       if (this.mti == this.N + 1) this.seed(5489);
@@ -88,7 +88,7 @@ class SeededRandom {
   }
 
   randomFloat() {
-    return this.randInt() * (1.0 / 4294967296.0);
+    return this._randInt() * (1.0 / 4294967296.0);
   }
 
   // API ////////////////////////////////////////////////////////////////////
@@ -101,16 +101,15 @@ class SeededRandom {
   }
 
   randomItem(arr, func) {
-    let item = arr[Math.floor(this.random() * arr.length)];
+    let crand = this.randomFloat();
+    let item = arr[Math.floor(crand * arr.length)];
     return typeof func === 'function' ? func(item) : item;
   }
 
   random() {
     let crand = this.randomFloat();
     if (!arguments.length) return crand;
-    if (Array.isArray(arguments[0])) {
-      return arguments[0][Math.floor(crand * arguments[0].length)];
-    }
+    if (Array.isArray(arguments[0])) return this.randomItem(arguments[0])
     return arguments.length === 1 ? crand * arguments[0] :
       crand * (arguments[1] - arguments[0]) + arguments[0];
   }

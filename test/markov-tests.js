@@ -121,6 +121,16 @@ describe('RiTa.Markov', () => {
     expect(() => rm.generate({ count: 5 })).to.throw;
   });
 
+  it('should correctly call generate non-english sentences', () => {
+    let text = '家 安 春 夢 家 安 春 夢 ！ 家 安 春 夢 德 安 春 夢 ？ 家 安 春 夢 安 安 春 夢 。';
+    let sentArray = text.match(/[^，；。？！]+[，；。？！]/g);
+    let rm = new Markov(4);
+    rm.addSentences(sentArray);
+    let result = rm.generate({ count: 5, startTokens: '家' });
+    eq(result.length, 5);
+    result.forEach(r => ok(/^家[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
+  });
+
   it('should correctly call generate', () => {
 
     let rm = new Markov(4, { disableInputChecks: 1 });
@@ -529,7 +539,7 @@ describe('RiTa.Markov', () => {
   function markovEquals(rm, copy) {
     Object.keys(rm) // check each non-object key
       .filter(k => !/(root|input|inverse)/.test(k))
-      .forEach(k => expect(rm[k], 'failed on '+k).eq(copy[k]));
+      .forEach(k => expect(rm[k], 'failed on ' + k).eq(copy[k]));
     expect(rm.toString()).eq(copy.toString());
     expect(rm.root.toString()).eq(copy.root.toString());
     expect(rm.input).eql(copy.input);

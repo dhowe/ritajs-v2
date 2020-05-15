@@ -14,6 +14,12 @@ const SeededRandom = require('./random');
 
 const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
 
+/**
+ * TODO:
+ *   RiTa.addTransform()
+ *   RiMarkov methods
+ */
+
 class RiTa {
 
   constructor() {

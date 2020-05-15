@@ -1,6 +1,9 @@
 const { parse, stringify } = require('flatted/cjs');
 
 // TODO: async methods
+//        define word tokenizer
+//        define sentence tokenizer ?
+//        generateUntil ?
 
 /**
   API:
