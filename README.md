@@ -1,4 +1,4 @@
-## Beta Testing
+## Installation
 
 Node (via npm): https://www.npmjs.com/package/rita/v/2.0.0-beta.6
 
