@@ -1,17 +1,15 @@
-describe('RiTa.Markov', () => {
+describe.only('RiTa.Markov', () => {
 
   if (typeof module !== 'undefined') {
     require('./before');
     fs = require('fs');
   }
 
-  const Markov = RiTa.Markov;
-  const Random = RiTa.randomizer;
+  const Markov = RiTa.Markov, Random = RiTa.randomizer;
   let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
   let sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself. After all, I did occasionally want to be embarrassed.";
   let sample3 = sample + ' One reason people are dishonest is to achieve power.';
 
-  //console.log(sample+'\n\n'+sample2);
   it('should correctly call Markov', () => {
     ok(typeof new Markov(3) !== 'undefined');
   });
@@ -112,10 +110,9 @@ describe('RiTa.Markov', () => {
 
 
   it('should throw on failed generate', () => {
-
     let rm = new Markov(4);
     rm.addSentences(RiTa.sentences(sample));
-    expect(() => rm.generate({ count: 5 })).to.throw;
+    expect(() => rm.generate(5)).to.throw;
   });
 
   it('should correctly generate non-english sentences', () => {
@@ -124,7 +121,7 @@ describe('RiTa.Markov', () => {
     let sentArray = text.match(/[^，；。？！]+[，；。？！]/g);
     let rm = new Markov(4);
     rm.addSentences(sentArray);
-    let result = rm.generate({ count: 5, startTokens: '家' });
+    let result = rm.generate(5, { startTokens: '家' });
     eq(result.length, 5);
     result.forEach(r => ok(/^家[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
   });
@@ -138,7 +135,7 @@ describe('RiTa.Markov', () => {
 
     let rm = new Markov(4, { tokenize, untokenize });
     rm.addSentences(sentArray);
-    let result = rm.generate({ count: 5, startTokens: '家' });
+    let result = rm.generate(5, {startTokens: '家' });
     //console.log(result);
 
     eq(result.length, 5);
@@ -149,7 +146,7 @@ describe('RiTa.Markov', () => {
 
     let rm = new Markov(4, { disableInputChecks: 1 });
     rm.addSentences(RiTa.sentences(sample));
-    let sents = rm.generate({ count: 5 });
+    let sents = rm.generate(5);
     eq(sents.length, 5);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
@@ -173,7 +170,7 @@ describe('RiTa.Markov', () => {
     let rm = new Markov(4, { disableInputChecks: 1 }), minLength = 7, maxLength = 20;
     rm.addSentences(RiTa.sentences(sample));
 
-    let sents = rm.generate({ count: 5, minLength, maxLength });
+    let sents = rm.generate(5, { minLength, maxLength });
     eq(sents.length, 5);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
@@ -216,7 +213,7 @@ describe('RiTa.Markov', () => {
 
     start = 'I';
     for (let i = 0; i < 5; i++) {
-      let arr = rm.generate({ count: 2, startTokens: start });
+      let arr = rm.generate(2, { startTokens: start });
       ok(Array.isArray(arr));
       eq(arr.length, 2);
       ok(arr[0].startsWith(start));
@@ -243,7 +240,7 @@ describe('RiTa.Markov', () => {
 
     start = ['I'];
     for (let i = 0; i < 5; i++) {
-      let arr = rm.generate({ count: 2, startTokens: start });
+      let arr = rm.generate(2, { startTokens: start });
       eq(arr.length, 2);
       ok(arr[0].startsWith(start));
     }
@@ -276,7 +273,7 @@ describe('RiTa.Markov', () => {
 
     let mlms = 10, rm = new Markov(3, { maxLengthMatch: mlms, trace: 0 });
     rm.addSentences(RiTa.sentences(sample3));
-    let sents = rm.generate({ count: 5 });
+    let sents = rm.generate(5);
     for (let i = 0; i < sents.length; i++) {
       let sent = sents[i];
       let toks = RiTa.tokenize(sent);
@@ -532,7 +529,7 @@ describe('RiTa.Markov', () => {
     rm.addSentences(['I ate the dog.']);
     let copy = Markov.fromJSON(rm.toJSON());
     markovEquals(rm, copy);
-    expect(copy.generate()).eq(rm.generate());
+    expect(copy.generate()).eql(rm.generate());
   });
 
   /////////////////////////// helpers ////////////////////////////

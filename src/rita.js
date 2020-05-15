@@ -16,8 +16,6 @@ const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
 
 /**
  * TODO:
- *   RiTa.addTransform()
- *   RiMarkov methods
  */
 
 class RiTa {
@@ -58,7 +56,7 @@ class RiTa {
     return Util.isNode() ? RiTa.NODE : RiTa.JS;
   }
 
-  static evaluate(input, context, opts) { // runScript,evalScript,execute,parse?
+  static evaluate(input, context, opts) {
     //return RiScript.eval(...arguments); // much faster, why?
     //return ((opts && opts.singlePass) ? RiScript.eval : RiScript.multeval)(...arguments);
     return RiScript.eval(...arguments);

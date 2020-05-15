@@ -76,14 +76,19 @@ class Markov {
     if (!this.discardInputs || this.mlm) this.input.push(...tokens);
   }
 
-  generate(opts) {
-    let count = opts && opts.count || 1;
-    let result = this.generateSentences(count, opts);
-    return (count === 1) ? result[0] : result;
-  }
+  generate(count, opts = {}) {
 
-  generateSentences(num,
-    { minLength = 5, maxLength = 35, startTokens, allowDuplicates, temperature = 0 } = {}) {
+    if (arguments.length === 1 && typeof count === 'object') {
+      opts = count;
+      count = null;
+    }
+
+    let num = count || 1;
+    let minLength = opts.minLength || 5;
+    let maxLength = opts.maxLength || 35;
+    let startTokens = opts.startTokens;
+    let allowDuplicates = opts.allowDuplicates;
+    let temperature = opts.temperature;
 
     let result = [], tokens, tries = 0, fail = (msg) => {
       this._logError(++tries, tokens, msg);
@@ -128,7 +133,8 @@ class Markov {
       }
       if (tokens && tokens.length >= maxLength) fail('too long');
     }
-    return result;
+
+    return typeof count === 'number' ? result : result[0];
   }
 
   /* returns array of possible tokens after pre and (optionally) before post */
