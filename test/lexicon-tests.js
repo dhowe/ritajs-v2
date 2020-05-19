@@ -42,6 +42,40 @@ describe('RiTa.Lexicon', function () {
 
   });
 
+  it("should handle an augmented lexicon", () => {
+    let toAdd = {
+      'deg': ['d-eh1-g', 'nn'],
+      'wadly': ['w-ae1-d l-iy', 'rb'],
+    }
+    let lex = RiTa.lexicon();
+    Object.keys(toAdd).forEach(w => RiTa.lexicon().data[w] = toAdd[w]);
+    expect(lex.hasWord("run"));
+    expect(lex.hasWord("walk"));
+    expect(lex.hasWord("deg"));
+    expect(lex.hasWord("wadly"));
+    expect(lex.isAlliteration("wadly", "welcome"));
+    Object.keys(toAdd).forEach(w => delete RiTa.lexicon().data[w]);
+  });
+
+  it("should handle a custom lexicon", () => {
+
+    let lex = RiTa.lexicon();
+    let orig = lex.data;
+    lex.data = {
+      'dog': ['d-ao1-g', 'nn'],
+      'cat': ['k-ae1-t', 'nn'],
+      'happily': ['hh-ae1 p-ah l-iy', 'rb'],
+      'walk': ['w-ao1-k', 'vb vbp nn'],
+      'welcome': ['w-eh1-l k-ah-m', 'jj nn vb vbp'],
+      'sadly': ['s-ae1-d l-iy', 'rb'],
+    }
+    
+    expect(lex.hasWord("run")).to.be.false;
+    expect(lex.hasWord("walk")).to.be.true;
+    expect(lex.isAlliteration("walk", "welcome")).to.be.true;
+    lex.data = orig;
+  });
+
   it('Should correctly call randomWord.nns', () => {
     for (let i = 0; i < 20; i++) {
       let result = RiTa.randomWord({ pos: "nns" });
@@ -55,7 +89,7 @@ describe('RiTa.Lexicon', function () {
 
       //No nn & vbg
       //No -ness, -ism
-      let pos = RiTa.lexicon._posData(result);
+      let pos = RiTa.lexicon()._posData(result);
       expect(!pos || pos.indexOf("vbg") < 0, "randomWord nns: " + result).to.be.true;
       expect(!result.endsWith("ness"), "randomWord nns: " + result).to.be.true;
       expect(!result.endsWith("isms"), "randomWord nns: " + result).to.be.true;
@@ -91,7 +125,7 @@ describe('RiTa.Lexicon', function () {
     for (let j = 0; j < pos.length; j++) {
       for (let i = 0; i < 5; i++) {
         let result = RiTa.randomWord({ pos: pos[j] });
-        let best = RiTa.lexicon._bestPos(result);
+        let best = RiTa.lexicon()._bestPos(result);
         //console.log(result+": "+pos[j]+" ?= "+best);
         expect(pos[j]).eq(best, result);
       }
@@ -128,7 +162,7 @@ describe('RiTa.Lexicon', function () {
     expect(result.length > 0, "randomWord n: " + result).to.be.true;
     syllables = RiTa.syllables(result);
     expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
-    pos = RiTa.posTags(result, {simple:1})[0];
+    pos = RiTa.posTags(result, { simple: 1 })[0];
 
     // include verbs here as many are both
     expect(['n', 'v'].includes(pos), "GOT: " + result + ' (' + pos + ')').to.be.true;
@@ -189,7 +223,7 @@ describe('RiTa.Lexicon', function () {
     expect(result.length < 1, "failed on 'umbrella'").to.be.true;
 
     result = RiTa.alliterations("cat stress");
-    expect(result.length > 1000, "failed on 'cat stress' got "+result).to.be.true;
+    expect(result.length > 1000, "failed on 'cat stress' got " + result).to.be.true;
 
     result = RiTa.alliterations("cat");
     expect(result.length > 1000, "failed on 'cat'").to.be.true;
@@ -303,7 +337,7 @@ describe('RiTa.Lexicon', function () {
     expect(result.length > answer.length).to.be.true; // more
 
     result = RiTa.similarBy("cat", { type: 'sound' });
-    answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "can\'t", "cap", "cash","cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
+    answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "can\'t", "cap", "cash", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
     eql(result, answer);
 
     result = RiTa.similarBy("cat", { type: 'sound', minAllowedDistance: 2 });
@@ -329,7 +363,6 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.isRhyme("cat", "hat")).to.be.true;
     expect(RiTa.isRhyme("yellow", "mellow")).to.be.true;
     expect(RiTa.isRhyme("toy", "boy")).to.be.true;
-
 
     expect(RiTa.isRhyme("solo", "tomorrow")).to.be.true;
     expect(RiTa.isRhyme("tense", "sense")).to.be.true;

@@ -1,8 +1,8 @@
 //let RiTa = require('../src/rita');
 let Conjugator = require('../src/conjugator');
-let dict = require('../scripts/dict_w_verbs.js');
+let dict = require('../src/rita_dict.js');
 
-let printRemoves = 0, printFile = 0;
+let printRemoves = 0, printFile = 1;
 let tests, remove = [];
 
 function checkForm(verb, pos) {
@@ -78,9 +78,9 @@ let words = tests || Object.keys(dict);
 for (let i = 0; i < words.length; i++) {
   let word = words[i], data = dict[word];
   let tags = dict[word][1].split(' ');
-/*   if (tags.length === 1 && tags[0] === 'vb' ||
-    tags.length === 2 && tags.includes('vb') && tags.includes('vbp')) { */
-    if (tags.includes('vb')) checkVerb(word);
+  /*   if (tags.length === 1 && tags[0] === 'vb' ||
+      tags.length === 2 && tags.includes('vb') && tags.includes('vbp')) { */
+  if (tags.includes('vb')) checkVerb(word);
 }
 
 if (!tests) {

@@ -4,8 +4,8 @@ const RiScript = require('../src/riscript');
 
 describe('RiTa.KnownIssues', () => {
 
-  it('1: pluralize or singularize fails', () => { // ok
-    let testPairs = [ ]; // ADD FAILING ITEMS HERE
+  it('1: pluralize or singularize fails', () => { 
+    let testPairs = [ "geese", "goose" ]; // FAILING ITEMS HERE
     let res1, res2, res3, i = 0, dbug = true;
     if (!testPairs.length) return;
     dbug && console.log(testPairs[i] + '/' + testPairs[i + 1]);
@@ -30,13 +30,6 @@ describe('RiTa.KnownIssues', () => {
 
   });
 
-  function eql(output, expected, msg) { expect(output).eql(expected, msg); }
-  function ok(res, msg) { expect(res).eq(true, msg); }
-  function eq(a, b, msg) { expect(a).eq(b, msg); }
-});
-
-
-describe('RiScript.KnownIssues', () => {
 
   it('simple evaluations', function() {
     // should this throw? maybe yes: can do foo&dot;bar - need better error
@@ -58,7 +51,7 @@ describe('RiScript.KnownIssues', () => {
     expect(RiTa.evaluate('$bar', { foo: 'baz', bar: '$foo starts with (b | b)' }, 1)).eq('baz starts with b');
   });
 
-  it.only('Should eval post-defined variables', () =>{
+  it('Should eval post-defined variables', () =>{
 
     let rc = RiScript.eval('$start=$foo\n$foo=hello\n$start', 1);
     expect(res).eq('hello');
@@ -71,7 +64,6 @@ describe('RiScript.KnownIssues', () => {
     0&&expect(RiScript.eval(script).run()).eq('hello');
   });
 
-  return; // remove to work
 
   it('Should allow transforms on assignments', () => {
     //return;
@@ -158,3 +150,7 @@ describe('RiScript.KnownIssues', () => {
     let res = rc.run();
     expect(res).eq('hello');
   });*/
+
+function eql(output, expected, msg) { expect(output).eql(expected, msg); }
+function ok(res, msg) { expect(res).eq(true, msg); }
+function eq(a, b, msg) { expect(a).eq(b, msg); }

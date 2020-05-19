@@ -7,7 +7,7 @@ class Analyzer {
   constructor(parent) {
     RiTa = parent;
     this.cache = {};
-    this.lexicon = RiTa._lexicon();
+    this.lexicon = RiTa.lexicon();
   }
 
   analyze(text) {

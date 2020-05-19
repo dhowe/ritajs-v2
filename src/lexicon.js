@@ -6,7 +6,7 @@ class Lexicon {
 
   constructor(parent, dict) {
     RiTa = parent;
-    this.dict = dict;
+    this.data = dict;
     this.lexWarned = false;
   }
 
@@ -436,14 +436,14 @@ class Lexicon {
   }
 
   _dict(fatal) {
-    if (!this.dict) {
+    if (!this.data) {
       if (fatal) throw Error('This function requires a lexicon, make sure you are using the full version of rita.js,\navailable at ' + RiTa.DOWNLOAD_URL + '\n');
       if (!this.lexWarned) {
         console.warn('[WARN] no lexicon appears to be loaded; feature-analysis and pos-tagging may be incorrect.');
         this.lexWarned = true;
       }
     }
-    return this.dict || {};
+    return this.data || {};
   }
 
   // med for 2 strings (or 2 arrays)

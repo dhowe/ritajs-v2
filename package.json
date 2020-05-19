@@ -18,6 +18,7 @@
     "test": "mocha",
     "test.g": "mocha ./test/*.js -g ",
     "test.grammar": "mocha ./test/riscript-tests.js",
+    "test.issues": "mocha ./issues/known-issues.js",
     "test.quick": "mocha './test/**/!(lexicon-tests).js'",
     "test.prod": "NODE_ENV=dist mocha ./test/*.js",
     "test.watch": "mocha --watch 'src/*.js' './test/**/!(lexicon-tests).js'",

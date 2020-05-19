@@ -30,7 +30,7 @@ class RiTa {
   }
 
   static alliterations() {
-    return RiTa._lexicon().alliterations(...arguments);
+    return RiTa.lexicon().alliterations(...arguments);
   }
 
   // static compile() {
@@ -68,7 +68,7 @@ class RiTa {
   }
 
   static hasWord(word) {
-    return RiTa._lexicon().hasWord(word, true);
+    return RiTa.lexicon().hasWord(word, true);
   }
 
   static isAbbreviation(input, { caseSensitive = false } = {}) {
@@ -88,7 +88,7 @@ class RiTa {
   }
 
   static isAlliteration(word1, word2) {
-    return RiTa._lexicon().isAlliteration(word1, word2);
+    return RiTa.lexicon().isAlliteration(word1, word2);
   }
 
   static isNoun(word) {
@@ -105,7 +105,7 @@ class RiTa {
   }
 
   static isRhyme(word1, word2) {
-    return RiTa._lexicon().isRhyme(word1, word2);
+    return RiTa.lexicon().isRhyme(word1, word2);
   }
 
   static isVerb(word) {
@@ -159,7 +159,7 @@ class RiTa {
   }
 
   static randomWord() {
-    return RiTa._lexicon().randomWord(...arguments);
+    return RiTa.lexicon().randomWord(...arguments);
   }
 
   static randomItem() {
@@ -167,7 +167,7 @@ class RiTa {
   }
 
   static rhymes() {
-    return RiTa._lexicon().rhymes(...arguments);
+    return RiTa.lexicon().rhymes(...arguments);
   }
 
   static stem(word) {
@@ -183,7 +183,7 @@ class RiTa {
   }
 
   static similarBy() {
-    return RiTa._lexicon().similarBy(...arguments);
+    return RiTa.lexicon().similarBy(...arguments);
   }
 
   static singularize() {
@@ -207,17 +207,17 @@ class RiTa {
   }
 
   static words() {
-    return RiTa._lexicon().words();
+    return RiTa.lexicon().words();
   }
 
   static hasLexicon() {
-    return RiTa._lexicon().size() > 0;
+    return RiTa.lexicon().size() > 0;
   }
 
   /////////////////////////////////////////////////////////////////
 
-  static _lexicon() { // lazy load
-    if (typeof RiTa.lexicon === 'undefined') {
+  static lexicon() { // lazy load
+    if (typeof RiTa._lexicon === 'undefined') {
       const LetterToSound = require('./rita_lts');
       RiTa.lts = new LetterToSound(RiTa);
       /*if (typeof __NOLTS__ !== 'undefined') { // used by webpack, don't shorten
@@ -225,18 +225,18 @@ class RiTa {
         RiTa.lts = new LetterToSound(RiTa);
       }*/
       if (typeof __NOLEX__ !== 'undefined') { // used by webpack, don't shorten
-        RiTa.lexicon = new Lexicon(RiTa);
+        RiTa._lexicon = new Lexicon(RiTa);
       }
       else {
-        RiTa.lexicon = new Lexicon(RiTa, require('./rita_dict'));
+        RiTa._lexicon = new Lexicon(RiTa, require('./rita_dict'));
       }
     }
-    return RiTa.lexicon;
+    return RiTa._lexicon;
   }
 
   static _analyzer() { // lazy load
     if (typeof RiTa.analyzer === 'undefined') {
-      RiTa._lexicon();
+      RiTa.lexicon();
       RiTa.analyzer = new Analyzer(RiTa);
     }
     return RiTa.analyzer;
@@ -261,7 +261,7 @@ RiTa.randomizer = new SeededRandom(RiTa);
 
 // LAZY-LOADS
 RiTa.analyzer = undefined;
-RiTa.lexicon = undefined;
+RiTa._lexicon = undefined;
 RiTa.dict = undefined;
 RiTa.lts = undefined;
 

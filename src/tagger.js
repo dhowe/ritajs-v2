@@ -12,7 +12,7 @@ class PosTagger {
   constructor(parent) {
     RiTa = parent;
     this.stemmer = RiTa.stemmer;
-    this.lex = RiTa._lexicon();
+    this.lex = RiTa.lexicon();
   }
 
   isVerb(word) {

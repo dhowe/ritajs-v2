@@ -29,6 +29,7 @@ const SINGULAR_RULES = [
   RE("^feet$", 3, "oot"),
   RE("^teeth$", 4, "ooth"),
   RE("children$", 3),
+  RE("geese", 4, "oose"),
   RE("^concerti$", 1, "o"),
   RE("people$", 4, "rson"),
   //RE("^(minuti)a$", 0, 'e'),
@@ -77,7 +78,6 @@ const PLURAL_RULES = [
   RE("^tooth$", 4, "eeth"),
   RE("^[lm]ouse$", 4, "ice"),
   RE("^foot$", 3, "eet"),
-  RE("femur", 2, "ora"),
   RE("goose", 4, "eese"),
   RE("^(co|no)$", 0, "'s"),
   RE("^blond$", 0, "es"),
@@ -131,7 +131,7 @@ class Inflector {
       this.pluralize.name, (opts && opts.dbug));
   }
 
-  isPlural(word, opts) {
+  isPlural(word, opts) { // add to API?
 
     if (!word || !word.length) return false;
 
@@ -142,12 +142,7 @@ class Inflector {
 
     if (MODALS.includes(word)) return true;
 
-    /*if (RiTa.stem(word) === word) { // removed Nov 1
-      return false;
-    }*/
-
-    let lex = RiTa._lexicon();
-    let dict = lex._dict(fatal);
+    let dict = RiTa.lexicon()._dict(fatal);
     let sing = RiTa.singularize(word);
 
     // Is singularized form is in lexicon as 'nn'?
