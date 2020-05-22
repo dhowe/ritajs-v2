@@ -200,13 +200,22 @@ class Lexicon {
     maxWordLength: return only words whose length is less than this num
     minAllowedDistance: disregard words with distance less than this num
   */
-  similarBy(word, opts) {
+  similars(word, opts) {
 
     if (!word || !word.length) return [];
 
     opts = opts || {};
-    opts.type = opts.type || 'letter';
-    return (opts.type === 'soundAndLetter') ?
+    opts.type = 'letter';
+    return this._similarByType(word, opts);
+  }
+
+  soundsLike(word, opts) {
+
+    if (!word || !word.length) return [];
+
+    opts = opts || {};
+    opts.type = "sound";
+    return (opts.matchSpelling) ?
       this._similarBySoundAndLetter(word, opts)
       : this._similarByType(word, opts);
   }

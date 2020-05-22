@@ -277,82 +277,82 @@ describe('RiTa.Lexicon', function () {
 
   it('Should correctly call similarBy.letter', () => {
     let result;
-    result = RiTa.similarBy("banana", { minWordLength: 6, maxWordLength: 6 });
+    result = RiTa.similars("banana", { minWordLength: 6, maxWordLength: 6 });
     eql(result, ["cabana"]);
 
-    result = RiTa.similarBy("");
+    result = RiTa.similars("");
     eql(result, []);
 
-    result = RiTa.similarBy("banana");
+    result = RiTa.similars("banana");
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
-    result = RiTa.similarBy("banana");
+    result = RiTa.similars("banana");
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
-    result = RiTa.similarBy("banana", { minAllowedDistance: 1, minWordLength: 6, maxWordLength: 6 });
+    result = RiTa.similars("banana", { minAllowedDistance: 1, minWordLength: 6, maxWordLength: 6 });
     eql(result, ["cabana"]);
 
-    result = RiTa.similarBy("banana", { minAllowedDistance: 1 });
+    result = RiTa.similars("banana", { minAllowedDistance: 1 });
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
-    result = RiTa.similarBy("tornado");
+    result = RiTa.similars("tornado");
     eql(result, ["torpedo"]);
 
-    result = RiTa.similarBy("ice");
+    result = RiTa.similars("ice");
     eql(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
 
-    result = RiTa.similarBy("ice", { minAllowedDistance: 1 });
+    result = RiTa.similars("ice", { minAllowedDistance: 1 });
     eql(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
 
-    result = RiTa.similarBy("ice", { minAllowedDistance: 2, minWordLength: 3, maxWordLength: 3 });
+    result = RiTa.similars("ice", { minAllowedDistance: 2, minWordLength: 3, maxWordLength: 3 });
     expect(result.length > 10).to.be.true;
 
-    result = RiTa.similarBy("ice", { minAllowedDistance: 0, minWordLength: 3, maxWordLength: 3 });
+    result = RiTa.similars("ice", { minAllowedDistance: 0, minWordLength: 3, maxWordLength: 3 });
     eql(result, ["ace", "icy", "ire"]);
 
-    result = RiTa.similarBy("ice", { minAllowedDistance: 1, minWordLength: 3, maxWordLength: 3 });
+    result = RiTa.similars("ice", { minAllowedDistance: 1, minWordLength: 3, maxWordLength: 3 });
     eql(result, ["ace", "icy", "ire"]);
 
-    result = RiTa.similarBy("123");
+    result = RiTa.similars("123");
     expect(result.length > 400).to.be.true;
   });
 
-  it('Should correctly call similarBy.sound', () => {
+  it('Should correctly call soundsLike', () => {
     let result, answer;
 
-    eql(RiTa.similarBy("tornado", { type: 'sound' }), ["torpedo"]);
+    eql(RiTa.soundsLike("tornado", { type: 'sound' }), ["torpedo"]);
 
-    result = RiTa.similarBy("try", { type: 'sound' });
+    result = RiTa.soundsLike("try");
     answer = ["cry", "dry", "fry", "pry", "rye", "tie", "tray", "tree", "tribe", "tried", "tripe", "trite", "true", "wry"];
     eql(result, answer);
 
-    result = RiTa.similarBy("try", { type: 'sound', minAllowedDistance: 2 });
+    result = RiTa.soundsLike("try", { minAllowedDistance: 2 });
     expect(result.length > answer.length).to.be.true; // more
 
-    result = RiTa.similarBy("happy", { type: 'sound' });
+    result = RiTa.soundsLike("happy");
     answer = ["happier", "hippie"];
     eql(result, answer);
 
-    result = RiTa.similarBy("happy", { type: 'sound', minAllowedDistance: 2 });
+    result = RiTa.soundsLike("happy", {minAllowedDistance: 2 });
     expect(result.length > answer.length).to.be.true; // more
 
-    result = RiTa.similarBy("cat", { type: 'sound' });
+    result = RiTa.soundsLike("cat", { type: 'sound' });
     answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "can\'t", "cap", "cash", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
     eql(result, answer);
 
-    result = RiTa.similarBy("cat", { type: 'sound', minAllowedDistance: 2 });
+    result = RiTa.soundsLike("cat", { minAllowedDistance: 2 });
     expect(result.length > answer.length).to.be.true;
   });
 
-  it('Should correctly call similarBy.soundAndLetter', () => {
+  it('Should correctly call soundsLike().matchSpelling', () => {
     let result;
-    result = RiTa.similarBy("try", { type: 'soundAndLetter' });
+    result = RiTa.soundsLike("try", { matchSpelling: true });
     eql(result, ["cry", "dry", "fry", "pry", "tray", "wry"]);
 
-    result = RiTa.similarBy("daddy", { type: 'soundAndLetter' });
+    result = RiTa.soundsLike("daddy", { matchSpelling: true });
     eql(result, ["dandy", "paddy"]);
 
-    result = RiTa.similarBy("banana", { type: 'soundAndLetter' });
+    result = RiTa.soundsLike("banana", { matchSpelling: true });
     eql(result, ["bonanza"]);
   });
 

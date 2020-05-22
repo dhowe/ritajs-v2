@@ -81,34 +81,34 @@ describe('RiTa.Analyzer', () => {
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
     
-    eq(RiTa.phonemes("mice"), "m-ay-s");
+    eq(RiTa.phones("mice"), "m-ay-s");
 
     let result, answer;
 
-    eq(RiTa.phonemes(""), "");
-    eq(RiTa.phonemes("The"), "dh-ah");
-    eq(RiTa.phonemes("The."), "dh-ah .");
-    eq(RiTa.phonemes("flowers"), "f-l-aw-er-z");
+    eq(RiTa.phones(""), "");
+    eq(RiTa.phones("The"), "dh-ah");
+    eq(RiTa.phones("The."), "dh-ah .");
+    eq(RiTa.phones("flowers"), "f-l-aw-er-z");
 
     // different without lexicon ------------------------------------------
 
-    result = RiTa.phonemes("The boy jumped over the wild dog.");
+    result = RiTa.phones("The boy jumped over the wild dog.");
     answer = hasLex ? "dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-ao-g ." : 'dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-aa-g .';
     eq(result, answer);
 
-    result = RiTa.phonemes("The boy ran to the store.");
+    result = RiTa.phones("The boy ran to the store.");
     answer = hasLex ? "dh-ah b-oy r-ae-n t-uw dh-ah s-t-ao-r ." : 'dh-ah b-oy r-ah-n t-ow dh-ah s-t-ao-r .';
     eq(result, answer);
 
-    result = RiTa.phonemes("The dog ran faster than the other dog.  But the other dog was prettier.");
+    result = RiTa.phones("The dog ran faster than the other dog.  But the other dog was prettier.");
     answer = hasLex ? "dh-ah d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ah ah-dh-er d-ao-g . b-ah-t dh-ah ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er ." : 'dh-ah d-aa-g r-ah-n f-ae-s-t-er th-ae-n dh-ah ah-dh-er d-aa-g . b-ah-t dh-ah ah-dh-er d-aa-g w-ah-z p-r-eh-t-iy-er .';
     eq(result, answer);
 
-    eq(RiTa.phonemes("quiche"), hasLex ? "k-iy-sh" : 'k-w-ih-sh');
-    eq(RiTa.phonemes("said"), hasLex ? "s-eh-d" : 's-ey-d');
-    eq(RiTa.phonemes("chevrolet"), hasLex ? "sh-eh-v-r-ow-l-ey" : 'ch-eh-v-r-ow-l-ah-t');
-    eq(RiTa.phonemes("women"), hasLex ? "w-ih-m-eh-n" : 'w-ow-m-eh-n');
-    eq(RiTa.phonemes("genuine"), hasLex ? "jh-eh-n-y-uw-w-ah-n" : 'jh-eh-n-y-ah-ay-n');
+    eq(RiTa.phones("quiche"), hasLex ? "k-iy-sh" : 'k-w-ih-sh');
+    eq(RiTa.phones("said"), hasLex ? "s-eh-d" : 's-ey-d');
+    eq(RiTa.phones("chevrolet"), hasLex ? "sh-eh-v-r-ow-l-ey" : 'ch-eh-v-r-ow-l-ah-t');
+    eq(RiTa.phones("women"), hasLex ? "w-ih-m-eh-n" : 'w-ow-m-eh-n');
+    eq(RiTa.phones("genuine"), hasLex ? "jh-eh-n-y-uw-w-ah-n" : 'jh-eh-n-y-ah-ay-n');
 
     RiTa.SILENCE_LTS = silent;
   });

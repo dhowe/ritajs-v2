@@ -25,17 +25,17 @@ class RiTa {
     throw Error('Invalid instantiation');
   }
 
-  static analyze(text) {
-    return RiTa._analyzer().analyze(text);
+  static addTransform(theName, theFunction) {
+    return RiScript.addTransform(...arguments);
   }
 
   static alliterations() {
     return RiTa.lexicon().alliterations(...arguments);
   }
 
-  // static compile() {
-  //   return RiScript.compile(...arguments);
-  // }
+  static analyze(text) {
+    return RiTa._analyzer().analyze(text);
+  }
 
   static concordance() {
     return RiTa.concorder.concordance(...arguments);
@@ -63,8 +63,8 @@ class RiTa {
     return RiScript.eval(...arguments);
   }
 
-  static addTransform(theName, theFunction) {
-    return RiScript.addTransform(...arguments);
+  static hasLexicon() {
+    return RiTa.lexicon().size() > 0;
   }
 
   static hasWord(word) {
@@ -120,7 +120,7 @@ class RiTa {
     return RiTa.conjugator.pastParticiple(verb);
   }
 
-  static phonemes(text) {
+  static phones(text) {
     return RiTa._analyzer().analyze(text).phonemes;
   }
 
@@ -170,8 +170,24 @@ class RiTa {
     return RiTa.lexicon().rhymes(...arguments);
   }
 
+  static sentences(text) {
+    return RiTa.tokenizer.sentences(text);
+  }
+
+  static similars() {
+    return RiTa.lexicon().similars(...arguments);
+  }
+
+  static singularize() {
+    return RiTa.inflector.singularize(...arguments);
+  }
+
+  static soundsLike() {
+    return RiTa.lexicon().soundsLike(...arguments);
+  }
+
   static stem(word) {
-    return RiTa.stem(word);
+    return RiTa.stemmer.stem(word);
   }
 
   static stresses(text) {
@@ -180,22 +196,6 @@ class RiTa {
 
   static syllables(text) {
     return RiTa._analyzer().analyze(text).syllables;
-  }
-
-  static similarBy() {
-    return RiTa.lexicon().similarBy(...arguments);
-  }
-
-  static singularize() {
-    return RiTa.inflector.singularize(...arguments);
-  }
-
-  static sentences(text) {
-    return RiTa.tokenizer.sentences(text);
-  }
-
-  static stem(word) {
-    return RiTa.stemmer.stem(word);
   }
 
   static tokenize(text) {
@@ -208,10 +208,6 @@ class RiTa {
 
   static words() {
     return RiTa.lexicon().words();
-  }
-
-  static hasLexicon() {
-    return RiTa.lexicon().size() > 0;
   }
 
   /////////////////////////////////////////////////////////////////
