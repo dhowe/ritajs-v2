@@ -11,7 +11,7 @@ class Analyzer {
   }
 
   analyze(text) {
-    let phonemes = '', syllables = '', stresses = '';
+    let phones = '', syllables = '', stresses = '';
     let slash = '/', delim = '-', features = {};
     let words = RiTa.tokenizer.tokenize(text);
     let tags = RiTa.tagger.tag(text); // don't fail if no lexicon
@@ -23,18 +23,18 @@ class Analyzer {
 
       let useRaw = false;
       let word = words[i];
-      let phones = this.lexicon._rawPhones(word, { noLts: true });
+      let rawphones = this.lexicon._rawPhones(word, { noLts: true });
 
       // if its a simple plural ending in 's',
       // and the singular is in the lexicon, add '-z' to end
-      if (!phones && word.endsWith('s')) {
+      if (!rawphones && word.endsWith('s')) {
         let sing = RiTa.singularize(word);
-        phones = this.lexicon._rawPhones(sing, { noLts: true });
-        phones && (phones += '-z'); // add 's' phone
+        rawphones = this.lexicon._rawPhones(sing, { noLts: true });
+        rawphones && (rawphones += '-z'); // add 's' phone
       }
 
       // if no phones yet, try the lts-engine
-      if (!phones) {
+      if (!rawphones) {
 
         let ltsPhones = RiTa.lts && RiTa.lts.getPhones(word);
         if (ltsPhones && ltsPhones.length > 0) {
@@ -42,22 +42,22 @@ class Analyzer {
           if (!RiTa.SILENT && !RiTa.SILENCE_LTS && RiTa.hasLexicon() && word.match(/[a-zA-Z]+/)) {
             console.log("[RiTa] Used LTS-rules for '" + word + "'");
           }
-          phones = Util.syllablesFromPhones(ltsPhones);
+          rawphones = Util.syllablesFromPhones(ltsPhones);
 
         } else {
 
-          phones = word;
+          rawphones = word;
           useRaw = true;
         }
       }
 
-      let sp = phones.replace(/[0-2]/g, '').replace(/ /g, delim) + ' ';
-      phonemes += (sp === 'dh ') ? 'dh-ah ' : sp; // special case
-      let ss = phones.replace(/ /g, slash).replace(/1/g, '') + ' ';
+      let sp = rawphones.replace(/[0-2]/g, '').replace(/ /g, delim) + ' ';
+      phones += (sp === 'dh ') ? 'dh-ah ' : sp; // special case
+      let ss = rawphones.replace(/ /g, slash).replace(/1/g, '') + ' ';
       syllables += (ss === 'dh ') ? 'dh-ah ' : ss;
 
       if (!useRaw) {
-        let stressyls = phones.split(' ');
+        let stressyls = rawphones.split(' ');
         for (let j = 0; j < stressyls.length; j++) {
 
           if (!stressyls[j].length) continue;
@@ -75,7 +75,7 @@ class Analyzer {
     }
 
     features.stresses = stresses.trim();
-    features.phones = phonemes.trim();
+    features.phones = phones.trim();
     features.syllables = syllables.trim();
 
     return features;

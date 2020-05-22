@@ -1,8 +1,8 @@
 ## Installation
 
-* For node (via npm): https://www.npmjs.com/package/rita/v/2.0.0-beta.6 (1.2mb)
-* For the browser: https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-full.js (1.4mb)
-* For the browser (no lexicon): https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-nolex.js (.5mb)
+* For [node (via npm)](https://www.npmjs.com/package/rita/v/2.0.0-beta.6) (1.2mb)
+* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-full.js) (1.4mb)
+* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-nolex.js) (.5mb)
 
 ## RiTa v2 API
 
@@ -36,12 +36,12 @@ RiTa.randomOrdering()
 RiTa.randomSeed()
 RiTa.randomWord()
 RiTa.rhymes()
+RiTa.sentences()
 RiTa.similars()
 RiTa.singularize()
-RiTa.sentences()
 RiTa.soundsLike()
 RiTa.stem()
-RiTa.stresses()
+RiTa.stresses() 
 RiTa.syllables()
 RiTa.tokenize()
 RiTa.untokenize()
@@ -63,7 +63,7 @@ toString()
 RiTa.Markov
 ------------
 addText()
-addSentences()
+addSentences() // ??
 completions()
 generate()
 probability()
