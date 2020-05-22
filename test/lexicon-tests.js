@@ -275,7 +275,7 @@ describe('RiTa.Lexicon', function () {
     expect(!RiTa.rhymes("swag").includes("grab")).to.be.true;
   });
 
-  it('Should correctly call similarBy.letter', () => {
+  it('Should correctly call similars', () => {
     let result;
     result = RiTa.similars("banana", { minWordLength: 6, maxWordLength: 6 });
     eql(result, ["cabana"]);

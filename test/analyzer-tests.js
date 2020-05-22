@@ -26,7 +26,7 @@ describe('RiTa.Analyzer', () => {
 
   it('Should correctly call analyze', () => {
 
-    expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phonemes: '', syllables: '' });
+    expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phones: '', syllables: '' });
 
     let feats;
     feats = RiTa.analyze("clothes");
@@ -76,7 +76,7 @@ describe('RiTa.Analyzer', () => {
 
   });
 
-  it('Should correctly call phonemes', () => {
+  it('Should correctly call phones', () => {
 
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;

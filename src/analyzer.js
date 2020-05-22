@@ -75,7 +75,7 @@ class Analyzer {
     }
 
     features.stresses = stresses.trim();
-    features.phonemes = phonemes.trim();
+    features.phones = phonemes.trim();
     features.syllables = syllables.trim();
 
     return features;

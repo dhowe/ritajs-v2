@@ -121,7 +121,7 @@ class RiTa {
   }
 
   static phones(text) {
-    return RiTa._analyzer().analyze(text).phonemes;
+    return RiTa._analyzer().analyze(text).phones;
   }
 
   // partOfSpeech() ?
@@ -297,6 +297,6 @@ RiTa.SUBJUNCTIVE = 5;
 // For tokenization, Can't -> Can not, etc.
 RiTa.SPLIT_CONTRACTIONS = false;
 
-RiTa.FEATURES = ['tokens', 'stresses', 'phonemes', 'syllables', 'pos', 'text'].map(f => f.toUpperCase());
+RiTa.FEATURES = ['tokens', 'stresses', 'phones', 'syllables', 'pos', 'text'].map(f => f.toUpperCase());
 
 module && (module.exports = RiTa);
