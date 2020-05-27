@@ -63,7 +63,7 @@ toString()
 RiTa.Markov
 ------------
 addText()
-addSentences() // ??
+addText() // ??
 completions()
 generate()
 probability()

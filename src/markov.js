@@ -39,21 +39,19 @@ class Markov {
     return rm;
   }
 
-  addText(text) {
-    if (Array.isArray(text)) throw Error('addText() expects a string');
-    return this.addSentences(RiTa().sentences(text));
-  }
+  addText(textx, multiplier) {
 
-  addSentences(sentences) {
-    if (!Array.isArray(sentences)) {
-      throw Error('addSentences() expects an array of sentences');
-    }
+    multiplier = multiplier || 1;
 
+    let sents = Array.isArray(text) ? text : RiTa().sentences(text);
+ 
     // add new tokens for each sentence start/end
     let tokens = [];
-    for (let i = 0; i < sentences.length; i++) {
+    for (let k = 0; k < multiplier; k++) {
+
+    for (let i = 0; i < sents.length; i++) {
       //let sentence = sentences[i].replace(/\s+/, ' ').trim();
-      let words = this.tokenize(sentences[i]);
+      let words = this.tokenize(sents[i]);
       tokens.push(Markov.SS, ...words, Markov.SE);
     }
     this._treeify(tokens);
