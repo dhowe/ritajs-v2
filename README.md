@@ -8,14 +8,14 @@
 
   <table border="1">
    <tr>
-    <th>RiTa</th>
-    <th></th>
+    <th colspan=2>RiTa</th>
+
       <th>RiTa.Grammar</th>
       <th>RiTa.Markov</th>
    </tr>
    <tr>
     <td>
-   <a href="RiTa/VERSION/index.html">RiTa.VERSION</a><br/>
+    <a href="RiTa/VERSION/index.html">RiTa.VERSION</a><br/>
     <a href="RiTa/addTransform/index.html">RiTa.addTransform</a><br/>
     <a href="RiTa/alliterations/index.html">RiTa.alliterations</a><br/>
     <a href="RiTa/concordance/index.html">RiTa.concordance</a><br/>
