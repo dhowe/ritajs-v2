@@ -17,8 +17,6 @@
    </tr>
    <tr>
     <td>
-    <a href="RiTa/VERSION/index.html">RiTa.VERSION</a><br/>
-    <a href=""></a><br/>
     <a href="RiTa/addTransform/index.html">RiTa.addTransform</a><br/>
     <a href="RiTa/alliterations/index.html">RiTa.alliterations</a><br/>
     <a href="RiTa/concordance/index.html">RiTa.concordance</a><br/>
