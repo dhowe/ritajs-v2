@@ -8,7 +8,7 @@
 
   <table border="1">
    <tr>
-    <th colspan=2>RiTa&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </th>
+    <th colspan=2>RiTa&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
     <th>RiTa.Grammar</th>
     <th>RiTa.Markov</th>
     <th></th>
@@ -75,6 +75,8 @@
     <a href="Markov/fromJSON/index.html">Markov.fromJSON</a><br/>
     <br/><br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
+     <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+     </td>
  </tr>
 </table>
   
