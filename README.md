@@ -1,78 +1,83 @@
 ## Installation
 
-* For node (via npm): https://www.npmjs.com/package/rita/v/2.0.0-beta.6 (1.2mb)
-* For the browser: https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-full.js (1.4mb)
-* For the browser (no lexicon): https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-nolex.js (.5mb)
+* For [node (via npm)](https://www.npmjs.com/package/rita/v/2.0.0-beta.6) (1.2mb)
+* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-full.js) (1.4mb)
+* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-nolex.js) (.5mb)
 
 ## RiTa v2 API
 
-```
-RiTa
-------------
-RiTa.VERSION
-RiTa.addTransform()
-RiTa.alliterations()
-RiTa.concordance()
-RiTa.conjugate()
-RiTa.evaluate()
-RiTa.hasWord()
-RiTa.isAbbreviation()
-RiTa.isAdjective()
-RiTa.isAdverb()
-RiTa.isAlliteration()
-RiTa.isNoun()
-RiTa.isPunctuation()
-RiTa.isQuestion()
-RiTa.isRhyme()
-RiTa.isVerb()
-RiTa.kwic()
-RiTa.pastParticiple()
-RiTa.phonemes()
-RiTa.pos()
-RiTa.posInline()
-RiTa.presentParticiple()
-RiTa.pluralize()
-RiTa.randomOrdering()
-RiTa.randomSeed()
-RiTa.randomWord()
-RiTa.rhymes()
-RiTa.similarBy()
-RiTa.singularize()
-RiTa.sentences()
-RiTa.stem()
-RiTa.stresses()
-RiTa.syllables()
-RiTa.tokenize()
-RiTa.untokenize()
-RiTa.words()
-```
-
-```
-RiTa.Grammar
-------------
-addRule()
-expand()
-expandFrom()
-loadRules()
-removeRule()
-toString()
-```
-
-```
-RiTa.Markov
-------------
-addText()
-addSentences()
-completions()
-generate()
-probability()
-probabilities()
-size()
-toString()
-toJSON()
-RiMarkov.fromJSON()
-```
-
+  <table cellspacing="0" cellpadding="0" border="0">
+   <tr>
+    <th colspan=2>RiTa&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </th>
+    <th>RiTa.Markov</th>
+    <th>RiTa.Grammar</th>
+   </tr>
+   <tr>
+    <td>
+    <a href="ref/RiTa/addTransform/index.html">RiTa.addTransform()</a><br/>
+    <a href="ref/RiTa/alliterations/index.html">RiTa.alliterations()</a><br/>
+    <a href="ref/RiTa/concordance/index.html">RiTa.concordance()</a><br/>
+    <a href="ref/RiTa/conjugate/index.html">RiTa.conjugate()</a><br/>
+    <a href="ref/RiTa/evaluate/index.html">RiTa.evaluate()</a><br/>
+    <a href="ref/RiTa/hasWord/index.html">RiTa.hasWord()</a><br/>
+    <a href="ref/RiTa/isAbbreviation/index.html">RiTa.isAbbreviation()</a><br/>
+    <a href="ref/RiTa/isAdjective/index.html">RiTa.isAdjective()</a><br/>
+    <a href="ref/RiTa/isAdverb/index.html">RiTa.isAdverb()</a><br/>
+    <a href="ref/RiTa/isAlliteration/index.html">RiTa.isAlliteration()</a><br/>
+    <a href="ref/RiTa/isNoun/index.html">RiTa.isNoun()</a><br/>
+    <a href="ref/RiTa/isPunctuation/index.html">RiTa.isPunctuation()</a><br/>
+    <a href="ref/RiTa/isQuestion/index.html">RiTa.isQuestion()</a><br/>
+    <a href="ref/RiTa/isRhyme/index.html">RiTa.isRhyme()</a><br/>
+    <a href="ref/RiTa/isVerb/index.html">RiTa.isVerb()</a><br/>
+    <a href="ref/RiTa/kwic/index.html">RiTa.kwic()</a><br/>
+    <a href="ref/RiTa/pastParticiple/index.html">RiTa.pastParticiple()</a><br/>
+    <a href="ref/RiTa/phonemes/index.html">RiTa.phonemes()</a><br/>
+   </td>
+   <td>
+    <a href="ref/RiTa/pos/index.html">RiTa.pos()</a><br/>
+    <a href="ref/RiTa/posInline/index.html">RiTa.posInline()</a><br/>
+    <a href="ref/RiTa/presentParticiple/index.html">RiTa.presentParticiple()</a><br/>
+    <a href="ref/RiTa/pluralize/index.html">RiTa.pluralize()</a><br/>
+    <a href="ref/RiTa/randomOrdering/index.html">RiTa.randomOrdering()</a><br/>
+    <a href="ref/RiTa/randomSeed/index.html">RiTa.randomSeed()</a><br/>
+    <a href="ref/RiTa/randomWord/index.html">RiTa.randomWord()</a><br/>
+    <a href="ref/RiTa/rhymes/index.html">RiTa.rhymes()</a><br/>
+    <a href="ref/RiTa/sentences/index.html">RiTa.sentences()</a><br/>
+    <a href="ref/RiTa/similars/index.html">RiTa.similars()</a><br/>
+    <a href="ref/RiTa/singularize/index.html">RiTa.singularize()</a><br/>
+    <a href="ref/RiTa/soundsLike/index.html">RiTa.soundsLike()</a><br/>
+    <a href="ref/RiTa/stem/index.html">RiTa.stem()</a><br/>
+    <a href="ref/RiTa/stresses/index.html">RiTa.stresses()</a><br/>
+    <a href="ref/RiTa/syllables/index.html">RiTa.syllables()</a><br/>
+    <a href="ref/RiTa/tokenize/index.html">RiTa.tokenize()</a><br/>
+    <a href="ref/RiTa/untokenize/index.html">RiTa.untokenize()</a><br/>
+    <a href="ref/RiTa/words/index.html">RiTa.words()</a><br/>
+   </td>
+   <td>
+    <a href="ref/Markov/addText/index.html">addText()</a><br/>
+    <a href="ref/Markov/completions/index.html">completions()</a><br/>
+    <a href="ref/Markov/generate/index.html">generate()</a><br/>
+    <a href="ref/Markov/probability/index.html">probability()</a><br/>
+    <a href="ref/Markov/probabilities/index.html">probabilities()</a><br/>
+    <a href="ref/Markov/size/index.html">size()</a><br/>
+    <a href="ref/Markov/toString/index.html">toString()</a><br/>
+    <a href="ref/Markov/toJSON/index.html">toJSON()</a><br/>
+    <a href="ref/Markov/fromJSON/index.html">Markov.fromJSON()</a><br/>
+    <br/><br/><br/><br/><br/><br/><br/><br/><br/>
+   </td>
+   <td>
+    <a href="ref/Grammar/addRule/index.html">addRule()</a><br/>
+    <a href="ref/Grammar/expand/index.html">expand()</a><br/>
+    <a href="ref/Grammar/removeRule/index.html">removeRule()</a><br/>
+    <a href="ref/Grammar/setRules/index.html">setRules()</a><br/>
+    <a href="ref/Grammar/toString/index.html">toString()</a><br/>
+    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+   </td>
+ </tr>
+</table>
+  
 
 ## RiTaScript
 

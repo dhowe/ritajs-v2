@@ -83,7 +83,7 @@ describe('RiTa.Markov', () => {
   // it('should correctly load a large model', async () => {
   //   let rm = new Markov(4, { optimizeMemory: true });
   //   let content = fs.readFileSync('/Users/dhowe/Desktop/dracula.txt', 'utf8');
-  //   rm.addSentences(content);//.then(console.log('done'));
+  //   rm.addText(content);//.then(console.log('done'));
   //   console.log('loaded');
   //   //try {
   //      var result = await rm.generateAsync();
@@ -104,14 +104,14 @@ describe('RiTa.Markov', () => {
     eq(toks[0].token, 'The');
 
     rm = new Markov(4);
-    rm.addSentences(RiTa.sentences(sample));
+    rm.addText(RiTa.sentences(sample));
     eq(rm._flatten(rm._initSentence(['I', 'also'])), "I also");
   });
 
 
   it('should throw on failed generate', () => {
     let rm = new Markov(4);
-    rm.addSentences(RiTa.sentences(sample));
+    rm.addText(RiTa.sentences(sample));
     expect(() => rm.generate(5)).to.throw;
   });
 
@@ -120,7 +120,7 @@ describe('RiTa.Markov', () => {
     let text = '家 安 春 夢 家 安 春 夢 ！ 家 安 春 夢 德 安 春 夢 ？ 家 安 春 夢 安 安 春 夢 。';
     let sentArray = text.match(/[^，；。？！]+[，；。？！]/g);
     let rm = new Markov(4);
-    rm.addSentences(sentArray);
+    rm.addText(sentArray);
     let result = rm.generate(5, { startTokens: '家' });
     eq(result.length, 5);
     result.forEach(r => ok(/^家[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
@@ -134,7 +134,7 @@ describe('RiTa.Markov', () => {
     let untokenize = (sents) => sents.join("");
 
     let rm = new Markov(4, { tokenize, untokenize });
-    rm.addSentences(sentArray);
+    rm.addText(sentArray);
     let result = rm.generate(5, { startTokens: '家' });
     //console.log(result);
 
@@ -145,7 +145,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call generate', () => {
 
     let rm = new Markov(4, { disableInputChecks: 1 });
-    rm.addSentences(RiTa.sentences(sample));
+    rm.addText(RiTa.sentences(sample));
     let sents = rm.generate(5);
     eq(sents.length, 5);
     for (let i = 0; i < sents.length; i++) {
@@ -168,7 +168,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call generate.minMaxLength', () => {
 
     let rm = new Markov(4, { disableInputChecks: 1 }), minLength = 7, maxLength = 20;
-    rm.addSentences(RiTa.sentences(sample));
+    rm.addText(RiTa.sentences(sample));
 
     let sents = rm.generate(5, { minLength, maxLength });
     eq(sents.length, 5);
@@ -181,7 +181,7 @@ describe('RiTa.Markov', () => {
     }
 
     rm = new Markov(4, { disableInputChecks: 1 });
-    rm.addSentences(RiTa.sentences(sample));
+    rm.addText(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
       minLength = (3 + i), maxLength = (10 + i);
       let s = rm.generate({ minLength, maxLength });
@@ -197,7 +197,7 @@ describe('RiTa.Markov', () => {
 
     let rm = new Markov(4, { disableInputChecks: 1 });
     let start = 'One';
-    rm.addSentences(RiTa.sentences(sample));
+    rm.addText(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
       let s = rm.generate({ startTokens: start });
       //console.log(i + ") " + s);
@@ -224,7 +224,7 @@ describe('RiTa.Markov', () => {
 
     let rm = new Markov(4, { disableInputChecks: 1 });
     let start = ['One'];
-    rm.addSentences(RiTa.sentences(sample));
+    rm.addText(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
       let s = rm.generate({ startTokens: start });
       //console.log(i + ") " + s);
@@ -246,7 +246,7 @@ describe('RiTa.Markov', () => {
     }
 
     rm = new Markov(4, { disableInputChecks: 1 });
-    rm.addSentences(RiTa.sentences(sample));
+    rm.addText(RiTa.sentences(sample));
     start = ['One', 'reason'];
     for (let i = 0; i < 1; i++) {
       let s = rm.generate({ startTokens: start });
@@ -272,7 +272,7 @@ describe('RiTa.Markov', () => {
   it('should correctly call generate.mlm', () => {
 
     let mlms = 10, rm = new Markov(3, { maxLengthMatch: mlms, trace: 0 });
-    rm.addSentences(RiTa.sentences(sample3));
+    rm.addText(RiTa.sentences(sample3));
     let sents = rm.generate(5);
     for (let i = 0; i < sents.length; i++) {
       let sent = sents[i];
@@ -471,7 +471,7 @@ describe('RiTa.Markov', () => {
     eq(rm.probability([]), 0);
   });
 
-  it('should correctly call addSentences', () => {
+  it('should correctly call addText', () => {
     let rm = new Markov(4);
     let sents = RiTa.sentences(sample);
     let count = sents.length; // sentence-end tokens
@@ -479,7 +479,7 @@ describe('RiTa.Markov', () => {
       let words = RiTa.tokenize(sents[i]);
       count += words.length;
     }
-    rm.addSentences(sents);
+    rm.addText(sents);
 
     eq(rm.size(), count + sents.length);
 
@@ -513,13 +513,13 @@ describe('RiTa.Markov', () => {
 
     let rm2 = new Markov(4);
     rm2 = new Markov(3);
-    rm2.addSentences(sents);
+    rm2.addText(sents);
     eq(rm.size(), rm2.size());
   });
 
   it('should fail when sentence is in inputs', () => {
     let rm = new Markov(4);
-    rm.addSentences(['I ate the dog.']);
+    rm.addText(['I ate the dog.']);
     expect(() => rm.generate()).to.throw;
   });
 
@@ -536,7 +536,7 @@ describe('RiTa.Markov', () => {
   it('should correctly serialize and deserialize', () => {
 
     let rm = new Markov(4, { disableInputChecks: 1 });
-    rm.addSentences(['I ate the dog.']);
+    rm.addText(['I ate the dog.']);
     let copy = Markov.fromJSON(rm.toJSON());
     markovEquals(rm, copy);
     expect(copy.generate()).eql(rm.generate());
