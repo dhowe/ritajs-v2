@@ -36,7 +36,7 @@ describe('RiTa.Grammar', () => {
         ok(typeof new Grammar() !== 'undefined');
     });
 
-    it("should correctly call load", () => {
+    it("should correctly call setRules", () => {
 
         let rg = new Grammar();
         ok(typeof rg.rules !== 'undefined');
@@ -44,7 +44,7 @@ describe('RiTa.Grammar', () => {
         ok(typeof rg.rules['noun_phrase'] === 'undefined');
 
         grammars.forEach(g => {
-            rg.load(JSON.stringify(g));
+            rg.setRules(JSON.stringify(g));
             ok(typeof rg.rules !== 'undefined');
             ok(typeof rg.rules['start'] !== 'undefined');
             ok(typeof rg.rules['noun_phrase'] !== 'undefined');

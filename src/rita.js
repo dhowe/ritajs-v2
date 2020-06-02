@@ -174,8 +174,8 @@ class RiTa {
     return RiTa.tokenizer.sentences(text);
   }
 
-  static similars() {
-    return RiTa.lexicon().similars(...arguments);
+  static spellsLike() {
+    return RiTa.lexicon().spellsLike(...arguments);
   }
 
   static singularize() {

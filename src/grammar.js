@@ -3,24 +3,16 @@ const deepmerge = require('deepmerge');
 const maxTries = 100;
 
 // TODO: handling weighting of rules?
+// expandFrom? expandWith?
 
-/*
-API:
-  addRule
-  removeRule
-  load (addRules?)
-  expand
-  expandFrom
-  toString (add)
- */
 class Grammar {
 
   constructor(rules) {
     this.rules = {};
-    rules && this.load(rules);
+    rules && this.setRules(rules);
   }
 
-  load(rules) { // setRules or rules or ... ?
+  setRules(rules) { // or rules or ... ?
     if (typeof rules === 'string') {
       try {
         rules = JSON.parse(rules);

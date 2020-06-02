@@ -2,18 +2,18 @@ const { parse, stringify } = require('flatted/cjs');
 
 class Markov {
 
-  constructor(n, opts) {
+  constructor(n, opts = {}) {
     this.n = n;
     this.root = new Node(null, 'ROOT');
 
     // options (TODO: clarify/document options)
-    this.trace = opts && opts.trace;
-    this.mlm = opts && opts.maxLengthMatch;
-    this.logDuplicates = opts && opts.logDuplicates;
-    this.maxAttempts = opts && opts.maxAttempts || 99;
-    this.disableInputChecks = opts && opts.disableInputChecks;
-    this.tokenize = opts && opts.tokenize || RiTa().tokenize;
-    this.untokenize = opts && opts.untokenize || RiTa().untokenize;
+    this.trace = opts.trace;
+    this.mlm = opts.maxLengthMatch;
+    this.logDuplicates = opts.logDuplicates;
+    this.maxAttempts = opts.maxAttempts || 99;
+    this.disableInputChecks = opts.disableInputChecks;
+    this.tokenize = opts.tokenize || RiTa().tokenize;
+    this.untokenize = opts.untokenize || RiTa().untokenize;
 
     if (this.mlm && this.mlm <= this.n) throw Error('maxLengthMatch(mlm) must be > N')
 
@@ -39,22 +39,20 @@ class Markov {
     return rm;
   }
 
-  addText(textx, multiplier) {
-
-    multiplier = multiplier || 1;
+  addText(text, multiplier = 1) {
 
     let sents = Array.isArray(text) ? text : RiTa().sentences(text);
- 
+
     // add new tokens for each sentence start/end
     let tokens = [];
     for (let k = 0; k < multiplier; k++) {
-
-    for (let i = 0; i < sents.length; i++) {
-      //let sentence = sentences[i].replace(/\s+/, ' ').trim();
-      let words = this.tokenize(sents[i]);
-      tokens.push(Markov.SS, ...words, Markov.SE);
+      for (let i = 0; i < sents.length; i++) {
+        //let sentence = sentences[i].replace(/\s+/, ' ').trim();
+        let words = this.tokenize(sents[i]);
+        tokens.push(Markov.SS, ...words, Markov.SE);
+      }
+      this._treeify(tokens);
     }
-    this._treeify(tokens);
 
     if (!this.disableInputChecks || this.mlm) this.input.push(...tokens);
   }
@@ -72,7 +70,7 @@ class Markov {
     const maxLength = opts.maxLength || 35;
     const allowDuplicates = opts.allowDuplicates;
     let startTokens = opts.startTokens;
-  
+
     let result = [], tokens, tries = 0;
     let fail = (msg) => {
       this._logError(++tries, tokens, msg);

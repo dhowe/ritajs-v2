@@ -275,45 +275,45 @@ describe('RiTa.Lexicon', function () {
     expect(!RiTa.rhymes("swag").includes("grab")).to.be.true;
   });
 
-  it('Should correctly call similars', () => {
+  it('Should correctly call spellsLike', () => {
     let result;
-    result = RiTa.similars("banana", { minWordLength: 6, maxWordLength: 6 });
+    result = RiTa.spellsLike("banana", { minWordLength: 6, maxWordLength: 6 });
     eql(result, ["cabana"]);
 
-    result = RiTa.similars("");
+    result = RiTa.spellsLike("");
     eql(result, []);
 
-    result = RiTa.similars("banana");
+    result = RiTa.spellsLike("banana");
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
-    result = RiTa.similars("banana");
+    result = RiTa.spellsLike("banana");
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
-    result = RiTa.similars("banana", { minAllowedDistance: 1, minWordLength: 6, maxWordLength: 6 });
+    result = RiTa.spellsLike("banana", { minAllowedDistance: 1, minWordLength: 6, maxWordLength: 6 });
     eql(result, ["cabana"]);
 
-    result = RiTa.similars("banana", { minAllowedDistance: 1 });
+    result = RiTa.spellsLike("banana", { minAllowedDistance: 1 });
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
-    result = RiTa.similars("tornado");
+    result = RiTa.spellsLike("tornado");
     eql(result, ["torpedo"]);
 
-    result = RiTa.similars("ice");
+    result = RiTa.spellsLike("ice");
     eql(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
 
-    result = RiTa.similars("ice", { minAllowedDistance: 1 });
+    result = RiTa.spellsLike("ice", { minAllowedDistance: 1 });
     eql(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
 
-    result = RiTa.similars("ice", { minAllowedDistance: 2, minWordLength: 3, maxWordLength: 3 });
+    result = RiTa.spellsLike("ice", { minAllowedDistance: 2, minWordLength: 3, maxWordLength: 3 });
     expect(result.length > 10).to.be.true;
 
-    result = RiTa.similars("ice", { minAllowedDistance: 0, minWordLength: 3, maxWordLength: 3 });
+    result = RiTa.spellsLike("ice", { minAllowedDistance: 0, minWordLength: 3, maxWordLength: 3 });
     eql(result, ["ace", "icy", "ire"]);
 
-    result = RiTa.similars("ice", { minAllowedDistance: 1, minWordLength: 3, maxWordLength: 3 });
+    result = RiTa.spellsLike("ice", { minAllowedDistance: 1, minWordLength: 3, maxWordLength: 3 });
     eql(result, ["ace", "icy", "ire"]);
 
-    result = RiTa.similars("123");
+    result = RiTa.spellsLike("123");
     expect(result.length > 400).to.be.true;
   });
 

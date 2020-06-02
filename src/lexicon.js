@@ -200,7 +200,7 @@ class Lexicon {
     maxWordLength: return only words whose length is less than this num
     minAllowedDistance: disregard words with distance less than this num
   */
-  similars(word, opts) {
+  spellsLike(word, opts) {
 
     if (!word || !word.length) return [];
 
