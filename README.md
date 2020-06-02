@@ -75,7 +75,10 @@
     <a href="Markov/fromJSON/index.html">Markov.fromJSON</a><br/>
     <br/><br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
-     <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+     <td>
+       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
      </td>
  </tr>
 </table>
