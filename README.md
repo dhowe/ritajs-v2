@@ -3,6 +3,7 @@
 * For [node (via npm)](https://www.npmjs.com/package/rita/v/2.0.0-beta.6) (1.2mb)
 * For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-full.js) (1.4mb)
 * For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-nolex.js) (.5mb)
+
 &nbsp;
 
 ## RiTa v2 API
