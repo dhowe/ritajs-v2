@@ -11,6 +11,7 @@
     <th colspan=2>RiTa&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </th>
     <th>RiTa.Grammar</th>
     <th>RiTa.Markov</th>
+    <th></th>
    </tr>
    <tr>
     <td>
@@ -60,7 +61,7 @@
     <a href="Grammar/removeRule/index.html">removeRule</a><br/>
     <a href="Grammar/setRules/index.html">setRules</a><br/>
     <a href="Grammar/toString/index.html">toString</a><br/>
-    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
    <td>
     <a href="Markov/addText/index.html">addText</a><br/>
@@ -72,7 +73,7 @@
     <a href="Markov/toString/index.html">toString</a><br/>
     <a href="Markov/toJSON/index.html">toJSON</a><br/>
     <a href="Markov/fromJSON/index.html">Markov.fromJSON</a><br/>
-    <br/><br/><br/><br/><br/><br/><br/><br/>
+    <br/><br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
  </tr>
 </table>
