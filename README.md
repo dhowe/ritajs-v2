@@ -34,9 +34,9 @@
     <a href="RiTa/isVerb/index.html">RiTa.isVerb</a><br/>
     <a href="RiTa/kwic/index.html">RiTa.kwic</a><br/>
     <a href="RiTa/pastParticiple/index.html">RiTa.pastParticiple</a><br/>
+    <a href="RiTa/phonemes/index.html">RiTa.phonemes</a><br/>
    </td>
    <td><br/>
-    <a href="RiTa/phonemes/index.html">RiTa.phonemes</a><br/>
     <a href="RiTa/pos/index.html">RiTa.pos</a><br/>
     <a href="RiTa/posInline/index.html">RiTa.posInline</a><br/>
     <a href="RiTa/presentParticiple/index.html">RiTa.presentParticiple</a><br/>
