@@ -8,7 +8,7 @@
 
   <table border="1">
    <tr>
-    <th colspan=2>RiTa</th>
+    <th colspan=2 style="text-align:right">RiTa</th>
     <th>RiTa.Grammar</th>
     <th>RiTa.Markov</th>
    </tr>
