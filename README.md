@@ -8,7 +8,7 @@
 
   <table border="1">
    <tr>
-    <th colspan=2 style="text-align:right">RiTa</th>
+    <th colspan=2 style="text-align:left">RiTa</th>
     <th>RiTa.Grammar</th>
     <th>RiTa.Markov</th>
    </tr>
@@ -54,8 +54,8 @@
     <a href="RiTa/untokenize/index.html">RiTa.untokenize</a><br/>
     <a href="RiTa/words/index.html">RiTa.words</a><br/>
    </td>
-   <td>
-  <a href="Grammar/addRule/index.html">addRule</a><br/>
+   <td style="vertical-align: top;" >
+    <a href="Grammar/addRule/index.html">addRule</a><br/>
     <a href="Grammar/expand/index.html">expand</a><br/>
     <a href="Grammar/removeRule/index.html">removeRule</a><br/>
     <a href="Grammar/setRules/index.html">setRules</a><br/>
