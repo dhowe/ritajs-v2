@@ -8,13 +8,13 @@
 
   <table border="1">
    <tr>
-    <th colspan=2 style="text-align:left">RiTa</th>
+    <th colspan=2>RiTa&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </th>
     <th>RiTa.Grammar</th>
     <th>RiTa.Markov</th>
    </tr>
    <tr>
     <td>
-    <a href="RiTa/VERSION/index.html">RiTa.VERSION</a><br/><br/>
+    <a href="RiTa/VERSION/index.html">RiTa.VERSION</a><br/>
     <a href="RiTa/addTransform/index.html">RiTa.addTransform</a><br/>
     <a href="RiTa/alliterations/index.html">RiTa.alliterations</a><br/>
     <a href="RiTa/concordance/index.html">RiTa.concordance</a><br/>
@@ -60,7 +60,7 @@
     <a href="Grammar/removeRule/index.html">removeRule</a><br/>
     <a href="Grammar/setRules/index.html">setRules</a><br/>
     <a href="Grammar/toString/index.html">toString</a><br/>
-     <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
    <td>
     <a href="Markov/addText/index.html">addText</a><br/>
@@ -72,6 +72,7 @@
     <a href="Markov/toString/index.html">toString</a><br/>
     <a href="Markov/toJSON/index.html">toJSON</a><br/>
     <a href="Markov/fromJSON/index.html">Markov.fromJSON</a><br/>
+    <br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
  </tr>
 </table>
