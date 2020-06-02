@@ -9,6 +9,8 @@
    <tr>
     <th>RiTa</th>
     <th>---</th>
+      <th>RiTa.Grammar</th>
+      <th>RiTa.Markov</th>
    </tr>
    <tr>
     <td>
@@ -32,9 +34,31 @@
         <a href="RiTa/isVerb/index.html">RiTa.isVerb</a><br/>
         <a href="RiTa/kwic/index.html">RiTa.kwic</a><br/>
         <a href="RiTa/pastParticiple/index.html">RiTa.pastParticiple</a><br/>
-      </td>
-   </tr>
-  </table>
+   </td>
+       <td>
+        <a href="RiTa/isAdverb/index.html">RiTa.isAdverb</a><br/>
+        <a href="RiTa/isAlliteration/index.html">RiTa.isAlliteration</a><br/>
+        <a href="RiTa/isNoun/index.html">RiTa.isNoun</a><br/>
+        <a href="RiTa/isPunctuation/index.html">RiTa.isPunctuation</a><br/>
+        <a href="RiTa/isQuestion/index.html">RiTa.isQuestion</a><br/>
+        <a href="RiTa/isRhyme/index.html">RiTa.isRhyme</a><br/>
+        <a href="RiTa/isVerb/index.html">RiTa.isVerb</a><br/>
+        <a href="RiTa/kwic/index.html">RiTa.kwic</a><br/>
+        <a href="RiTa/pastParticiple/index.html">RiTa.pastParticiple</a><br/>
+   </td>
+        <td>
+        <a href="RiTa/isAdverb/index.html">RiTa.isAdverb</a><br/>
+        <a href="RiTa/isAlliteration/index.html">RiTa.isAlliteration</a><br/>
+        <a href="RiTa/isNoun/index.html">RiTa.isNoun</a><br/>
+        <a href="RiTa/isPunctuation/index.html">RiTa.isPunctuation</a><br/>
+        <a href="RiTa/isQuestion/index.html">RiTa.isQuestion</a><br/>
+        <a href="RiTa/isRhyme/index.html">RiTa.isRhyme</a><br/>
+        <a href="RiTa/isVerb/index.html">RiTa.isVerb</a><br/>
+        <a href="RiTa/kwic/index.html">RiTa.kwic</a><br/>
+        <a href="RiTa/pastParticiple/index.html">RiTa.pastParticiple</a><br/>
+   </td>
+ </tr>
+</table>
   
 
 
