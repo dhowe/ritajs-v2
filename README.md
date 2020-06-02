@@ -239,8 +239,10 @@ $Opening=(
 ## Developing
 To build the library and run tests:
 ```
-$ yarn install 
-$ yarn compile
+
+$ git clone https://github.com/dhowe/rita2js.git
+$ cd rita2js && yarn install && yarn compile
 $ yarn test
+
 ```
 &nbsp;
