@@ -9,9 +9,8 @@
   <table border="1">
    <tr>
     <th colspan=2>RiTa</th>
-
-      <th>RiTa.Grammar</th>
-      <th>RiTa.Markov</th>
+    <th>RiTa.Grammar</th>
+    <th>RiTa.Markov</th>
    </tr>
    <tr>
     <td>
