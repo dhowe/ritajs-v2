@@ -8,10 +8,32 @@
   <table border="1">
    <tr>
     <th>RiTa</th>
+         <th></th>
    </tr>
    <tr>
-    <td><a href="RiTa/VERSION/index.html">RiTa.VERSION</a><br>
-<a href="RiTa/addTransform/index.html">RiTa.addTransform</a><br>
+    <td>
+<a href="RiTa/VERSION/index.html">RiTa.VERSION</a><br/>
+<a href="RiTa/addTransform/index.html">RiTa.addTransform</a><br/>
+<a href="RiTa/alliterations/index.html">RiTa.alliterations</a><br/>
+<a href="RiTa/concordance/index.html">RiTa.concordance</a><br/>
+<a href="RiTa/conjugate/index.html">RiTa.conjugate</a><br/>
+<a href="RiTa/evaluate/index.html">RiTa.evaluate</a><br/>
+<a href="RiTa/hasWord/index.html">RiTa.hasWord</a><br/>
+<a href="RiTa/isAbbreviation/index.html">RiTa.isAbbreviation</a><br/>
+<a href="RiTa/isAdjective/index.html">RiTa.isAdjective</a><br/>
+              </td>
+        </tr>
+       <tr>
+    <td>
+<a href="RiTa/isAdverb/index.html">RiTa.isAdverb</a><br/>
+<a href="RiTa/isAlliteration/index.html">RiTa.isAlliteration</a><br/>
+<a href="RiTa/isNoun/index.html">RiTa.isNoun</a><br/>
+<a href="RiTa/isPunctuation/index.html">RiTa.isPunctuation</a><br/>
+<a href="RiTa/isQuestion/index.html">RiTa.isQuestion</a><br/>
+<a href="RiTa/isRhyme/index.html">RiTa.isRhyme</a><br/>
+<a href="RiTa/isVerb/index.html">RiTa.isVerb</a><br/>
+<a href="RiTa/kwic/index.html">RiTa.kwic</a><br/>
+<a href="RiTa/pastParticiple/index.html">RiTa.pastParticiple</a><br/>
       </td>
    </tr>
   </table>
