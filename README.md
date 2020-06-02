@@ -9,7 +9,7 @@
   <table border="1">
    <tr>
     <th>RiTa</th>
-    <th>---</th>
+    <th></th>
       <th>RiTa.Grammar</th>
       <th>RiTa.Markov</th>
    </tr>
@@ -34,7 +34,7 @@
     <a href="RiTa/kwic/index.html">RiTa.kwic</a><br/>
     <a href="RiTa/pastParticiple/index.html">RiTa.pastParticiple</a><br/>
    </td>
-   <td>
+   <td><br/>
     <a href="RiTa/phonemes/index.html">RiTa.phonemes</a><br/>
     <a href="RiTa/pos/index.html">RiTa.pos</a><br/>
     <a href="RiTa/posInline/index.html">RiTa.posInline</a><br/>
