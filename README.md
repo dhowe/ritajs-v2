@@ -8,15 +8,11 @@
   <table border="1">
    <tr>
     <th>RiTa</th>
-    <th></th>
    </tr>
    <tr>
-    <td>Cell A1</td>
-    <td>Cell B1</td>>
-   </tr>
-   <tr>
-    <td>Cell A2</td>
-    <td>Cell B2</td>
+    <td><a href="RiTa/VERSION/index.html">RiTa.VERSION</a><br>
+<a href="RiTa/addTransform/index.html">RiTa.addTransform</a><br>
+      </td>
    </tr>
   </table>
   
