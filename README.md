@@ -36,7 +36,7 @@
     <a href="RiTa/pastParticiple/index.html">RiTa.pastParticiple</a><br/>
     <a href="RiTa/phonemes/index.html">RiTa.phonemes</a><br/>
    </td>
-   <td><br/>
+   <td>
     <a href="RiTa/pos/index.html">RiTa.pos</a><br/>
     <a href="RiTa/posInline/index.html">RiTa.posInline</a><br/>
     <a href="RiTa/presentParticiple/index.html">RiTa.presentParticiple</a><br/>
