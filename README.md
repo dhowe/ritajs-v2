@@ -11,9 +11,8 @@
     <th colspan=2>RiTa&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </th>
-    <th>RiTa.Grammar</th>
     <th>RiTa.Markov</th>
-    <th></th>
+    <th>RiTa.Grammar</th>
    </tr>
    <tr>
     <td>
@@ -57,14 +56,6 @@
     <a href="RiTa/words/index.html">RiTa.words</a><br/>
    </td>
    <td style="vertical-align: top;" >
-    <a href="Grammar/addRule/index.html">addRule</a><br/>
-    <a href="Grammar/expand/index.html">expand</a><br/>
-    <a href="Grammar/removeRule/index.html">removeRule</a><br/>
-    <a href="Grammar/setRules/index.html">setRules</a><br/>
-    <a href="Grammar/toString/index.html">toString</a><br/>
-    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-   </td>
-   <td>
     <a href="Markov/addText/index.html">addText</a><br/>
     <a href="Markov/completions/index.html">completions</a><br/>
     <a href="Markov/generate/index.html">generate</a><br/>
@@ -76,14 +67,14 @@
     <a href="Markov/fromJSON/index.html">Markov.fromJSON</a><br/>
     <br/><br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
-     <td>
-       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-     </td>
+   <td>
+    <a href="Grammar/addRule/index.html">addRule</a><br/>
+    <a href="Grammar/expand/index.html">expand</a><br/>
+    <a href="Grammar/removeRule/index.html">removeRule</a><br/>
+    <a href="Grammar/setRules/index.html">setRules</a><br/>
+    <a href="Grammar/toString/index.html">toString</a><br/>
+    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+   </td>
  </tr>
 </table>
   
