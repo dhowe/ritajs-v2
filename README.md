@@ -8,7 +8,7 @@
   <table border="1">
    <tr>
     <th>RiTa</th>
-         <th></th>
+         <th>---</th>
    </tr>
    <tr>
     <td>
@@ -22,8 +22,7 @@
 <a href="RiTa/isAbbreviation/index.html">RiTa.isAbbreviation</a><br/>
 <a href="RiTa/isAdjective/index.html">RiTa.isAdjective</a><br/>
               </td>
-        </tr>
-       <tr>
+
     <td>
 <a href="RiTa/isAdverb/index.html">RiTa.isAdverb</a><br/>
 <a href="RiTa/isAlliteration/index.html">RiTa.isAlliteration</a><br/>
