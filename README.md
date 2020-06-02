@@ -13,8 +13,8 @@
     <th colspan=2>RiTa&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </th>
-    <th>&nbsp;RiTa.Markov&nbsp;</th>
-    <th>&nbsp;RiTa.Grammar&nbsp;</th>
+    <th>RiTa.Markov</th>
+    <th> &nbsp; RiTa.Grammar &nbsp; </th>
    </tr>
    <tr>
 <td>
@@ -83,7 +83,7 @@
 
 ## RiTaScript
 
-RiTaScript can be used as part of any grammar (via RiGrammar) or can be run directly using RiTa.evaluate() 
+RiTaScript can be used as part of any grammar (via RiTa.Grammar) or can be run directly using RiTa.evaluate() 
 
 
 ### Choice
@@ -128,16 +128,18 @@ In [$place=(New York | Berlin | Shanghai)] it is cold and wet in winter.
 The group of boys (to run).conjugate().
 How many (tooth | menu | child).pluralize() do you have?
 How many (tooth | menu | child).pluralize().toUpper() do you have?
+```
+
+Custom transforms can be added using RiTa.addTransform() 
+
+<!--
+### Choice
 
 // Resolves choice without repeating
 How many (tooth | menu | child).norepeat() do you have?
 
 // Resolves choice in sequence
 How many (tooth | menu | child).seq() do you have?
-```
-
-<!--
-### Choice
 
 | | | 
 |-|-|
