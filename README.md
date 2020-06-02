@@ -81,83 +81,13 @@
        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
      </td>
  </tr>
 </table>
   
-
-
-
-## RiTa v2 API
-
-```
-RiTa
-------------
-RiTa.VERSION
-RiTa.addTransform()
-RiTa.alliterations()
-RiTa.concordance()
-RiTa.conjugate()
-RiTa.evaluate()
-RiTa.hasWord()
-RiTa.isAbbreviation()
-RiTa.isAdjective()
-RiTa.isAdverb()
-RiTa.isAlliteration()
-RiTa.isNoun()
-RiTa.isPunctuation()
-RiTa.isQuestion()
-RiTa.isRhyme()
-RiTa.isVerb()
-RiTa.kwic()
-RiTa.pastParticiple()
-RiTa.phones()
-RiTa.pos()
-RiTa.posInline()
-RiTa.presentParticiple()
-RiTa.pluralize()
-RiTa.randomOrdering()
-RiTa.randomSeed()
-RiTa.randomWord()
-RiTa.rhymes()
-RiTa.sentences()
-RiTa.similars()
-RiTa.singularize()
-RiTa.soundsLike()
-RiTa.stem()
-RiTa.stresses() 
-RiTa.syllables()
-RiTa.tokenize()
-RiTa.untokenize()
-RiTa.words()
-```
-
-```
-RiTa.Grammar
-------------
-addRule()
-expand()
-expandFrom()
-loadRules()
-removeRule()
-toString()
-```
-
-```
-RiTa.Markov
-------------
-addText()
-addText() // ??
-completions()
-generate()
-probability()
-probabilities()
-size()
-toString()
-toJSON()
-RiMarkov.fromJSON()
-```
-
 
 ## RiTaScript
 
