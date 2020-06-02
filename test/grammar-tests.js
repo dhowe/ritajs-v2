@@ -92,9 +92,9 @@ describe('RiTa.Grammar', () => {
         rg.addRule("$pet", "($bird | $mammal)");
         rg.addRule("$bird", "(hawk | crow)");
         rg.addRule("$mammal", "dog");
-        eq(rg.expandFrom("$mammal"), "dog");
+        eq(rg.expand("$mammal"), "dog");
         for (let i = 0; i < 30; i++) {
-            let res = rg.expandFrom("$bird");
+            let res = rg.expand("$bird");
             ok(res === "hawk" || res === 'crow');
         }
     });
@@ -138,11 +138,11 @@ describe('RiTa.Grammar', () => {
         rg.addRule("$bird", "hawk");
         rg.addRule("$mammal", "dog [2]");
 
-        eq(rg.expandFrom("$mammal"), "dog");
+        eq(rg.expand("$mammal"), "dog");
 
         let hawks = 0, dogs = 0;
         for (let i = 0; i < 30; i++) {
-            let res = rg.expandFrom("$pet");
+            let res = rg.expand("$pet");
             ok(res === "hawk" || res === 'dog', 'got ' + res);
             if (res == "dog") dogs++;
             if (res == "hawk") hawks++;

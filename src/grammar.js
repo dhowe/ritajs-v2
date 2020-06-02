@@ -2,6 +2,8 @@ const RiScript = require('./riscript');
 const deepmerge = require('deepmerge');
 const maxTries = 100;
 
+// TODO: handling weighting of rules?
+
 /*
 API:
   addRule
@@ -18,7 +20,7 @@ class Grammar {
     rules && this.load(rules);
   }
 
-  load(rules) {
+  load(rules) { // setRules or rules or ... ?
     if (typeof rules === 'string') {
       try {
         rules = JSON.parse(rules);
@@ -32,28 +34,31 @@ class Grammar {
     return this;
   }
 
-  addRule(name, theRule /*,weight?*/) { 
+  addRule(name, rule) {
     if (name.startsWith('$')) name = name.substring(1);
-    if (Array.isArray(theRule)) theRule = joinChoice(theRule);
-    if (/[|\[\]]/.test(theRule) && !(/^\(.*\)$/.test(theRule))) {
-      theRule = '(' + theRule + ')';
+    if (Array.isArray(rule)) rule = joinChoice(rule);
+    if (/[|\[\]]/.test(rule) && !(/^\(.*\)$/.test(rule))) {
+      rule = '(' + rule + ')';
     }
-    this.rules[name] = theRule;
+    this.rules[name] = rule;
     return this;
   }
 
-  expand(context, opts) {
-    return this.expandFrom("start", context, opts);
-  }
+  expand(ruleName, context, opts) {
+    let trace = opts && opts.trace;
 
-  expandFrom(rule, context, opts) {
+    /// NEXT: working HERE
+    if (arguments.length && typeof arguments[0] !== 'string') {
+      context = ruleName;
+      opts = context;
+      ruleName = null;
+    }
+    let rule = ruleName || 'start';
+    let ctx = deepmerge(context, this.rules);
     if (rule.startsWith('$')) rule = rule.substring(1);
-    let lookup = deepmerge(context, this.rules);
-    Object.keys(lookup).forEach(r => lookup[r] = RiScript.eval
-      (lookup[r], lookup, opts && opts.trace));
-    if (!lookup.hasOwnProperty(rule)) throw Error
-      ('Rule ' + rule + ' not found');
-    return lookup[rule];
+    Object.keys(ctx).forEach(r => ctx[r] = RiScript.eval(ctx[r], ctx, trace));
+    if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
+    return ctx[rule];
   }
 
   toString() { // TODO
