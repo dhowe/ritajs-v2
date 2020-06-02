@@ -5,25 +5,22 @@
 * For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.6/rita-web-nolex.js) (.5mb)
 
 
-<a href=""><b>RiTa</b></a><br/>
-<a href="RiTa/VERSION/index.html">RiTa.VERSION</a><br/>
-<a href="RiTa/addTransform/index.html">RiTa.addTransform</a><br/>
-<a href="RiTa/alliterations/index.html">RiTa.alliterations</a><br/>
-<a href="RiTa/concordance/index.html">RiTa.concordance</a><br/>
-<a href="RiTa/conjugate/index.html">RiTa.conjugate</a><br/>
-<a href="RiTa/evaluate/index.html">RiTa.evaluate</a><br/>
-<a href="RiTa/hasWord/index.html">RiTa.hasWord</a><br/>
-<a href="RiTa/isAbbreviation/index.html">RiTa.isAbbreviation</a><br/>
-<a href="RiTa/isAdjective/index.html">RiTa.isAdjective</a><br/>
-<a href="RiTa/isAdverb/index.html">RiTa.isAdverb</a><br/>
-<a href="RiTa/isAlliteration/index.html">RiTa.isAlliteration</a><br/>
-<a href="RiTa/isNoun/index.html">RiTa.isNoun</a><br/>
-<a href="RiTa/isPunctuation/index.html">RiTa.isPunctuation</a><br/>
-<a href="RiTa/isQuestion/index.html">RiTa.isQuestion</a><br/>
-<a href="RiTa/isRhyme/index.html">RiTa.isRhyme</a><br/>
-<a href="RiTa/isVerb/index.html">RiTa.isVerb</a><br/>
-<a href="RiTa/kwic/index.html">RiTa.kwic</a><br/>
-<a href="RiTa/pastParticiple/index.html">RiTa.pastParticiple</a><br/>
+  <table border="1">
+   <tr>
+    <th>RiTa</th>
+    <th></th>
+   </tr>
+   <tr>
+    <td>Cell A1</td>
+    <td>Cell B1</td>>
+   </tr>
+   <tr>
+    <td>Cell A2</td>
+    <td>Cell B2</td>
+   </tr>
+  </table>
+  
+
 
 
 ## RiTa v2 API
