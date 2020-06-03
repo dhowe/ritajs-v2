@@ -173,7 +173,7 @@ class RiScript {
 /// <summary>
 /// Prefixes the string with 'a' or 'an' as appropriate.
 /// </summary>
-function articlise() {
+function articlize() {
   return ("aeiou".indexOf(this[0].toLowerCase() > -1) ? "an " : "a ") + this;
 }
 
@@ -201,13 +201,13 @@ function quotify() {
 /// <summary>
 /// Pluralizes the word according to english regular/irregular rules.
 /// </summary>
-function pluralise() {
+function pluralize() {
   if (this.indexOf(' ') > -1) throw Error
     ('pluralize expected a single word, got "' + this + '"');
   return RiTa.pluralize(this);
 }
 
-RiScript.transforms = { capitalise, articlise, quotify, pluralise, qq: quotify, uc: toUpper, ucf: capitalise };
+RiScript.transforms = { capitalise, articlize, quotify, pluralize, qq: quotify, uc: toUpper, ucf: capitalise };
 
 module && (module.exports = RiScript);
   ////////////// NEW //////////////////////////////////////////// // not used...

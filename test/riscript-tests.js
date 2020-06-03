@@ -251,7 +251,7 @@ describe('RiTa.RiScript', () => {
 
     it('Should correctly handle transforms on literals', function () {
       expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many "teeth" do you have?');
-      expect(RiTa.evaluate('That is (ant).articlise().')).eq('That is an ant.');
+      expect(RiTa.evaluate('That is (ant).articlize().')).eq('That is an ant.');
     });
     /*     it.only('Should handle silents', () => {
           expect(RiTa.evaluate('The $hero=blue (dog | dog)', ctx = {}, {trace:0})).eq('The blue dog');
@@ -519,7 +519,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('((a)).toUpperCase()', 0, {trace:0})).eq('A');
       expect(RiTa.evaluate('(a | b).toUpperCase()')).to.be.oneOf(['A', 'B']);
       expect(RiTa.evaluate("The (boy | boy).toUpperCase() ate.")).eq('The BOY ate.');
-      expect(RiTa.evaluate('How many (tooth | tooth).pluralise() do you have?')).eq('How many teeth do you have?');
+      expect(RiTa.evaluate('How many (tooth | tooth).pluralize() do you have?')).eq('How many teeth do you have?');
     });
 
     it('Should handle symbol transforms', () => {
@@ -562,11 +562,11 @@ describe('RiTa.RiScript', () => {
 
     it('Should handle transforms on literals', () => {
       expect(String.quotify).eq(undefined);
-      expect(String.articlise).eq(undefined);
+      expect(String.articlize).eq(undefined);
       expect(RiTa.evaluate('How many (teeth).toUpperCase() do you have?', 0, {trace:0})).eq('How many TEETH do you have?');
       expect(RiTa.evaluate('How many (teeth).quotify() do you have?', 0, {trace:0})).eq('How many "teeth" do you have?');
-      expect(RiTa.evaluate('That is (ant).articlise().')).eq('That is an ant.');
-      expect(String.articlise).eq(undefined);
+      expect(RiTa.evaluate('That is (ant).articlize().')).eq('That is an ant.');
+      expect(String.articlize).eq(undefined);
       expect(String.quotify).eq(undefined);
     });
 
