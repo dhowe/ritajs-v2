@@ -1,11 +1,19 @@
 ## Installation
 
-* For [node (via npm)](https://www.npmjs.com/package/rita/v/2.0.0-beta.7) (1.2mb)
-* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.7/rita-web-full.js) (1.4mb)
-* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.7/rita-web-nolex.js) (.5mb)
+* For node: `npm install rita@beta`
+* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.9/rita-web-full.js) (1.4mb)
+* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.9/rita-web-nolex.js) (.5mb)
 * For [developers](#developing)
 
-&nbsp;
+### Example (node)
+
+```
+let RiTa = require('rita');
+console.log(RiTa.rhymes('sweet'));
+
+let grammar = new RiTa.Grammar(jsonRules);
+console.log(grammar.expand());
+```
 
 ## API
 
