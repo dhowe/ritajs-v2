@@ -99,7 +99,7 @@ RiTaScript can be used as part of any grammar (via RiTa.Grammar) or can be run d
 
 ```
 The weather was (sad | gloomy | depressed).  ->  "The weather was gloomy." 
-| I'm (very | super | really) glad to ((meet | know) you | learn about you).  ->  "I'm very glad to know you." 
+I'm (very | super | really) glad to ((meet | know) you | learn about you).  ->  "I'm very glad to know you." 
 ```
 
 ### Weighted Choice
@@ -120,7 +120,8 @@ The weather was $desc  ->  "The weather was wet and cold"
 Inline assignments create/modify a symbol _and_ output its contents
 
 ```
-Jane was from [$place=(New York | Berlin | Shanghai)]. $place is cold and wet. 
+Jane was from [$place=(New York | Berlin | Shanghai)]. 
+$place is cold and wet. 
      ->  "Jane was from Berlin. Berlin is cold and wet."
 
 $place=(New York | Berlin | Shanghai)
