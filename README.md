@@ -98,13 +98,13 @@ RiTaScript can be used as part of any grammar (via RiTa.Grammar) or can be run d
 ### Choice
 
 ```
-The weather was (sad | gloomy | depressed).  ->  The weather was gloomy. 
-| I'm (very | super | really) glad to ((meet | know) you | learn about you).  ->  I'm very glad to know you. 
+The weather was (sad | gloomy | depressed).  ->  "The weather was gloomy." 
+| I'm (very | super | really) glad to ((meet | know) you | learn about you).  ->  "I'm very glad to know you." 
 ```
 
 ### Weighted Choice
 ```
-The weather was (sad | gloomy [2] | depressed[4]).  ->  The weather was depressed. 
+The weather was (sad | gloomy [2] | depressed[4]).  ->  "The weather was depressed." 
 ```
 
 ### Assignment
@@ -112,7 +112,7 @@ Basic assignments do not have output, they simply create or update a symbol
 
 ```
 $desc=wet and cold
-The weather was $desc  ->  The weather was wet and cold 
+The weather was $desc  ->  "The weather was wet and cold" 
 ```
 
 ### Inline Assignment
@@ -121,14 +121,14 @@ Inline assignments create/modify a symbol _and_ output its contents
 
 ```
 Jane was from [$place=(New York | Berlin | Shanghai)]. $place is cold and wet. 
-     ->  Jane was from Berlin. Berlin is cold and wet.
+     ->  "Jane was from Berlin. Berlin is cold and wet."
 
 $place=(New York | Berlin | Shanghai)
 $place is cold and wet in winter. 
-     ->  Berlin is cold and wet in the winter.
+     ->  "Berlin is cold and wet in the winter."
     
 In [$place=(New York | Berlin | Shanghai)] it is cold and wet in winter. 
-     ->  In Berlin it is cold and wet in the winter.
+     ->  "In Berlin it is cold and wet in the winter."
 ```
 
 
@@ -153,14 +153,14 @@ How many (tooth | menu | child).seq() do you have?
 
 | | | 
 |-|-|
-| The weather was (sad &#124; gloomy &#124; depressed). | The weather was depressed. |
-| I'm (very &#124; super &#124; really) glad to ((meet &#124; know) you &#124; learn about you). | I'm very glad to know you. |
+| The weather was (sad &#124; gloomy &#124; depressed). | "The weather was depressed." |
+| I'm (very &#124; super &#124; really) glad to ((meet &#124; know) you &#124; learn about you). | "I'm very glad to know you." |
 
 
 ### Weighted Choice
 | | | 
 |-|-|
-| The weather was (sad &#124; gloomy [2] &#124; depressed[4]). | The weather was gloomy. |
+| The weather was (sad &#124; gloomy [2] &#124; depressed[4]). | "The weather was gloomy." |
 
 ### Assignment
 
@@ -168,7 +168,7 @@ Basic assignments do not have output, they simply create/update a symbol
 | | | 
 |-|-|
 |$desc=wet and cold||
-|The weather was $desc|The weather was wet and cold|
+|The weather was $desc|"The weather was wet and cold"|
 
 ### Inline Assignment
 
