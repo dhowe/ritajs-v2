@@ -58,33 +58,6 @@ class RiScript {
     return rs.popTransforms().resolveEntities(expr);
   }
 
-  /*
-  static evalOld(input, context, opts) { // remove
-    let riscript = new RiScript().pushTransforms();
-    let expr = riscript.lexParseVisit(input, context || {}, opts);
-    return riscript.popTransforms().resolveEntities(expr);
-  }
-
-  // TODO: should only repeat if symbols or choices remain
-  static multeval(input, context, opts) { // remove
-    opts = opts || {};
-    let trace = opts.trace, silent = opts.silent;
-    let last, expr = input, ctx = context || {};
-    opts.silent = true; // always true, handled after loop
-    let riscript = new RiScript().pushTransforms();
-    for (let i = 0; i < MaxTries && expr !== last; i++) {
-      last = expr;
-      expr = riscript.lexParseVisit(expr, ctx, opts);
-      trace && console.log(i + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
-      if (i >= MaxTries - 1) throw Error('Unable to resolve: "'
-        + input + '" after ' + MaxTries + ' tries - an infinite loop?');
-    }
-    if (!silent && !RiTa.SILENT && /(\$[A-Za-z_]|[()])/.test(expr)) {
-      console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
-    }
-    return riscript.popTransforms().resolveEntities(expr);
-  }*/
-
   lex(input, opts) {
 
     // create the lexer
@@ -180,7 +153,7 @@ function articlize() {
 /// <summary>
 /// Capitalizes the first character.
 /// </summary>
-function capitalise() {
+function capitalize() {
   return this[0].toUpperCase() + this.substring(1);
 }
 
@@ -207,132 +180,6 @@ function pluralize() {
   return RiTa.pluralize(this);
 }
 
-RiScript.transforms = { capitalise, articlize, quotify, pluralize, qq: quotify, uc: toUpper, ucf: capitalise };
+RiScript.transforms = { capitalize, articlize, quotify, pluralize, qq: quotify, uc: toUpper, ucf: capitalize };
 
 module && (module.exports = RiScript);
-  ////////////// NEW //////////////////////////////////////////// // not used...
-/*lexParseCompile(input, context, showParse, silent) {
-  let tree = this.lexParse(input, showParse, silent);
-  let visitor = this.createVisitor(context, showParse);
-  visitor.start(tree);
-  return context;
-}
-
-lexParseExpand(input, context, showParse, silent) { // not used...
-  let tree = this.lexParse(input, showParse, silent);
-  let visitor = this.createVisitor(context, showParse);
-  return visitor.start(tree);
-}*/
-
-// class RiScript {
-//
-//   constructor() {
-//     //this.parseTree = undefined;
-//     //this.symbolTable = undefined;
-//     this.scripting = new Scripting();
-//     //this.context = context;
-//   }
-
-/*static compile(input, context, showParse, silent) {
-  let rs = new RiScript();
-  rs.scripting.lexParseCompile(input, context, showParse, silent);
-  rs.context = context;
-  return rs;
-}*/
-
-  // expand(rule) {
-  //   let dbug = 0;
-  //   let result = rule || '$start';
-  //   let tries = 0, maxIterations = 100;
-  //   //while (result.includes('$')) {
-  //   while (++tries < maxIterations) {
-  //     let next = this.expandRule(result, dbug);
-  //     dbug && console.log('expand: '+result+ ' -> '+next);
-  //
-  //     if (next && next.length && next !== result) { // matched a rule
-  //       result = this.scripting.lexParseExpand(next, context);
-  //       dbug && console.log('got: '+result);
-  //       continue;
-  //     }
-  //     dbug && console.log('return: '+result+'\n---------------');
-  //     return result;
-  //   }
-  //   dbug && console.log('return nil');
-  // }
-
-  // expandRule(prod, dbug) {
-  //   for (let name in this.context) {
-  //     let idx = prod.indexOf(name);
-  //     if (idx >= 0) { // got a match, split into 3 parts
-  //       dbug && console.log('matched: ' + name);
-  //       let pre = prod.substring(0, idx) || '';
-  //       let expanded = this.symbolTable[name] || '';
-  //       let post = prod.substring(idx + name.length) || '';
-  //       return pre + expanded + post;
-  //     }
-  //   }  // no rules matched
-  // }
-
-/*expandOrig(rule) {
-
-  rule = rule || '$start';
-
-  //console.log('rule: '+rule);
-  if (!this.symbolTable) throw Error('Call compile() before run()');
-  if (!this.symbolTable[rule]) throw Error('No rule called: ' + rule);
-
-  let rules = Object.keys(this.symbolTable);
-  let tries = 0, maxIterations = 1000;
-
-  while (++tries < maxIterations) {
-    console.log('rule: ' + rule);
-
-    let next = this.expandRule(rule, rules);
-
-    if (next && next.length) { // matched a rule
-
-      rule = next;
-      continue;
-    }
-    console.log('\n-------------------------------------------------');
-
-    return rule;
-  }
-
-  throw Error('Failed to expand grammar from '
-    + rule + ', after ' + tries + ' tries');
-}*/
-  //
-  // static evaluate(input, context, showParse, silent) {
-  //   Object.assign((context = context || {}), silent ? { _silent: silent } : {});
-  //   return new Scripting().lexParseVisit(input, context, showParse, silent);
-  // }
-
-  // run(cmd, showParse, silent) {
-  //   return this.scripting.lexParseVisit(this.context, showParse, silent);
-  // }
-/*
-  run(context, showParse, silent) {
-    let vis = this.scripting.createVisitor(context, showParse, silent);
-    let result = vis.start(this.parseTree);
-    //console.log('RESULT: '+result+'==============Symbols===============\n', vis.context);
-    return result;
-  }
-
-  static evaluate(input, context, showParse, silent) {
-    let rs = RiScript.compile(input, showParse, silent);
-    Object.assign((context = context || {}), silent ? { _silent: silent } : {});
-    return rs.run(context, showParse, silent);
-  }
-
-  static compile(input, showParse, silent) {
-    let rs = new RiScript();
-    rs.parseTree = rs.scripting.lexParse(input, showParse, silent);
-    return rs;
-  }
-
-}*/
-
-  // static RiScript.evaluate(input, context, showParse, silent) {
-  //
-  // }
