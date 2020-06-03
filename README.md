@@ -123,7 +123,8 @@ Inline assignments create/modify a symbol _and_ output its contents
 Jane was from [$place=(New York | Berlin | Shanghai)]. $place is cold and wet. 
      ->  Jane was from Berlin. Berlin is cold and wet.
 
-$place=(New York | Berlin | Shanghai)`<br/>`$place is cold and wet in winter. 
+$place=(New York | Berlin | Shanghai)
+$place is cold and wet in winter. 
      ->  Berlin is cold and wet in the winter.
     
 In [$place=(New York | Berlin | Shanghai)] it is cold and wet in winter. 
@@ -134,7 +135,7 @@ In [$place=(New York | Berlin | Shanghai)] it is cold and wet in winter.
 ### Transforms
 
 ```
-The group of boys (to run).conjugate().
+The group of boys (run).conjugate().
 How many (tooth | menu | child).pluralize() do you have?
 How many (tooth | menu | child).pluralize().toUpper() do you have?
 ```
