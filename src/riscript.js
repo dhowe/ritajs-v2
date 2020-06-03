@@ -1,5 +1,5 @@
 const antlr4 = require('antlr4');
-const colors = require('colors');
+//const colors = require('colors');
 const { decode } = require('he');
 const Visitor = require('./visitor');
 const Lexer = require('../grammar/.antlr/RiScriptLexer');
@@ -107,8 +107,8 @@ class RiScript {
         console.log();
       }
     } catch (e) {
-      if (!silent) console.error
-        (colors.red("LEXER: " + input + '\n' + e.message + "\n"));
+      if (!silent) console.error(//colors.red
+        ("LEXER: " + input + '\n' + e.message + "\n"));
       throw e;
     }
     return tokenStream;
@@ -139,7 +139,7 @@ class RiScript {
     try {
       tree = this.parser.script();
     } catch (e) {
-      if (!silent) console.error(colors.red
+      if (!silent) console.error(//colors.red
         ("PARSER: '" + input + '\'\n' + e.message + '\n'));
       throw e;
     }

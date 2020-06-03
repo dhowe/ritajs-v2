@@ -32,7 +32,7 @@ module.exports = {
   watchOptions: {
     ignored: /node_modules/
   },
-  externals: ['he', 'colors', 'flatted/cjs', 'deepmerge', 'antlr4', /^antlr4\/.+$/ ],
+  externals: ['he', 'flatted/cjs', 'deepmerge', 'antlr4', /^antlr4\/.+$/ ],
   entry: './src/rita.js',
   plugins: [new (require('webpack').DefinePlugin)({
     __VERSION__: JSON.stringify(require("../package.json").version)
