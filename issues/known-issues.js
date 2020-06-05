@@ -31,29 +31,10 @@ describe('RiTa.KnownIssues', () => {
     expect(RiTa.evaluate('foo.bar', {}, 1)).eq('foo.bar'); 
   });
 
-  it('Should allow transforms on assignments', () => {
+  it('Should allow transforms on assignments', () => {   // TODO
     let ctx = {};
-    expect(RiTa.evaluate('[$a=a].toUpperCase()', ctx, 1)).eq('');
+    expect(RiTa.evaluate('[$a=a].toUpperCase()', ctx, 0)).eq('');
     expect(ctx.a).eq('A')
-  });
-
-  it('Should be fixed to pass', () => {
-    let ctx = {};
-    expect(RiTa.evaluate('$foo=().toUpperCase()', ctx, 0)).eq('');
-    expect(ctx.foo).eq('');
-  });
-
-  it('Should eval converted grammar', function() {
-    let script = [
-      '$start = $nounp $verbp.',
-      '$nounp = $determiner $noun',
-      '$determiner = the | the',
-      '$verbp = $verb $nounp',
-      '$noun = (woman | woman)',
-      '$verb = shoots',
-      '$start'
-    ].join('\n');
-    expect(RiTa.evaluate(script, undefined, 0)).eq('the woman shoots the woman');
   });
 });
 

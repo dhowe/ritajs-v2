@@ -69,7 +69,7 @@ describe('RiTa.Lexicon', function () {
       'welcome': ['w-eh1-l k-ah-m', 'jj nn vb vbp'],
       'sadly': ['s-ae1-d l-iy', 'rb'],
     }
-    
+
     expect(lex.hasWord("run")).to.be.false;
     expect(lex.hasWord("walk")).to.be.true;
     expect(lex.isAlliteration("walk", "welcome")).to.be.true;
@@ -151,6 +151,96 @@ describe('RiTa.Lexicon', function () {
       expect(num === 5, result + ": " + syllables).to.be.true; // "5 syllables: "
     }
   });
+
+  it('Should correctly call words', () => {
+    /*     [
+          'elephant',
+          'elephantine',
+          'phantom',
+          'sycophantic',
+          'triumphant',
+          'triumphantly'
+        ].forEach(w => console.log(w, RiTa.lexicon()._rawPhones(w))); */
+    /* 
+        expect(RiTa.words('f-ae-n-t', { type: 'phones' })).eql([
+          'elephant',
+          'infant',
+          'triumphant',
+          'triumphantly'
+        ]);
+        return; */
+    expect(RiTa.words(/f-ae-n-t/, { type: 'phones' })).eql([
+      "elephantine",
+      "fantasia",
+      "fantasize",
+      "fantasized",
+      "fantastic",
+      "fantastically",
+      "fantasy",
+      "infantryman",
+      "phantom",
+      "sycophantic"
+    ]);
+
+    expect(RiTa.words(/f-a[eh]-n-t/, { type: 'phones' })).eql([
+      "elephant",
+      "elephantine",
+      "fantasia",
+      "fantasize",
+      "fantasized",
+      "fantastic",
+      "fantastically",
+      "fantasy",
+      "infant",
+      "infantile",
+      "infantry",
+      "infantryman",
+      "oftentimes",
+      "phantom",
+      "sycophantic",
+      "triumphant",
+      "triumphantly"
+    ]);
+    expect(RiTa.words().length > 20000, "fail").to.be.true;
+    expect(RiTa.words("phant")).eql([
+      'elephant',
+      'elephantine',
+      'phantom',
+      'sycophantic',
+      'triumphant',
+      'triumphantly'
+    ]);
+    expect(RiTa.words(/phant/)).eql([
+      'elephant',
+      'elephantine',
+      'phantom',
+      'sycophantic',
+      'triumphant',
+      'triumphantly'
+    ]);
+    expect(RiTa.words('f-ah-n-t', { type: 'phones' })).eql([
+      'elephant',
+      'infant',
+      'infantile',
+      'infantry',
+      "oftentimes",
+      'triumphant',
+      'triumphantly',
+    ]);
+    expect(RiTa.words(/f-ah-n-t/, { type: 'phones' })).eql([
+      'elephant',
+      'infant',
+      "infantile",
+      "infantry",
+      "oftentimes",
+      'triumphant',
+      'triumphantly'
+    ]);
+
+    // TODO: NEXT stress search
+    // OPTIMIZE both
+  });
+
 
   it('Should correctly call randomWord.pos.syls', () => {
 
@@ -333,7 +423,7 @@ describe('RiTa.Lexicon', function () {
     answer = ["happier", "hippie"];
     eql(result, answer);
 
-    result = RiTa.soundsLike("happy", {minAllowedDistance: 2 });
+    result = RiTa.soundsLike("happy", { minAllowedDistance: 2 });
     expect(result.length > answer.length).to.be.true; // more
 
     result = RiTa.soundsLike("cat", { type: 'sound' });

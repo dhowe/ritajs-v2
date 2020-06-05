@@ -204,8 +204,8 @@ class RiTa {
     return RiTa.tokenizer.untokenize(words);
   }
 
-  static words() {
-    return RiTa.lexicon().words();
+  static words(regex, opts) {
+    return RiTa.lexicon().words(...arguments);
   }
 
   /////////////////////////////////////////////////////////////////

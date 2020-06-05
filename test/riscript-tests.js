@@ -519,6 +519,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$foo=().toUpperCase()', ctx, { trace: 0 })).eq('');
       expect(ctx.foo).eq('');
 
+
       expect(RiTa.evaluate('(a).toUpperCase()')).eq('A');
       expect(RiTa.evaluate('((a)).toUpperCase()', 0, { trace: 0 })).eq('A');
       expect(RiTa.evaluate('(a | b).toUpperCase()')).to.be.oneOf(['A', 'B']);
@@ -592,6 +593,10 @@ describe('RiTa.RiScript', () => {
     it('Should evaluate symbols with a transform', () => {
       let rs = RiTa.evaluate('$foo=$bar.toUpperCase()\n$bar=baz\n$foo', {}, { trace: 0 });
       expect(rs).eq('BAZ');
+
+      let ctx = {};
+      expect(RiTa.evaluate('$foo=().toUpperCase()', ctx, 0)).eq('');
+      expect(ctx.foo).eq('');
     });
 
     it('Should evaluate symbols even with property transform', () => {

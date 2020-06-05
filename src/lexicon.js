@@ -219,8 +219,24 @@ class Lexicon {
     return this._dict(fatal).hasOwnProperty(word.toLowerCase());
   }
 
-  words() {
-    return Object.keys(this._dict(true));
+  words(regex, opts = {}) {
+    let dict = this._dict(true);
+    if (!arguments.length) return Object.keys(dict);
+    if (typeof regex === 'string') regex = new RegExp(regex);
+    if (opts.type === 'phones') {
+      return Object.keys(dict).filter(w => {
+        return regex.test(RiTa.phones(w));
+      });
+    }
+    else if (!opts.type === 'stresses') {
+      return Object.keys(dict).filter(w => {
+        let phones = dict[w][0].replace('1', '');
+        return regex.test(phones);
+      });    
+    }
+    else {
+      return Object.keys(dict).filter(w => regex.test(w));
+    }
   }
 
   size() {

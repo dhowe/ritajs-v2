@@ -72,7 +72,7 @@ class PosTagger {
 
   tag(words, simple, inline/*, fatal*/) {
 
-    let dbug = 1, result = [], choices2d = [];
+    let dbug = 0, result = [], choices2d = [];
 
     if (!words || !words.length) {
       return inline ? '' : [];
