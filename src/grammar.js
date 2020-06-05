@@ -36,25 +36,26 @@ class Grammar {
     return this;
   }
 
-  expand(ruleName, context, opts) {
+  expand(rule = 'start', context, opts) {
     let trace = opts && opts.trace;
 
-    /// NEXT: working HERE
+    /// TODO: texst with missing args
     if (arguments.length && typeof arguments[0] !== 'string') {
       context = ruleName;
       opts = context;
       ruleName = null;
     }
-    let rule = ruleName || 'start';
     let ctx = deepmerge(context, this.rules);
     if (rule.startsWith('$')) rule = rule.substring(1);
-    Object.keys(ctx).forEach(r => ctx[r] = RiScript.eval(ctx[r], ctx, trace));
+    Object.keys(ctx).forEach(r => ctx[r] = RiScript.eval(ctx[r], ctx, { trace }));
     if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
     return ctx[rule];
   }
 
   toString() { // TODO
-    return this + "";
+    let s = '';
+    Object.keys(rules).forEach(r => s += r + ':' + rules[r] + '\n');
+    return s;
   }
 
   removeRule(name) {

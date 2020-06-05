@@ -3,7 +3,8 @@ describe('RiTa.Tagger', () => {
   if (typeof module !== 'undefined') require('./before');
 
   it('Should correctly call posTags.array', () => {
-    eql(RiTa.posTags([]), []);
+    //eql(RiTa.posTags([]), []);
+    eql(RiTa.posTags(["deal"]), ["nn"]);
     eql(RiTa.posTags(["freed"]), ["jj"]);
     eql(RiTa.posTags(["the"]), ["dt"]);  
     eql(RiTa.posTags(["a"]), ["dt"]);

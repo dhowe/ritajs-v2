@@ -89,6 +89,9 @@ describe('RiTa.Analyzer', () => {
     eq(RiTa.phones("The"), "dh-ah");
     eq(RiTa.phones("The."), "dh-ah .");
     eq(RiTa.phones("flowers"), "f-l-aw-er-z");
+    
+    expect(RiTa.phones("deforestations")).eq('d-ih-f-ao-r-ih-s-t-ey-sh-ah-n-z');
+    expect(RiTa.phones("schizophrenias")).eq('s-k-ih-t-s-ah-f-r-iy-n-iy-ah-z');
 
     // different without lexicon ------------------------------------------
 
@@ -109,6 +112,8 @@ describe('RiTa.Analyzer', () => {
     eq(RiTa.phones("chevrolet"), hasLex ? "sh-eh-v-r-ow-l-ey" : 'ch-eh-v-r-ow-l-ah-t');
     eq(RiTa.phones("women"), hasLex ? "w-ih-m-eh-n" : 'w-ow-m-eh-n');
     eq(RiTa.phones("genuine"), hasLex ? "jh-eh-n-y-uw-w-ah-n" : 'jh-eh-n-y-ah-ay-n');
+
+    
 
     RiTa.SILENCE_LTS = silent;
   });

@@ -72,7 +72,7 @@ class PosTagger {
 
   tag(words, simple, inline/*, fatal*/) {
 
-    let dbug = 0, result = [], choices2d = [];
+    let dbug = 1, result = [], choices2d = [];
 
     if (!words || !words.length) {
       return inline ? '' : [];
@@ -249,9 +249,9 @@ class PosTagger {
         dbug && this._log(4, word, tag);
       }
 
-      // transform 5: convert a common noun (NN or NNS) to a
+      // transform 5: convert a common noun (NN or NNS) to a (only if longer than 4 letters)
       // adjective if it ends with "al", special-case for mammal
-      if (tag.startsWith("nn") && word.endsWith("al") && word != 'mammal') {
+      if (word.length > 4 && tag.startsWith("nn") && word.endsWith("al") && word != 'mammal') {
         tag = "jj";
         dbug && this._log(5, word, tag);
       }

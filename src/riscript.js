@@ -1,9 +1,8 @@
 const antlr4 = require('antlr4');
-//const colors = require('colors');
 const { decode } = require('he');
 const Visitor = require('./visitor');
 const Lexer = require('../grammar/.antlr/RiScriptLexer');
-const Parser = require('../grammar/.antlr//RiScriptParser');
+const Parser = require('../grammar/.antlr/RiScriptParser');
 const { LexerErrors, ParserErrors } = require('./errors');
 const MaxTries = 100;
 
@@ -14,6 +13,28 @@ class RiScript {
     this.parser = undefined;
     this.visitor = undefined;
     this.appliedTransforms = {};
+  }
+
+  static eval(input, ctx = {}, opts = {}) {
+    
+    let onepass = opts.singlePass; // TODO: doc
+    let last = input, trace = opts.trace;
+    let rs = new RiScript().pushTransforms();
+    let expr = rs.lexParseVisit(input, ctx, opts);
+    if (!onepass || /(\$[A-Za-z_]|[()])/.test(expr)) {
+      for (let i = 0; i < MaxTries && expr !== last; i++) {
+        last = expr;
+        if (!expr) break;
+        expr = rs.lexParseVisit(expr, ctx, opts);
+        trace && console.log(i + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
+        if (i >= MaxTries - 1) throw Error('Unable to resolve: "'
+          + input + '" after ' + MaxTries + ' tries - an infinite loop?');
+      }
+    }
+    if (!opts.silent && !RiScript.RiTa.SILENT && /\$[A-Za-z_]/.test(expr)) {
+      console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
+    }
+    return rs.popTransforms().resolveEntities(expr);
   }
 
   static addTransform(name, func) {
@@ -33,29 +54,6 @@ class RiScript {
       String.prototype[t] = this.appliedTransforms[t];
     });
     return this;
-  }
-
-  static eval(input, context, opts) { // TODO: optimize
-    opts = opts || {};
-    let trace = opts.trace;
-    let onepass = opts.onepass;
-    let ctx = context || {}, last = input;
-    let rs = new RiScript().pushTransforms();
-    let expr = rs.lexParseVisit(input, ctx, opts);
-    if (!onepass || /(\$[A-Za-z_]|[()])/.test(expr)) {
-      for (let i = 0; i < MaxTries && expr !== last; i++) {
-        last = expr;
-        if (!expr) break;
-        expr = rs.lexParseVisit(expr, ctx, opts);
-        trace && console.log(i + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
-        if (i >= MaxTries - 1) throw Error('Unable to resolve: "'
-          + input + '" after ' + MaxTries + ' tries - an infinite loop?');
-      }
-    }
-    if (!opts.silent && !RiTa.SILENT && /\$[A-Za-z_]/.test(expr)) {
-      console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
-    }
-    return rs.popTransforms().resolveEntities(expr);
   }
 
   lex(input, opts) {
@@ -80,7 +78,7 @@ class RiScript {
         console.log();
       }
     } catch (e) {
-      if (!silent) console.error(//colors.red
+      if (!silent) console.error(//require('colors').red
         ("LEXER: " + input + '\n' + e.message + "\n"));
       throw e;
     }
@@ -112,7 +110,7 @@ class RiScript {
     try {
       tree = this.parser.script();
     } catch (e) {
-      if (!silent) console.error(//colors.red
+      if (!silent) console.error(//require('colors').red
         ("PARSER: '" + input + '\'\n' + e.message + '\n'));
       throw e;
     }

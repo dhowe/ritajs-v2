@@ -58,8 +58,6 @@ class RiTa {
   }
 
   static evaluate(input, context, opts) {
-    //return RiScript.eval(...arguments); // much faster, why?
-    //return ((opts && opts.singlePass) ? RiScript.eval : RiScript.multeval)(...arguments);
     return RiScript.eval(...arguments);
   }
 
@@ -238,6 +236,8 @@ class RiTa {
     return RiTa.analyzer;
   }
 }
+
+RiScript.RiTa = RiTa;
 
 // CLASSES
 RiTa.Grammar = Grammar;

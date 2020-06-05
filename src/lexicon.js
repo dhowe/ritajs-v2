@@ -15,9 +15,8 @@ class Lexicon {
       minWordLength: return only words whose length is greater than this num
       maxWordLength: return only words whose length is less than this num
   */
-  alliterations(word, opts) {
+  alliterations(word, opts = {}) {
 
-    opts = opts || {};
     let silent = opts.silent;
     let minLen = opts.minWordLength || 4;
     let maxLen = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
@@ -61,9 +60,8 @@ class Lexicon {
     minWordLength: return only words whose length is greater than this num
     maxWordLength: return only words whose length is less than this num
   */
-  rhymes(word, opts) {
+  rhymes(word, opts = {}) {
 
-    opts = opts || {};
     let minLen = opts.minWordLength || 3;
     let maxLen = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
 
@@ -86,9 +84,8 @@ class Lexicon {
     return results;
   }
 
-  randomWord(opts) {
+  randomWord(opts = {}) {
 
-    opts = opts || {};
     const minLen = opts.minWordLength || 4;
     const numSyls = opts.numSyllables || 0;
     const maxLen = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
@@ -200,20 +197,17 @@ class Lexicon {
     maxWordLength: return only words whose length is less than this num
     minAllowedDistance: disregard words with distance less than this num
   */
-  spellsLike(word, opts) {
+  spellsLike(word, opts = {}) {
 
     if (!word || !word.length) return [];
-
-    opts = opts || {};
     opts.type = 'letter';
     return this._similarByType(word, opts);
   }
 
-  soundsLike(word, opts) {
+  soundsLike(word, opts = {}) {
 
     if (!word || !word.length) return [];
 
-    opts = opts || {};
     opts.type = "sound";
     return (opts.matchSpelling) ?
       this._similarBySoundAndLetter(word, opts)
