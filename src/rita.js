@@ -25,7 +25,7 @@ class RiTa {
     throw Error('Invalid instantiation');
   }
 
-  static addTransform(theName, theFunction) {
+  static addTransform() {
     return RiScript.addTransform(...arguments);
   }
 
@@ -37,7 +37,7 @@ class RiTa {
     return RiTa._analyzer().analyze(text);
   }
 
-  static concordance() {
+  static concordance() { // DOC:
     return RiTa.concorder.concordance(...arguments);
   }
 
@@ -45,19 +45,19 @@ class RiTa {
     return RiTa.conjugator.conjugate(...arguments);
   }
 
-  static createGrammar() {
+  static createGrammar() { // niapi
     return new RiTa.Grammar(...arguments);
   }
 
-  static createMarkov() {
+  static createMarkov() { // niapi
     return new RiTa.Markov(...arguments);
   }
 
-  static env() {
+  static env() { // niapi
     return Util.isNode() ? RiTa.NODE : RiTa.JS;
   }
 
-  static evaluate(input, context, opts) {
+  static evaluate() { // DOC:
     return RiScript.eval(...arguments);
   }
 
@@ -123,7 +123,7 @@ class RiTa {
   }
 
   // partOfSpeech() ?
-  static posTags(words, { simple = false, inline = false } = {}) {
+  static posTags(words, { simple = false, inline = false } = {}) { // DOC:
     return RiTa.tagger.tag(words, simple, inline, true);
   }
 
@@ -132,7 +132,7 @@ class RiTa {
     return RiTa.tagger.tag(words, simple, true, true);
   }
 
-  static pluralize() {
+  static pluralize(word) {
     return RiTa.inflector.pluralize(...arguments);
   }
 
@@ -145,7 +145,7 @@ class RiTa {
   }
 
   static randInt() {
-    return Math.floor(RiTa.randomizer.random(...arguments));
+    return Math.floor(RiTa.random(...arguments));
   }
 
   static randomOrdering(num) {
@@ -156,7 +156,7 @@ class RiTa {
     return RiTa.randomizer.seed(theSeed);
   }
 
-  static randomWord() {
+  static randomWord() { // DOC:
     return RiTa.lexicon().randomWord(...arguments);
   }
 
@@ -164,7 +164,7 @@ class RiTa {
     return RiTa.randomizer.randomItem(...arguments);
   }
 
-  static rhymes() {
+  static rhymes() { // DOC:
     return RiTa.lexicon().rhymes(...arguments);
   }
 
@@ -172,15 +172,15 @@ class RiTa {
     return RiTa.tokenizer.sentences(text);
   }
 
-  static spellsLike() {
+  static spellsLike() { // DOC:
     return RiTa.lexicon().spellsLike(...arguments);
   }
 
-  static singularize() {
+  static singularize(word) {
     return RiTa.inflector.singularize(...arguments);
   }
 
-  static soundsLike() {
+  static soundsLike() { // DOC:
     return RiTa.lexicon().soundsLike(...arguments);
   }
 
@@ -204,7 +204,7 @@ class RiTa {
     return RiTa.tokenizer.untokenize(words);
   }
 
-  static words(regex, opts) {
+  static words() { // DOC:
     return RiTa.lexicon().words(...arguments);
   }
 

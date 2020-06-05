@@ -59,7 +59,7 @@ class LetterToSound {
     }
   }
 
-  getPhones(input) {
+  computePhones(input) {
 
     // use cached value if possible
     if (this.cache && typeof this.cache[input] !== 'undefined') {
@@ -70,9 +70,7 @@ class LetterToSound {
     let delim = '-';
 
     if (typeof input === 'string') {
-
       if (!input.length) return '';
-
       input = RiTa.tokenize(input);
     }
 
@@ -82,8 +80,7 @@ class LetterToSound {
     }
 
     result = result.join(delim).replace(/ax/g, 'ah');
-
-    result.replace("/0/g", "");
+    result = result.replace("/0/g", "");
 
     if (result.length > 0 && result.indexOf("1") < 0 && result.indexOf(" ") < 0) {
       let ph = result.split("-");

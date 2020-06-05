@@ -153,34 +153,38 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should correctly call words', () => {
-    /*     [
-          'elephant',
-          'elephantine',
-          'phantom',
-          'sycophantic',
-          'triumphant',
-          'triumphantly'
-        ].forEach(w => console.log(w, RiTa.lexicon()._rawPhones(w))); */
-    /* 
-        expect(RiTa.words('f-ae-n-t', { type: 'phones' })).eql([
-          'elephant',
-          'infant',
-          'triumphant',
-          'triumphantly'
-        ]);
-        return; */
-    expect(RiTa.words(/f-ae-n-t/, { type: 'phones' })).eql([
-      "elephantine",
-      "fantasia",
-      "fantasize",
-      "fantasized",
-      "fantastic",
-      "fantastically",
-      "fantasy",
-      "infantryman",
-      "phantom",
-      "sycophantic"
+    /*   [
+             'elephant',
+             'elephantine',
+             'phantom',
+             'sycophantic',
+             'triumphant',
+             'triumphantly'
+      ].forEach(w => console.log(w, RiTa.phones(w), RiTa.stresses(w)+' '+ RiTa.lexicon()._lookupRaw(w)[0])); 
+       */
+    expect(RiTa.words().length > 20000, "fail").to.be.true;
+  });
+
+  it('Should correctly call words.letters', () => {
+    expect(RiTa.words("phant")).eql([
+      'elephant',
+      'elephantine',
+      'phantom',
+      'sycophantic',
+      'triumphant',
+      'triumphantly'
     ]);
+    expect(RiTa.words(/phant/)).eql([
+      'elephant',
+      'elephantine',
+      'phantom',
+      'sycophantic',
+      'triumphant',
+      'triumphantly'
+    ]);
+  });
+
+  it('Should correctly call words.phones', () => {
 
     expect(RiTa.words(/f-a[eh]-n-t/, { type: 'phones' })).eql([
       "elephant",
@@ -201,23 +205,7 @@ describe('RiTa.Lexicon', function () {
       "triumphant",
       "triumphantly"
     ]);
-    expect(RiTa.words().length > 20000, "fail").to.be.true;
-    expect(RiTa.words("phant")).eql([
-      'elephant',
-      'elephantine',
-      'phantom',
-      'sycophantic',
-      'triumphant',
-      'triumphantly'
-    ]);
-    expect(RiTa.words(/phant/)).eql([
-      'elephant',
-      'elephantine',
-      'phantom',
-      'sycophantic',
-      'triumphant',
-      'triumphantly'
-    ]);
+
     expect(RiTa.words('f-ah-n-t', { type: 'phones' })).eql([
       'elephant',
       'infant',
@@ -227,20 +215,16 @@ describe('RiTa.Lexicon', function () {
       'triumphant',
       'triumphantly',
     ]);
-    expect(RiTa.words(/f-ah-n-t/, { type: 'phones' })).eql([
-      'elephant',
-      'infant',
-      "infantile",
-      "infantry",
-      "oftentimes",
-      'triumphant',
-      'triumphantly'
-    ]);
-
-    // TODO: NEXT stress search
-    // OPTIMIZE both
   });
 
+  it('Should correctly call words.stresses', () => {
+    expect(RiTa.words('0/1/0/0/0/0/0', { type: 'stresses' })).eql([
+      "environmentalism"
+    ]);
+    expect(RiTa.words('0100000', { type: 'stresses' })).eql([
+      "environmentalism"
+    ]);
+  });
 
   it('Should correctly call randomWord.pos.syls', () => {
 
@@ -292,7 +276,7 @@ describe('RiTa.Lexicon', function () {
     if (count !== 5) console.warn("Syllabifier problem: " // see #2
       + result + ".syllables was " + count + ', expected 5');
     pos = RiTa.posTags(result)[0];
-    expect(pos).eq('nns', "GOT: " + result + ' (' + pos + ')');
+    expect(pos).eq('nns', "Expected 'nns' GOT: " + result + ' (' + pos + ')');
 
     RiTa.SILENCE_LTS = tmp;
   });

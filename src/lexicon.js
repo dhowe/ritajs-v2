@@ -91,7 +91,7 @@ class Lexicon {
     const maxLen = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
     const dict = this._dict(true), words = Object.keys(dict);
     const ran = Math.floor(RiTa.randInt(words.length));
-    const massNouns = ['dive', 'people', 'salespeople'];
+    const massNouns = ['people', 'salespeople', 'electrolysis'];
 
     let targetPos = opts.pos || false;
     let pluralize = false, conjugate = false;
@@ -220,23 +220,44 @@ class Lexicon {
   }
 
   words(regex, opts = {}) {
+
     let dict = this._dict(true);
-    if (!arguments.length) return Object.keys(dict);
-    if (typeof regex === 'string') regex = new RegExp(regex);
-    if (opts.type === 'phones') {
-      return Object.keys(dict).filter(w => {
-        return regex.test(RiTa.phones(w));
-      });
+    let func, words = Object.keys(dict);
+    let limit = opts.limit || Number.MAX_SAFE_INTEGER;
+    if (typeof regex === 'undefined') return words;
+    if (typeof regex === 'string') {
+      // if we have a stress string without slashes, add them
+      if (opts.type === 'stresses' && /^[01]+$/.test(regex)) {
+        regex = regex.split('').join('/');
+      }
+      regex = new RegExp(regex);
     }
-    else if (!opts.type === 'stresses') {
-      return Object.keys(dict).filter(w => {
-        let phones = dict[w][0].replace('1', '');
-        return regex.test(phones);
-      });    
+    /* if (/(phones|stresses)/.test(opts.type)) {
+      return words.filter(w => regex.test(RiTa[opts.type](w)));
+    } return words.filter(w => regex.test(w)); */
+    /*let f = /(phones|stresses)/.test(opts.type) ? w => RiTa[opts.type](w) : w => w;
+    return words.filter(words, () => regex.test(f(w)));*/
+    /*if (opts.type === 'phones') return words.filter(w => regex.test(RiTa.phones(w)));
+    if (opts.type === 'stresses') return words.filter(w => regex.test(RiTa.stresses(w)));
+    return words.filter(w => regex.test(w)); */
+    if (opts.type === 'stresses') func = RiTa.stresses;
+    else if (opts.type === 'phones') func = RiTa.phones;
+    return this.regexFilter(words, regex, limit, func);
+  }
+  
+  regexFilter(words, regex, limit, func) {
+    let result = [];
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      if (typeof func !== 'undefined') {
+        if (regex.test(func(words[i]))) result.push(words[i]);
+      }
+      else {
+        if (regex.test(words[i])) result.push(words[i]);
+      }
+      if (result.length > limit) break;
     }
-    else {
-      return Object.keys(dict).filter(w => regex.test(w));
-    }
+    return result;
   }
 
   size() {
@@ -287,7 +308,7 @@ class Lexicon {
     let minLen = opts.minWordLength || 2;
     let minMed = opts.minAllowedDistance || 1;
     let maxLen = opts.maxWordLength || Number.MAX_VALUE;
-    
+
     let result = [], dict = this._dict(true);
     let sound = opts.type === 'sound'; // default: letter 
     let input = word.toLowerCase(), words = Object.keys(dict);
@@ -449,7 +470,7 @@ class Lexicon {
     if (rdata && rdata.length) return rdata[0];
 
     if (!noLts) {
-      let phones = RiTa.lts && RiTa.lts.getPhones(word);
+      let phones = RiTa.lts && RiTa.lts.computePhones(word);
       return Util.syllablesFromPhones(phones);
     }
   }
