@@ -62,40 +62,41 @@ class LetterToSound {
   computePhones(input) {
 
     // use cached value if possible
-    if (this.cache && typeof this.cache[input] !== 'undefined') {
-      return this.cache[input];
-    }
+    if (!this.cache && typeof this.cache[input] === 'undefined') {
 
-    let result = [];
-    let delim = '-';
+      let result = [];
+      let delim = '-';
 
-    if (typeof input === 'string') {
-      if (!input.length) return '';
-      input = RiTa.tokenize(input);
-    }
-
-    for (let i = 0; i < input.length; i++) {
-      let ph = this.computePhones(input[i]);
-      result[i] = ph ? ph.join(delim) : '';
-    }
-
-    result = result.join(delim).replace(/ax/g, 'ah');
-    result = result.replace("/0/g", "");
-
-    if (result.length > 0 && result.indexOf("1") < 0 && result.indexOf(" ") < 0) {
-      let ph = result.split("-");
-      result = "";
-      for (let i = 0; i < ph.length; i++) {
-        if (/[aeiou]/.test(ph[i])) ph[i] += "1";
-        result += ph[i] + "-";
+      if (typeof input === 'string') {
+        if (!input.length) return '';
+        input = RiTa.tokenize(input);
       }
-      if (ph.length > 1) result = result.substring(0, result.length - 1);
+
+      for (let i = 0; i < input.length; i++) {
+        let ph = this.computePhones(input[i]);
+        result[i] = ph ? ph.join(delim) : '';
+      }
+
+      result = result.join(delim).replace(/ax/g, 'ah');
+      result = result.replace("/0/g", "");
+
+      if (result.length > 0 && result.indexOf("1") < 0 && result.indexOf(" ") < 0) {
+        let ph = result.split("-");
+        result = "";
+        for (let i = 0; i < ph.length; i++) {
+          if (/[aeiou]/.test(ph[i])) ph[i] += "1";
+          result += ph[i] + "-";
+        }
+        if (ph.length > 1) result = result.substring(0, result.length - 1);
+      }
+      
+      if (!RiTa.CACHING) return result;
+
+      // cached the value for later
+      this.cache[input] = result;
     }
 
-    // cached the value for later
-    if (this.cache) this.cache[input] = result;
-
-    return result;
+    return this.cache[input];
   }
 
   computePhones(word) {

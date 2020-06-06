@@ -86,13 +86,12 @@ class Lexicon {
 
   randomWord(opts = {}) {
 
-    const minLen = opts.minWordLength || 4;
+    const minLen = opts.minWordLength || 4; // DOC:
     const numSyls = opts.numSyllables || 0;
     const maxLen = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
     const dict = this._dict(true), words = Object.keys(dict);
     const ran = Math.floor(RiTa.randInt(words.length));
-    const massNouns = ['people', 'salespeople', 'electrolysis'];
-
+    
     let targetPos = opts.pos || false;
     let pluralize = false, conjugate = false;
 
@@ -107,10 +106,8 @@ class Lexicon {
     }
 
     let isMassNoun = (w, pos) => {
-      return w.endsWith("ness") ||
-        w.endsWith("ism") ||
-        pos.indexOf("vbg") > 0 ||
-        massNouns.includes(w);
+      return w.endsWith("ness") || w.endsWith("ism") || pos.indexOf("vbg") > 0 
+        || Util.MASS_NOUNS.includes(w);
     }
 
     for (let k = 0; k < words.length; k++) {

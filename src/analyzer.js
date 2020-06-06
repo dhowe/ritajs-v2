@@ -83,7 +83,10 @@ class Analyzer {
         stresses += word;
       }
       if (!stresses.endsWith(' ')) stresses += ' ';
-      this.cache[word] = { phones, stresses, syllables };
+
+      let features = { phones, stresses, syllables };
+      if (!RiTa.CACHING) return features;
+      this.cache[word] = features;
     }
 
     return this.cache[word];

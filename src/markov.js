@@ -326,7 +326,7 @@ class Node {
 
   // Increments count for a child node and returns it
   addChild(word, count) {
-    this.numChildren === -1; // invalidate cache
+    this.numChildren = -1; // invalidate cache
     count = count || 1;
     let node = this.children[word];
     if (!node) {

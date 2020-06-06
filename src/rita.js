@@ -297,6 +297,9 @@ RiTa.SUBJUNCTIVE = 5;
 // For tokenization, Can't -> Can not, etc.
 RiTa.SPLIT_CONTRACTIONS = false;
 
-RiTa.FEATURES = ['tokens', 'stresses', 'phones', 'syllables', 'pos', 'text'].map(f => f.toUpperCase());
+// Set to false to reduce memory (likely slower)
+RiTa.CACHING = true;
+
+RiTa.FEATURES = ['TOKENS', 'STRESSES', 'PHONES', 'SYLLABLES', 'POS', 'TEXT'];
 
 module && (module.exports = RiTa);
