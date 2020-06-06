@@ -92,7 +92,7 @@ class LetterToSound {
       
       if (!RiTa.CACHING) return result;
 
-      // cached the value for later
+      // cache the value for later
       this.cache[input] = result;
     }
 

@@ -184,9 +184,9 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should correctly call words.phones', () => {
-
-    expect(RiTa.words(/f-a[eh]-n-t/, { type: 'phones' })).eql([
+  it('Should correctly call words.phones with limit', () => {
+    // omitting no limit tests as they are a bit slow
+    expect(RiTa.words(/f-a[eh]-n-t/, { type: 'phones', limit: 10 })).eql([
       "elephant",
       "elephantine",
       "fantasia",
@@ -195,34 +195,53 @@ describe('RiTa.Lexicon', function () {
       "fantastic",
       "fantastically",
       "fantasy",
-      "infant",
-      "infantile",
+      "infant", 
+      "infantile", /* 
       "infantry",
       "infantryman",
       "oftentimes",
       "phantom",
       "sycophantic",
       "triumphant",
-      "triumphantly"
+      "triumphantly" */
     ]);
 
-    expect(RiTa.words('f-ah-n-t', { type: 'phones' })).eql([
+    expect(RiTa.words('f-ah-n-t', { type: 'phones', limit: 5 })).eql([
       'elephant',
       'infant',
       'infantile',
       'infantry',
-      "oftentimes",
-      'triumphant',
-      'triumphantly',
+      "oftentimes"
+      /*, 'triumphant',
+      'triumphantly'*/
     ]);
   });
 
-  it('Should correctly call words.stresses', () => {
+  // omitting no limit tests as they are a bit slow
+  /*it('Should correctly call words.stresses', () => {
     expect(RiTa.words('0/1/0/0/0/0/0', { type: 'stresses' })).eql([
       "environmentalism"
     ]);
     expect(RiTa.words('0100000', { type: 'stresses' })).eql([
       "environmentalism"
+    ]);
+  });*/
+
+  it('Should correctly call words.stresses with limit', () => {
+    //console.log(RiTa.words('0/1/0/0/0/0', { type: 'stresses', limit: 5 }));  
+    expect(RiTa.words('0/1/0/0/0/0', { type: 'stresses', limit: 5 })).eql([
+      'accountability',
+      'anticipatory',
+      'appreciatively',
+      'authoritarianism',
+      'colonialism'
+    ]);
+    expect(RiTa.words('010000', { type: 'stresses', limit: 5 })).eql([
+      'accountability',
+      'anticipatory',
+      'appreciatively',
+      'authoritarianism',
+      'colonialism'
     ]);
   });
 

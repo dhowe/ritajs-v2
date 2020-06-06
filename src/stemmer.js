@@ -1,3 +1,5 @@
+// a modified prt of the Pling stemmer as documented here: http://resources.mpi-inf.mpg.de/yago-naga/javatools/doc/javatools/parsers/PlingStemmer.html
+
 const { MODALS } = require("./util");
 
 /* Words that end in '-se' in their plural forms (like 'nurse' etc.) */

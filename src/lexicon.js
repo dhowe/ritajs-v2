@@ -74,7 +74,8 @@ class Lexicon {
     let phone = this._lastStressedPhoneToEnd(word);
     if (phone) {
       for (let i = 0; i < words.length; i++) {
-        if (words[i] !== word && words[i].length >= minLen && words[i].length <= maxLen) {
+        if (words[i] !== word && words[i].length >= minLen
+          && words[i].length <= maxLen) {
           if (dict[words[i]][0].endsWith(phone)) {
             results.push(words[i]);
           }
@@ -84,52 +85,72 @@ class Lexicon {
     return results;
   }
 
+  checkCriteria(word, rdata, opts) {
+
+    /*  let isMassNoun = (w, pos) => {
+       return /(ism|ess)$/.test(w)
+         || pos.indexOf('vbg') > 0
+         || Util.MASS_NOUNS.includes(w);
+     } */
+
+    // check word length
+    if (word.length > opts.maxWordLength) return false;
+    if (word.length < opts.minWordLength) return false;
+
+    // match the syls if supplied
+    let syls = rdata[0].split(' ').length;
+    if (opts.numSyllables && opts.numSyllables !== syls) return false;
+
+    return true;
+  }
+
+  parseArgs(opts) {
+    let tpos = opts.pos || false;
+    opts.numSyllables = opts.numSyllables || 0;
+    opts.minWordLength = opts.minWordLength || 4;
+    opts.maxWordLength = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
+    if (tpos && tpos.length) {
+      opts.pluralize = (tpos === "nns");
+      opts.conjugate = (tpos[0] === "v" && tpos.length > 2);
+      if (tpos[0] === "n") tpos = "nn";
+      else if (tpos[0] === "v") tpos = "vb";
+      else if (tpos === "r") tpos = "rb";
+      else if (tpos === "a") tpos = "jj";
+    }
+    opts.targetPos = tpos;
+    return opts;
+  }
+
   randomWord(opts = {}) {
 
-    const minLen = opts.minWordLength || 4; // DOC:
-    const numSyls = opts.numSyllables || 0;
-    const maxLen = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
+    this.parseArgs(opts);
+
     const dict = this._dict(true), words = Object.keys(dict);
     const ran = Math.floor(RiTa.randInt(words.length));
-    
-    let targetPos = opts.pos || false;
-    let pluralize = false, conjugate = false;
 
-    if (targetPos && targetPos.length) {
-      targetPos = targetPos.trim().toLowerCase();
-      pluralize = (targetPos === "nns");
-      conjugate = (targetPos[0] === "v" && targetPos.length > 2);
-      if (targetPos[0] === "n") targetPos = "nn";
-      else if (targetPos[0] === "v") targetPos = "vb";
-      else if (targetPos === "r") targetPos = "rb";
-      else if (targetPos === "a") targetPos = "jj";
-    }
+    //opts.pos = opts.pos || false;
+    //let pluralize = false, conjugate = false;
 
     let isMassNoun = (w, pos) => {
-      return w.endsWith("ness") || w.endsWith("ism") || pos.indexOf("vbg") > 0 
+      return w.endsWith("ness") || w.endsWith("ism") || pos.indexOf("vbg") > 0
         || Util.MASS_NOUNS.includes(w);
     }
 
     for (let k = 0; k < words.length; k++) {
       let j = (ran + k) % words.length;
-
-      if (words[j].length > maxLen || words[j].length < minLen) continue;
-
       let word = words[j], rdata = dict[word];
-
-      // match the syls if supplied
-      if (numSyls && numSyls !== rdata[0].split(' ').length) continue;
+      if (!this.checkCriteria(word, rdata, opts)) continue;
 
       // match the pos if supplied (may need to inflect)
-      if (targetPos) {
+      if (opts.targetPos) {
 
         let result = words[j];
         let firstPos = rdata[1].split(' ')[0];
-        if (targetPos !== firstPos) continue;
+        if (opts.targetPos !== firstPos) continue;
 
         // we've matched our part-of-speech
 
-        if (pluralize) { // try to pluralize
+        if (opts.pluralize) { // try to pluralize
 
           // match plural noun
           if (isMassNoun(words[j], rdata[1])) continue;
@@ -143,7 +164,7 @@ class Lexicon {
         VBP 	Verb, non-3rd person singular present
         VBZ 	Verb, 3rd person singular present
         */
-        else if (conjugate) { // try to inflect
+        else if (opts.conjugate) { // try to inflect
           switch (opts.pos) {
             case 'vbd':
               result = RiTa.conjugate(verb, {
@@ -168,16 +189,16 @@ class Lexicon {
                 tense: RiTa.PRESENT_TENSE
               });
               break;
-            default: throw Error('Unexpected pos: ' + targetPos);
+            default: throw Error('Unexpected pos: ' + opts.targetPos);
           }
         }
 
-        if (numSyls) { // Need to make sure we dont change syllable count
+        if (opts.numSyllables) { // Need to make sure we dont change syllable count
           let tmp = RiTa.SILENCE_LTS;
           RiTa.SILENCE_LTS = true;
           let count = RiTa.syllables(result).split(RiTa.SYLLABLE_BOUNDARY).length;
           RiTa.SILENCE_LTS = tmp;
-          if (count !== numSyls) continue;
+          if (count !== opts.numSyllables) continue;
         }
         return result;
       }
@@ -241,7 +262,7 @@ class Lexicon {
     else if (opts.type === 'phones') func = RiTa.phones;
     return this.regexFilter(words, regex, limit, func);
   }
-  
+
   regexFilter(words, regex, limit, func) {
     let result = [];
     for (let i = 0; i < words.length; i++) {
@@ -252,7 +273,7 @@ class Lexicon {
       else {
         if (regex.test(words[i])) result.push(words[i]);
       }
-      if (result.length > limit) break;
+      if (result.length === limit) break;
     }
     return result;
   }

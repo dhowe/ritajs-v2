@@ -156,7 +156,7 @@ class RiTa {
     return RiTa.randomizer.seed(theSeed);
   }
 
-  static randomWord() { // DOC:
+  static randomWord() {
     return RiTa.lexicon().randomWord(...arguments);
   }
 
