@@ -1,8 +1,8 @@
 ## Installation
 
 * For node: `npm install rita@beta`
-* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.10/rita-web-full.js) (1.4mb)
-* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.10/rita-web-nolex.js) (.5mb)
+* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.11/rita-web-full.js) (1.4mb)
+* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.11/rita-web-nolex.js) (.5mb)
 * For [developers](#developing)
 
 ### Example (node)
@@ -55,6 +55,7 @@ console.log(grammar.expand());
     <a href="https://rednoise.org/rita2/RiTa/randomSeed/index.html">RiTa.randomSeed()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/randomWord/index.html">RiTa.randomWord()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/rhymes/index.html">RiTa.rhymes()</a><br/>
+    <a href="https://rednoise.org/rita2/RiTa/search/index.html">RiTa.search()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/sentences/index.html">RiTa.sentences()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/similars/index.html">RiTa.similars()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/singularize/index.html">RiTa.singularize()</a><br/>
@@ -64,7 +65,6 @@ console.log(grammar.expand());
     <a href="https://rednoise.org/rita2/RiTa/syllables/index.html">RiTa.syllables()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/tokenize/index.html">RiTa.tokenize()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/untokenize/index.html">RiTa.untokenize()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/words/index.html">RiTa.search()</a><br/>
    </td>
    <td>
     <a href="https://rednoise.org/rita2/Markov/addText/index.html">addText()</a><br/>
