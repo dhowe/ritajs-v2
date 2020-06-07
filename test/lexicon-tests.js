@@ -152,21 +152,12 @@ describe('RiTa.Lexicon', function () {
     }
   });
 
-  it('Should correctly call words', () => {
-    /*   [
-             'elephant',
-             'elephantine',
-             'phantom',
-             'sycophantic',
-             'triumphant',
-             'triumphantly'
-      ].forEach(w => console.log(w, RiTa.phones(w), RiTa.stresses(w)+' '+ RiTa.lexicon()._lookupRaw(w)[0])); 
-       */
-    expect(RiTa.words().length > 20000, "fail").to.be.true;
+  it('Should correctly call search without opts', () => {
+    expect(RiTa.search().length > 20000, "fail").to.be.true;
   });
 
-  it('Should correctly call words.letters', () => {
-    expect(RiTa.words("phant")).eql([
+  it('Should correctly call search with letters', () => {
+    expect(RiTa.search("phant")).eql([
       'elephant',
       'elephantine',
       'phantom',
@@ -174,7 +165,7 @@ describe('RiTa.Lexicon', function () {
       'triumphant',
       'triumphantly'
     ]);
-    expect(RiTa.words(/phant/)).eql([
+    expect(RiTa.search(/phant/)).eql([
       'elephant',
       'elephantine',
       'phantom',
@@ -184,9 +175,9 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should correctly call words.phones with limit', () => {
+  it('Should correctly call search with phones, limit', () => {
     // omitting no limit tests as they are a bit slow
-    expect(RiTa.words(/f-a[eh]-n-t/, { type: 'phones', limit: 10 })).eql([
+    expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', limit: 10 })).eql([
       "elephant",
       "elephantine",
       "fantasia",
@@ -205,7 +196,7 @@ describe('RiTa.Lexicon', function () {
       "triumphantly" */
     ]);
 
-    expect(RiTa.words('f-ah-n-t', { type: 'phones', limit: 5 })).eql([
+    expect(RiTa.search('f-ah-n-t', { type: 'phones', limit: 5 })).eql([
       'elephant',
       'infant',
       'infantile',
@@ -217,31 +208,47 @@ describe('RiTa.Lexicon', function () {
   });
 
   /* omitting no limit tests as they are a bit slow
-  it('Should correctly call words.stresses', () => {
-    expect(RiTa.words('0/1/0/0/0/0/0', { type: 'stresses' })).eql([
+  it('Should correctly call search with stresses', () => {
+    expect(RiTa.search('0/1/0/0/0/0/0', { type: 'stresses' })).eql([
       "environmentalism"
     ]);
-    expect(RiTa.words('0100000', { type: 'stresses' })).eql([
+    expect(RiTa.search('0100000', { type: 'stresses' })).eql([
       "environmentalism"
     ]);
   });*/
 
-  it('Should correctly call words.stresses with limit', () => {
-    //console.log(RiTa.words('0/1/0/0/0/0', { type: 'stresses', limit: 5 }));  
-    expect(RiTa.words('0/1/0/0/0/0', { type: 'stresses', limit: 5 })).eql([
+  it('Should correctly call search with stresses, limit', () => {
+    //console.log(RiTa.search('0/1/0/0/0/0', { type: 'stresses', limit: 5 }));  
+    expect(RiTa.search('0/1/0/0/0/0', { type: 'stresses', limit: 5 })).eql([
       'accountability',
       'anticipatory',
       'appreciatively',
       'authoritarianism',
       'colonialism'
     ]);
-    expect(RiTa.words('010000', { type: 'stresses', limit: 5 })).eql([
+    expect(RiTa.search('010000', { type: 'stresses', limit: 5 })).eql([
       'accountability',
       'anticipatory',
       'appreciatively',
       'authoritarianism',
       'colonialism'
     ]);
+    expect(RiTa.search('010000', { type: 'stresses', limit: 5, maxLength: 11 })).eql([
+      'colonialism',
+      "imperialism",
+      "materialism"
+    ]);
+    expect(RiTa.search('010000', { type: 'stresses', limit: 5, minLength: 12 })).eql([
+      'accountability',
+      'anticipatory',
+      'appreciatively',
+      'authoritarianism',
+      "conciliatory"
+    ]);
+
+    // TODO: add code/tests for pos option in all lexicon scans
+    console.log(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }));
+      
   });
 
   it('Should correctly call randomWord.pos.syls', () => {
@@ -300,7 +307,7 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should correctly call alliterations.numSyllables', () => {
-    let result = RiTa.alliterations("cat", { minWordLength: 1, numSyllables:7 });
+    let result = RiTa.alliterations("cat", { minLength: 1, numSyllables:7 });
     expect(result).eql(['electrocardiogram', 'electromechanical', 'telecommunications']);
     for (let i = 0; i < result.length; i++) {
       expect(RiTa.isAlliteration(result[i], "cat"), 'FAIL2: ' + result[i]).to.be.true;
@@ -334,13 +341,13 @@ describe('RiTa.Lexicon', function () {
       expect(RiTa.isAlliteration(result[i], "dog")).to.be.true;
     }
 
-    result = RiTa.alliterations("dog", { minWordLength: 15 });
+    result = RiTa.alliterations("dog", { minLength: 15 });
     expect(result.length < 5, "got length=" + result.length).to.be.true;
     for (let i = 0; i < result.length; i++) {
       expect(RiTa.isAlliteration(result[i], "dog"), 'FAIL1: ' + result[i]).to.be.true;
     }
 
-    result = RiTa.alliterations("cat", { minWordLength: 16 });
+    result = RiTa.alliterations("cat", { minLength: 16 });
     expect(result.length < 15, "failed on 'dog'").to.be.true;
     for (let i = 0; i < result.length; i++) {
       expect(RiTa.isAlliteration(result[i], "cat"), 'FAIL2: ' + result[i]).to.be.true;
@@ -410,13 +417,13 @@ describe('RiTa.Lexicon', function () {
 
   it('Should correctly call rhymes.wordlength', () => {
 
-    expect(RiTa.rhymes("cat", { minWordLength: 4 }).includes("hat")).to.be.false;
-    expect(RiTa.rhymes("cat", { maxWordLength: 2 }).includes("hat")).to.be.false;
+    expect(RiTa.rhymes("cat", { minLength: 4 }).includes("hat")).to.be.false;
+    expect(RiTa.rhymes("cat", { maxLength: 2 }).includes("hat")).to.be.false;
   });
 
   it('Should correctly call spellsLike', () => {
     let result;
-    result = RiTa.spellsLike("banana", { minWordLength: 6, maxWordLength: 6 });
+    result = RiTa.spellsLike("banana", { minLength: 6, maxLength: 6 });
     eql(result, ["cabana"]);
 
     result = RiTa.spellsLike("");
@@ -428,7 +435,7 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.spellsLike("banana");
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
-    result = RiTa.spellsLike("banana", { minDistance: 1, minWordLength: 6, maxWordLength: 6 });
+    result = RiTa.spellsLike("banana", { minDistance: 1, minLength: 6, maxLength: 6 });
     eql(result, ["cabana"]);
 
     result = RiTa.spellsLike("banana", { minDistance: 1 });
@@ -443,13 +450,13 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.spellsLike("ice", { minDistance: 1 });
     eql(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
 
-    result = RiTa.spellsLike("ice", { minDistance: 2, minWordLength: 3, maxWordLength: 3 });
+    result = RiTa.spellsLike("ice", { minDistance: 2, minLength: 3, maxLength: 3 });
     expect(result.length > 10).to.be.true;
 
-    result = RiTa.spellsLike("ice", { minDistance: 0, minWordLength: 3, maxWordLength: 3 });
+    result = RiTa.spellsLike("ice", { minDistance: 0, minLength: 3, maxLength: 3 });
     eql(result, ["ace", "icy", "ire"]);
 
-    result = RiTa.spellsLike("ice", { minDistance: 1, minWordLength: 3, maxWordLength: 3 });
+    result = RiTa.spellsLike("ice", { minDistance: 1, minLength: 3, maxLength: 3 });
     eql(result, ["ace", "icy", "ire"]);
 
     result = RiTa.spellsLike("123");
@@ -483,7 +490,7 @@ describe('RiTa.Lexicon', function () {
     answer = ['abashed', 'abate', 'abbey', 'abbot', 'abet'];
     eql(result, answer);
 
-    result = RiTa.soundsLike("cat", { type: 'sound', minWordLength: 2, maxWordLength:4 });
+    result = RiTa.soundsLike("cat", { type: 'sound', minLength: 2, maxLength:4 });
     answer = ["at", "bat", "cab","calf", "can", "cap", "cash", "cast",  "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt",  "pat", "rat", "sat", "tat", "that", "vat"];
     eql(result, answer);
 
@@ -496,10 +503,10 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.soundsLike("try", { matchSpelling: true });
     eql(result, ["cry", "dry", "fry", "pry", "tray", "wry"]);
 
-    result = RiTa.soundsLike("try", { matchSpelling: true, maxWordLength: 3 });
+    result = RiTa.soundsLike("try", { matchSpelling: true, maxLength: 3 });
     eql(result, ["cry", "dry", "fry", "pry","wry"]);
 
-    result = RiTa.soundsLike("try", { matchSpelling: true, minWordLength: 4 });
+    result = RiTa.soundsLike("try", { matchSpelling: true, minLength: 4 });
     eql(result, ["tray"]);
 
     result = RiTa.soundsLike("try", { matchSpelling: true, limit:3 });

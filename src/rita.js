@@ -167,6 +167,10 @@ class RiTa {
   static rhymes() { // DOC:
     return RiTa.lexicon().rhymes(...arguments);
   }
+  
+  static search() {
+    return RiTa.lexicon().search(...arguments);
+  }
 
   static sentences(text) {
     return RiTa.tokenizer.sentences(text);
@@ -202,10 +206,6 @@ class RiTa {
 
   static untokenize(words) {
     return RiTa.tokenizer.untokenize(words);
-  }
-
-  static words() { // DOC:
-    return RiTa.lexicon().words(...arguments);
   }
 
   /////////////////////////////////////////////////////////////////

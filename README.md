@@ -64,7 +64,7 @@ console.log(grammar.expand());
     <a href="https://rednoise.org/rita2/RiTa/syllables/index.html">RiTa.syllables()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/tokenize/index.html">RiTa.tokenize()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/untokenize/index.html">RiTa.untokenize()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/words/index.html">RiTa.words()</a><br/>
+    <a href="https://rednoise.org/rita2/RiTa/words/index.html">RiTa.search()</a><br/>
    </td>
    <td>
     <a href="https://rednoise.org/rita2/Markov/addText/index.html">addText()</a><br/>

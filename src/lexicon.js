@@ -74,7 +74,7 @@ class Lexicon {
 
   randomWord(opts = {}) {
 
-    opts.minWordLength = opts.minWordLength || 4; // not 3
+    opts.minLength = opts.minLength || 4; // not 3
     this.parseArgs(opts);
 
     const dict = this._dict(true), words = Object.keys(dict);
@@ -146,7 +146,7 @@ class Lexicon {
     return this._dict(fatal).hasOwnProperty(word.toLowerCase());
   }
 
-  words(regex, opts = {}) {
+  search(regex, opts = {}) {
     let dict = this._dict(true);
     let words = Object.keys(dict);
     if (typeof regex === 'undefined') return words;
@@ -157,7 +157,22 @@ class Lexicon {
       }
       regex = new RegExp(regex);
     }
-    return this.regexFilter(words, regex, opts);
+    this.parseArgs(opts);
+    let func, result = [];
+    if (opts.type === 'stresses') func = RiTa.stresses;
+    else if (opts.type === 'phones') func = RiTa.phones;
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      if (!this.checkCriteria(word, dict[word], opts)) continue;
+      if (typeof func !== 'undefined') {
+        if (regex.test(func(words[i]))) result.push(words[i]);
+      }
+      else {
+        if (regex.test(words[i])) result.push(words[i]);
+      }
+      if (result.length === opts.limit) break;
+    }
+    return result;
   }
 
   isAlliteration(word1, word2) {
@@ -165,10 +180,6 @@ class Lexicon {
 
     if (!word1 || !word2 || !word1.length || !word2.length) {
       return false;
-    }
-
-    if (word1.indexOf(" ") > -1 || word2.indexOf(" ") > -1) {
-      throw Error('isAlliteration expects single words only');
     }
 
     let c1 = this._firstPhone(this._firstStressedSyl(word1)),
@@ -240,8 +251,8 @@ class Lexicon {
   checkCriteria(word, rdata, opts) {
 
     // check word length
-    if (word.length > opts.maxWordLength) return false;
-    if (word.length < opts.minWordLength) return false;
+    if (word.length > opts.maxLength) return false;
+    if (word.length < opts.minLength) return false;
 
     // match numSyllables if supplied
     if (opts.numSyllables) {
@@ -252,14 +263,14 @@ class Lexicon {
     return true;
   }
 
-  // Handles: pos, limit, numSyllables, minWordLength, maxWordLength
+  // Handles: pos, limit, numSyllables, minLength, maxLength
   // potentially appends pluralize, conjugate, targetPos
   parseArgs(opts) { 
     
     opts.minDistance = opts.minDistance || 1;
     opts.numSyllables = opts.numSyllables || 0;
-    opts.minWordLength = opts.minWordLength || 3;
-    opts.maxWordLength = opts.maxWordLength || Number.MAX_SAFE_INTEGER;
+    opts.minLength = opts.minLength || 3;
+    opts.maxLength = opts.maxLength || Number.MAX_SAFE_INTEGER;
     opts.limit = opts.limit || Number.MAX_SAFE_INTEGER;
 
     // handle part-of-speech
@@ -308,23 +319,6 @@ class Lexicon {
         break;
       default: throw Error('Unexpected pos: ' + pos);
     }
-  }
-
-  regexFilter(words, regex, opts) {
-    let result = [], func;
-    if (opts.type === 'stresses') func = RiTa.stresses;
-    else if (opts.type === 'phones') func = RiTa.phones;
-    for (let i = 0; i < words.length; i++) {
-      const word = words[i];
-      if (typeof func !== 'undefined') {
-        if (regex.test(func(words[i]))) result.push(words[i]);
-      }
-      else {
-        if (regex.test(words[i])) result.push(words[i]);
-      }
-      if (result.length === opts.limit) break;
-    }
-    return result;
   }
 
   similarBySoundAndLetter(word, opts) {
