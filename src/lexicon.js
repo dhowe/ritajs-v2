@@ -127,86 +127,81 @@ class Lexicon {
 
     const dict = this._dict(true), words = Object.keys(dict);
     const ran = Math.floor(RiTa.randInt(words.length));
-
-    //opts.pos = opts.pos || false;
-    //let pluralize = false, conjugate = false;
-
-    let isMassNoun = (w, pos) => {
-      return w.endsWith("ness") || w.endsWith("ism") || pos.indexOf("vbg") > 0
+    const isMassNoun = (w, pos) => {
+      return w.endsWith("ness")
+        || w.endsWith("ism")
+        || pos.indexOf("vbg") > 0
         || Util.MASS_NOUNS.includes(w);
     }
 
     for (let k = 0; k < words.length; k++) {
       let j = (ran + k) % words.length;
       let word = words[j], rdata = dict[word];
+
+      // check word length and syllables 
       if (!this.checkCriteria(word, rdata, opts)) continue;
 
-      // match the pos if supplied (may need to inflect)
-      if (opts.targetPos) {
+      if (!opts.targetPos) return words[j]; // done if no pos to match
 
-        let result = words[j];
-        let firstPos = rdata[1].split(' ')[0];
-        if (opts.targetPos !== firstPos) continue;
+      // match the pos if supplied
+      let result = word, firstPos = rdata[1].split(' ')[0];
+      if (opts.targetPos !== firstPos) continue;
 
-        // we've matched our part-of-speech
-
-        if (opts.pluralize) { // try to pluralize
-
-          // match plural noun
-          if (isMassNoun(words[j], rdata[1])) continue;
-          result = RiTa.pluralize(words[j]);
-        }
-
-        /*
-        VBD 	Verb, past tense
-        VBG 	Verb, gerund or present participle
-        VBN 	Verb, past participle
-        VBP 	Verb, non-3rd person singular present
-        VBZ 	Verb, 3rd person singular present
-        */
-        else if (opts.conjugate) { // try to inflect
-          switch (opts.pos) {
-            case 'vbd':
-              result = RiTa.conjugate(verb, {
-                number: RiTa.SINGULAR,
-                person: RiTa.FIRST_PERSON,
-                tense: RiTa.PAST_TENSE
-              });
-              break;
-            case 'vbg':
-              result = RiTa.presentParticiple(words[j]);
-              break;
-            case 'vbn':
-              result = RiTa.pastParticiple(words[j]);
-              break;
-            case 'vbp':
-              result = RiTa.conjugate(words[j]); // no args
-              break;
-            case 'vbz':
-              result = RiTa.conjugate(words[j], {
-                number: RiTa.SINGULAR,
-                person: RiTa.THIRD_PERSON,
-                tense: RiTa.PRESENT_TENSE
-              });
-              break;
-            default: throw Error('Unexpected pos: ' + opts.targetPos);
-          }
-        }
-
-        if (opts.numSyllables) { // Need to make sure we dont change syllable count
-          let tmp = RiTa.SILENCE_LTS;
-          RiTa.SILENCE_LTS = true;
-          let count = RiTa.syllables(result).split(RiTa.SYLLABLE_BOUNDARY).length;
-          RiTa.SILENCE_LTS = tmp;
-          if (count !== opts.numSyllables) continue;
-        }
-        return result;
+      // we've matched our pos, pluralize if needed
+      if (opts.pluralize) {
+        if (isMassNoun(word, rdata[1])) continue;
+        result = RiTa.pluralize(word); // match plural noun
       }
-      else {
-        return words[j]; // no pos to match
+      else if (opts.conjugate) { // inflect if needed
+        result = this.reconjugate(word, opts.pos);
       }
+      if (opts.numSyllables) { // Need to make sure we dont change syllable count
+        let tmp = RiTa.SILENCE_LTS;
+        RiTa.SILENCE_LTS = true;
+        let num = RiTa.syllables(result).split(RiTa.SYLLABLE_BOUNDARY).length;
+        RiTa.SILENCE_LTS = tmp;
+        // reject if syllable count has changed
+        if (num !== opts.numSyllables) continue;
+      }
+
+      return result;
     }
-    throw Error('No word with specified options: ' + JSON.stringify(opts));
+
+    throw Error('No random word with specified options: ' + JSON.stringify(opts));
+  }
+
+  reconjugate(word, pos) {
+    switch (pos) {
+      /*  VBD 	Verb, past tense
+          VBG 	Verb, gerund or present participle
+          VBN 	Verb, past participle
+          VBP 	Verb, non-3rd person singular present
+          VBZ 	Verb, 3rd person singular present */
+      case 'vbd':
+        return RiTa.conjugate(word, {
+          number: RiTa.SINGULAR,
+          person: RiTa.FIRST_PERSON,
+          tense: RiTa.PAST_TENSE
+        });
+        break;
+      case 'vbg':
+        return RiTa.presentParticiple(word);
+        break;
+      case 'vbn':
+        return RiTa.pastParticiple(word);
+        break;
+      case 'vbp':
+        return RiTa.conjugate(word); // no args
+        break;
+      case 'vbz':
+        return RiTa.conjugate(word, {
+          number: RiTa.SINGULAR,
+          person: RiTa.THIRD_PERSON,
+          tense: RiTa.PRESENT_TENSE
+        });
+        break;
+      default: throw Error('Unexpected pos: ' + pos);
+    }
   }
 
   /*

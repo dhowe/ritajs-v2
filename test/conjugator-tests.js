@@ -21,15 +21,16 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.pastParticiple(""), "");
 
     // PROBLEMS
-
     equal(RiTa.pastParticiple("awake"), "awoken");
     equal(RiTa.pastParticiple("become"), "became");
     equal(RiTa.pastParticiple("drink"), "drunk");
     equal(RiTa.pastParticiple("plead"), "pled");
     equal(RiTa.pastParticiple("run"), "run");
     equal(RiTa.pastParticiple("shine"), "shone");
+
     // or shined
     equal(RiTa.pastParticiple("shrink"), "shrunk");
+
     // or shrunken
     equal(RiTa.pastParticiple("stink"), "stunk");
     equal(RiTa.pastParticiple("study"), "studied");
@@ -64,9 +65,21 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.presentParticiple(" study"), "studying"); // trim
   });
 
+  it('Should correctly conjugate a vbd', () => {
+    expect(RiTa.conjugate("go", {
+      number: RiTa.SINGULAR,
+      person: RiTa.FIRST_PERSON,
+      tense: RiTa.PAST_TENSE
+    })).eq("went");
+    expect(RiTa.conjugate("run", {
+      number: RiTa.SINGULAR,
+      person: RiTa.FIRST_PERSON,
+      tense: RiTa.PAST_TENSE
+    })).eq("ran");
+  });
+
   it('Should correctly call conjugate', () => {
     let args, s, a;
-
 
     equal("swum", RiTa.pastParticiple("swim"));
 
