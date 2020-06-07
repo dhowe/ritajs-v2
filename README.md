@@ -60,6 +60,7 @@ console.log(grammar.expand());
     <a href="https://rednoise.org/rita2/RiTa/similars/index.html">RiTa.similars()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/singularize/index.html">RiTa.singularize()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/soundsLike/index.html">RiTa.soundsLike()</a><br/>
+    <a href="https://rednoise.org/rita2/RiTa/spellsLike/index.html">RiTa.spellsLike()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/stem/index.html">RiTa.stem()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/stresses/index.html">RiTa.stresses()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/syllables/index.html">RiTa.syllables()</a><br/>
