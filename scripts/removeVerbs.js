@@ -1,4 +1,3 @@
-//let RiTa = require('../src/rita');
 let Conjugator = require('../src/conjugator');
 let dict = require('../src/rita_dict.js');
 
@@ -17,12 +16,29 @@ function checkForm(verb, pos) {
 }
 
 function checkPast(word) {
+  return checkPast1(word) && checkPast2(word);
+}
+
+function checkPast1(word) {
   let verb = word + 'ed', data = dict[verb], doubled = false;
   if (!data && Conjugator.VERB_CONS_DOUBLING.includes(word)) {
     verb = doubleFinalConsonant(word) + 'ed';
     data = dict[verb];  // words like 'inferred'
     doubled = true;
   }
+  if (data) {
+    let tags = data[1].split(' ');
+    if ((tags.length === 1 && (tags[0] === 'vbn' || tags[0] === 'vbd')) ||
+      (tags.length === 2 && tags.includes('vbn') && tags.includes('vbd'))) {
+      //doubled && console.log('DOUBLE-ED', verb, data[1].split(' '))
+      return doRemove(verb, tags);
+    }
+  }
+  return true;
+}
+
+function checkPast2(word) {
+  let verb = word + 'd', data = dict[verb];
   if (data) {
     let tags = data[1].split(' ');
     if ((tags.length === 1 && (tags[0] === 'vbn' || tags[0] === 'vbd')) ||
@@ -78,8 +94,6 @@ let words = tests || Object.keys(dict);
 for (let i = 0; i < words.length; i++) {
   let word = words[i], data = dict[word];
   let tags = dict[word][1].split(' ');
-  /*   if (tags.length === 1 && tags[0] === 'vb' ||
-      tags.length === 2 && tags.includes('vb') && tags.includes('vbp')) { */
   if (tags.includes('vb')) checkVerb(word);
 }
 

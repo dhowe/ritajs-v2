@@ -191,13 +191,12 @@ describe('RiTa.Lexicon', function () {
       "elephantine",
       "fantasia",
       "fantasize",
-      "fantasized",
       "fantastic",
       "fantastically",
       "fantasy",
       "infant", 
-      "infantile", /* 
-      "infantry",
+      "infantile",  
+      "infantry",/*
       "infantryman",
       "oftentimes",
       "phantom",
@@ -217,8 +216,8 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  // omitting no limit tests as they are a bit slow
-  /*it('Should correctly call words.stresses', () => {
+  /* omitting no limit tests as they are a bit slow
+  it('Should correctly call words.stresses', () => {
     expect(RiTa.words('0/1/0/0/0/0/0', { type: 'stresses' })).eql([
       "environmentalism"
     ]);
@@ -300,6 +299,14 @@ describe('RiTa.Lexicon', function () {
     RiTa.SILENCE_LTS = tmp;
   });
 
+  it('Should correctly call alliterations.numSyllables', () => {
+    let result = RiTa.alliterations("cat", { minWordLength: 1, numSyllables:7 });
+    expect(result).eql(['electrocardiogram', 'electromechanical', 'telecommunications']);
+    for (let i = 0; i < result.length; i++) {
+      expect(RiTa.isAlliteration(result[i], "cat"), 'FAIL2: ' + result[i]).to.be.true;
+    }
+  });
+
   it('Should correctly call alliterations', () => {
 
     let result;
@@ -314,9 +321,6 @@ describe('RiTa.Lexicon', function () {
 
     result = RiTa.alliterations("umbrella", { silent: 1 });
     expect(result.length < 1, "failed on 'umbrella'").to.be.true;
-
-    result = RiTa.alliterations("cat stress");
-    expect(result.length > 1000, "failed on 'cat stress' got " + result).to.be.true;
 
     result = RiTa.alliterations("cat");
     expect(result.length > 1000, "failed on 'cat'").to.be.true;
@@ -360,12 +364,54 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.rhymes("weight").includes("eight")).to.be.true;
     expect(RiTa.rhymes("eight").includes("weight")).to.be.true;
 
-    expect(!RiTa.rhymes("apple").includes("polo")).to.be.true;
-    expect(!RiTa.rhymes("this").includes("these")).to.be.true;
+    expect(RiTa.rhymes("apple").includes("polo")).to.be.false;
+    expect(RiTa.rhymes("this").includes("these")).to.be.false;
 
-    expect(!RiTa.rhymes("hose").includes("house")).to.be.true;
-    expect(!RiTa.rhymes("sieve").includes("mellow")).to.be.true;
-    expect(!RiTa.rhymes("swag").includes("grab")).to.be.true;
+    expect(RiTa.rhymes("hose").includes("house")).to.be.false;
+    expect(RiTa.rhymes("sieve").includes("mellow")).to.be.false;
+    expect(RiTa.rhymes("swag").includes("grab")).to.be.false;
+  });
+
+  // TODO: pos
+  0 && it('Should correctly call rhymes.pos', () => {
+
+    expect(RiTa.rhymes("cat", {pos: 'v'}).includes("hat")).to.be.false;
+    expect(RiTa.rhymes("yellow", { pos: 'a' }).includes("mellow")).to.be.true;
+    expect(RiTa.rhymes("toy", { pos: 'n' }).includes("boy")).to.be.true;
+    expect(RiTa.rhymes("sieve", { pos: 'n' }).includes("give")).to.be.false;
+
+    expect(RiTa.rhymes("tense", { pos: 'v' }).includes("sense")).to.be.true;
+    expect(RiTa.rhymes("crab", { pos: 'n' }).includes("drab")).to.be.false;
+    expect(RiTa.rhymes("shore", { pos: 'v' }).includes("more")).to.be.false;
+
+    expect(RiTa.rhymes("mouse", { pos: 'nn' }).includes("house")).to.be.true;
+
+    expect(RiTa.rhymes("weight", { pos: 'vb' }).includes("eight")).to.be.false;
+    expect(RiTa.rhymes("eight", { pos: 'nn' }).includes("weight")).to.be.true;
+
+    expect(RiTa.rhymes("apple", { pos: 'v' }).includes("polo")).to.be.false;
+    expect(RiTa.rhymes("this", { pos: 'v' }).includes("these")).to.be.false;
+
+    expect(RiTa.rhymes("hose", { pos: 'v' }).includes("house")).to.be.false;
+    expect(RiTa.rhymes("sieve", { pos: 'v' }).includes("mellow")).to.be.false;
+    expect(RiTa.rhymes("swag", { pos: 'v' }).includes("grab")).to.be.false;
+  });
+
+  it('Should correctly call rhymes.numSyllables', () => {
+
+    expect(RiTa.rhymes("cat", { numSyllables: 2 }).includes("hat")).to.be.false;
+    expect(RiTa.rhymes("cat", { numSyllables: 3 }).includes("hat")).to.be.false;
+    expect(RiTa.rhymes("cat", { numSyllables: 1 }).includes("hat")).to.be.true;
+
+    expect(RiTa.rhymes("yellow", { numSyllables: 2 }).includes("mellow")).to.be.true;
+    expect(RiTa.rhymes("yellow", { numSyllables: 3 }).includes("mellow")).to.be.false;
+
+  });
+
+  it('Should correctly call rhymes.wordlength', () => {
+
+    expect(RiTa.rhymes("cat", { minWordLength: 4 }).includes("hat")).to.be.false;
+    expect(RiTa.rhymes("cat", { maxWordLength: 2 }).includes("hat")).to.be.false;
   });
 
   it('Should correctly call spellsLike', () => {
@@ -382,10 +428,10 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.spellsLike("banana");
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
-    result = RiTa.spellsLike("banana", { minAllowedDistance: 1, minWordLength: 6, maxWordLength: 6 });
+    result = RiTa.spellsLike("banana", { minDistance: 1, minWordLength: 6, maxWordLength: 6 });
     eql(result, ["cabana"]);
 
-    result = RiTa.spellsLike("banana", { minAllowedDistance: 1 });
+    result = RiTa.spellsLike("banana", { minDistance: 1 });
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
     result = RiTa.spellsLike("tornado");
@@ -394,16 +440,16 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.spellsLike("ice");
     eql(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
 
-    result = RiTa.spellsLike("ice", { minAllowedDistance: 1 });
+    result = RiTa.spellsLike("ice", { minDistance: 1 });
     eql(result, ["ace", "dice", "iced", "icy", "ire", "nice", "rice", "vice"]);
 
-    result = RiTa.spellsLike("ice", { minAllowedDistance: 2, minWordLength: 3, maxWordLength: 3 });
+    result = RiTa.spellsLike("ice", { minDistance: 2, minWordLength: 3, maxWordLength: 3 });
     expect(result.length > 10).to.be.true;
 
-    result = RiTa.spellsLike("ice", { minAllowedDistance: 0, minWordLength: 3, maxWordLength: 3 });
+    result = RiTa.spellsLike("ice", { minDistance: 0, minWordLength: 3, maxWordLength: 3 });
     eql(result, ["ace", "icy", "ire"]);
 
-    result = RiTa.spellsLike("ice", { minAllowedDistance: 1, minWordLength: 3, maxWordLength: 3 });
+    result = RiTa.spellsLike("ice", { minDistance: 1, minWordLength: 3, maxWordLength: 3 });
     eql(result, ["ace", "icy", "ire"]);
 
     result = RiTa.spellsLike("123");
@@ -419,21 +465,29 @@ describe('RiTa.Lexicon', function () {
     answer = ["cry", "dry", "fry", "pry", "rye", "tie", "tray", "tree", "tribe", "tried", "tripe", "trite", "true", "wry"];
     eql(result, answer);
 
-    result = RiTa.soundsLike("try", { minAllowedDistance: 2 });
+    result = RiTa.soundsLike("try", { minDistance: 2 });    
     expect(result.length > answer.length).to.be.true; // more
 
     result = RiTa.soundsLike("happy");
     answer = ["happier", "hippie"];
     eql(result, answer);
 
-    result = RiTa.soundsLike("happy", { minAllowedDistance: 2 });
+    result = RiTa.soundsLike("happy", { minDistance: 2 });
     expect(result.length > answer.length).to.be.true; // more
 
     result = RiTa.soundsLike("cat", { type: 'sound' });
-    answer = ["at", "bat", "cab", "cache", "calf", "calve", "can", "can\'t", "cap", "cash", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
+    answer = [ "bat", "cab", "cache", "calf", "calve", "can", "can\'t", "cap", "cash", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
     eql(result, answer);
 
-    result = RiTa.soundsLike("cat", { minAllowedDistance: 2 });
+    result = RiTa.soundsLike("cat", { type: 'sound', limit: 5 });
+    answer = ['abashed', 'abate', 'abbey', 'abbot', 'abet'];
+    eql(result, answer);
+
+    result = RiTa.soundsLike("cat", { type: 'sound', minWordLength: 2, maxWordLength:4 });
+    answer = ["at", "bat", "cab","calf", "can", "cap", "cash", "cast",  "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt",  "pat", "rat", "sat", "tat", "that", "vat"];
+    eql(result, answer);
+
+    result = RiTa.soundsLike("cat", { minDistance: 2 });
     expect(result.length > answer.length).to.be.true;
   });
 
@@ -441,6 +495,15 @@ describe('RiTa.Lexicon', function () {
     let result;
     result = RiTa.soundsLike("try", { matchSpelling: true });
     eql(result, ["cry", "dry", "fry", "pry", "tray", "wry"]);
+
+    result = RiTa.soundsLike("try", { matchSpelling: true, maxWordLength: 3 });
+    eql(result, ["cry", "dry", "fry", "pry","wry"]);
+
+    result = RiTa.soundsLike("try", { matchSpelling: true, minWordLength: 4 });
+    eql(result, ["tray"]);
+
+    result = RiTa.soundsLike("try", { matchSpelling: true, limit:3 });
+    eql(result, ["cry", "dry", "fry"]);
 
     result = RiTa.soundsLike("daddy", { matchSpelling: true });
     eql(result, ["dandy", "paddy"]);
