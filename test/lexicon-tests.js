@@ -185,8 +185,8 @@ describe('RiTa.Lexicon', function () {
       "fantastic",
       "fantastically",
       "fantasy",
-      "infant", 
-      "infantile",  
+      "infant",
+      "infantile",
       "infantry",/*
       "infantryman",
       "oftentimes",
@@ -247,67 +247,68 @@ describe('RiTa.Lexicon', function () {
     ]);
 
     // TODO: add code/tests for pos option in all lexicon scans
-    console.log(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }));
-      
+    console.log('TODO:', RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }));
+
   });
 
+/*    it('XXX', () => {
+     let result = RiTa.randomWord({ numSyllables: 1, pos: "nns" });
+     expect(result.length > 0, "randomWord nns: " + result).to.be.true;
+     console.log(result);
+     let syllables = RiTa.syllables(result);
+     expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
+     expect(RiTa.isNoun(result)).eq(true, fail(result, 'nns'));
+  }); */
+
   it('Should correctly call randomWord.pos.syls', () => {
-
-    let pos, result, syllables;
-    let tmp = RiTa.SILENCE_LTS;
-    RiTa.SILENCE_LTS = true;
-
-    result = RiTa.randomWord({ numSyllables: 1, pos: "nns" });
-    expect(result.length > 0, "randomWord n: " + result).to.be.true;
-    syllables = RiTa.syllables(result);
-    expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
-    pos = RiTa.posTags(result, { simple: 1 })[0];
-
-    // include verbs here as many are both
-    expect(['n', 'v'].includes(pos), "GOT: " + result + ' (' + pos + ')').to.be.true;
-
-    for (let i = 0; i < 5; i++) {
-      result = RiTa.randomWord({ numSyllables: 3, pos: "vbz" });
-      expect(result.length > 0, "randomWord vbz: " + result).to.be.true;
-      syllables = RiTa.syllables(result);
-      expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(3, "GOT: " + result + ' (' + syllables + ')');
-      pos = RiTa.posTags(result, { simple: 1 })[0];
-
-      // include nouns here as many are both
-      expect(['n', 'v'].includes(pos), "GOT: " + result + ' (' + pos + ')').to.be.true;
-
-
-      result = RiTa.randomWord({ numSyllables: 1, pos: "n" });
-      expect(result.length > 0, "randomWord n: " + result).to.be.true;
-      syllables = RiTa.syllables(result);
-      expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
-      pos = RiTa.posTags(result)[0];
-      expect(pos).eq('nn', "GOT: " + result + ' (' + pos + ')');
-
-      result = RiTa.randomWord({ numSyllables: 1, pos: "nns" });
-      expect(result.length > 0, "randomWord nns: " + result).to.be.true;
-      syllables = RiTa.syllables(result);
-      expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
-      pos = RiTa.posTags(result)[0];
-
-      // include verbs here as many are both (also nn for singular/plural like 'prose')
-      expect(['nns', 'vbz', 'nn'].includes(pos), "GOT: " + result + ' (' + pos + ')').to.be.true;
+    function fail(result, epos) {
+      let test = result.endsWith('es') ? result.substring(-2) : result;
+      let ent = RiTa.lexicon()[test];
+      return ('(' + epos + ') Fail: ' + result + ': expected ' + epos + ', got ' + (ent ? ent[1] : 'null'));
     }
+   
+    for (let j = 0; j < 1; j++) {
 
-    result = RiTa.randomWord({ numSyllables: 5, pos: "nns" });
-    expect(result.length > 0, "randomWord nns: " + result).to.be.true;
-    syllables = RiTa.syllables(result);
-    let count = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
-    if (count !== 5) console.warn("Syllabifier problem: " // see #2
-      + result + ".syllables was " + count + ', expected 5');
-    pos = RiTa.posTags(result)[0];
-    expect(pos).eq('nns', "Expected 'nns' GOT: " + result + ' (' + pos + ')');
+      let pos, result, syllables;
+      let tmp = RiTa.SILENCE_LTS;
+      RiTa.SILENCE_LTS = true;
 
-    RiTa.SILENCE_LTS = tmp;
+      for (let i = 0; i < 5; i++) {
+        result = RiTa.randomWord({ numSyllables: 3, pos: "vbz" });
+        expect(result.length > 0, "randomWord vbz: " + result).to.be.true;
+        syllables = RiTa.syllables(result);
+        expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(3, "GOT: " + result + ' (' + syllables + ')');
+        expect(RiTa.isVerb(result)).eq(true, fail(result, 'vbz'));
+
+        result = RiTa.randomWord({ numSyllables: 1, pos: "n" });
+        expect(result.length > 0, "randomWord n: " + result).to.be.true;
+        syllables = RiTa.syllables(result);
+        expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
+        expect(RiTa.isNoun(result)).eq(true, fail(result, 'n'));
+
+        result = RiTa.randomWord({ numSyllables: 1, pos: "nns" });
+        expect(result.length > 0, "randomWord nns: " + result).to.be.true;
+        syllables = RiTa.syllables(result);
+        expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
+        expect(RiTa.isNoun(result)).eq(true, fail(result, 'nns'));
+        // was failing occasionally: proves, torpedoes, strives,  times - should be fixed now
+
+        result = RiTa.randomWord({ numSyllables: 5, pos: "nns" });
+        expect(result.length > 0, "randomWord nns: " + result).to.be.true;
+        syllables = RiTa.syllables(result);
+        let count = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
+        if (count !== 5) console.warn("Syllabifier problem: "
+          + result + ".syllables was " + count + ', expected 5');
+        pos = RiTa.pos(result)[0];
+        expect(RiTa.isNoun(result)).eq(true, fail(result, 'nns'));
+
+        RiTa.SILENCE_LTS = tmp;
+      }
+    }
   });
 
   it('Should correctly call alliterations.numSyllables', () => {
-    let result = RiTa.alliterations("cat", { minLength: 1, numSyllables:7 });
+    let result = RiTa.alliterations("cat", { minLength: 1, numSyllables: 7 });
     expect(result).eql(['electrocardiogram', 'electromechanical', 'telecommunications']);
     for (let i = 0; i < result.length; i++) {
       expect(RiTa.isAlliteration(result[i], "cat"), 'FAIL2: ' + result[i]).to.be.true;
@@ -382,7 +383,7 @@ describe('RiTa.Lexicon', function () {
   // TODO: pos
   0 && it('Should correctly call rhymes.pos', () => {
 
-    expect(RiTa.rhymes("cat", {pos: 'v'}).includes("hat")).to.be.false;
+    expect(RiTa.rhymes("cat", { pos: 'v' }).includes("hat")).to.be.false;
     expect(RiTa.rhymes("yellow", { pos: 'a' }).includes("mellow")).to.be.true;
     expect(RiTa.rhymes("toy", { pos: 'n' }).includes("boy")).to.be.true;
     expect(RiTa.rhymes("sieve", { pos: 'n' }).includes("give")).to.be.false;
@@ -472,7 +473,7 @@ describe('RiTa.Lexicon', function () {
     answer = ["cry", "dry", "fry", "pry", "rye", "tie", "tray", "tree", "tribe", "tried", "tripe", "trite", "true", "wry"];
     eql(result, answer);
 
-    result = RiTa.soundsLike("try", { minDistance: 2 });    
+    result = RiTa.soundsLike("try", { minDistance: 2 });
     expect(result.length > answer.length).to.be.true; // more
 
     result = RiTa.soundsLike("happy");
@@ -483,15 +484,15 @@ describe('RiTa.Lexicon', function () {
     expect(result.length > answer.length).to.be.true; // more
 
     result = RiTa.soundsLike("cat", { type: 'sound' });
-    answer = [ "bat", "cab", "cache", "calf", "calve", "can", "can\'t", "cap", "cash", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
+    answer = ["bat", "cab", "cache", "calf", "calve", "can", "can\'t", "cap", "cash", "cast", "caste", "catch", "catty", "caught", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "matte", "pat", "rat", "sat", "tat", "that", "vat"];
     eql(result, answer);
 
     result = RiTa.soundsLike("cat", { type: 'sound', limit: 5 });
     answer = ['abashed', 'abate', 'abbey', 'abbot', 'abet'];
     eql(result, answer);
 
-    result = RiTa.soundsLike("cat", { type: 'sound', minLength: 2, maxLength:4 });
-    answer = ["at", "bat", "cab","calf", "can", "cap", "cash", "cast",  "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt",  "pat", "rat", "sat", "tat", "that", "vat"];
+    result = RiTa.soundsLike("cat", { type: 'sound', minLength: 2, maxLength: 4 });
+    answer = ["at", "bat", "cab", "calf", "can", "cap", "cash", "cast", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "pat", "rat", "sat", "tat", "that", "vat"];
     eql(result, answer);
 
     result = RiTa.soundsLike("cat", { minDistance: 2 });
@@ -504,12 +505,12 @@ describe('RiTa.Lexicon', function () {
     eql(result, ["cry", "dry", "fry", "pry", "tray", "wry"]);
 
     result = RiTa.soundsLike("try", { matchSpelling: true, maxLength: 3 });
-    eql(result, ["cry", "dry", "fry", "pry","wry"]);
+    eql(result, ["cry", "dry", "fry", "pry", "wry"]);
 
     result = RiTa.soundsLike("try", { matchSpelling: true, minLength: 4 });
     eql(result, ["tray"]);
 
-    result = RiTa.soundsLike("try", { matchSpelling: true, limit:3 });
+    result = RiTa.soundsLike("try", { matchSpelling: true, limit: 3 });
     eql(result, ["cry", "dry", "fry"]);
 
     result = RiTa.soundsLike("daddy", { matchSpelling: true });

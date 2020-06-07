@@ -3,255 +3,255 @@ describe('RiTa.Tagger', () => {
   if (typeof module !== 'undefined') require('./before');
 
   it('Should correctly call posTags.array', () => {
-    //eql(RiTa.posTags([]), []);
-    eql(RiTa.posTags(["deal"]), ["nn"]);
-    eql(RiTa.posTags(["freed"]), ["jj"]);
-    eql(RiTa.posTags(["the"]), ["dt"]);  
-    eql(RiTa.posTags(["a"]), ["dt"]);
-    eql(RiTa.posTags("the top seed".split(/ /)), ["dt", "jj", "nn"]);
-    eql(RiTa.posTags("by illegal means".split(/ /)), ["in", "jj", "nn"]);
-    eql(RiTa.posTags("He outnumbers us".split(/ /)), ["prp", "vbz", "prp"]);
-    eql(RiTa.posTags("I outnumber you".split(/ /)), ["prp", "vbp", "prp"]);
-    eql(RiTa.posTags("Elephants dance".split(/ /)), ["nns", "vbp"]);
-    eql(RiTa.posTags("the boy dances".split(/ /)), ["dt", "nn", "vbz"]);
-    eql(RiTa.posTags("Dave dances".split(/ /)), ["nnp", "vbz"]);
+    //eql(RiTa.pos([]), []);
+    eql(RiTa.pos(["deal"]), ["nn"]);
+    eql(RiTa.pos(["freed"]), ["jj"]);
+    eql(RiTa.pos(["the"]), ["dt"]);  
+    eql(RiTa.pos(["a"]), ["dt"]);
+    eql(RiTa.pos("the top seed".split(/ /)), ["dt", "jj", "nn"]);
+    eql(RiTa.pos("by illegal means".split(/ /)), ["in", "jj", "nn"]);
+    eql(RiTa.pos("He outnumbers us".split(/ /)), ["prp", "vbz", "prp"]);
+    eql(RiTa.pos("I outnumber you".split(/ /)), ["prp", "vbp", "prp"]);
+    eql(RiTa.pos("Elephants dance".split(/ /)), ["nns", "vbp"]);
+    eql(RiTa.pos("the boy dances".split(/ /)), ["dt", "nn", "vbz"]);
+    eql(RiTa.pos("Dave dances".split(/ /)), ["nnp", "vbz"]);
   });
 
   it('Should correctly call simple posTags.array', () => {
-    eql(RiTa.posTags([], { simple: true }), []);
-    eql(RiTa.posTags(["freed"], { simple: true }), ["a"]);
-    eql(RiTa.posTags(["the"], { simple: true }), ["-"]);
-    eql(RiTa.posTags(["a"], { simple: true }), ["-"]);
-    eql(RiTa.posTags("the top seed".split(/ /), { simple: true }), ["-", "a", "n"]);
-    eql(RiTa.posTags("by illegal means".split(/ /), { simple: true }), ["-", "a", "n"]);
-    eql(RiTa.posTags("He outnumbers us".split(/ /), { simple: true }), ["-", "v", "-"]);
-    eql(RiTa.posTags("I outnumber you".split(/ /), { simple: true }), ["-", "v", "-"]);
-    eql(RiTa.posTags("Elephants dance".split(/ /), { simple: true }), ["n", "v"]);
-    eql(RiTa.posTags("the boy dances".split(/ /), { simple: true }), ["-", "n", "v"]);
+    eql(RiTa.pos([], { simple: true }), []);
+    eql(RiTa.pos(["freed"], { simple: true }), ["a"]);
+    eql(RiTa.pos(["the"], { simple: true }), ["-"]);
+    eql(RiTa.pos(["a"], { simple: true }), ["-"]);
+    eql(RiTa.pos("the top seed".split(/ /), { simple: true }), ["-", "a", "n"]);
+    eql(RiTa.pos("by illegal means".split(/ /), { simple: true }), ["-", "a", "n"]);
+    eql(RiTa.pos("He outnumbers us".split(/ /), { simple: true }), ["-", "v", "-"]);
+    eql(RiTa.pos("I outnumber you".split(/ /), { simple: true }), ["-", "v", "-"]);
+    eql(RiTa.pos("Elephants dance".split(/ /), { simple: true }), ["n", "v"]);
+    eql(RiTa.pos("the boy dances".split(/ /), { simple: true }), ["-", "n", "v"]);
   });
 
 
   it('Should correctly call posTags.array.inline.simple', () => {
     let result, answer, txt;
 
-    eql(RiTa.posTags([], { inline: true, simple: true }), "");
-    eql(RiTa.posTags(["asdfaasd"], { inline: true, simple: true }), "asdfaasd/n");
+    eql(RiTa.pos([], { inline: true, simple: true }), "");
+    eql(RiTa.pos(["asdfaasd"], { inline: true, simple: true }), "asdfaasd/n");
 
-    result = RiTa.posTags(["clothes"], { inline: true, simple: true });
+    result = RiTa.pos(["clothes"], { inline: true, simple: true });
     answer = "clothes/n";
     eql(result, answer);
 
-    result = RiTa.posTags(["teeth"], { inline: true, simple: true });
+    result = RiTa.pos(["teeth"], { inline: true, simple: true });
     answer = "teeth/n";
     eql(result, answer);
 
-    result = RiTa.posTags("There is a cat".split(/ /), { inline: true, simple: true });
+    result = RiTa.pos("There is a cat".split(/ /), { inline: true, simple: true });
     answer = "There/- is/v a/- cat/n";
     eql(result, answer);
 
-    result = RiTa.posTags(RiTa.tokenize("The boy, dressed in red, ate an apple."), { inline: true, simple: true });
+    result = RiTa.pos(RiTa.tokenize("The boy, dressed in red, ate an apple."), { inline: true, simple: true });
     answer = "The/- boy/n , dressed/v in/- red/a , ate/v an/- apple/n .";
     eql(result, answer);
 
     txt = "The dog ran faster than the other dog. But the other dog was prettier.";
-    result = RiTa.posTags(RiTa.tokenize(txt), { inline: true, simple: true });
+    result = RiTa.pos(RiTa.tokenize(txt), { inline: true, simple: true });
     answer = "The/- dog/n ran/v faster/r than/- the/- other/a dog/n . But/- the/- other/a dog/n was/v prettier/a .";
     eq(result, answer);
   });
 
   it('Should correctly handle inflected verbs', () => {
-    eql(RiTa.posTags("disbelieves"), ["vbz"]);
-    eql(RiTa.posTags("disbelieves", { simple: 1 }), ["v"]);
+    eql(RiTa.pos("disbelieves"), ["vbz"]);
+    eql(RiTa.pos("disbelieves", { simple: 1 }), ["v"]);
 
-    eql(RiTa.posTags("fates"), ["nns"]);
-    eql(RiTa.posTags("fates", { simple: 1 }), ["n"]);
+    eql(RiTa.pos("fates"), ["nns"]);
+    eql(RiTa.pos("fates", { simple: 1 }), ["n"]);
 
-    eql(RiTa.posTags("hates"), ["vbz"]);
-    eql(RiTa.posTags("hates", { simple: 1 }), ["v"]);
+    eql(RiTa.pos("hates"), ["vbz"]);
+    eql(RiTa.pos("hates", { simple: 1 }), ["v"]);
 
-    eql(RiTa.posTags("hated"), ["vbd"]);
-    eql(RiTa.posTags("hated", { simple: 1 }), ["v"]);
+    eql(RiTa.pos("hated"), ["vbd"]);
+    eql(RiTa.pos("hated", { simple: 1 }), ["v"]);
 
-    eql(RiTa.posTags("hating"), ["vbg"]);
-    eql(RiTa.posTags("hating", { simple: 1 }), ["v"]);
+    eql(RiTa.pos("hating"), ["vbg"]);
+    eql(RiTa.pos("hating", { simple: 1 }), ["v"]);
 
-    eql(RiTa.posTags("He rode the horse"), ['prp', 'vbd', 'dt', 'nn']);
-    eql(RiTa.posTags("He has ridden the horse"), ['prp', 'vbz', 'vbn', 'dt', 'nn']);
+    eql(RiTa.pos("He rode the horse"), ['prp', 'vbd', 'dt', 'nn']);
+    eql(RiTa.pos("He has ridden the horse"), ['prp', 'vbz', 'vbn', 'dt', 'nn']);
 
-    eql(RiTa.posTags("He rowed the boat"), ['prp', 'vbd', 'dt', 'nn']);
-    eql(RiTa.posTags("He has rowed the boat"), ['prp', 'vbz', 'vbn', 'dt', 'nn']);
+    eql(RiTa.pos("He rowed the boat"), ['prp', 'vbd', 'dt', 'nn']);
+    eql(RiTa.pos("He has rowed the boat"), ['prp', 'vbz', 'vbn', 'dt', 'nn']);
   });
 
   it('Should correctly call posTags', () => {
     let result, answer, resultArr, answerArr, txt;
 
-    eql(RiTa.posTags(""), []);
-    eql(RiTa.posTags("freed"), ["jj"]);
+    eql(RiTa.pos(""), []);
+    eql(RiTa.pos("freed"), ["jj"]);
 
-    eql(RiTa.posTags("the top seed"), ["dt", "jj", "nn"]);
+    eql(RiTa.pos("the top seed"), ["dt", "jj", "nn"]);
 
-    eql(RiTa.posTags("by illegal means"), ["in", "jj", "nn"]);
+    eql(RiTa.pos("by illegal means"), ["in", "jj", "nn"]);
 
-    eql(RiTa.posTags("biped"), ["nn"]);
-    eql(RiTa.posTags("greed"), ["nn"]);
-    eql(RiTa.posTags("creed"), ["nn"]);
-    eql(RiTa.posTags("weed"), ["nn"]);
+    eql(RiTa.pos("biped"), ["nn"]);
+    eql(RiTa.pos("greed"), ["nn"]);
+    eql(RiTa.pos("creed"), ["nn"]);
+    eql(RiTa.pos("weed"), ["nn"]);
 
-    result = RiTa.posTags("mammal");
+    result = RiTa.pos("mammal");
     answer = ["nn"];
     eql(result, answer);
 
-    result = RiTa.posTags("asfaasd");
+    result = RiTa.pos("asfaasd");
     answer = ["nn"];
     eql(result, answer);
 
-    result = RiTa.posTags("innings");
+    result = RiTa.pos("innings");
     answer = ["nns"];
     eql(result, answer);
 
-    result = RiTa.posTags("clothes");
+    result = RiTa.pos("clothes");
     answer = ["nns"];
     eql(result, answer);
 
-    result = RiTa.posTags("clothes");
+    result = RiTa.pos("clothes");
     answer = ["nns"];
     eql(result, answer);
 
-    result = RiTa.posTags("teeth");
+    result = RiTa.pos("teeth");
     answer = ["nns"];
     eql(result, answer);
 
-    result = RiTa.posTags("memories");
+    result = RiTa.pos("memories");
     answer = ["nns"];
     eql(result, answer);
 
-    eql(RiTa.posTags("flunks"), ["vbz"], 'Failed: flunks');
-    eql(RiTa.posTags("outnumbers"), ["vbz"], 'Failed: outnumbers');
-    eql(RiTa.posTags("He outnumbers us"), ["prp", "vbz", "prp"]);
-    eql(RiTa.posTags("I outnumber you"), ["prp", "vbp", "prp"]);
+    eql(RiTa.pos("flunks"), ["vbz"], 'Failed: flunks');
+    eql(RiTa.pos("outnumbers"), ["vbz"], 'Failed: outnumbers');
+    eql(RiTa.pos("He outnumbers us"), ["prp", "vbz", "prp"]);
+    eql(RiTa.pos("I outnumber you"), ["prp", "vbp", "prp"]);
 
-    resultArr = RiTa.posTags("Elephants dance");
+    resultArr = RiTa.pos("Elephants dance");
     answerArr = ["nns", "vbp"];
     eql(answerArr, resultArr);
 
-    result = RiTa.posTags("the boy dances");
+    result = RiTa.pos("the boy dances");
     answer = ["dt", "nn", "vbz"];
     eql(result, answer);
 
-    result = RiTa.posTags("he dances");
+    result = RiTa.pos("he dances");
     answer = ["prp", "vbz"];
     eql(result, answer);
 
-    resultArr = RiTa.posTags("Dave dances");
+    resultArr = RiTa.pos("Dave dances");
     answerArr = ["nnp", "vbz"];
     eql(answerArr, resultArr);
 
-    result = RiTa.posTags("running");
+    result = RiTa.pos("running");
     answer = ["vbg"];
     eql(result, answer);
 
-    result = RiTa.posTags("asserting");
+    result = RiTa.pos("asserting");
     answer = ["vbg"];
     eql(result, answer);
 
-    result = RiTa.posTags("assenting");
+    result = RiTa.pos("assenting");
     answer = ["vbg"];
     eql(result, answer);
 
-    result = RiTa.posTags("Dave");
+    result = RiTa.pos("Dave");
     answer = ["nnp"];
     eql(result, answer);
 
-    result = RiTa.posTags("They feed the cat");
+    result = RiTa.pos("They feed the cat");
     answer = ["prp", "vbp", "dt", "nn"];
     eql(result, answer);
 
-    result = RiTa.posTags("There is a cat.");
+    result = RiTa.pos("There is a cat.");
     answer = ["ex", "vbz", "dt", "nn", "."];
     eql(result, answer);
 
-    result = RiTa.posTags("The boy, dressed in red, ate an apple.");
+    result = RiTa.pos("The boy, dressed in red, ate an apple.");
     answer = ["dt", "nn", ",", "vbn", "in", "jj", ",", "vbd", "dt", "nn", "."];
     eql(result, answer);
 
     txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
-    result = RiTa.posTags(txt);
+    result = RiTa.pos(txt);
     answer = ["dt", "nn", "vbd", "rbr", "in", "dt", "jj", "nn", ".", "cc", "dt", "jj", "nn", "vbd", "jjr", "."];
     eql(result, answer);
 
     // Tests for verb conjugation
-    eql(RiTa.posTags("is"), ["vbz"]);
-    eql(RiTa.posTags("am"), ["vbp"]);
-    eql(RiTa.posTags("be"), ["vb"]);
+    eql(RiTa.pos("is"), ["vbz"]);
+    eql(RiTa.pos("am"), ["vbp"]);
+    eql(RiTa.pos("be"), ["vb"]);
 
-    result = RiTa.posTags("There is a cat.");
+    result = RiTa.pos("There is a cat.");
     answer = ["ex", "vbz", "dt", "nn", "."];
     eql(result, answer);
 
-    result = RiTa.posTags("There was a cat.");
+    result = RiTa.pos("There was a cat.");
     answer = ["ex", "vbd", "dt", "nn", "."];
     eql(result, answer);
 
-    result = RiTa.posTags("I am a cat.");
+    result = RiTa.pos("I am a cat.");
     answer = ["prp", "vbp", "dt", "nn", "."];
     eql(result, answer);
 
-    result = RiTa.posTags("I was a cat.");
+    result = RiTa.pos("I was a cat.");
     answer = ["prp", "vbd", "dt", "nn", "."];
     eql(result, answer);
 
-    eql(RiTa.posTags("flunk"), ["vb"]);
-    eql(RiTa.posTags("He flunks the test"), ["prp", "vbz", "dt", "nn"]);
+    eql(RiTa.pos("flunk"), ["vb"]);
+    eql(RiTa.pos("He flunks the test"), ["prp", "vbz", "dt", "nn"]);
 
-    eql(RiTa.posTags("he"), ["prp"]);
-    eql(RiTa.posTags("outnumber"), ["vb"]);
-    eql(RiTa.posTags("I outnumbered you"), ["prp", "vbd", "prp"], "I outnumbered you");
-    eql(RiTa.posTags("She outnumbered us"), ["prp", "vbd", "prp"], "She outnumbered us");
-    eql(RiTa.posTags("I am outnumbering you"), ["prp", "vbp", "vbg", "prp"], "I am outnumbering you");
-    eql(RiTa.posTags("I have outnumbered you"), ["prp", "vbp", "vbd", "prp"], "I have outnumbered you");//?
+    eql(RiTa.pos("he"), ["prp"]);
+    eql(RiTa.pos("outnumber"), ["vb"]);
+    eql(RiTa.pos("I outnumbered you"), ["prp", "vbd", "prp"], "I outnumbered you");
+    eql(RiTa.pos("She outnumbered us"), ["prp", "vbd", "prp"], "She outnumbered us");
+    eql(RiTa.pos("I am outnumbering you"), ["prp", "vbp", "vbg", "prp"], "I am outnumbering you");
+    eql(RiTa.pos("I have outnumbered you"), ["prp", "vbp", "vbd", "prp"], "I have outnumbered you");//?
 
     let checks = ["emphasis", "stress", "discus", "colossus", "fibrosis", "digitalis", "pettiness", "mess", "cleanliness", "orderliness", "bronchitis", "preparedness", "highness"];
     for (let i = 0, j = checks.length; i < j; i++) {
-      eql(RiTa.posTags(checks[i]), ["nn"]);
+      eql(RiTa.pos(checks[i]), ["nn"]);
     }
   });
 
   it('Should correctly call posTags.simple', () => {
-    //eql(RiTa.posTags("", { simple: true }), []);
-    eql(RiTa.posTags("biped", { simple: true }), ["n"]);
-    eql(RiTa.posTags("greed", { simple: true }), ["n"]);
-    eql(RiTa.posTags("creed", { simple: true }), ["n"]);
-    eql(RiTa.posTags("weed", { simple: true }), ["n"]);
-    eql(RiTa.posTags("is", { simple: true }), ["v"]);
-    eql(RiTa.posTags("am", { simple: true }), ["v"]);
-    eql(RiTa.posTags("be", { simple: true }), ["v"]);
-    eql(RiTa.posTags("freed", { simple: true }), ["a"]);
+    //eql(RiTa.pos("", { simple: true }), []);
+    eql(RiTa.pos("biped", { simple: true }), ["n"]);
+    eql(RiTa.pos("greed", { simple: true }), ["n"]);
+    eql(RiTa.pos("creed", { simple: true }), ["n"]);
+    eql(RiTa.pos("weed", { simple: true }), ["n"]);
+    eql(RiTa.pos("is", { simple: true }), ["v"]);
+    eql(RiTa.pos("am", { simple: true }), ["v"]);
+    eql(RiTa.pos("be", { simple: true }), ["v"]);
+    eql(RiTa.pos("freed", { simple: true }), ["a"]);
   });
 
   it('Should correctly call posTags.inline', () => {
     let result, answer, txt;
 
-    eql(RiTa.posTags("", { inline: true }), "");
-    eql(RiTa.posTags("asdfaasd", { inline: true }), "asdfaasd/nn");
+    eql(RiTa.pos("", { inline: true }), "");
+    eql(RiTa.pos("asdfaasd", { inline: true }), "asdfaasd/nn");
 
-    result = RiTa.posTags("clothes", { inline: true });
+    result = RiTa.pos("clothes", { inline: true });
     answer = "clothes/nns";
     eql(result, answer);
 
-    result = RiTa.posTags("teeth", { inline: true });
+    result = RiTa.pos("teeth", { inline: true });
     answer = "teeth/nns";
     eql(result, answer);
 
-    result = RiTa.posTags("There is a cat.", { inline: true });
+    result = RiTa.pos("There is a cat.", { inline: true });
     answer = "There/ex is/vbz a/dt cat/nn .";
     eql(result, answer);
 
-    result = RiTa.posTags("The boy, dressed in red, ate an apple.", { inline: true });
+    result = RiTa.pos("The boy, dressed in red, ate an apple.", { inline: true });
     answer = "The/dt boy/nn , dressed/vbn in/in red/jj , ate/vbd an/dt apple/nn .";
     eql(result, answer);
 
     txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
-    result = RiTa.posTags(txt, { inline: true });
+    result = RiTa.pos(txt, { inline: true });
     answer = "The/dt dog/nn ran/vbd faster/rbr than/in the/dt other/jj dog/nn . But/cc the/dt other/jj dog/nn was/vbd prettier/jjr .";
     eq(result, answer);
   });
@@ -260,27 +260,27 @@ describe('RiTa.Tagger', () => {
   it('Should correctly call posTagsInline', () => {
     let result, answer, txt;
 
-    eql(RiTa.posTagsInline(""), "");
-    eql(RiTa.posTagsInline("asdfaasd"), "asdfaasd/nn");
+    eql(RiTa.posInline(""), "");
+    eql(RiTa.posInline("asdfaasd"), "asdfaasd/nn");
 
-    result = RiTa.posTagsInline("clothes");
+    result = RiTa.posInline("clothes");
     answer = "clothes/nns";
     eql(result, answer);
 
-    result = RiTa.posTagsInline("teeth");
+    result = RiTa.posInline("teeth");
     answer = "teeth/nns";
     eql(result, answer);
 
-    result = RiTa.posTagsInline("There is a cat.");
+    result = RiTa.posInline("There is a cat.");
     answer = "There/ex is/vbz a/dt cat/nn .";
     eql(result, answer);
 
-    result = RiTa.posTagsInline("The boy, dressed in red, ate an apple.");
+    result = RiTa.posInline("The boy, dressed in red, ate an apple.");
     answer = "The/dt boy/nn , dressed/vbn in/in red/jj , ate/vbd an/dt apple/nn .";
     eql(result, answer);
 
     txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
-    result = RiTa.posTagsInline(txt);
+    result = RiTa.posInline(txt);
     answer = "The/dt dog/nn ran/vbd faster/rbr than/in the/dt other/jj dog/nn . But/cc the/dt other/jj dog/nn was/vbd prettier/jjr .";
     eq(result, answer);
   });
@@ -288,55 +288,55 @@ describe('RiTa.Tagger', () => {
   it('Should correctly call posTags.inline.simple', () => {
     let result, answer, txt;
 
-    eql(RiTa.posTags("", { inline: true, simple: true }), "");
-    eql(RiTa.posTags("asdfaasd", { inline: true, simple: true }), "asdfaasd/n");
+    eql(RiTa.pos("", { inline: true, simple: true }), "");
+    eql(RiTa.pos("asdfaasd", { inline: true, simple: true }), "asdfaasd/n");
 
-    result = RiTa.posTags("clothes", { inline: true, simple: true });
+    result = RiTa.pos("clothes", { inline: true, simple: true });
     answer = "clothes/n";
     eql(result, answer);
 
-    result = RiTa.posTags("teeth", { inline: true, simple: true });
+    result = RiTa.pos("teeth", { inline: true, simple: true });
     answer = "teeth/n";
     eql(result, answer);
 
-    result = RiTa.posTags("There is a cat.", { inline: true, simple: true });
+    result = RiTa.pos("There is a cat.", { inline: true, simple: true });
     answer = "There/- is/v a/- cat/n .";
     eql(result, answer);
 
-    result = RiTa.posTags("The boy, dressed in red, ate an apple.", { inline: true, simple: true });
+    result = RiTa.pos("The boy, dressed in red, ate an apple.", { inline: true, simple: true });
     answer = "The/- boy/n , dressed/v in/- red/a , ate/v an/- apple/n .";
     eql(result, answer);
 
     txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
-    result = RiTa.posTags(txt, { inline: true, simple: true });
+    result = RiTa.pos(txt, { inline: true, simple: true });
     answer = "The/- dog/n ran/v faster/r than/- the/- other/a dog/n . But/- the/- other/a dog/n was/v prettier/a .";
     eq(result, answer);
   });
 
   it('Should correctly call posTagsInline.simple', () => {
     let result, answer, txt;
-    eql(RiTa.posTagsInline("asdfaasd", { inline: true, simple: true }), "asdfaasd/n");
+    eql(RiTa.posInline("asdfaasd", { inline: true, simple: true }), "asdfaasd/n");
 
-    eql(RiTa.posTagsInline("", { inline: true, simple: true }), "");
+    eql(RiTa.posInline("", { inline: true, simple: true }), "");
 
-    result = RiTa.posTagsInline("clothes", { inline: true, simple: true });
+    result = RiTa.posInline("clothes", { inline: true, simple: true });
     answer = "clothes/n";
     eql(result, answer);
 
-    result = RiTa.posTagsInline("teeth", { inline: true, simple: true });
+    result = RiTa.posInline("teeth", { inline: true, simple: true });
     answer = "teeth/n";
     eql(result, answer);
 
-    result = RiTa.posTagsInline("There is a cat.", { inline: true, simple: true });
+    result = RiTa.posInline("There is a cat.", { inline: true, simple: true });
     answer = "There/- is/v a/- cat/n .";
     eql(result, answer);
 
-    result = RiTa.posTagsInline("The boy, dressed in red, ate an apple.", { inline: true, simple: true });
+    result = RiTa.posInline("The boy, dressed in red, ate an apple.", { inline: true, simple: true });
     answer = "The/- boy/n , dressed/v in/- red/a , ate/v an/- apple/n .";
     eql(result, answer);
 
     txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
-    result = RiTa.posTagsInline(txt, { inline: true, simple: true });
+    result = RiTa.posInline(txt, { inline: true, simple: true });
     answer = "The/- dog/n ran/v faster/r than/- the/- other/a dog/n . But/- the/- other/a dog/n was/v prettier/a .";
     eq(result, answer);
   });
@@ -391,9 +391,11 @@ describe('RiTa.Tagger', () => {
   });
 
   it('Should correctly call isNoun', () => {
+
+    ok(RiTa.isNoun("thieves"), "thieves");
+    ok(RiTa.isNoun("calves"));
+
     ok(!RiTa.isNoun("scarily"));
-return;
-    //ok(!RiTa.isNoun(""));
     ok(RiTa.isNoun("boxes"));
     ok(RiTa.isNoun("swim"));
     ok(RiTa.isNoun("walk"));
@@ -418,13 +420,13 @@ return;
     ok(RiTa.isNoun("duck"));
     ok(RiTa.isNoun("dog"));
     ok(RiTa.isNoun("drink"));
+    ok(!RiTa.isNoun("abates"));
 
     ok(!RiTa.isNoun("eat"));
     ok(!RiTa.isNoun("chew"));
     ok(!RiTa.isNoun("moved"));
     ok(!RiTa.isNoun("went"));
     ok(!RiTa.isNoun("spent"));
-    ok(!RiTa.isNoun("abates"));
 
     //adj
     ok(!RiTa.isNoun("hard"));
@@ -457,11 +459,28 @@ return;
   });
 
   it('Should correctly call isVerb', () => {
+    
+    expect(RiTa.isVerb("abandons")).eq(true);
 
     // verbs
     ok(RiTa.isVerb("dance"));
     ok(RiTa.isVerb("swim"));
     ok(RiTa.isVerb("walk"));
+
+    ok(RiTa.isVerb("dances"));
+    ok(RiTa.isVerb("swims"));
+    ok(RiTa.isVerb("walks"));
+    ok(RiTa.isVerb("costs"));
+
+    // inflections
+    ok(RiTa.isVerb("danced"));
+    ok(RiTa.isVerb("swam"));
+    ok(RiTa.isVerb("walked"));
+    ok(RiTa.isVerb("costed"));
+    ok(RiTa.isVerb("satisfies"));
+    ok(RiTa.isVerb("falsifies"));
+    ok(RiTa.isVerb("beautifies"));
+    ok(RiTa.isVerb("repossesses"));
     
     ok(!RiTa.isVerb("dancer"));
     ok(!RiTa.isVerb("walker"));

@@ -77,7 +77,8 @@ class Lexicon {
     opts.minLength = opts.minLength || 4; // not 3
     this.parseArgs(opts);
 
-    const dict = this._dict(true), words = Object.keys(dict);
+    const dict = this._dict(true);
+    let words = Object.keys(dict);
     const ran = Math.floor(RiTa.randInt(words.length));
     const isMassNoun = (w, pos) => {
       return w.endsWith("ness")
@@ -85,6 +86,9 @@ class Lexicon {
         || pos.indexOf("vbg") > 0
         || Util.MASS_NOUNS.includes(w);
     }
+
+    // testing
+    //words = { "strive":["s-t-r-ay1-v","vb vbp"] };
 
     for (let k = 0; k < words.length; k++) {
       let j = (ran + k) % words.length;
@@ -94,18 +98,21 @@ class Lexicon {
       if (!opts.targetPos) return words[j]; // done if no pos to match
 
       // match the pos if supplied
-      let result = word, firstPos = rdata[1].split(' ')[0];
+      let firstPos = rdata[1].split(' ')[0];
       if (opts.targetPos !== firstPos) continue;
 
-      // we've matched our pos, pluralize if needed
+      // we've matched our pos, pluralize or inflect if needed
+      let result = word;
       if (opts.pluralize) {
         if (isMassNoun(word, rdata[1])) continue;
-        result = RiTa.pluralize(word); // match plural noun
+        result = RiTa.pluralize(word);
       }
-      else if (opts.conjugate) { // inflect if needed
+      if (opts.conjugate) { // inflect
         result = this.reconjugate(word, opts.pos);
       }
-      if (opts.numSyllables) { // Need to make sure we dont change syllable count
+
+      // berify we haven't changed syllable count
+      if (result !== word && opts.numSyllables) { 
         let tmp = RiTa.SILENCE_LTS;
         RiTa.SILENCE_LTS = true;
         let num = RiTa.syllables(result).split(RiTa.SYLLABLE_BOUNDARY).length;
@@ -212,6 +219,7 @@ class Lexicon {
   }
 
   //////////////////////////// helpers /////////////////////////////////
+
   similarByType(word, opts) {
 
     this.parseArgs(opts);
@@ -222,7 +230,7 @@ class Lexicon {
     const variations = [input, input + 's', input + 'es'];
     const phonesA = sound ? this._toPhoneArray(this._rawPhones(input)) : input;
 
-    if (!phonesA) return result;    
+    if (!phonesA) return result;
 
     let result = [], minVal = Number.MAX_VALUE;
     for (let i = 0; i < words.length; i++) {
@@ -259,14 +267,13 @@ class Lexicon {
       let syls = rdata[0].split(' ').length;
       if (opts.numSyllables !== syls) return false;
     }
-
     return true;
   }
 
   // Handles: pos, limit, numSyllables, minLength, maxLength
   // potentially appends pluralize, conjugate, targetPos
-  parseArgs(opts) { 
-    
+  parseArgs(opts) {
+
     opts.minDistance = opts.minDistance || 1;
     opts.numSyllables = opts.numSyllables || 0;
     opts.minLength = opts.minLength || 3;
@@ -343,18 +350,15 @@ class Lexicon {
   }
 
   _isVowel(c) {
-
     return c && c.length && RiTa.VOWELS.includes(c);
   }
 
   _isConsonant(p) {
-
     return (typeof p === S && p.length === 1 && // precompile
       RiTa.VOWELS.indexOf(p) < 0 && /^[a-z\u00C0-\u00ff]+$/.test(p));
   }
 
   _firstPhone(rawPhones) {
-
     if (rawPhones && rawPhones.length) {
       let phones = rawPhones.split(RiTa.PHONEME_BOUNDARY);
       if (phones) return phones[0];
@@ -366,7 +370,6 @@ class Lexicon {
   }
 
   _lastStressedPhoneToEnd(word) {
-
     if (word && word.length) {
       let raw = this._rawPhones(word);
       if (raw) {
@@ -385,7 +388,6 @@ class Lexicon {
 
 
   _lastStressedVowelPhonemeToEnd(word) {
-
     if (word && word.length) {
       let raw = this._lastStressedPhoneToEnd(word);
       if (raw) {
@@ -405,7 +407,6 @@ class Lexicon {
   }
 
   _firstStressedSyl(word) {
-
     let raw = this._rawPhones(word);
     if (raw) {
       let idx = raw.indexOf(RiTa.STRESSED);

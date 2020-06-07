@@ -117,11 +117,23 @@ class PosTagger {
 
   //////////////////////////////////////////////////////////////////
 
-  _derivePosData(word) {
+  _checkPluralNounOrVerb(stem, result) {
+    let pos = this.lex._posArr(stem);
+    if (pos) {
+      if (pos.includes('nn')) result.push('nns'); // ?? any case
+      if (pos.includes('vb')) result.push('vbz');
+    }
+  }
 
+  _safeConcat(a, b) {
+    if (a && b) return a.concat(b);
+    if (a) return a;
+    if (b) return b;
+  }
+  
+  _derivePosData(word) {
     /*
       Try for a verb or noun inflection 
-
       VBD 	Verb, past tense
       VBG 	Verb, gerund or present participle
       VBN 	Verb, past participle
@@ -129,25 +141,31 @@ class PosTagger {
       VBZ 	Verb, 3rd person singular present
       NNS   Noun, plural
     */
-    if (word.endsWith('s')/* or 'es'*/) {  // plural noun or vbz
-      let stem = word.substring(0, word.length - 1);
-      if (stem) {
-        let pos = this.lex._posArr(stem);
-        if (pos) {
-          let result;
-          if (pos.includes('nn')) {
-            result = ['nns'];  // fates
-          }
-          if (pos.includes('vb')) {
-            result = result || [];
-            result.push('vbz'); // hates
-          }
-          if (result) return result;
-        }
+    if (word.endsWith('ies')) { // 3rd-person sing. present (satisfies, falsifies)
+      let check = word.substring(0, word.length - 3) + "y";
+      let pos = this.lex._posArr(check);
+      if (pos && pos.includes('vb')) return ['vbz'];
+    }
+    else if (word.endsWith('s')) {  // plural noun or vbz
+
+      let result = [];
+
+      // remove suffix (s) and test (eg 'hates', 'cakes')
+      this._checkPluralNounOrVerb(word.substring(0, word.length - 1), result);
+
+      if (word.endsWith('es')) {
+
+        // remove suffix (es) and test (eg 'repossesses')
+        this._checkPluralNounOrVerb(word.substring(0, word.length - 2), result);
+
+        // singularize and test (eg 'thieves')
+        this._checkPluralNounOrVerb(RiTa.singularize(word), result);
       }
+
+      if (result) return result;
     }
     else if (word.endsWith('ed')) { // simple past or past participle
-      let pos = this.lex._posArr(word.substring(0, word.length - 1)) 
+      let pos = this.lex._posArr(word.substring(0, word.length - 1))
         || this.lex._posArr(word.substring(0, word.length - 2));
       if (pos && pos.includes('vb')) {
         return ['vbd', 'vbn']; // hate-> hated || row->rowed
@@ -178,7 +196,7 @@ class PosTagger {
     return word.endsWith('ly') ? ['rb'] : (word.endsWith('s') ? ['nns'] : ['nn']);
   }
 
-  _isLikelyPlural(word) { 
+  _isLikelyPlural(word) {
     // Check for plural noun with singularizer and stemmer
     return RiTa.stemmer.isRawPlural(word) || this._lexHas("n", RiTa.singularize(word));
   }

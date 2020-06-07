@@ -172,8 +172,6 @@ describe('RiTa.Grammar', () => {
         //console.log(res);
         ok(res === "hello | name");
 
-        return;
-
         s = "{ \"$start\": \"hello: name\" }";
         rg = new Grammar(s);
         res = rg.expand();
@@ -186,7 +184,7 @@ describe('RiTa.Grammar', () => {
         rg = new Grammar(s);
         res = rg.expand();
         //console.log(res);
-        ok(res === "$start");
+        ok(res === "<start>");
 
         s = "{ \"$start\": \"I don&#96;t want it.\" }";
         rg = new Grammar(s);

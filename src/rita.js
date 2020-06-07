@@ -17,6 +17,8 @@ const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
 
 /**
  * TODO:
+ *   implement pos opt for rhymes/alliterations/soundsLike/spellsLike
+ *   add docs for evaluate and addTransform (link to README#riscript)
  */
 
 class RiTa {
@@ -122,13 +124,11 @@ class RiTa {
     return RiTa._analyzer().analyze(text).phones;
   }
 
-  // partOfSpeech() ?
-  static posTags(words, { simple = false, inline = false } = {}) { // DOC:
+  static pos(words, { simple = false, inline = false } = {}) { // DOC:
     return RiTa.tagger.tag(words, simple, inline, true);
   }
 
-  // partOfSpeechInline() ?
-  static posTagsInline(words, { simple = false } = {}) { // java only?
+  static posInline(words, { simple = false } = {}) { // java only?
     return RiTa.tagger.tag(words, simple, true, true);
   }
 
@@ -167,7 +167,7 @@ class RiTa {
   static rhymes() { // DOC:
     return RiTa.lexicon().rhymes(...arguments);
   }
-  
+
   static search() {
     return RiTa.lexicon().search(...arguments);
   }
