@@ -207,6 +207,37 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
+  it('Should correctly call search with pos, limit', () => {
+
+/*     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }))
+      .eql(['abalone', 'abandonment', 'abatement', 'abbreviation', 'abdomen']);
+
+    expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n', numSyllables: 3 }))
+      .eql(['abatement', 'abdomen', "abduction", "abeyance", "abortion"]);
+
+    expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'n', limit: 3 }))
+      .eql(['elephant', 'infant', 'infantry']); */
+/* 
+    expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'n', limit: 3, numSyllables: 2 }))
+      .eql(['infant']);
+    
+    expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', pos: 'v', limit: 5 }))
+      .eql(["fantasize"]);
+
+    expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'nns' }))
+      .eql(['abalones', 'abandonments', 'abatements', 'abbreviations', 'abdomens']);
+
+    expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'nns', numSyllables: 3 }))
+      .eql(['abatements', 'abdomens', "abductions", "abeyances", "abortions"]);
+ */
+    expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'nns', limit: 3 }))
+      .eql(['elephants', 'infants', 'infantries']);
+    return;
+    expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', pos: 'vb', limit: 5 }))
+      .eql(["fantasize"]);
+  });
+
+
   /* omitting no limit tests as they are a bit slow
   it('Should correctly call search with stresses', () => {
     expect(RiTa.search('0/1/0/0/0/0/0', { type: 'stresses' })).eql([
@@ -246,19 +277,9 @@ describe('RiTa.Lexicon', function () {
       "conciliatory"
     ]);
 
-    // TODO: add code/tests for pos option in all lexicon scans
-    console.log('TODO:', RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }));
+    // TODO: NEXT: add tests for pos option in all lexicon scans
 
   });
-
-/*    it('XXX', () => {
-     let result = RiTa.randomWord({ numSyllables: 1, pos: "nns" });
-     expect(result.length > 0, "randomWord nns: " + result).to.be.true;
-     console.log(result);
-     let syllables = RiTa.syllables(result);
-     expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
-     expect(RiTa.isNoun(result)).eq(true, fail(result, 'nns'));
-  }); */
 
   it('Should correctly call randomWord.pos.syls', () => {
     function fail(result, epos) {
@@ -266,7 +287,7 @@ describe('RiTa.Lexicon', function () {
       let ent = RiTa.lexicon()[test];
       return ('(' + epos + ') Fail: ' + result + ': expected ' + epos + ', got ' + (ent ? ent[1] : 'null'));
     }
-   
+
     for (let j = 0; j < 1; j++) {
 
       let pos, result, syllables;
@@ -381,14 +402,16 @@ describe('RiTa.Lexicon', function () {
   });
 
   // TODO: pos
-  0 && it('Should correctly call rhymes.pos', () => {
+  it('Should correctly call rhymes.pos', () => {
 
-    expect(RiTa.rhymes("cat", { pos: 'v' }).includes("hat")).to.be.false;
-    expect(RiTa.rhymes("yellow", { pos: 'a' }).includes("mellow")).to.be.true;
-    expect(RiTa.rhymes("toy", { pos: 'n' }).includes("boy")).to.be.true;
-    expect(RiTa.rhymes("sieve", { pos: 'n' }).includes("give")).to.be.false;
+    /*     expect(RiTa.rhymes("cat", { pos: 'v' }).includes("hat")).to.be.false;
+        expect(RiTa.rhymes("yellow", { pos: 'a' }).includes("mellow")).to.be.true;
+        expect(RiTa.rhymes("toy", { pos: 'n' }).includes("boy")).to.be.true;
+        expect(RiTa.rhymes("sieve", { pos: 'n' }).includes("give")).to.be.false;
+     */
+    //console.log(RiTa.rhymes("tense", { pos: 'v' }));
 
-    expect(RiTa.rhymes("tense", { pos: 'v' }).includes("sense")).to.be.true;
+    expect(RiTa.rhymes("tense", { pos: 'v' }).includes("condense")).to.be.true;
     expect(RiTa.rhymes("crab", { pos: 'n' }).includes("drab")).to.be.false;
     expect(RiTa.rhymes("shore", { pos: 'v' }).includes("more")).to.be.false;
 

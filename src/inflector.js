@@ -122,13 +122,11 @@ class Inflector {
   }
 
   singularize(word, opts) {
-    return this.adjustNumber(word,
-      this.singularize.name, (opts && opts.dbug));
+    return this.adjustNumber(word, this.singularize.name, (opts && opts.dbug));
   }
 
   pluralize(word, opts) {
-    return this.adjustNumber(word,
-      this.pluralize.name, (opts && opts.dbug));
+    return this.adjustNumber(word, this.pluralize.name, (opts && opts.dbug));
   }
 
   isPlural(word, opts) { // add to API?
