@@ -355,7 +355,7 @@ class Lexicon {
     return this._intersect(simSound, simLetter).slice(0, actualLimit);
   }
 
-  isMassNoun = (w, pos) => {
+  isMassNoun(w, pos) {
     return w.endsWith("ness")
       || w.endsWith("ism")
       || pos.indexOf("vbg") > 0
