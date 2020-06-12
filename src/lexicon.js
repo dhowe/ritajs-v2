@@ -10,70 +10,67 @@ class Lexicon {
     this.lexWarned = false;
   }
 
-  alliterations(word, opts = {}) {
+  alliterations(theWord, opts = {}) {
 
     this.parseArgs(opts);
 
-    // only allow consonant inputs ?
-    if (RiTa.VOWELS.includes(word.charAt(0))) {
+    // only allow consonant inputs
+    if (RiTa.VOWELS.includes(theWord.charAt(0))) {
       if (!RiTa.SILENT) console.warn
       if (!opts.silent && !RiTa.SILENT) console.warn
-        ('Expects a word starting with a consonant, got: ' + word);
+        ('Expects a word starting with a consonant, got: ' + theWord);
       return [];
     }
 
-    const dict = this._dict(true);
-    const words = Object.keys(dict);
-    const fss = this._firstStressedSyl(word);
+    const dict = this._dict(true), words = Object.keys(dict);
+    const fss = this._firstStressedSyl(theWord);
     if (!fss) return [];
-
-    let result = [], phone = this._firstPhone(fss);
+    const phone = this._firstPhone(fss);
+    let result = []; 
 
     // make sure we parsed first phoneme
     if (!phone) {
       if (!opts.silent && !RiTa.SILENT) console.warn
-        ('Failed parsing first phone in "' + word + '"');
+        ('Failed parsing first phone in "' + theWord + '"');
       return result;
     }
 
     for (let i = 0; i < words.length; i++) {
-      if (!this.checkCriteria(words[i], dict[words[i]], opts)) continue;
       let word = words[i];
+      // check word length and syllables 
+      if (word === theWord || !this.checkCriteria(word, dict[word], opts)) {
+        continue;
+      }      
       if (opts.targetPos) {
-        word = this.matchPos(words[i], dict[words[i]], opts);
+        word = this.matchPos(word, dict[word], opts);
         if (!word) continue;
       }
       let c2 = this._firstPhone(this._firstStressedSyl(word));
       if (phone === c2) result.push(word);
       if (result.length === opts.limit) break;
     }
+
     return result;
   }
 
-  rhymes(word, opts = {}) {
+  rhymes(theWord, opts = {}) {
 
     this.parseArgs(opts);
-
-    if (!word || !word.length) return [];
-    word = word.toLowerCase();
-
-    const dict = this._dict(true);
-    const words = Object.keys(dict);
-    const phone = this._lastStressedPhoneToEnd(word);
+    if (!theWord || !theWord.length) return [];
+    const dict = this._dict(true), words = Object.keys(dict);
+    const phone = this._lastStressedPhoneToEnd(theWord);
     if (!phone) return [];
-
     let result = [];
     for (let i = 0; i < words.length; i++) {
-
-      // check word length and syllables 
-      if (!this.checkCriteria(words[i], dict[words[i]], opts)) continue;
-
       let word = words[i];
+      // check word length and syllables 
+      if (word === theWord || !this.checkCriteria(word, dict[word], opts)) {
+        continue;
+      }
       if (opts.targetPos) {
         word = this.matchPos(word, dict[word], opts);
         if (!word) continue;
       }
-
       // check for the rhyme
       if (dict[word][0].endsWith(phone)) result.push(word);
       if (result.length === opts.limit) break;
@@ -91,9 +88,6 @@ class Lexicon {
     let words = Object.keys(dict);
     const ran = Math.floor(RiTa.randInt(words.length));
 
-    // testing
-    //words = { "strive":["s-t-r-ay1-v","vb vbp"] };
-
     for (let k = 0; k < words.length; k++) {
       let j = (ran + k) % words.length;
       let word = words[j], rdata = dict[word];
@@ -104,7 +98,8 @@ class Lexicon {
       let result = this.matchPos(word, rdata, opts, true);
       if (result) return result;
     }
-    throw Error('No random word with specified options: ' + JSON.stringify(opts));
+
+    throw Error('No random word with options: ' + JSON.stringify(opts));
   }
 
 

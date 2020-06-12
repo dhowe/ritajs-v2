@@ -1,6 +1,6 @@
 {
   "name": "rita",
-  "version": "2.0.0-beta.13",
+  "version": "2.0.0-beta.14",
   "author": "Daniel C. Howe",
   "license": "GPL-3.0",
   "description": "RiTa: A toolkit for natural language and computational literature",
@@ -17,6 +17,9 @@
     "npmpub": "np --tag beta prerelease",
     "bump": "yarn version --no-git-tag-version --prerelease",
     "bump.version": "yarn version --no-git-tag-version --patch",
+    "version": "yarn build.prod && yarn test.prod",
+    "postversion": "sed \"s/@VERSION@/$npm_package_version/g\" README.tmpl.md > README.md",
+    "readmxe": "replace -s \"@VERSION@\" $npm_package_version build/build.js",
     "build": "webpack --display-modules && ls -l lib",
     "build.prod": "webpack --display-modules --mode production && ls -l lib",
     "watch": "webpack --watch",
