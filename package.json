@@ -14,7 +14,7 @@
   ],
   "main": "lib/rita.js",
   "scripts": {
-    "npmpub": "np --no-tests --tag beta prerelease",
+    "npmpub": "np --tag beta prerelease",
     "bump": "yarn version --no-git-tag-version --prerelease",
     "bump.version": "yarn version --no-git-tag-version --patch",
     "version": "yarn build.prod && yarn test.prod",
