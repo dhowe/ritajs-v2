@@ -4,6 +4,11 @@ const RiScript = require('../src/riscript');
 
 describe('RiTa.KnownIssues', () => {
 
+  it('Should throw on infinite recursions', () => {
+    console.log(RiTa.evaluate('$s', { s: '$a', a: '$s' }));
+    expect(() => RiTa.evaluate('$s', { s: '$a', a: '$s' })).to.throw();
+  });
+  
   0 && it('1: pluralize or singularize fails', () => { 
     let testPairs = [  ]; // SS FAILING ITEMS HERE
     let res1, res2, res3, i = 0, dbug = true;

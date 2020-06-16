@@ -93,10 +93,6 @@ describe('RiTa.RiScript', () => {
       expr = { s: '$a', a: '$b', c: '$d', d: 'c' };
       expect(RiTa.evaluate('$s', ctx)).eq('c');
     });
-
-    it('Should throw on infinite recursions', () => {
-      expect(() => RiTa.evaluate('$s', { s: '$a', a: '$s' })).to.throw();
-    });
   });
 
   describe('Assign', () => {
@@ -262,7 +258,29 @@ describe('RiTa.RiScript', () => {
 
   describe('Inline', () => {
 
-    it('Should evaluate inline assigns', () => {
+    it('Should evaluate inline assigns to vars', () => {
+      let rs, ctx;
+
+      rs = RiTa.evaluate('[$stored=$name] is called $stored', ctx = { name: '(Dave | Dave)' }, {trace:0});
+      expect(rs).eq("Dave is called Dave");
+      expect(ctx.stored).eq('Dave');
+
+      return;
+      rs = RiTa.evaluate('$name=(Dave1 | Dave2)\n[$stored=$name] is $stored', ctx = {}, { trace: 0 });
+      expect(ctx.stored).to.be.oneOf(['Dave1', 'Dave2']);
+      expect(rs).to.be.oneOf(['Dave1 is Dave1', 'Dave2 is Dave2']);
+
+      rs = RiTa.evaluate('[$stored=(Dave1 | Dave2)] is $stored', ctx = {}, { trace: 0 });
+      expect(ctx.stored).to.be.oneOf(['Dave1', 'Dave2']);
+      expect(rs).to.be.oneOf(['Dave1 is Dave1', 'Dave2 is Dave2']);
+      
+      ctx = { name: '(Dave1 | Dave2)' };
+      rs = RiTa.evaluate('$name=(Dave1 | Dave2)\n[$stored=$name] is $stored', {}, {trace:1});
+      expect(ctx.stored).to.be.oneOf(['Dave1', 'Dave2']);
+      expect(rs).to.be.oneOf(['Dave1 is Dave1', 'Dave2 is Dave2']);
+    });
+
+    it('Should evaluate basic inline assigns', () => {
       let ctx;
       expect(RiTa.evaluate('[$foo=hi]', 0, { trace: 0 })).eq('hi');
       expect(RiTa.evaluate('[$foo=(hi | hi)] there')).eq('hi there');
@@ -288,6 +306,9 @@ describe('RiTa.RiScript', () => {
 
       expect(RiTa.evaluate('$stored=(a | a)\n($stored).toUpperCase() dog is a mammal', ctx)).eq(exp);
       expect(ctx.stored).eq('a');
+
+      expect(RiTa.evaluate('[$stored=(a | a)] dog is a mammal', ctx={}, { trace: 0 })).eq(exp.toLowerCase());
+      expect(ctx.stored).eq('a');
     });
 
     it('Should handle assign transforms', () => {
@@ -310,9 +331,22 @@ describe('RiTa.RiScript', () => {
       let result = RiTa.evaluate('[$stored=(a | b)]', context);
       expect(result).to.be.oneOf(['a', 'b']);
       expect(context.stored).eq(result);
-      let result2 = RiTa.evaluate('[$a=$stored]', context);
+      let result2 = RiTa.evaluate('[$a=$stored]', context, {trace:0});
+      //console.log('result2', result2, context.a);
       expect(context.a).eq(result2);
       expect(result2).eq(context.stored);
+    });
+
+    it('Should assign a silent variable to a result', () => {
+      let ctx = {};
+      let result = RiTa.evaluate('$stored=(a | b)', ctx);
+      expect(result).eq('');
+      result = ctx.stored;
+      expect(ctx.stored).to.be.oneOf(['a', 'b']);
+      let result2 = RiTa.evaluate('$a=$stored', ctx);
+      expect(result2).eq('');
+      expect(ctx.a).eq(ctx.stored);
+      expect(ctx.a).eq(result);
     });
 
     it('Should assign a variable to code', () => {
@@ -329,15 +363,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate(inp, ctx)).eq(out);
     });
 
-    it('Should assign a silent variable to a result', () => {
-      let ctx = {};
-      let result = RiTa.evaluate('[$stored=(a | b)]', ctx);
-      expect(result).to.be.oneOf(['a', 'b']);
-      expect(ctx.stored).to.be.oneOf(['a', 'b']);
-      let result2 = RiTa.evaluate('[$a=$stored]', ctx);
-      expect(result2).to.be.oneOf(['a', 'b']);
-      expect(ctx.a).eq(ctx.stored);
-    });
+   
 
     it('Should assign a silent variable to code', () => {
       /*       expect(RiTa.evaluate('A [$stored=($animal | $animal)] is a mammal', { animal: 'dog' }, {trace:0})).eq('A dog is a mammal');

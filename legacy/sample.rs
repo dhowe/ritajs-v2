@@ -1,10 +1,10 @@
 {
     "start" : "<li>$template</li>",
-
-    "template" : "$teen",
+    "template1" : "$teen",
+    "template" : "$teenSpring means nothing $teenCant",
     "templateORig": "child | teen | college | adult | event",
     
-    "child" : "`remember('$person')` $childVariation. `forget('$remember')` $misses. $wistful",
+    "child" : "[$chosen=$person] $childVariation. $chosen $misses. $wistful",
     
     "childVariation" : "$from $city, $childDescription | $childDescription $from $city",
     
@@ -80,7 +80,7 @@
     
     "job" : "A $plum job offer from `randomJob()` $rescinded. $corporateBS",
     
-    "corporateBS" : "So much for $q`catchPhrase()`.$/q | There goes the chance to be `randomPosition()`.",
+    "corporateBS" : "So much for <q>`catchPhrase()`.</q> | There goes the chance to be `randomPosition()`.",
     
     "interview" : "A Zoom interview with `randomJob()` went horribly wrong when $badInterview | Interview after interview was cancelled.",
     
@@ -158,7 +158,7 @@
     
     "teenEvent" : " prom | graduation | the SAT exam | the driver's license exam | the ACT test | the playoff game | March Madness | the NBA season | the college visit to $university | the spring musical",
     
-    "cancelled" : "cancelled | postponed | $qindefinitely$/q delayed | called off",
+    "cancelled" : "cancelled | postponed | <q>indefinitely</q> delayed | called off",
     
     "event" : "`capitalize('$time')` in $city, they $cancelled a $gathering. $peopleResult. It was just $oneMoreThing. $futureEvent | A $gathering in $city, was $cancelled $time. $peopleResult. It was just $oneMoreThing. $futureEvent | All the $stores are $closed in $city. $tumbleweeds $wildlife",
     

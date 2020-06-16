@@ -43,14 +43,14 @@ class Visitor extends RiScriptVisitor {
   }
 
   visitExpr(ctx) {
-    this.trace && console.log('visitExpr(' + ctx.getText() + ')',
-      "tfs=" + (ctx.transforms || "[]"));
+    //this.trace && console.log('visitExpr(' + ctx.getText() + ')',"tfs=" + (ctx.transforms || "[]"));
     return this.visitChildren(ctx);
   }
 
 
   /* visit value and create a mapping in the symbol table */
   visitAssign(ctx) {
+    // TODO: test with transforms
     let token = ctx.expr();
     let id = symbolName(ctx.symbol().getText());
     this.trace && console.log('visitAssign: '
@@ -65,9 +65,16 @@ class Visitor extends RiScriptVisitor {
     let token = ctx.expr();
     let id = symbolName(ctx.symbol().getText());
     token.transforms = this.inheritTransforms(token, ctx);
+    if (token && /\$/.test(token.getText())) {
+      //console.log('\nHIT***: '+this.flatten(token)+"\n");
+      return this.context[id] = token.getText(); // TODO: append transforms
+    }
     this.trace && console.log('visitInline: ' + id + '=' +
       this.flatten(token) + ' tfs=[' + (token.transforms || '') + ']');
-    this.context[id] = token ? this.visit(token) : '';
+    //let result = token ? this.visit(token) : '';
+    //this.context[id] = /\$/.test(token.getText()) ? token.getText() : this.visit(token);//token.getText();//result;
+    this.context[id] = this.visit(token);
+    this.trace &&console.log('visitInline2: ' + id + '=' +this.context[id]);
     return this.context[id];
   }
 
@@ -109,11 +116,37 @@ class Visitor extends RiScriptVisitor {
     textContext.transforms = ctx.transforms || [];
     ctx.transform().map(t => textContext.transforms.push(t.getText()));
 
-    this.trace && console.log('visitSymbol: $' + ident
+    this.trace && console.log('visitSymbol($' + ident+')'
       + ' tfs=[' + (textContext.transforms || '') + '] ctx[\''
       + ident + '\']=' + textContext.text);
 
-    return this.visitTerminal(textContext);
+    let resolution = this.visitTerminal(textContext);
+    //if (resolution === '$'+ident) throw Error("Rec");
+
+    if (!/[\$()]/.test(resolution)) {
+      
+      // WORKING HERE: ytg 'Should evaluate inline assigns to vars'
+      // before updating need to make sure resolution doesnt contain $()
+      
+      // problem is how to retroactively resolve variables in context??
+
+      let keys = Object.keys(this.context);
+      let re = new RegExp('\\$'+ident);
+
+      // update symbols in context with our newly resolved value
+      for (let i = 0; i < keys.length; i++) {
+        let key = keys[i];
+        let val = this.context[keys[i]];
+
+        //console.log("CHK:" + key + ': "' + val+'"', 'for $'+ident);
+        if (re.test(val)) {
+          console.log("HIT2:" + key + ': ' + val, resolution);
+          this.context[keys[i]] = val.replace(re, resolution);
+        }
+      }
+
+    }
+    return resolution;
   }
 
   visitTerminal(ctx) {

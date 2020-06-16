@@ -29,12 +29,13 @@ class RiScript {
     let last = input, trace = opts.trace;
     let rs = new RiScript().pushTransforms();
     let expr = rs.lexParseVisit(input, ctx, opts);
+    trace && console.log('\nPass#1: ' + expr);//, 'ctx: ' + JSON.stringify(ctx));
     if (!onepass && /(\$[A-Za-z_]|[()])/.test(expr)) {
       for (let i = 0; i < MaxTries && expr !== last; i++) {
         last = expr;
         if (!expr) break;
         expr = rs.lexParseVisit(expr, ctx, opts);
-        trace && console.log('\nPass#' + (i + 1) + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
+        trace && console.log('\nPass#' + (i + 2) + ' ' + expr);//, 'ctx: ' + JSON.stringify(ctx));
         if (i >= MaxTries - 1) throw Error('Unable to resolve: "'
           + input + '" after ' + MaxTries + ' tries - an infinite loop?');
       }
@@ -206,7 +207,7 @@ class RiScript {
     return new Visitor(this, context, opts);
   }
 
-  resolveEntities(result) {
+  resolveEntities(result) { // &#10; for line break DOC:
     return decode(result.replace(/ +/g, ' '))
       .replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
   }
