@@ -56,10 +56,10 @@ describe('RiTa.RiScript', () => {
 
   describe('Evaluation', () => {
     it('Should eval simple expressions', () => {
-/*       expect(RiTa.evaluate('foo', {}, { trace: 0 })).eq('foo');
+      expect(RiTa.evaluate('foo', {}, { trace: 0 })).eq('foo');
       expect(RiTa.evaluate('foo.', {}, { trace: 0 })).eq('foo.');
       expect(RiTa.evaluate('"foo"', {}, { trace: 0 })).eq('"foo"');
-      expect(RiTa.evaluate("'foo'", {}, { trace: 0 })).eq("'foo'"); */
+      expect(RiTa.evaluate("'foo'", {}, { trace: 0 })).eq("'foo'"); 
       expect(RiTa.evaluate('foo\nbar', {}, { trace: 0 })).eq('foo bar');
       expect(RiTa.evaluate('foo&#10;bar', {}, { trace: 0 })).eq('foo\nbar');
       expect(RiTa.evaluate('$foo=bar \\nbaz\n$foo', {}, { trace: 0 })).eq('bar baz'); ``
@@ -545,12 +545,13 @@ describe('RiTa.RiScript', () => {
     it('Should parse object properties', () => {
       let dog = { name: 'spot', color: 'white', hair: { color: 'white' } };
       expect(RiTa.evaluate("It was a $dog.hair.color dog.", { dog }, { trace: 0 })).eq('It was a white dog.');
-      expect(RiTa.evaluate("It was a $dog.color.toUpperCase() dog.", { dog })).eq('It was a WHITE dog.');
+      expect(RiTa.evaluate("It was a $dog.color.toUpperCase() dog.", { dog }, { trace: 0 })).eq('It was a WHITE dog.');
     });
 
     it('Should call member function', () => {
       let dog = { name: 'Spot', getColor: () => 'red' };
-      expect(RiTa.evaluate("$dog.name was a $dog.getColor() dog.", { dog })).eq('Spot was a red dog.');
+      expect(RiTa.evaluate("$dog.name was a $dog.getColor() dog.", 
+        { dog })).eq('Spot was a red dog.');
     });
 
     it('Should handle transforms ending with punc', () => {

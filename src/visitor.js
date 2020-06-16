@@ -113,16 +113,6 @@ class Visitor extends RiScriptVisitor {
       + ' tfs=[' + (textContext.transforms || '') + '] ctx[\''
       + ident + '\']=' + textContext.text);
 
-    /*
-    TODO: what if we get choice or symbol or here ...
-    need to visit, but its not a context, just a string
-    Options: either reparse, or simply treat as terminal
-    to be handled if necessary in multeval() call
-    */
-
-    // TODO: if we an object here and a transform, we should 
-    // attempt to resolve it immediately ***
-
     return this.visitTerminal(textContext);
   }
 
@@ -135,16 +125,14 @@ class Visitor extends RiScriptVisitor {
     let tfs = ctx.transforms;
     if (typeof term === 'string') {
       if (term === Visitor.EOF) return '';
+
       term = this.parent.normalize(term);
-      /* 
-      term = term.replace(/\r/, ''); // normalise
-      term = term.replace(/\\n/, ''); // continuations
-      term = term.replace(/\n/, ' '); // no line-breaks
- */
+
       this.trace && /\S/.test(term) && console.log
         ('visitTerminal: "' + term + '" tfs=[' + (tfs || '') + ']');
 
-      // Handle unresolved symbols
+      // Handle unresolved symbols and groups by simply
+      // re-appending transforms to be handled in next pass
       if (/([()]|\$[A-Za-z_][A-Za-z_0-9-]*)/.test(term)) {
         return term + (tfs ? tfs.reduce((acc, val) => acc +
           (typeof val === 'string' ? val : val.getText()), '') : '');
