@@ -56,10 +56,10 @@ describe('RiTa.RiScript', () => {
 
   describe('Evaluation', () => {
     it('Should eval simple expressions', () => {
-      expect(RiTa.evaluate('foo', {}, { trace: 0 })).eq('foo');
+/*       expect(RiTa.evaluate('foo', {}, { trace: 0 })).eq('foo');
       expect(RiTa.evaluate('foo.', {}, { trace: 0 })).eq('foo.');
       expect(RiTa.evaluate('"foo"', {}, { trace: 0 })).eq('"foo"');
-      expect(RiTa.evaluate("'foo'", {}, { trace: 0 })).eq("'foo'");
+      expect(RiTa.evaluate("'foo'", {}, { trace: 0 })).eq("'foo'"); */
       expect(RiTa.evaluate('foo\nbar', {}, { trace: 0 })).eq('foo bar');
       expect(RiTa.evaluate('foo&#10;bar', {}, { trace: 0 })).eq('foo\nbar');
       expect(RiTa.evaluate('$foo=bar \\nbaz\n$foo', {}, { trace: 0 })).eq('bar baz'); ``
@@ -597,12 +597,25 @@ describe('RiTa.RiScript', () => {
       expect(rs).eq('baz');
     });
 
-    it('Should handle pre-parsing', () => {
-      let ctx = { nothing: 'NOTHING', hang: 'HANG' };
-      let input = "Eve near Vancouver, Washington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
-      let rs = RiTa.evaluate(input, ctx, { skipPreParse: 0 });
+    it('Should optimise via pre-parsing', () => {
+      let ctx, input, rs;
+      ctx = { nothing: 'NOTHING', hang: 'HANG' };
+      input = "Eve near Vancouver, Washington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
+      rs = RiTa.evaluate(input, ctx, { skipPreParse: 0 });
       //console.log('OUTPUT: '+rs);
       expect(rs).eq(input.replace('$hang', 'HANG').replace('$nothing', 'NOTHING'));
+
+      input = "Eve near Vancouver,\nWashington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
+      rs = RiTa.evaluate(input, ctx, { skipPreParse: 0 });
+      expect(rs).eq(input.replace('$hang', 'HANG').replace('$nothing', 'NOTHING').replace('\n', ' '));
+      
+      input = "Eve&nbsp;near Vancouver";
+      rs = RiTa.evaluate(input, ctx, { skipPreParse: 0 });
+      expect(rs).eq("Eve near Vancouver");
+
+      input = "This is not a &#124;.";
+      rs = RiTa.evaluate(input, ctx, { skipPreParse: 0 });
+      expect(rs).eq("This is not a |.");
     });
 
     it('Should evaluate symbols with a transform', () => {

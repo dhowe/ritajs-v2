@@ -3,7 +3,6 @@ const Operator = require('./operator');
 const { RiScriptVisitor } = require('../grammar/.antlr/RiScriptVisitor');
 const { RiScriptParser } = require('../grammar/.antlr/RiScriptParser');
 const EmptyExpr = new RiScriptParser.ExprContext();
-const RiTa = ('./rita');
 
 String.prototype.uc = function () {
   return this.toUpperCase();
@@ -136,15 +135,17 @@ class Visitor extends RiScriptVisitor {
     let tfs = ctx.transforms;
     if (typeof term === 'string') {
       if (term === Visitor.EOF) return '';
+      term = this.parent.normalize(term);
+      /* 
       term = term.replace(/\r/, ''); // normalise
       term = term.replace(/\\n/, ''); // continuations
       term = term.replace(/\n/, ' '); // no line-breaks
-
+ */
       this.trace && /\S/.test(term) && console.log
         ('visitTerminal: "' + term + '" tfs=[' + (tfs || '') + ']');
 
       // Handle unresolved symbols
-      if (/\$[A-Za-z_][A-Za-z_0-9-]*/.test(term)) {
+      if (/([()]|\$[A-Za-z_][A-Za-z_0-9-]*)/.test(term)) {
         return term + (tfs ? tfs.reduce((acc, val) => acc +
           (typeof val === 'string' ? val : val.getText()), '') : '');
       }

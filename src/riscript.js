@@ -128,7 +128,7 @@ class RiScript {
     return this.parse(tokens, input, opts);
   }
 
-  preParse(input, opts) {
+  preParseOrig(input, opts) {
     function countPre(words) {
       let i = 0;
       while (i < words.length) {
@@ -150,7 +150,7 @@ class RiScript {
       const words = input.split(/ +/);
       const preIdx = countPre(words);
       const postIdx = preIdx < words.length ? countPost(words) : words.length;
-      
+
       pre = words.slice(0, preIdx).join(' ');
       parse = words.slice(preIdx, postIdx + 1).join(' ');
       post = words.slice(postIdx + 1).join(' ');
@@ -158,30 +158,48 @@ class RiScript {
     return { pre, parse, post };
   }
 
-  lexParseVisitNew(input, context, opts) { // TODO: remove after profiling
-    console.log('----------------------------------------------');
-    console.log('PARSE: ' + input);
-    let { pre, parse, post } = this.preParse(input, opts);
-    console.log("\nPRE: " + pre);
-    console.log("PARSE: " + parse);
-    console.log("POST: " + post, "\n");
-
-    let hrstart = process.hrtime();
-    let tree = parse.length && this.lexParse(parse, opts);
-    let hrend = process.hrtime(hrstart);
-    console.info('Parse time (hr): %ds %dms', hrend[0], hrend[1] / 1000000);
-    console.info('   ' + parse);
-    hrstart = process.hrtime();
-    let result = parse.length ? this.createVisitor(context, opts).start(tree) : '';
-    hrend = process.hrtime(hrstart);
-    console.info('Visit time (hr): %ds %dms', hrend[0], hrend[1] / 1000000);
-    let res = (pre + ' ' + result + ' ' + post).trim();
-    return res;
+  preParse(input, opts = {}) {
+    let parse = input, pre = '', post = '';
+    if (!opts.skipPreParse) {
+      const re = /[()$|]/;
+      const words = input.split(/ +/);
+      let preIdx = 0, postIdx = words.length - 1;
+      while (preIdx < words.length) {
+        if (re.test(words[preIdx])) break;
+        preIdx++;
+      }
+      if (preIdx < words.length) {
+        while (postIdx >= 0) {
+          if (re.test(words[preIdx])) break;
+          postIdx--;
+        }
+      }
+      pre = words.slice(0, preIdx).join(' ');
+      parse = words.slice(preIdx, postIdx + 1).join(' ');
+      post = words.slice(postIdx + 1).join(' ');
+    }
+    return { pre, parse, post };
   }
 
   lexParseVisit(input, context, opts) {
+
+    let { pre, parse, post } = this.preParse(input, opts);
+    //console.log("\nPRE: " + pre,"PARSE: " + parse, "POST: " + post, "\n");
+    let tree = parse.length && this.lexParse(parse, opts);
+    let result = parse.length ? this.createVisitor(context, opts).start(tree) : '';
+    return (this.normalize(pre) + ' ' + result + ' ' + this.normalize(post)).trim();
+  }
+
+  lexParseVisitOrig(input, context, opts) {
     let tree = this.lexParse(input, opts);
     return this.createVisitor(context, opts).start(tree);;
+  }
+
+  normalize(s) {
+    return s && s.length ?
+      s.replace(/\r/, '')
+        .replace(/\\n/, '')
+        .replace(/\n/, ' ') : '';
   }
 
   createVisitor(context, opts) {

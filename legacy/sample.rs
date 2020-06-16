@@ -1,5 +1,5 @@
 {
-    "start" : "<li>$template$</li>",
+    "start" : "<li>$template</li>",
 
     "template" : "$teen",
     "templateORig": "child | teen | college | adult | event",
@@ -50,7 +50,7 @@
     
     "weeks" : "days | weeks | a month",
     
-    "teenSpring" : "`capitalize('$jrSr')` $theWorst.",
+    "teenSpring" : "$jrSr.capitalize() $theWorst.",
     
     "jrSr" : "junior year | senior year | being a sophomore",
     
