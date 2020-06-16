@@ -38,13 +38,12 @@ class Grammar {
 
   expand(rule = 'start', context, opts) {
 
-    /// TODO: test with missing args
+    // TODO: test with missing args (check all cases)
     if (arguments.length && typeof arguments[0] !== 'string') {
       context = rule;
       opts = context;
       rule = 'start';
     }
-    let trace = opts && opts.trace;    
     let ctx = deepmerge(context, this.rules);
     if (rule.startsWith('$')) rule = rule.substring(1);
     if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');

@@ -168,18 +168,20 @@ class Visitor extends RiScriptVisitor {
         this.trace && (tfs += transform); // debugging
         let comps = transform.split('.');
         for (let j = 1; j < comps.length; j++) {
-          if (comps[j].endsWith(Visitor.FUNCTION)) {
-            comps[j] = comps[j].substring(0, comps[j].length - 2);
-            if (typeof term[comps[j]] === 'function') {
-              term = term[comps[j]]();
+          if (comps[j].length) {
+            if (comps[j].endsWith(Visitor.FUNCTION)) {
+              comps[j] = comps[j].substring(0, comps[j].length - 2);
+              if (typeof term[comps[j]] === 'function') {
+                term = term[comps[j]]();
+              }
+              else {
+                throw Error('Expecting ' + term + '.' + comps[j] + ' to be a function');
+              }
+            } else if (term.hasOwnProperty(comps[j])) { // property
+              term = term[comps[j]];
+            } else {
+              term = term + '.' + comps[j]; // no-op
             }
-            else {
-              throw Error('Expecting ' + term + '.' + comps[j] + ' to be a function');
-            }
-          } else if (term.hasOwnProperty(comps[j])) { // property
-            term = term[comps[j]];
-          } else {
-            term = term + '.' + comps[j]; // no-op
           }
         }
       }

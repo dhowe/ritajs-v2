@@ -170,8 +170,8 @@ describe('RiTa.Grammar', () => {
             tmpl: "$jrSr.capitalize()",
             jrSr: "(junior|junior)"
         });
-        eq(rg.expand({ trace: 0 }), "Junior"); 
-
+        eq(rg.expand({ trace: 1 }), "Junior"); 
+return;
         rg = new Grammar({
             start: "$r.capitalize()",
             r: "(a|a)"

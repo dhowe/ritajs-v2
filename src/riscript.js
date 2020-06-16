@@ -158,7 +158,7 @@ class RiScript {
     return { pre, parse, post };
   }
 
-  lexParseVisit(input, context, opts) { // TODO: remove after profiling
+  lexParseVisitNew(input, context, opts) { // TODO: remove after profiling
     console.log('----------------------------------------------');
     console.log('PARSE: ' + input);
     let { pre, parse, post } = this.preParse(input, opts);
@@ -179,7 +179,7 @@ class RiScript {
     return res;
   }
 
-  lexParseVisitREAL(input, context, opts) {
+  lexParseVisit(input, context, opts) {
     let tree = this.lexParse(input, opts);
     return this.createVisitor(context, opts).start(tree);;
   }

@@ -369,6 +369,8 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve symbols in context', () => {
 
+      expect(RiTa.evaluate('$a.capitalize()', { a: '(terrier | terrier)' }, { trace: 0 })).eq('Terrier');
+  
       expect(RiTa.evaluate('the $dog ate', { dog: 'terrier' }, { trace: 0 })).eq('the terrier ate');
       expect(RiTa.evaluate('the $dog $verb', { dog: 'terrier', verb: 'ate' }, { trace: 0 })).eq('the terrier ate');
 
