@@ -38,6 +38,11 @@ describe('RiTa.KnownIssues', () => {
   });
 });
 
+/* VERB REMOVAL
+"arbitrate":["aa1-r b-ah t-r-ey-t","vb"],
+"arbitrating":["aa1-r b-ah t-r-ey t-ih-ng","vbg"],
+*/
+
 function eql(output, expected, msg) { expect(output).eql(expected, msg); }
 function ok(res, msg) { expect(res).eq(true, msg); }
 function eq(a, b, msg) { expect(a).eq(b, msg); }

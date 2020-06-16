@@ -15,18 +15,26 @@ class RiScript {
     this.appliedTransforms = {};
   }
 
+  static addTransform(name, func) {
+    RiScript.transforms[name] = func;
+  }
+
+  static getTransforms() {
+    return Object.keys(RiScript.transforms);
+  }
+
   static eval(input, ctx = {}, opts = {}) {
-    
+
     let onepass = opts.singlePass; // TODO: doc
     let last = input, trace = opts.trace;
     let rs = new RiScript().pushTransforms();
     let expr = rs.lexParseVisit(input, ctx, opts);
-    if (!onepass || /(\$[A-Za-z_]|[()])/.test(expr)) {
+    if (!onepass && /(\$[A-Za-z_]|[()])/.test(expr)) {
       for (let i = 0; i < MaxTries && expr !== last; i++) {
         last = expr;
         if (!expr) break;
         expr = rs.lexParseVisit(expr, ctx, opts);
-        trace && console.log(i + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
+        trace && console.log('\nPass#' + (i + 1) + ') ' + expr, 'ctx: ' + JSON.stringify(ctx));
         if (i >= MaxTries - 1) throw Error('Unable to resolve: "'
           + input + '" after ' + MaxTries + ' tries - an infinite loop?');
       }
@@ -35,10 +43,6 @@ class RiScript {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
     }
     return rs.popTransforms().resolveEntities(expr);
-  }
-
-  static addTransform(name, func) {
-    RiScript.transforms[name] = func;
   }
 
   pushTransforms() {
@@ -124,9 +128,60 @@ class RiScript {
     return this.parse(tokens, input, opts);
   }
 
-  lexParseVisit(input, context, opts) {
+  preParse(input, opts) {
+    function countPre(words) {
+      let i = 0;
+      while (i < words.length) {
+        if (/[()$]/.test(words[i])) break;
+        i++;
+      }
+      return i;
+    }
+    function countPost(words) {
+      let i = words.length - 1;
+      while (i >= 0) {
+        if (/[()$]/.test(words[i])) break;
+        i--;
+      }
+      return i;
+    }
+    let parse = input, pre = '', post = '';
+    if (!opts || !opts.skipPreParse) {
+      const words = input.split(/ +/);
+      const preIdx = countPre(words);
+      const postIdx = preIdx < words.length ? countPost(words) : words.length;
+      
+      pre = words.slice(0, preIdx).join(' ');
+      parse = words.slice(preIdx, postIdx + 1).join(' ');
+      post = words.slice(postIdx + 1).join(' ');
+    }
+    return { pre, parse, post };
+  }
+
+  lexParseVisit(input, context, opts) { // TODO: remove after profiling
+    console.log('----------------------------------------------');
+    console.log('PARSE: ' + input);
+    let { pre, parse, post } = this.preParse(input, opts);
+    console.log("\nPRE: " + pre);
+    console.log("PARSE: " + parse);
+    console.log("POST: " + post, "\n");
+
+    let hrstart = process.hrtime();
+    let tree = parse.length && this.lexParse(parse, opts);
+    let hrend = process.hrtime(hrstart);
+    console.info('Parse time (hr): %ds %dms', hrend[0], hrend[1] / 1000000);
+    console.info('   ' + parse);
+    hrstart = process.hrtime();
+    let result = parse.length ? this.createVisitor(context, opts).start(tree) : '';
+    hrend = process.hrtime(hrstart);
+    console.info('Visit time (hr): %ds %dms', hrend[0], hrend[1] / 1000000);
+    let res = (pre + ' ' + result + ' ' + post).trim();
+    return res;
+  }
+
+  lexParseVisitREAL(input, context, opts) {
     let tree = this.lexParse(input, opts);
-    return this.createVisitor(context, opts).start(tree);
+    return this.createVisitor(context, opts).start(tree);;
   }
 
   createVisitor(context, opts) {

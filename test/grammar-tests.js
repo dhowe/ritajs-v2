@@ -162,6 +162,23 @@ describe('RiTa.Grammar', () => {
         rg.addRule("$pet", "(dog).toUpperCase()");
         eq(rg.expand(), "DOG");
     });
+    
+    it("should handle symbol transforms", () => {
+
+        let rg = new Grammar({
+            start: "$tmpl",
+            tmpl: "$jrSr.capitalize()",
+            jrSr: "(junior|junior)"
+        });
+        eq(rg.expand({ trace: 0 }), "Junior"); 
+
+        rg = new Grammar({
+            start: "$r.capitalize()",
+            r: "(a|a)"
+        });
+        eq(rg.expand({ trace: 0 }), "A");
+
+    });
 
     it("should correctly handle special characters", () => {
         let rg, res, s;

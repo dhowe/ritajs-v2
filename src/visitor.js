@@ -138,13 +138,13 @@ class Visitor extends RiScriptVisitor {
       if (term === Visitor.EOF) return '';
       term = term.replace(/\r/, ''); // normalise
       term = term.replace(/\\n/, ''); // continuations
-      term = term.replace(/\r?\n/, ' '); // no line-breaks
+      term = term.replace(/\n/, ' '); // no line-breaks
 
-      this.trace && console.log('visitTerminal: "'
-        + term + '" tfs=[' + (tfs || '') + ']');
+      this.trace && /\S/.test(term) && console.log
+        ('visitTerminal: "' + term + '" tfs=[' + (tfs || '') + ']');
 
       // Handle unresolved symbols
-      if (/\$[A-Za-z_][A-Za-z_0-9-]*/.test(term)) { 
+      if (/\$[A-Za-z_][A-Za-z_0-9-]*/.test(term)) {
         return term + (tfs ? tfs.reduce((acc, val) => acc +
           (typeof val === 'string' ? val : val.getText()), '') : '');
       }

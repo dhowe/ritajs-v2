@@ -252,6 +252,7 @@ describe('RiTa.RiScript', () => {
     it('Should correctly handle transforms on literals', function () {
       expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many "teeth" do you have?');
       expect(RiTa.evaluate('That is (ant).articlize().')).eq('That is an ant.');
+      expect(RiTa.evaluate('That is an (ant).capitalize().')).eq('That is an Ant.');
     });
     /*     it.only('Should handle silents', () => {
           expect(RiTa.evaluate('The $hero=blue (dog | dog)', ctx = {}, {trace:0})).eq('The blue dog');
@@ -519,20 +520,24 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$foo=().toUpperCase()', ctx, { trace: 0 })).eq('');
       expect(ctx.foo).eq('');
 
-
       expect(RiTa.evaluate('(a).toUpperCase()')).eq('A');
       expect(RiTa.evaluate('((a)).toUpperCase()', 0, { trace: 0 })).eq('A');
       expect(RiTa.evaluate('(a | b).toUpperCase()')).to.be.oneOf(['A', 'B']);
+      expect(RiTa.evaluate('(a | a).capitalize()')).eq('A');
       expect(RiTa.evaluate("The (boy | boy).toUpperCase() ate.")).eq('The BOY ate.');
       expect(RiTa.evaluate('How many (tooth | tooth).pluralize() do you have?')).eq('How many teeth do you have?');
     });
 
     it('Should handle symbol transforms', () => {
       expect(RiTa.evaluate('$dog.toUpperCase()', { dog: 'spot' }, { trace: 0 })).eq('SPOT');
+      expect(RiTa.evaluate('$dog.capitalize()', { dog: 'spot' }, { trace: 0 })).eq('Spot');
+      expect(RiTa.evaluate('($dog).capitalize()', { dog: 'spot' }, { trace: 0 })).eq('Spot');
       expect(RiTa.evaluate('$dog.toUpperCase()', {}, { silent: 1 })).eq('$dog.toUpperCase()');
       expect(RiTa.evaluate('The $dog.toUpperCase()', { dog: 'spot' })).eq('The SPOT');
       expect(RiTa.evaluate("The (boy | boy).toUpperCase() ate.")).eq('The BOY ate.');
       expect(RiTa.evaluate("The (girl).toUpperCase() ate.")).eq('The GIRL ate.');
+      expect(RiTa.evaluate("<li>$start</li>\n$start=($jrSr).capitalize()\n$jrSr=(junior|junior)"))
+        .eq("<li>Junior</li>");
     });
 
     it('Should parse object properties', () => {
@@ -590,6 +595,14 @@ describe('RiTa.RiScript', () => {
       expect(rs).eq('baz');
     });
 
+    it('Should handle pre-parsing', () => {
+      let ctx = { nothing: 'NOTHING', hang: 'HANG' };
+      let input = "Eve near Vancouver, Washington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
+      let rs = RiTa.evaluate(input, ctx, { skipPreParse: 0 });
+      //console.log('OUTPUT: '+rs);
+      expect(rs).eq(input.replace('$hang', 'HANG').replace('$nothing', 'NOTHING'));
+    });
+
     it('Should evaluate symbols with a transform', () => {
       let rs = RiTa.evaluate('$foo=$bar.toUpperCase()\n$bar=baz\n$foo', {}, { trace: 0 });
       expect(rs).eq('BAZ');
@@ -597,9 +610,19 @@ describe('RiTa.RiScript', () => {
       let ctx = {};
       expect(RiTa.evaluate('$foo=().toUpperCase()', ctx, 0)).eq('');
       expect(ctx.foo).eq('');
+
+      expect(RiTa.evaluate('$foo.capitalize()\n$foo=(a|a)')).eq('A');
+      expect(RiTa.evaluate('$start=$r.capitalize()\n$r=(a|a)\n$start', {}, { trace: 0 })).eq('A');
     });
 
     it('Should evaluate symbols even with property transform', () => {
+      let context = { bar: { ucf: 'result' } };
+      let rs = RiTa.evaluate('$foo=$bar.ucf\n$foo', context, { trace: 0 });
+      expect(rs).eq('result');
+    });
+
+
+    it('Should do preparsing', () => {
       let context = { bar: { ucf: 'result' } };
       let rs = RiTa.evaluate('$foo=$bar.ucf\n$foo', context, { trace: 0 });
       expect(rs).eq('result');
@@ -616,8 +639,7 @@ describe('RiTa.RiScript', () => {
     });*/
 
     it('Should evaluate post-defined symbols with transforms', () => {
-      let rs = RiTa.evaluate('$foo=$bar.toLowerCase().ucf()\n$bar=baz\n$foo', {}, { trace: 0 });
-      expect(rs).eq('Baz');
+      expect(RiTa.evaluate('$foo=$bar.toLowerCase().ucf()\n$bar=baz\n$foo', {}, { trace: 0 })).eq('Baz');
     });
 
     it('Should eval converted grammar', () => {

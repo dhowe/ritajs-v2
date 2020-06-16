@@ -17,8 +17,8 @@ class Grammar {
       try {
         rules = JSON.parse(rules);
       } catch (e) {
-        err('Grammar appears to be invalid JSON, please check'
-          + ' it at http://jsonlint.com/', grammar);
+        console.warn('Grammar appears to be invalid JSON, please check'
+          + ' it at http://jsonlint.com/', rules);
         return this;
       }
     }
@@ -37,24 +37,23 @@ class Grammar {
   }
 
   expand(rule = 'start', context, opts) {
-    let trace = opts && opts.trace;
 
-    /// TODO: texst with missing args
+    /// TODO: test with missing args
     if (arguments.length && typeof arguments[0] !== 'string') {
-      context = ruleName;
+      context = rule;
       opts = context;
-      ruleName = null;
+      rule = 'start';
     }
+    let trace = opts && opts.trace;    
     let ctx = deepmerge(context, this.rules);
     if (rule.startsWith('$')) rule = rule.substring(1);
-    Object.keys(ctx).forEach(r => ctx[r] = RiScript.eval(ctx[r], ctx, { trace }));
     if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
-    return ctx[rule];
+    return RiScript.eval(ctx[rule], ctx, opts);
   }
 
-  toString() { // TODO
+  toString(lb='\n') { // TODO
     let s = '';
-    Object.keys(rules).forEach(r => s += r + ':' + rules[r] + '\n');
+    Object.keys(rules).forEach(r => s += r + ':' + rules[r] + lb);
     return s;
   }
 
@@ -65,6 +64,9 @@ class Grammar {
     }
     return this;
   }
+
+  addTransform() { return RiScript.addTransform(...arguments); }
+  transforms() { return RiScript.getTransforms(); }
 }
 
 function joinChoice(arr) {
