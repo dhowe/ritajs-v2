@@ -122,7 +122,7 @@ class Visitor extends RiScriptVisitor {
     */
 
     // TODO: if we an object here and a transform, we should 
-    // attempt to resolve it immediately ***
+    // attempt to resolve it immediately *** CASE?
 
     return this.visitTerminal(textContext);
   }
@@ -143,8 +143,9 @@ class Visitor extends RiScriptVisitor {
       this.trace && console.log('visitTerminal: "'
         + term + '" tfs=[' + (tfs || '') + ']');
 
-      // Handle unresolved symbols
-      if (/\$[A-Za-z_][A-Za-z_0-9-]*/.test(term)) { 
+      // Handle unresolved symbols/groups by re-appending
+      // transforms to be resolved in next pass
+      if (/([()]|\$[A-Za-z_][A-Za-z_0-9-]*)/.test(term)) {
         return term + (tfs ? tfs.reduce((acc, val) => acc +
           (typeof val === 'string' ? val : val.getText()), '') : '');
       }

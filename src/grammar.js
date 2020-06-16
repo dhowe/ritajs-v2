@@ -41,9 +41,9 @@ class Grammar {
 
     /// TODO: texst with missing args
     if (arguments.length && typeof arguments[0] !== 'string') {
-      context = ruleName;
+      context = rule;
       opts = context;
-      ruleName = null;
+      rule = 'start';
     }
     let ctx = deepmerge(context, this.rules);
     if (rule.startsWith('$')) rule = rule.substring(1);

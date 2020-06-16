@@ -162,7 +162,7 @@ describe('RiTa.Grammar', () => {
         rg.addRule("$pet", "(dog).toUpperCase()");
         eq(rg.expand(), "DOG");
     });
-
+    
     it("should correctly handle special characters", () => {
         let rg, res, s;
 
