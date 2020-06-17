@@ -261,7 +261,7 @@ describe('RiTa.RiScript', () => {
     it('Should evaluate inline assigns to vars', () => {
       let rs, ctx;
 
-      rs = RiTa.evaluate('[$stored=$name] is called $stored', ctx = { name: '(Dave | Dave)' }, {trace:0});
+      rs = RiTa.evaluate('[$stored=$name] is called $stored', ctx = { name: '(Dave | Dave)' }, {trace:1});
       expect(rs).eq("Dave is called Dave");
       expect(ctx.stored).eq('Dave');
 

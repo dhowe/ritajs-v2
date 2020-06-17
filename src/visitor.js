@@ -55,22 +55,41 @@ class Visitor extends RiScriptVisitor {
     let id = symbolName(ctx.symbol().getText());
     this.trace && console.log('visitAssign: '
       + id + '=' + this.flatten(token) + ']');
-    this.context[id] = token ? this.visit(token) : '';
+    this.context[id] = this.visit(token);
     return ''; // no output on vanilla assign
   }
 
   /* output expr value and create a mapping in the symbol table */
   visitInline(ctx) {
     //this.visitAssign(ctx);
+    let orig = ctx.getText();
     let token = ctx.expr();
+    let tokText = token.getText();
     let id = symbolName(ctx.symbol().getText());
     token.transforms = this.inheritTransforms(token, ctx);
-    if (token && /\$/.test(token.getText())) {
-      //console.log('\nHIT***: '+this.flatten(token)+"\n");
-      return this.context[id] = token.getText(); // TODO: append transforms
-    }
+    
     this.trace && console.log('visitInline: ' + id + '=' +
       this.flatten(token) + ' tfs=[' + (token.transforms || '') + ']');
+    
+    if (false && token && /(\$|[()])/.test(tokText)) {
+      console.log('REVERT: '+orig+'\n');
+ 
+      //let re = /\$[A-Za-z_][A-Za-z_0-9-]*/g;
+      /*let syms = tokText.matchAll(re);
+      for (const match of syms) {
+        let text = match[0];
+        let sym = { text, getText: () => text };
+        let symContext = { SYM: () => sym, transform: () => [] };
+        console.log("SYM: " + symContext.SYM().getText(), typeof symContext.SYM().getText());
+        symContext.transforms = ctx.transforms || [];
+        ctx.transform().map(t => symContext.transforms.push(t.getText()));
+        let result = this.visitSymbol(symContext);
+        console.log("SYM-RESULT: " + result);
+      }*/
+      
+      return orig; // TODO: append transforms
+    }
+
     //let result = token ? this.visit(token) : '';
     //this.context[id] = /\$/.test(token.getText()) ? token.getText() : this.visit(token);//token.getText();//result;
     this.context[id] = this.visit(token);
@@ -106,12 +125,10 @@ class Visitor extends RiScriptVisitor {
   /* simply visit the resolved symbol, don't reparse */
   visitSymbol(ctx) {
 
-    let ident = ctx.SYM().getText()
-      .replace(/^\$/, ''); // strip $
-
+    let ident = ctx.SYM().getText().replace(/^\$/, ''); // strip $
     let text = this.context[ident] || '$' + ident;
 
-    // hack
+    // hack to pass transforms along to visitTerminal
     let textContext = { text, getText: () => text };
     textContext.transforms = ctx.transforms || [];
     ctx.transform().map(t => textContext.transforms.push(t.getText()));
@@ -121,11 +138,14 @@ class Visitor extends RiScriptVisitor {
       + ident + '\']=' + textContext.text);
 
     let resolution = this.visitTerminal(textContext);
+    if (false && /[\$()]/.test(resolution)) { // cannot resolve yet
+      return '$' + ident;
+    }
     //if (resolution === '$'+ident) throw Error("Rec");
 
-    if (!/[\$()]/.test(resolution)) {
+    /*if (!/[\$()]/.test(resolution)) {
       
-      // WORKING HERE: ytg 'Should evaluate inline assigns to vars'
+      // WORKING HERE: $ ytg 'Should evaluate inline assigns to vars'
       // before updating need to make sure resolution doesnt contain $()
       
       // problem is how to retroactively resolve variables in context??
@@ -145,7 +165,7 @@ class Visitor extends RiScriptVisitor {
         }
       }
 
-    }
+    }*/
     return resolution;
   }
 
@@ -162,7 +182,7 @@ class Visitor extends RiScriptVisitor {
       term = this.parent.normalize(term);
 
       this.trace && /\S/.test(term) && console.log
-        ('visitTerminal: "' + term + '" tfs=[' + (tfs || '') + ']');
+        ('visitTerminal("' + term + '") tfs=[' + (tfs || '') + ']');
 
       // Handle unresolved symbols and groups by simply
       // re-appending transforms to be handled in next pass
@@ -176,6 +196,10 @@ class Visitor extends RiScriptVisitor {
         + JSON.stringify(term) + '" tfs=[' + (tfs || '') + ']');
     }
     return this.handleTransforms(term, tfs);
+  }
+
+  isParseable(s) {
+    return /([()]|\$[A-Za-z_][A-Za-z_0-9-]*)/.test(s);
   }
 
   /* run the transforms and return the results */

@@ -29,13 +29,26 @@ class RiScript {
     let last = input, trace = opts.trace;
     let rs = new RiScript().pushTransforms();
     let expr = rs.lexParseVisit(input, ctx, opts);
-    trace && console.log('\nPass#1: ' + expr);//, 'ctx: ' + JSON.stringify(ctx));
+    trace && console.log('\nInput1: ' + input + '\nResult1: '
+      + expr + '\nContext1:' + JSON.stringify(ctx));
+
     if (!onepass && /(\$[A-Za-z_]|[()])/.test(expr)) {
-      for (let i = 0; i < MaxTries && expr !== last; i++) {
+      for (let i = 0; i < MaxTries; i++) {
+        if (expr === last) { // no progress
+          Object.keys(ctx).forEach(key => {
+
+            // NEXT: lexParseVisit each context element to resolve
+            // **************************************************
+          });
+        }
         last = expr;
         if (!expr) break;
         expr = rs.lexParseVisit(expr, ctx, opts);
-        trace && console.log('\nPass#' + (i + 2) + ' ' + expr);//, 'ctx: ' + JSON.stringify(ctx));
+
+        trace && console.log('\nPass#' + (i + 2) + ': ' + expr 
+          + '\n-------------------------------------------------------\n');
+          //, 'ctx: ' + JSON.stringify(ctx));
+        
         if (i >= MaxTries - 1) throw Error('Unable to resolve: "'
           + input + '" after ' + MaxTries + ' tries - an infinite loop?');
       }
@@ -127,36 +140,6 @@ class RiScript {
   lexParse(input, opts) {
     let tokens = this.lex(input, opts);
     return this.parse(tokens, input, opts);
-  }
-
-  preParseOrig(input, opts) {
-    function countPre(words) {
-      let i = 0;
-      while (i < words.length) {
-        if (/[()$]/.test(words[i])) break;
-        i++;
-      }
-      return i;
-    }
-    function countPost(words) {
-      let i = words.length - 1;
-      while (i >= 0) {
-        if (/[()$]/.test(words[i])) break;
-        i--;
-      }
-      return i;
-    }
-    let parse = input, pre = '', post = '';
-    if (!opts || !opts.skipPreParse) {
-      const words = input.split(/ +/);
-      const preIdx = countPre(words);
-      const postIdx = preIdx < words.length ? countPost(words) : words.length;
-
-      pre = words.slice(0, preIdx).join(' ');
-      parse = words.slice(preIdx, postIdx + 1).join(' ');
-      post = words.slice(postIdx + 1).join(' ');
-    }
-    return { pre, parse, post };
   }
 
   preParse(input, opts = {}) {
