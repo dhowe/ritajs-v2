@@ -10,16 +10,6 @@ require('fs').readFile('./legacy/pandemic.rs', 'utf-8', (e, data) => {
   console.info('\nExecution time (hr): %ds %dms', hrend[0], hrend[1] / 1000000)
 });
 
-function remember(word) {
-  gr.addRule("<remember>", word);
-  return word;
-}
-
-function forget(rule) {
-  gr.removeRule("<remember>");
-  return rule;
-}
-
 /* Converter
   1. brackets
   2. parenthesize Ors

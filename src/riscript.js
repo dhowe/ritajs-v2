@@ -33,18 +33,10 @@ class RiScript {
       + expr + '\nContext1:' + JSON.stringify(ctx));
 
     if (!onepass && /(\$[A-Za-z_]|[()])/.test(expr)) {
-      for (let i = 0; i < MaxTries; i++) {
-        if (expr === last) { // no progress
-          Object.keys(ctx).forEach(key => {
-
-            // NEXT: lexParseVisit each context element to resolve
-            // **************************************************
-          });
-        }
+      for (let i = 0; i < MaxTries && expr !== last; i++) {
         last = expr;
         if (!expr) break;
         expr = rs.lexParseVisit(expr, ctx, opts);
-
         trace && console.log('\nPass#' + (i + 2) + ': ' + expr 
           + '\n-------------------------------------------------------\n');
           //, 'ctx: ' + JSON.stringify(ctx));

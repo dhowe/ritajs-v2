@@ -70,6 +70,7 @@ describe('RiTa.RiScript', () => {
       ctx = { a: 'a', b: 'b' };
       expr = '(a|a)';
       expect(RiTa.evaluate(expr, ctx)).eq('a');
+      
       //expect(RiTa.evaluate('foo.bar', {}, {trace:0})).eq('foo.bar'); // KNOWN ISSUE
     });
 
@@ -258,14 +259,17 @@ describe('RiTa.RiScript', () => {
 
   describe('Inline', () => {
 
+    // BIG ISSUE HERE re: pandemic.js
     it('Should evaluate inline assigns to vars', () => {
       let rs, ctx;
 
-      rs = RiTa.evaluate('[$stored=$name] is called $stored', ctx = { name: '(Dave | Dave)' }, {trace:1});
+  /*  rs = RiTa.evaluate('[$stored=$name] is called $stored', ctx = { name: '(Dave | Dave)' }, {trace:0});
       expect(rs).eq("Dave is called Dave");
       expect(ctx.stored).eq('Dave');
+ */
+      ctx = { name: '(Dave1 | Dave2)' };
+      rs = RiTa.evaluate('$name=(Dave1 | Dave2)\n[$stored=$name] is $stored', ctx={}, { trace: 0 });
 
-      return;
       rs = RiTa.evaluate('$name=(Dave1 | Dave2)\n[$stored=$name] is $stored', ctx = {}, { trace: 0 });
       expect(ctx.stored).to.be.oneOf(['Dave1', 'Dave2']);
       expect(rs).to.be.oneOf(['Dave1 is Dave1', 'Dave2 is Dave2']);
@@ -273,11 +277,12 @@ describe('RiTa.RiScript', () => {
       rs = RiTa.evaluate('[$stored=(Dave1 | Dave2)] is $stored', ctx = {}, { trace: 0 });
       expect(ctx.stored).to.be.oneOf(['Dave1', 'Dave2']);
       expect(rs).to.be.oneOf(['Dave1 is Dave1', 'Dave2 is Dave2']);
-      
-      ctx = { name: '(Dave1 | Dave2)' };
-      rs = RiTa.evaluate('$name=(Dave1 | Dave2)\n[$stored=$name] is $stored', {}, {trace:1});
+
       expect(ctx.stored).to.be.oneOf(['Dave1', 'Dave2']);
       expect(rs).to.be.oneOf(['Dave1 is Dave1', 'Dave2 is Dave2']);
+
+      rs = RiTa.evaluate('$name=(Dave | Dave)\n[$stored=$name] is called $stored', {}, { trace: 0 });
+      expect(rs).eq("Dave is called Dave");
     });
 
     it('Should evaluate basic inline assigns', () => {

@@ -29,7 +29,9 @@ class Grammar {
   addRule(name, rule) {
     if (name.startsWith('$')) name = name.substring(1);
     if (Array.isArray(rule)) rule = joinChoice(rule);
-    if (/[|\[\]]/.test(rule) && !(/^\(.*\)$/.test(rule))) {
+
+    // TODO: better regex here: if '|' happens before '('
+    if (/\|/.test(rule) && !(/^\(.*\)$/.test(rule))) {
       rule = '(' + rule + ')';
     }
     this.rules[name] = rule;

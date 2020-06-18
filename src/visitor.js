@@ -21,6 +21,7 @@ class Visitor extends RiScriptVisitor {
   constructor(parent, context, opts) {
     super();
     this.parent = parent;
+    this.pendingSymbols = [];
     this.context = context || {};
     this.trace = opts && opts.trace;
   }
@@ -67,33 +68,19 @@ class Visitor extends RiScriptVisitor {
     let tokText = token.getText();
     let id = symbolName(ctx.symbol().getText());
     token.transforms = this.inheritTransforms(token, ctx);
-    
+
     this.trace && console.log('visitInline: ' + id + '=' +
       this.flatten(token) + ' tfs=[' + (token.transforms || '') + ']');
-    
-    if (false && token && /(\$|[()])/.test(tokText)) {
-      console.log('REVERT: '+orig+'\n');
- 
-      //let re = /\$[A-Za-z_][A-Za-z_0-9-]*/g;
-      /*let syms = tokText.matchAll(re);
-      for (const match of syms) {
-        let text = match[0];
-        let sym = { text, getText: () => text };
-        let symContext = { SYM: () => sym, transform: () => [] };
-        console.log("SYM: " + symContext.SYM().getText(), typeof symContext.SYM().getText());
-        symContext.transforms = ctx.transforms || [];
-        ctx.transform().map(t => symContext.transforms.push(t.getText()));
-        let result = this.visitSymbol(symContext);
-        console.log("SYM-RESULT: " + result);
-      }*/
-      
-      return orig; // TODO: append transforms
-    }
 
-    //let result = token ? this.visit(token) : '';
-    //this.context[id] = /\$/.test(token.getText()) ? token.getText() : this.visit(token);//token.getText();//result;
     this.context[id] = this.visit(token);
-    this.trace &&console.log('visitInline2: ' + id + '=' +this.context[id]);
+    this.trace && console.log('visitInline2: $' + id + '=' + this.context[id]);
+
+    // if the inline is not fully resolved, save it for next time
+    if (/(\$|[()])/.test(this.context[id])) {
+      this.pendingSymbols.push(id);
+      //console.log('HIT', rs, this.pendingSymbols);
+      return orig.replace(tokText, this.context[id]);
+    }
     return this.context[id];
   }
 
@@ -126,6 +113,10 @@ class Visitor extends RiScriptVisitor {
   visitSymbol(ctx) {
 
     let ident = ctx.SYM().getText().replace(/^\$/, ''); // strip $
+
+    // the symbol is pending so just return it
+    if (this.pendingSymbols.includes(ident)) return '$' + ident;
+
     let text = this.context[ident] || '$' + ident;
 
     // hack to pass transforms along to visitTerminal
@@ -133,7 +124,7 @@ class Visitor extends RiScriptVisitor {
     textContext.transforms = ctx.transforms || [];
     ctx.transform().map(t => textContext.transforms.push(t.getText()));
 
-    this.trace && console.log('visitSymbol($' + ident+')'
+    this.trace && console.log('visitSymbol($' + ident + ')'
       + ' tfs=[' + (textContext.transforms || '') + '] ctx[\''
       + ident + '\']=' + textContext.text);
 
