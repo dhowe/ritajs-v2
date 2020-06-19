@@ -15,8 +15,16 @@ class RiScript {
     this.appliedTransforms = {};
   }
 
-  static addTransform(name, func) {
-    RiScript.transforms[name] = func;
+  static addTransform(name, func) { // DOC: object case
+    let obj = {};
+    if (typeof name === 'string') obj[name] = func;
+    Object.keys(obj).forEach(k => RiScript.transforms[k] = obj[k]);
+  }
+
+  static removeTransform(name) {
+    let obj = {};
+    if (typeof name === 'string') obj[name] = 1;
+    Object.keys(obj).forEach(k => delete RiScript.transforms[k]);
   }
 
   static getTransforms() {
@@ -25,12 +33,17 @@ class RiScript {
 
   static eval(input, ctx = {}, opts = {}) {
 
+    // make sure we have RiTa in context
+    if (ctx && !ctx.hasOwnProperty('RiTa')) {
+      ctx.RiTa = RiScript.RiTa;
+    }
+
     let onepass = opts.singlePass; // TODO: doc
     let last = input, trace = opts.trace;
     let rs = new RiScript().pushTransforms();
     let expr = rs.lexParseVisit(input, ctx, opts);
     trace && console.log('\nInput1: ' + input + '\nResult1: '
-      + expr + '\nContext1:' + JSON.stringify(ctx));
+      + expr + '\nContext1:' + JSON.stringify(ctx).substring(0,1000)+'...');
 
     if (!onepass && /(\$[A-Za-z_]|[()])/.test(expr)) {
       for (let i = 0; i < MaxTries && expr !== last; i++) {

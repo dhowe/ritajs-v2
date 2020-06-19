@@ -1,5 +1,6 @@
 {
-    "start": "<li>$template </li>",
+    "start": "().randomPerson()",
+    "startX": "<li>$template </li>",
     "template": "$child | $teen | $college | $adult | $event",
     
     "child": "[$chosen=$person] $childVariation. $chosen $misses. $wistful",

@@ -8,7 +8,12 @@ describe('RiTa.KnownIssues', () => {
     console.log(RiTa.evaluate('$s', { s: '$a', a: '$s' }));
     expect(() => RiTa.evaluate('$s', { s: '$a', a: '$s' })).to.throw();
   });
-  
+
+  it('Should handle RiTa function transforms with args', () => {
+    expect(RiTa.evaluate('Is $RiTa.presentParticiple("lie") wrong?',
+       {}, { trace: 1, singlePass: 1 })).eq("Is lying wrong?");
+  });
+
   0 && it('1: pluralize or singularize fails', () => { 
     let testPairs = [  ]; // SS FAILING ITEMS HERE
     let res1, res2, res3, i = 0, dbug = true;

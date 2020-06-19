@@ -366,8 +366,6 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate(inp, ctx)).eq(out);
     });
 
-
-
     it('Should assign a silent variable to code', () => {
       /*       expect(RiTa.evaluate('A [$stored=($animal | $animal)] is a mammal', { animal: 'dog' }, {trace:0})).eq('A dog is a mammal');
             expect(RiTa.evaluate('[$b=(a | a).toUpperCase()] dog is a $b.', 0, {trace:0})).eq('A dog is a A.'); */
@@ -550,6 +548,26 @@ describe('RiTa.RiScript', () => {
       expect(() => RiTa.evaluate('a.toUpperCase()', 0, { silent: 1 })).to.throw();
     });
 
+    it('Should handle add/remove transforms', () => {
+      let orig = RiTa.getTransforms().length;
+      RiTa.addTransform('capA', () => 'A');
+      RiTa.removeTransform('capA');
+      expect(RiTa.getTransforms().length).eq(orig);
+    });
+
+    it('Should handle no-input transforms', () => {
+      RiTa.addTransform('capA', () => 'A');
+      expect(RiTa.evaluate('().capA()', 0, { trace: 0 })).eq('A');
+      RiTa.removeTransform('capA');
+    });
+
+    // TODO: should also look in context
+
+    it('Should handle RiTa function transforms', () => {
+      expect(RiTa.evaluate('Does $RiTa.env() equal node?',
+         {}, { trace: 0 })).eq("Does node equal node?");
+    });
+    
     it('Should handle choice transforms', () => {
 
       let ctx = {};
