@@ -209,7 +209,7 @@ class RiScript {
 /// Prefixes the string with 'a' or 'an' as appropriate.
 /// </summary>
 function articlize() {
-  return ("aeiou".indexOf(this[0].toLowerCase() > -1) ? "an " : "a ") + this;
+  return ("aeiou".indexOf(this[0].toLowerCase()) > -1 ? "an" : "a") + ' ' + this;
 }
 
 /// <summary>

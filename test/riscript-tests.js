@@ -583,6 +583,7 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle symbol transforms', () => {
+
       expect(RiTa.evaluate('$dog.toUpperCase()', { dog: 'spot' }, { trace: 0 })).eq('SPOT');
       expect(RiTa.evaluate('$dog.capitalize()', { dog: 'spot' }, { trace: 0 })).eq('Spot');
       expect(RiTa.evaluate('($dog).capitalize()', { dog: 'spot' }, { trace: 0 })).eq('Spot');
@@ -590,6 +591,11 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('The $dog.toUpperCase()', { dog: 'spot' })).eq('The SPOT');
       expect(RiTa.evaluate("The (boy | boy).toUpperCase() ate.")).eq('The BOY ate.');
       expect(RiTa.evaluate("The (girl).toUpperCase() ate.")).eq('The GIRL ate.');
+      expect(RiTa.evaluate('$dog.articlize().capitalize()', { dog: 'spot' }, { trace: 0 })).eq('A spot');
+      expect(RiTa.evaluate('[$a=$dog] $a.articlize().capitalize()', { dog: 'spot' })).eq('spot A spot');
+      expect(RiTa.evaluate('[$a=$dog] $a.articlize().capitalize()', { dog: 'abe' })).eq('abe An abe');
+      expect(RiTa.evaluate('(abe | abe).articlize().capitalize()', { dog: 'abe' })).eq('An abe');
+      expect(RiTa.evaluate('(abe | abe).capitalize().articlize()', { dog: 'abe' })).eq('an Abe');
       expect(RiTa.evaluate("<li>$start</li>\n$start=($jrSr).capitalize()\n$jrSr=(junior|junior)"))
         .eq("<li>Junior</li>");
     });
