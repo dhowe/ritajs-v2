@@ -9,6 +9,10 @@ describe('RiTa.KnownIssues', () => {
     expect(() => RiTa.evaluate('$s', { s: '$a', a: '$s' })).to.throw();
   });
 
+  it('Should throw on bad transforms', () => {
+    expect(() => RiTa.evaluate('a.toUpperCase()', 0, { silent: 1, trace: 1 })).to.throw();
+  });
+
   it('Should handle RiTa function transforms with args', () => {
     expect(RiTa.evaluate('Is $RiTa.presentParticiple("lie") wrong?',
        {}, { trace: 1, singlePass: 1 })).eq("Is lying wrong?");

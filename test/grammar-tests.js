@@ -1,4 +1,3 @@
-const { expect } = require('chai');
 
 const Grammar = RiTa.Grammar;
 describe('RiTa.Grammar', () => {

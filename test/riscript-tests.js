@@ -544,9 +544,7 @@ describe('RiTa.RiScript', () => {
 
 
   describe('Transform', () => {
-    it('Should throw on bad transforms', () => {
-      expect(() => RiTa.evaluate('a.toUpperCase()', 0, { silent: 1 })).to.throw();
-    });
+   
 
     it('Should handle add/remove transforms', () => {
       let orig = RiTa.getTransforms().length;
@@ -556,7 +554,9 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle no-input transforms', () => {
+
       RiTa.addTransform('capA', () => 'A');
+      expect(RiTa.evaluate('.capA()', 0, { trace: 0 })).eq('A');
       expect(RiTa.evaluate('().capA()', 0, { trace: 0 })).eq('A');
       RiTa.removeTransform('capA');
     });

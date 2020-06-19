@@ -4,7 +4,6 @@ const Visitor = require('./visitor');
 const Lexer = require('../grammar/.antlr/RiScriptLexer');
 const Parser = require('../grammar/.antlr/RiScriptParser');
 const { LexerErrors, ParserErrors } = require('./errors');
-const MaxTries = 100;
 
 class RiScript {
 
@@ -13,22 +12,6 @@ class RiScript {
     this.parser = undefined;
     this.visitor = undefined;
     this.appliedTransforms = {};
-  }
-
-  static addTransform(name, func) { // DOC: object case
-    let obj = {};
-    if (typeof name === 'string') obj[name] = func;
-    Object.keys(obj).forEach(k => RiScript.transforms[k] = obj[k]);
-  }
-
-  static removeTransform(name) {
-    let obj = {};
-    if (typeof name === 'string') obj[name] = 1;
-    Object.keys(obj).forEach(k => delete RiScript.transforms[k]);
-  }
-
-  static getTransforms() {
-    return Object.keys(RiScript.transforms);
   }
 
   static eval(input, ctx = {}, opts = {}) {
@@ -46,16 +29,14 @@ class RiScript {
       + expr + '\nContext1:' + JSON.stringify(ctx).substring(0,1000)+'...');
 
     if (!onepass && /(\$[A-Za-z_]|[()])/.test(expr)) {
-      for (let i = 0; i < MaxTries && expr !== last; i++) {
+      for (let i = 0; i < RiScript.MAX_TRIES && expr !== last; i++) {
         last = expr;
         if (!expr) break;
         expr = rs.lexParseVisit(expr, ctx, opts);
         trace && console.log('\nPass#' + (i + 2) + ': ' + expr 
-          + '\n-------------------------------------------------------\n');
-          //, 'ctx: ' + JSON.stringify(ctx));
-        
-        if (i >= MaxTries - 1) throw Error('Unable to resolve: "'
-          + input + '" after ' + MaxTries + ' tries - an infinite loop?');
+          + '\n-------------------------------------------------------\n');        
+        if (i >= RiScript.MAX_TRIES - 1) throw Error('Unable to resolve: "'
+          + input + '" after ' + RiScript.MAX_TRIES + ' tries. An infinite loop?');
       }
     }
     if (!opts.silent && !RiScript.RiTa.SILENT && /\$[A-Za-z_]/.test(expr)) {
@@ -199,6 +180,27 @@ class RiScript {
     return decode(result.replace(/ +/g, ' '))
       .replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
   }
+
+  static addTransform(name, func) { // DOC: object case
+    if (typeof name === 'string') {
+      return RiScript.transforms[name] = func;
+    }
+    Object.keys(name).forEach(k => {
+      RiScript.transforms[k] = name[k];
+    }); 
+  }
+
+  static removeTransform(name) { // DOC:
+    let obj = {};
+    if (typeof name === 'string') {
+      return delete RiScript.transforms[name];
+    }
+    Object.keys(name).forEach(k => delete RiScript.transforms[k]);
+  }
+
+  static getTransforms() { // DOC:
+    return Object.keys(RiScript.transforms);
+  }
 }
 
 // -------------------- Default Transforms ----------------------
@@ -237,9 +239,10 @@ function quotify() {
 function pluralize() {
   if (this.indexOf(' ') > -1) throw Error
     ('pluralize expected a single word, got "' + this + '"');
-  return RiTa.pluralize(this);
+  return RiScript.RiTa.pluralize(this);
 }
 
+RiScript.MAX_TRIES = 100;
 RiScript.transforms = { capitalize, articlize, quotify, pluralize, qq: quotify, uc: toUpper, ucf: capitalize };
 
 module && (module.exports = RiScript);

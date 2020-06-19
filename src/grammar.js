@@ -66,8 +66,9 @@ class Grammar {
     return this;
   }
 
-  addTransform() { return RiScript.addTransform(...arguments); }
-  transforms() { return RiScript.getTransforms(); }
+  addTransform() { RiScript.addTransform(...arguments); return this }
+  removeTransform() { RiScript.removeTransform(...arguments); return this }
+  getTransforms() { return RiScript.getTransforms(); }
 }
 
 function joinChoice(arr) {

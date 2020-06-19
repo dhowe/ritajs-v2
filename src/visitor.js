@@ -56,7 +56,7 @@ class Visitor extends RiScriptVisitor {
     this.trace && console.log('visitChoice: ' + this.flatten(token),
       "tfs=" + (token.transforms && token.transforms.length || "[]"));
 
-    // 2nd half is to handle ().func() transforms (needed?)
+    // 2nd half is to handle ().func() transforms (TODO: Remove when no longer needed -> use .func() instead?)
     return token.getText().length ? this.visit(token)
       : this.handleTransforms('', token.transforms);
   }
@@ -110,10 +110,15 @@ class Visitor extends RiScriptVisitor {
 
 
 
-  /* simply visit the resolved symbol, don't reparse */
+  /* visit the resolved symbol */
   visitSymbol(ctx) {
 
-    let ident = ctx.SYM().getText().replace(/^\$/, ''); // strip $
+    let ident = ctx.SYM();
+    if (!ident) { // hack: for blank .func() cases
+      //console.log('HIT', ctx.transform().length);
+      return this.handleTransforms('', ctx.transform());
+    }
+    ident = ident.getText().replace(/^\$/, ''); // strip $
 
     // the symbol is pending so just return it
     if (this.pendingSymbols.includes(ident)) return '$' + ident;
