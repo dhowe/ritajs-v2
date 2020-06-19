@@ -498,6 +498,13 @@ describe('RiTa.RiScript', () => {
       expect(() => RiTa.evaluate('(a | b) | c', 0, { silent: 1 })).to.throw();
     });
 
+    it('Should handle multi-word choices', () => {
+      expect(RiTa.evaluate('(A B | A B)')).eq('A B');
+      expect(RiTa.evaluate('(A B).toLowerCase()')).eq('a b');
+      expect(RiTa.evaluate('(A B | A B).toLowerCase()', 0, { trace: 0 })).eq('a b');
+      expect(RiTa.evaluate('(A B | A B).articlize()', 0, { trace: 0 })).eq('an A B');
+    });
+
     it('Should parse/select choices', () => {
       expect(RiTa.evaluate('(|)')).eq('');
       expect(RiTa.evaluate('(a)')).eq('a');
@@ -544,7 +551,7 @@ describe('RiTa.RiScript', () => {
 
 
   describe('Transform', () => {
-   
+
 
     it('Should handle add/remove transforms', () => {
       let orig = RiTa.getTransforms().length;
@@ -565,9 +572,9 @@ describe('RiTa.RiScript', () => {
 
     it('Should handle RiTa function transforms', () => {
       expect(RiTa.evaluate('Does $RiTa.env() equal node?',
-         {}, { trace: 0 })).eq("Does node equal node?");
+        {}, { trace: 0 })).eq("Does node equal node?");
     });
-    
+
     it('Should handle choice transforms', () => {
 
       let ctx = {};
@@ -596,6 +603,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('[$a=$dog] $a.articlize().capitalize()', { dog: 'abe' })).eq('abe An abe');
       expect(RiTa.evaluate('(abe | abe).articlize().capitalize()', { dog: 'abe' })).eq('An abe');
       expect(RiTa.evaluate('(abe | abe).capitalize().articlize()', { dog: 'abe' })).eq('an Abe');
+      expect(RiTa.evaluate('(Abe Lincoln).articlize().capitalize()', { dog: 'abe' }, { trace: 0 })).eq('An Abe Lincoln');
       expect(RiTa.evaluate("<li>$start</li>\n$start=($jrSr).capitalize()\n$jrSr=(junior|junior)"))
         .eq("<li>Junior</li>");
     });

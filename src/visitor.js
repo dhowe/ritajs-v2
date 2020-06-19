@@ -79,8 +79,9 @@ class Visitor extends RiScriptVisitor {
   }
 
   visitExpr(ctx) {
-    //this.trace && console.log('visitExpr(' + ctx.getText() + ')',"tfs=" + (ctx.transforms || "[]"));
-    return this.visitChildren(ctx);
+    this.trace && console.log('visitExpr("' + ctx.getText() + '"): tfs=' + (ctx.transforms || "[]"));//  ctx.children[0]);
+    let result = this.visitChildren(ctx);
+    return result;
   }
 
 
@@ -268,11 +269,18 @@ class Visitor extends RiScriptVisitor {
   }
 
   visitChildren(ctx) {
-    //console.log('visitChildren: '+ctx.getText());
-    return ctx.children ? ctx.children.reduce((acc, child) => {
+    if (!ctx.children) return ''; 
+    //console.log('visitChildren: "'+ctx.getText()+'"', ctx.transforms, ctx.children.length, ctx.constructor.name);
+
+    // we don't want characters to be split up before applying tgransforms
+    if (ctx.constructor.name === 'CharsContext') { // yuck
+      return this.handleTransforms(ctx.getText(), ctx.transforms);
+    }
+    
+    return ctx.children.reduce((acc, child) => {
       child.transforms = ctx.transforms;//typeof ctx.transform === 'function' ? this.inheritTransforms(child, ctx) : ctx.transforms;
       return acc + this.visit(child);
-    }, '') : '';
+    }, '');
   }
 }
 
