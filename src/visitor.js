@@ -270,10 +270,11 @@ class Visitor extends RiScriptVisitor {
 
   visitChildren(ctx) {
     if (!ctx.children) return ''; 
-    //console.log('visitChildren: "'+ctx.getText()+'"', ctx.transforms, ctx.children.length, ctx.constructor.name);
+    //console.log('visitChildren: "'+ctx.getText()+'"', ctx.transforms);
 
-    // we don't want characters to be split up before applying tgransforms
-    if (ctx.constructor.name === 'CharsContext') { // yuck
+    // we don't want characters to be split up before applying transforms
+    if (ctx.ruleIndex === RiScriptParser.RULE_chars) { // hrmm
+      //console.log("HIT", ctx.constructor.name, ctx.ruleIndex);
       return this.handleTransforms(ctx.getText(), ctx.transforms);
     }
     

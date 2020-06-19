@@ -81,7 +81,7 @@ describe('RiTa.Lexicon', function () {
         console.warn("Pluralize/Singularize problem: randomWord(nns) was '" + result + "' (" +
           "isPlural=" + RiTa.inflector.isPlural(result) + "), singularized is '" + RiTa.singularize(result) + "'");
       }
-      //expect(RiTa._isPlural(result), "randomWord nns: " + result).to.be.true;
+      // TODO: occasional problem here, examples: beaux
 
       //No nn & vbg, No -ness, -ism
       let pos = RiTa.lexicon()._posData(result);
