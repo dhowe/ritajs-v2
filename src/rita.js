@@ -31,6 +31,14 @@ class RiTa {
     return RiScript.addTransform(...arguments);
   }
 
+  static removeTransform() {
+    return RiScript.removeTransform(...arguments);
+  }
+
+  static getTransforms() {
+    return RiScript.getTransforms();
+  }
+
   static alliterations() {
     return RiTa.lexicon().alliterations(...arguments);
   }

@@ -279,7 +279,7 @@ describe('RiTa.Lexicon', function () {
         syllables = RiTa.syllables(result);
         expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
         expect(RiTa.isNoun(result)).eq(true, fail(result, 'nns'));
-        // was failing occasionally: proves, torpedoes, strives,  times - should be fixed now
+        // TODO: still failing occasionally on: proves, torpedoes, strives, times, etc.
 
         result = RiTa.randomWord({ numSyllables: 5, pos: "nns" });
         expect(result.length > 0, "randomWord nns: " + result).to.be.true;

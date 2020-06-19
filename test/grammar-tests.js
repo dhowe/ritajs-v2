@@ -1,3 +1,4 @@
+
 const Grammar = RiTa.Grammar;
 describe('RiTa.Grammar', () => {
 
@@ -34,6 +35,40 @@ describe('RiTa.Grammar', () => {
 
     it('should correctly call constructor', () => {
         ok(typeof new Grammar() !== 'undefined');
+    });
+
+    it('should correctly resolve inlines', () => {
+        let rg, rs;
+
+        rg = new Grammar({
+            "start": "[$chosen=$person] talks to $chosen.",
+            "person": "Dave | Jill | Pete"
+        });
+        rs = rg.expand({ trace: 0 });
+        //console.log(rs);
+        expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
+
+        rg = new Grammar({
+            "start": "[$chosen=$person] talks to $chosen.",
+            "person": "$Dave | $Jill | $Pete",
+            "Dave": "Dave",
+            "Jill": "Jill",
+            "Pete": "Pete",
+        });
+        rs = rg.expand({ trace: 0 });
+        //console.log(rs);
+        expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
+
+        rg = new Grammar({
+            "start": "[$chosen=$person] talks to $chosen.",
+            "person": "$Dave | $Jill | $Pete",
+            "Dave": "Dave | Jill | Pete",
+            "Jill": "Dave | Jill | Pete",
+            "Pete": "Dave | Jill | Pete",
+        });
+        rs = rg.expand({ trace: 0 });
+        //console.log(rs);
+        expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
     });
 
     it("should correctly call setRules", () => {
@@ -115,7 +150,7 @@ describe('RiTa.Grammar', () => {
 
     it("should correctly call expand.weights", () => {
         let rg = new Grammar();
-        rg.addRule("$start", "$rule1 [3]");
+        rg.addRule("$start", "$rule1");
         rg.addRule("$rule1", "cat | dog | boy");
         let found1 = false;
         let found2 = false;
@@ -136,7 +171,7 @@ describe('RiTa.Grammar', () => {
         rg.addRule("$start", "$pet");
         rg.addRule("$pet", "$bird [9] | $mammal");
         rg.addRule("$bird", "hawk");
-        rg.addRule("$mammal", "dog [2]");
+        rg.addRule("$mammal", "dog");
 
         eq(rg.expand("$mammal"), "dog");
 
@@ -162,7 +197,24 @@ describe('RiTa.Grammar', () => {
         rg.addRule("$pet", "(dog).toUpperCase()");
         eq(rg.expand(), "DOG");
     });
-    
+
+    it("should handle symbol transforms", () => {
+
+        let rg = new Grammar({
+            start: "$tmpl",
+            tmpl: "$jrSr.capitalize()",
+            jrSr: "(junior|junior)"
+        });
+        eq(rg.expand({ trace: 0 }), "Junior");
+
+        rg = new Grammar({
+            start: "$r.capitalize()",
+            r: "(a|a)"
+        });
+        eq(rg.expand({ trace: 0 }), "A");
+
+    });
+
     it("should correctly handle special characters", () => {
         let rg, res, s;
 

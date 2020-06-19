@@ -17,8 +17,8 @@ class Grammar {
       try {
         rules = JSON.parse(rules);
       } catch (e) {
-        err('Grammar appears to be invalid JSON, please check'
-          + ' it at http://jsonlint.com/', grammar);
+        console.warn('Grammar appears to be invalid JSON, please check'
+          + ' it at http://jsonlint.com/', rules);
         return this;
       }
     }
@@ -29,7 +29,9 @@ class Grammar {
   addRule(name, rule) {
     if (name.startsWith('$')) name = name.substring(1);
     if (Array.isArray(rule)) rule = joinChoice(rule);
-    if (/[|\[\]]/.test(rule) && !(/^\(.*\)$/.test(rule))) {
+
+    // TODO: better regex here: if '|' happens before '('
+    if (/\|/.test(rule) && !(/^\(.*\)$/.test(rule))) {
       rule = '(' + rule + ')';
     }
     this.rules[name] = rule;
@@ -37,9 +39,8 @@ class Grammar {
   }
 
   expand(rule = 'start', context, opts) {
-    let trace = opts && opts.trace;
 
-    /// TODO: texst with missing args
+    // TODO: test with missing args (check all cases)
     if (arguments.length && typeof arguments[0] !== 'string') {
       context = rule;
       opts = context;
@@ -47,14 +48,13 @@ class Grammar {
     }
     let ctx = deepmerge(context, this.rules);
     if (rule.startsWith('$')) rule = rule.substring(1);
-    Object.keys(ctx).forEach(r => ctx[r] = RiScript.eval(ctx[r], ctx, { trace }));
     if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
-    return ctx[rule];
+    return RiScript.eval(ctx[rule], ctx, opts);
   }
 
-  toString() { // TODO
+  toString(lb='\n') { // TODO
     let s = '';
-    Object.keys(rules).forEach(r => s += r + ':' + rules[r] + '\n');
+    Object.keys(rules).forEach(r => s += r + ':' + rules[r] + lb);
     return s;
   }
 
@@ -65,6 +65,10 @@ class Grammar {
     }
     return this;
   }
+
+  addTransform() { RiScript.addTransform(...arguments); return this }
+  removeTransform() { RiScript.removeTransform(...arguments); return this }
+  getTransforms() { return RiScript.getTransforms(); }
 }
 
 function joinChoice(arr) {

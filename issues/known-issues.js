@@ -4,6 +4,20 @@ const RiScript = require('../src/riscript');
 
 describe('RiTa.KnownIssues', () => {
 
+  it('Should throw on infinite recursions', () => {
+    console.log(RiTa.evaluate('$s', { s: '$a', a: '$s' }));
+    expect(() => RiTa.evaluate('$s', { s: '$a', a: '$s' })).to.throw();
+  });
+
+  it('Should throw on bad transforms', () => {
+    expect(() => RiTa.evaluate('a.toUpperCase()', 0, { silent: 1, trace: 1 })).to.throw();
+  });
+
+  it('Should handle RiTa function transforms with args', () => {
+    expect(RiTa.evaluate('Is $RiTa.presentParticiple("lie") wrong?',
+       {}, { trace: 1, singlePass: 1 })).eq("Is lying wrong?");
+  });
+
   0 && it('1: pluralize or singularize fails', () => { 
     let testPairs = [  ]; // SS FAILING ITEMS HERE
     let res1, res2, res3, i = 0, dbug = true;
@@ -37,6 +51,11 @@ describe('RiTa.KnownIssues', () => {
     expect(ctx.a).eq('A')
   });
 });
+
+/* VERB REMOVAL
+"arbitrate":["aa1-r b-ah t-r-ey-t","vb"],
+"arbitrating":["aa1-r b-ah t-r-ey t-ih-ng","vbg"],
+*/
 
 function eql(output, expected, msg) { expect(output).eql(expected, msg); }
 function ok(res, msg) { expect(res).eq(true, msg); }

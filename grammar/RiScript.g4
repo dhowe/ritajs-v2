@@ -20,9 +20,8 @@ chars: (
 		| ENT
 		| INT
 	)+;
-symbol: SYM transform*;
+symbol: SYM transform* | transform+;
 wexpr: expr? weight?;
-//wexpr: prod? weight?;
 transform: TF;
 op: OP | (LT | GT | EQ);
 
