@@ -59,7 +59,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('foo', {}, { trace: 0 })).eq('foo');
       expect(RiTa.evaluate('foo.', {}, { trace: 0 })).eq('foo.');
       expect(RiTa.evaluate('"foo"', {}, { trace: 0 })).eq('"foo"');
-      expect(RiTa.evaluate("'foo'", {}, { trace: 0 })).eq("'foo'"); 
+      expect(RiTa.evaluate("'foo'", {}, { trace: 0 })).eq("'foo'");
       expect(RiTa.evaluate('foo\nbar', {}, { trace: 0 })).eq('foo bar');
       expect(RiTa.evaluate('foo&#10;bar', {}, { trace: 0 })).eq('foo\nbar');
       expect(RiTa.evaluate('$foo=bar \\nbaz\n$foo', {}, { trace: 0 })).eq('bar baz'); ``
@@ -70,7 +70,7 @@ describe('RiTa.RiScript', () => {
       ctx = { a: 'a', b: 'b' };
       expr = '(a|a)';
       expect(RiTa.evaluate(expr, ctx)).eq('a');
-      
+
       //expect(RiTa.evaluate('foo.bar', {}, {trace:0})).eq('foo.bar'); // KNOWN ISSUE
     });
 
@@ -259,16 +259,14 @@ describe('RiTa.RiScript', () => {
 
   describe('Inline', () => {
 
-    // BIG ISSUE HERE re: pandemic.js
     it('Should evaluate inline assigns to vars', () => {
       let rs, ctx;
 
-  /*  rs = RiTa.evaluate('[$stored=$name] is called $stored', ctx = { name: '(Dave | Dave)' }, {trace:0});
-      expect(rs).eq("Dave is called Dave");
-      expect(ctx.stored).eq('Dave');
- */
+      rs = RiTa.evaluate('$person=(a | b | c)\n[$a=$person] is $a', context, { trace: 0 });
+      expect(rs).to.be.oneOf(['a is a', 'b is b', 'c is c']);
+
       ctx = { name: '(Dave1 | Dave2)' };
-      rs = RiTa.evaluate('$name=(Dave1 | Dave2)\n[$stored=$name] is $stored', ctx={}, { trace: 0 });
+      rs = RiTa.evaluate('$name=(Dave1 | Dave2)\n[$stored=$name] is $stored', ctx = {}, { trace: 0 });
 
       rs = RiTa.evaluate('$name=(Dave1 | Dave2)\n[$stored=$name] is $stored', ctx = {}, { trace: 0 });
       expect(ctx.stored).to.be.oneOf(['Dave1', 'Dave2']);
@@ -312,7 +310,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$stored=(a | a)\n($stored).toUpperCase() dog is a mammal', ctx)).eq(exp);
       expect(ctx.stored).eq('a');
 
-      expect(RiTa.evaluate('[$stored=(a | a)] dog is a mammal', ctx={}, { trace: 0 })).eq(exp.toLowerCase());
+      expect(RiTa.evaluate('[$stored=(a | a)] dog is a mammal', ctx = {}, { trace: 0 })).eq(exp.toLowerCase());
       expect(ctx.stored).eq('a');
     });
 
@@ -336,7 +334,7 @@ describe('RiTa.RiScript', () => {
       let result = RiTa.evaluate('[$stored=(a | b)]', context);
       expect(result).to.be.oneOf(['a', 'b']);
       expect(context.stored).eq(result);
-      let result2 = RiTa.evaluate('[$a=$stored]', context, {trace:0});
+      let result2 = RiTa.evaluate('[$a=$stored]', context, { trace: 0 });
       //console.log('result2', result2, context.a);
       expect(context.a).eq(result2);
       expect(result2).eq(context.stored);
@@ -368,7 +366,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate(inp, ctx)).eq(out);
     });
 
-   
+
 
     it('Should assign a silent variable to code', () => {
       /*       expect(RiTa.evaluate('A [$stored=($animal | $animal)] is a mammal', { animal: 'dog' }, {trace:0})).eq('A dog is a mammal');
@@ -390,6 +388,11 @@ describe('RiTa.RiScript', () => {
           expect(() => RiTa.evaluate('$', 0, {silent:1})).to.throw();
         });
      */
+    0 && it('Should throw for riscript in context symbol', () => { // TODO: is there a use-case here?
+      expect(() => RiTa.evaluate('[$stored=$name] is called $stored',
+        ctx = { name: '(Dave | Dave)' }, { trace: 1 })).to.throw();
+    });
+
     it('Should eval linebreak-defined variables', () => {
       let res;
       res = RiTa.evaluate('$foo=hello\n$start=I said $foo to her\n$start', {}, { trace: 0 });
@@ -401,7 +404,7 @@ describe('RiTa.RiScript', () => {
     it('Should resolve symbols in context', () => {
 
       expect(RiTa.evaluate('$a.capitalize()', { a: '(terrier | terrier)' }, { trace: 0 })).eq('Terrier');
-  
+
       expect(RiTa.evaluate('the $dog ate', { dog: 'terrier' }, { trace: 0 })).eq('the terrier ate');
       expect(RiTa.evaluate('the $dog $verb', { dog: 'terrier', verb: 'ate' }, { trace: 0 })).eq('the terrier ate');
 
@@ -449,7 +452,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$bar', { foo: 'baz', bar: '(A | A)' }, 1)).eq('A');
       expect(RiTa.evaluate('$bar', { foo: 'baz', bar: '$foo starts with (b | b)' }, 1)).eq('baz starts with b');
       expect(RiTa.evaluate('$start=$foo\n$foo=hello\n$start')).eq('hello');
-      expect(RiTa.evaluate('$start = $noun\n$noun = hello\n$start')).eq('hello'); 
+      expect(RiTa.evaluate('$start = $noun\n$noun = hello\n$start')).eq('hello');
     });
 
     it('Should resolve symbols from context', () => {
@@ -581,7 +584,7 @@ describe('RiTa.RiScript', () => {
 
     it('Should call member function', () => {
       let dog = { name: 'Spot', getColor: () => 'red' };
-      expect(RiTa.evaluate("$dog.name was a $dog.getColor() dog.", 
+      expect(RiTa.evaluate("$dog.name was a $dog.getColor() dog.",
         { dog })).eq('Spot was a red dog.');
     });
 
@@ -640,7 +643,7 @@ describe('RiTa.RiScript', () => {
       input = "Eve near Vancouver,\nWashington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
       rs = RiTa.evaluate(input, ctx, { skipPreParse: 0 });
       expect(rs).eq(input.replace('$hang', 'HANG').replace('$nothing', 'NOTHING').replace('\n', ' '));
-      
+
       input = "Eve&nbsp;near Vancouver";
       rs = RiTa.evaluate(input, ctx, { skipPreParse: 0 });
       expect(rs).eq("Eve near Vancouver");

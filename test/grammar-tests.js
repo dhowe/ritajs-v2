@@ -59,7 +59,7 @@ describe('RiTa.Grammar', () => {
         rs = rg.expand({ trace: 0 });
         //console.log(rs);
         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
-        
+
         rg = new Grammar({
             "start": "[$chosen=$person] talks to $chosen.",
             "person": "$Dave | $Jill | $Pete",

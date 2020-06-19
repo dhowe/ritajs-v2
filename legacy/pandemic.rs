@@ -1,6 +1,5 @@
 {
-    "startX": "<li>$template </li>",
-    "start": "[$chosen=$person] talks. $chosen talks.",
+    "start": "<li>$template </li>",
     "template": "$child | $teen | $college | $adult | $event",
     
     "child": "[$chosen=$person] $childVariation. $chosen $misses. $wistful",
