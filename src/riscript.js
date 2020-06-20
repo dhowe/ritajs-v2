@@ -11,18 +11,20 @@ class RiScript {
     this.lexer = undefined;
     this.parser = undefined;
     this.visitor = undefined;
-    this.appliedTransforms = {};
+    this.appliedTransforms = [];
   }
 
-  static eval(input, ctx = {}, opts = {}) {
+  static eval(input, ctx, opts = {}) {
 
+    ctx = ctx || {};
+    
     // make sure we have RiTa in context
-    if (ctx && !ctx.hasOwnProperty('RiTa')) {
+    if (!ctx.hasOwnProperty('RiTa')) {
       ctx.RiTa = RiScript.RiTa;
     }
     let onepass = opts.singlePass; // TODO: doc
     let last = input, trace = opts.trace;
-    let rs = new RiScript().pushTransforms();
+    let rs = new RiScript().pushTransforms(ctx);
     let expr = rs.lexParseVisit(input, ctx, opts);
     trace && console.log('\nInput1: ' + input + '\nResult1: '
       + expr + '\nContext: [' + Object.keys(ctx) + ']');
@@ -41,26 +43,25 @@ class RiScript {
     if (!opts.silent && !RiScript.RiTa.SILENT && /\$[A-Za-z_]/.test(expr)) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
     }
-    return rs.popTransforms().resolveEntities(expr);
+    return rs.popTransforms(ctx).resolveEntities(expr);
   }
 
-  pushTransforms() {
+  pushTransforms(ctx) {
     Object.keys(RiScript.transforms).forEach(t => {
-      this.appliedTransforms[t] = String.prototype[t];
-      String.prototype[t] = RiScript.transforms[t];
+      if (!ctx.hasOwnProperty(t)) {
+        ctx[t] = RiScript.transforms[t];
+        this.appliedTransforms.push(t);
+      }
     });
     return this;
   }
 
-  popTransforms() {
-    Object.keys(RiScript.transforms).forEach(t => {
-      String.prototype[t] = this.appliedTransforms[t];
-    });
+  popTransforms(ctx) {
+    this.appliedTransforms.forEach(t => delete ctx[t]);
     return this;
   }
 
   lex(input, opts) {
-
     // create the lexer
     let stream = new antlr4.InputStream(input);
     this.lexer = new Lexer.RiScriptLexer(stream);
@@ -117,8 +118,7 @@ class RiScript {
         ("PARSER: '" + input + '\'\n' + e.message + '\n'));
       throw e;
     }
-    if (trace) console.log(tree.toStringTree(this.parser.ruleNames), '\n');
-
+    trace && console.log(tree.toStringTree(this.parser.ruleNames) + '\n');
     return tree;
   }
 
@@ -179,27 +179,27 @@ class RiScript {
     return decode(result.replace(/ +/g, ' '))
       .replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
   }
-
-  static addTransform(name, func) { // DOC: object case
-    if (typeof name === 'string') {
-      return RiScript.transforms[name] = func;
+  /* 
+    static addTransform(name, func) { // DOC: object case
+      if (typeof name === 'string') {
+        return RiScript.transforms[name] = func;
+      }
+      Object.keys(name).forEach(k => {
+        RiScript.transforms[k] = name[k];
+      });
     }
-    Object.keys(name).forEach(k => {
-      RiScript.transforms[k] = name[k];
-    });
-  }
-
-  static removeTransform(name) { // DOC:
-    let obj = {};
-    if (typeof name === 'string') {
-      return delete RiScript.transforms[name];
+  
+    static removeTransform(name) { // DOC:
+      let obj = {};
+      if (typeof name === 'string') {
+        return delete RiScript.transforms[name];
+      }
+      Object.keys(name).forEach(k => delete RiScript.transforms[k]);
     }
-    Object.keys(name).forEach(k => delete RiScript.transforms[k]);
-  }
-
-  static getTransforms() { // DOC:
-    return Object.keys(RiScript.transforms);
-  }
+  
+    static getTransforms() { // DOC:
+      return Object.keys(RiScript.transforms);
+    } */
 }
 
 // -------------------- Default Transforms ----------------------
@@ -207,38 +207,38 @@ class RiScript {
 /// <summary>
 /// Prefixes the string with 'a' or 'an' as appropriate.
 /// </summary>
-function articlize() {
-  return RiScript.RiTa.articlize(this.toString());
+function articlize(s) {
+  return RiScript.RiTa.articlize(s);
 }
 
 /// <summary>
 /// Capitalizes the first character.
 /// </summary>
-function capitalize() {
-  return this[0].toUpperCase() + this.substring(1);
+function capitalize(s) {
+  return s[0].toUpperCase() + s.substring(1);
 }
 
 /// <summary>
 /// Capitalizes the first character.
 /// </summary>
-function toUpper() {
-  return this.toUpperCase();
+function toUpper(s) {
+  return s.toUpperCase();
 }
 
 /// <summary>
 /// Wraps the given string in double-quotes.
 /// </summary>
-function quotify() {
-  return "&quot;" + this + "&quot;";
+function quotify(s) {
+  return "&quot;" + s + "&quot;";
 }
 
 /// <summary>
 /// Pluralizes the word according to english regular/irregular rules.
 /// </summary>
-function pluralize() {
-  if (this.indexOf(' ') > -1) throw Error
-    ('pluralize expected a single word, got "' + this + '"');
-  return RiScript.RiTa.pluralize(this.toString());
+function pluralize(s) {
+  if (s.indexOf(' ') > -1) throw Error
+    ('pluralize expected a single word, got "' + s + '"');
+  return RiScript.RiTa.pluralize(s);
 }
 
 RiScript.MAX_TRIES = 100;
