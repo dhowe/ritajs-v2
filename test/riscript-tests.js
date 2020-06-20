@@ -561,14 +561,15 @@ describe('RiTa.RiScript', () => {
 
   describe('Transform', () => {
 
-    /*     it('Should handle add transforms', () => {
-          let orig = RiTa.getTransforms().length;
-          //RiTa.addTransform('capA', () => 'A');
-          expect(RiTa.getTransforms().length).eq(orig + 1);
-          expect(RiTa.evaluate('.capA()', 0, { trace: 0 })).eq('A');
-          expect(RiTa.evaluate('(b).capA()', 0, { trace: 0 })).eq('A');
-        });
-     */
+    it('Should handle add transforms', () => {
+      
+      let orig = RiTa.addTransform('capA', () => 'A').length;
+      expect(RiTa.evaluate('.capA()', 0, { trace: 0 })).eq('A');
+      expect(RiTa.evaluate('(b).capA()', 0, { trace: 0 })).eq('A');
+      let post = RiTa.addTransform('capA').length;
+      expect(post).eq(orig);
+    });
+
     it('Should use transforms in context', () => {
       let ctx = { 'capB': (s) => s || 'B' };
       expect(RiTa.evaluate('.capB()', ctx, { trace: 0 })).eq('B');
@@ -577,10 +578,12 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle no-input transforms', () => {
-      //RiTa.addTransform('capA', () => 'A');
       let ctx = { 'capA': () => 'A' };
       expect(RiTa.evaluate('.capA()', ctx, { trace: 0 })).eq('A');
-      //expect(RiTa.evaluate('().capA()', ctx, { trace: 0 })).eq('A');
+
+      RiTa.addTransform('capA', () => 'A');
+      expect(RiTa.evaluate('.capA()', {}, { trace: 0 })).eq('A');
+      RiTa.addTransform('capA');
     });
 
     it('Should handle RiTa function transforms', () => {

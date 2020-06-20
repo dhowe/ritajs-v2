@@ -182,8 +182,9 @@ class RiScript {
     return /([()]|\$[A-Za-z_][A-Za-z_0-9-]*)/.test(s);
   }
 
-  static addTransform(name, func) {
+  static addTransform(name, func) { // DOC:
     RiScript.transforms[name] = func;
+    return RiScript.transforms;
   }
 
   /* 

@@ -304,12 +304,13 @@ RiTa.IMPERATIVE = 3;
 RiTa.BARE_INFINITIVE = 4;
 RiTa.SUBJUNCTIVE = 5;
 
+RiTa.FEATURES = ['TOKENS', 'STRESSES', 'PHONES', 'SYLLABLES', 'POS', 'TEXT'];
+
 // For tokenization, Can't -> Can not, etc.
 RiTa.SPLIT_CONTRACTIONS = false;
 
 // Set to false to reduce memory (likely slower)
 RiTa.CACHING = true;
 
-RiTa.FEATURES = ['TOKENS', 'STRESSES', 'PHONES', 'SYLLABLES', 'POS', 'TEXT'];
 
 module && (module.exports = RiTa);
