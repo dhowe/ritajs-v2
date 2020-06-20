@@ -86,13 +86,13 @@ class PosTagger {
         continue;
       }
 
-      if (word.length == 1) {
+      if (word.length === 1) {
         result.push(this._handleSingleLetter(word));
         continue;
       }
 
-      choices2d[i] = this.posOptions(word);//, fatal);
-      result.push(choices2d[i][0]);
+      choices2d[i] = this.posOptions(word);
+      result.push(choices2d[i][0] || '');
     }
 
     // Adjust pos according to transformation rules
@@ -214,15 +214,17 @@ class PosTagger {
     for (let i = 0, l = words.length; i < l; i++) {
 
       let word = words[i], tag = result[i];
-
-      if (!tag) throw Error('unexpected state');
+      if (!tag) {
+        tag = '';
+        if (!RiTa.SILENT) console.warn
+          ('[WARN] unexpected state in tagger._applyContext');
+      }
 
       // transform 1a: DT, {VBD | VBP | VB} --> DT, NN
       if (i > 0 && (result[i - 1] === "dt")) {
 
         if (tag.startsWith("vb")) {
           tag = "nn";
-
           // transform 7: if a word has been categorized as a
           // common noun and it ends with "s", then set its type to plural common noun (NNS)
           if (word.match(/^.*[^s]s$/)) {
@@ -230,7 +232,6 @@ class PosTagger {
               tag = "nns";
             }
           }
-
           dbug && this._log("1a", word, tag);
         }
 
