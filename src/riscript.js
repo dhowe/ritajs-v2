@@ -188,11 +188,7 @@ class RiScript {
   }
 
   static articlize(s) {
-    let R = RiScript.RiTa;
-    let silent = R.SILENCE_LTS;
-    R.SILENCE_LTS = true;    
-    let phones = RiTa.phones(s);
-    R.SILENCE_LTS = silent;
+    let phones = RiScript.RiTa.phones(s, {silent: true});
     return (phones && phones.length
       && /[aeiou]/.test(phones[0]) ? 'an ' : 'a ') + s;
   }
