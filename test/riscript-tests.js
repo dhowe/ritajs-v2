@@ -574,13 +574,10 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle no-input transforms', () => {
-
       RiTa.addTransform('capA', () => 'A');
       expect(RiTa.evaluate('.capA()', 0, { trace: 0 })).eq('A');
       expect(RiTa.evaluate('().capA()', 0, { trace: 0 })).eq('A');
     });
-
-    // TODO: should also look in context
 
     it('Should handle RiTa function transforms', () => {
       expect(RiTa.evaluate('Does $RiTa.env() equal node?',

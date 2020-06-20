@@ -205,30 +205,34 @@ class Visitor extends RiScriptVisitor {
     if (transforms && transforms.length) {
       let tfs = this.trace ? '' : null; // debugging
       for (let i = 0; i < transforms.length; i++) {
-        let transform = transforms[i];
-        transform = (typeof transform === 'string') ? transform : transform.getText();
-
-        this.trace && (tfs += transform); // debugging
-        let comps = transform.split('.');
+        let txf = transforms[i];
+        txf = (typeof txf === 'string') ? txf : txf.getText();
+        this.trace && (tfs += txf); // debugging
+        let comps = txf.split('.');
         for (let j = 1; j < comps.length; j++) {
           let comp = comps[j];
           if (comp.length) {
             if (comp.endsWith(Visitor.FUNCTION)) {
-              comp = comp.substring(0, comp.length - 2);
-              if (typeof term[comp] === 'function') {
-                term = term[comp]();
-              }
-              else if (typeof this.context[comp] === 'function') {
+              // strip parens
+              comp = comp.substring(0, comp.length - 2); 
+              // handle transforms in context
+              if (typeof this.context[comp] === 'function') {
                 term = this.context[comp](term);
               }
-              else {
-                throw Error('Expecting ' + term + '.' + comp + ' to be a function');
+              // handle built-in string functions
+              else if (typeof term[comp] === 'function') {
+                term = term[comp]();
               }
-            } else if (term.hasOwnProperty(comp)) { // property
+              else {
+                throw Error('Expecting ' + term + '.' + comp + '() to be a function');
+              }
+            // handle object properties
+            } else if (term.hasOwnProperty(comp)) { 
               if (typeof term[comp] === 'function') {
                 throw Error('Functions with args not yet supported: $object.' + comp + '(...)');
               }
               term = term[comp];
+            // no-op
             } else {
               term = term + '.' + comp; // no-op
             }
