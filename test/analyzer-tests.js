@@ -81,14 +81,16 @@ describe('RiTa.Analyzer', () => {
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
     
-    eq(RiTa.phones("mice"), "m-ay-s");
-
     let result, answer;
 
     eq(RiTa.phones(""), "");
+    eq(RiTa.phones("b"), "b");
+    eq(RiTa.phones("B"), "b");
     eq(RiTa.phones("The"), "dh-ah");
     eq(RiTa.phones("The."), "dh-ah .");
     eq(RiTa.phones("flowers"), "f-l-aw-er-z");
+    eq(RiTa.phones("mice"), "m-ay-s");
+    eq(RiTa.phones("ant"), "ae-n-t");
     
     expect(RiTa.phones("deforestations")).eq('d-ih-f-ao-r-ih-s-t-ey-sh-ah-n-z');
     expect(RiTa.phones("schizophrenias")).eq('s-k-ih-t-s-ah-f-r-iy-n-iy-ah-z');
@@ -112,8 +114,6 @@ describe('RiTa.Analyzer', () => {
     eq(RiTa.phones("chevrolet"), hasLex ? "sh-eh-v-r-ow-l-ey" : 'ch-eh-v-r-ow-l-ah-t');
     eq(RiTa.phones("women"), hasLex ? "w-ih-m-eh-n" : 'w-ow-m-eh-n');
     eq(RiTa.phones("genuine"), hasLex ? "jh-eh-n-y-uw-w-ah-n" : 'jh-eh-n-y-ah-ay-n');
-
-    
 
     RiTa.SILENCE_LTS = silent;
   });

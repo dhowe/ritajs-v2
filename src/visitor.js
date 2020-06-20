@@ -15,7 +15,7 @@ class Visitor extends RiScriptVisitor {
     this.parent = parent;
     this.pendingSymbols = [];
     this.context = context || {};
-    this.trace = opts && opts.trace;
+    this.trace = opts && opts.trace;    
   }
 
   // Entry point for tree visiting
@@ -32,6 +32,11 @@ class Visitor extends RiScriptVisitor {
       + id + '=' + this.flatten(token) + ']');
     this.context[id] = this.visit(token);
     return ''; // no output on vanilla assign
+  }
+
+  visitChars(ctx) {
+    this.trace && console.log('visitChars("' + ctx.getText() + '"): tfs=' + (ctx.transforms || "[]"));
+    return this.handleTransforms(ctx.getText().toString(), ctx.transforms);
   }
 
   visitChoice(ctx) {
@@ -54,7 +59,7 @@ class Visitor extends RiScriptVisitor {
     // merge transforms on entire choice and selected option
     token.transforms = this.inheritTransforms(token, ctx);
     this.trace && console.log('visitChoice: ' + this.flatten(token),
-      "tfs=" + (token.transforms && token.transforms.length || "[]"));
+      "tfs=" + (token.transforms || "[]"));
 
     // 2nd half is to handle ().func() transforms (TODO: Remove when no longer needed -> use .func() instead?)
     return token.getText().length ? this.visit(token)
@@ -79,11 +84,10 @@ class Visitor extends RiScriptVisitor {
   }
 
   visitExpr(ctx) {
-    this.trace && console.log('visitExpr("' + ctx.getText() + '"): tfs=' + (ctx.transforms || "[]"));//  ctx.children[0]);
+    this.trace && console.log('visitExpr(\'' + ctx.getText() + '\'): tfs=' + (ctx.transforms || "[]"));//  ctx.children[0]);
     let result = this.visitChildren(ctx);
     return result;
   }
-
 
   /* output expr value and create a mapping in the symbol table */
   visitInline(ctx) {
@@ -109,8 +113,6 @@ class Visitor extends RiScriptVisitor {
     return this.context[id];
   }
 
-
-
   /* visit the resolved symbol */
   visitSymbol(ctx) {
 
@@ -134,11 +136,7 @@ class Visitor extends RiScriptVisitor {
     this.trace && console.log('visitSymbol($' + ident + ')'
       + ' tfs=[' + (textContext.transforms || '') + '] ctx[\''
       + ident + '\']=' + (ident === 'RiTa' ? '{RiTa}' : textContext.text));
-    /* 
-        let resolution = ;
-        if (false && /[\$()]/.test(resolution)) { // cannot resolve yet
-          return '$' + ident;
-        } */
+
     return this.visitTerminal(textContext);
   }
 
@@ -174,6 +172,26 @@ class Visitor extends RiScriptVisitor {
     return this.handleTransforms(term, tfs);
   }
 
+  visitChildren(ctx) {
+    
+    if (!ctx.children) return '';
+
+    this.trace && console.log('visitChildren(' + ctx.constructor.name + '): "' 
+      + ctx.getText() + '"', ctx.transforms || '[]', '[' + ctx.children.reduce(
+        (acc, c) => acc += c.constructor.name + ',', '').replace(/,$/, ']'));
+
+    // we don't want characters to be split up before applying transforms
+/*     if (ctx.ruleIndex === RiScriptParser.RULE_chars) { // hrmm
+      console.log("HIT", ctx.getText(), 'RULE_chars');
+      return this.handleTransforms(ctx.getText(), ctx.transforms);
+    } */
+
+    // visit each child, pass transforms, and merge their output
+    return ctx.children.reduce((acc, child) => {
+      child.transforms = ctx.transforms;//typeof ctx.transform === 'function' ? this.inheritTransforms(child, ctx) : ctx.transforms;
+      return acc + this.visit(child);
+    }, '');
+  }
 
   // ---------------------- Helpers ---------------------------
 
@@ -199,6 +217,9 @@ class Visitor extends RiScriptVisitor {
               comp = comp.substring(0, comp.length - 2);
               if (typeof term[comp] === 'function') {
                 term = term[comp]();
+              }
+              else if (typeof this.context[comp] === 'function') {
+                term = this.context[comp](term);
               }
               else {
                 throw Error('Expecting ' + term + '.' + comp + ' to be a function');
@@ -266,22 +287,6 @@ class Visitor extends RiScriptVisitor {
     for (let i = 0; i < adds; i++) {
       options.push(emptyExpr());
     }
-  }
-
-  visitChildren(ctx) {
-    if (!ctx.children) return ''; 
-    //console.log('visitChildren: "'+ctx.getText()+'"', ctx.transforms);
-
-    // we don't want characters to be split up before applying transforms
-    if (ctx.ruleIndex === RiScriptParser.RULE_chars) { // hrmm
-      //console.log("HIT", ctx.constructor.name, ctx.ruleIndex);
-      return this.handleTransforms(ctx.getText(), ctx.transforms);
-    }
-    
-    return ctx.children.reduce((acc, child) => {
-      child.transforms = ctx.transforms;//typeof ctx.transform === 'function' ? this.inheritTransforms(child, ctx) : ctx.transforms;
-      return acc + this.visit(child);
-    }, '');
   }
 }
 

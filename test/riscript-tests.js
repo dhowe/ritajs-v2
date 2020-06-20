@@ -248,7 +248,10 @@ describe('RiTa.RiScript', () => {
 
     it('Should correctly handle transforms on literals', function () {
       expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many "teeth" do you have?');
-      expect(RiTa.evaluate('That is (ant).articlize().')).eq('That is an ant.');
+
+      // NEXT: CONSIDER adding context to RiTa.Grammar/grammar.expand
+
+      expect(RiTa.evaluate('That is (ant).articlize().', 0, { trace: 0 })).eq('That is an ant.');
       expect(RiTa.evaluate('That is an (ant).capitalize().')).eq('That is an Ant.');
     });
     /*     it.only('Should handle silents', () => {
@@ -499,10 +502,13 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle multi-word choices', () => {
+      let silent = RiTa.SILENCE_LTS;
+      RiTa.SILENCE_LTS = true;
       expect(RiTa.evaluate('(A B | A B)')).eq('A B');
       expect(RiTa.evaluate('(A B).toLowerCase()')).eq('a b');
       expect(RiTa.evaluate('(A B | A B).toLowerCase()', 0, { trace: 0 })).eq('a b');
       expect(RiTa.evaluate('(A B | A B).articlize()', 0, { trace: 0 })).eq('an A B');
+      RiTa.SILENCE_LTS = silent;
     });
 
     it('Should parse/select choices', () => {
@@ -552,12 +558,19 @@ describe('RiTa.RiScript', () => {
 
   describe('Transform', () => {
 
-
-    it('Should handle add/remove transforms', () => {
+    it('Should handle add transforms', () => {
       let orig = RiTa.getTransforms().length;
       RiTa.addTransform('capA', () => 'A');
-      RiTa.removeTransform('capA');
-      expect(RiTa.getTransforms().length).eq(orig);
+      expect(RiTa.getTransforms().length).eq(orig + 1);
+      expect(RiTa.evaluate('.capA()', 0, { trace: 0 })).eq('A');
+      expect(RiTa.evaluate('(b).capA()', 0, { trace: 0 })).eq('A');
+    });
+
+    it('Should use transforms in context', () => {
+      let ctx = { 'capB': (s) => s || 'B' };
+      expect(RiTa.evaluate('.capB()', ctx, { trace: 0 })).eq('B');
+      expect(RiTa.evaluate('(c).capB()', ctx, { trace: 0 })).eq('c');
+      expect(RiTa.evaluate('(c).toUpperCase()', ctx, { trace: 0 })).eq('C');
     });
 
     it('Should handle no-input transforms', () => {
@@ -565,7 +578,6 @@ describe('RiTa.RiScript', () => {
       RiTa.addTransform('capA', () => 'A');
       expect(RiTa.evaluate('.capA()', 0, { trace: 0 })).eq('A');
       expect(RiTa.evaluate('().capA()', 0, { trace: 0 })).eq('A');
-      RiTa.removeTransform('capA');
     });
 
     // TODO: should also look in context
@@ -590,7 +602,8 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle symbol transforms', () => {
-
+      let silent = RiTa.SILENCE_LTS;
+      RiTa.SILENCE_LTS = true;
       expect(RiTa.evaluate('$dog.toUpperCase()', { dog: 'spot' }, { trace: 0 })).eq('SPOT');
       expect(RiTa.evaluate('$dog.capitalize()', { dog: 'spot' }, { trace: 0 })).eq('Spot');
       expect(RiTa.evaluate('($dog).capitalize()', { dog: 'spot' }, { trace: 0 })).eq('Spot');
@@ -606,6 +619,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(Abe Lincoln).articlize().capitalize()', { dog: 'abe' }, { trace: 0 })).eq('An Abe Lincoln');
       expect(RiTa.evaluate("<li>$start</li>\n$start=($jrSr).capitalize()\n$jrSr=(junior|junior)"))
         .eq("<li>Junior</li>");
+      RiTa.SILENCE_LTS = silent;
     });
 
     it('Should parse object properties', () => {

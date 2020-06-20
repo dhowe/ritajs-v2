@@ -58,7 +58,6 @@ class Analyzer {
         if (ltsPhones && ltsPhones.length > 0) {
           if (!RiTa.SILENT && !RiTa.SILENCE_LTS && RiTa.hasLexicon() && word.match(/[a-zA-Z]+/)) {
             console.log("[RiTa] Used LTS-rules for '" + word + "'");
-            throw Error(word);
           }
           rawphones = Util.syllablesFromPhones(ltsPhones);
         } else {

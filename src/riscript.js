@@ -20,21 +20,20 @@ class RiScript {
     if (ctx && !ctx.hasOwnProperty('RiTa')) {
       ctx.RiTa = RiScript.RiTa;
     }
-
     let onepass = opts.singlePass; // TODO: doc
     let last = input, trace = opts.trace;
     let rs = new RiScript().pushTransforms();
     let expr = rs.lexParseVisit(input, ctx, opts);
     trace && console.log('\nInput1: ' + input + '\nResult1: '
-      + expr + '\nContext1:' + JSON.stringify(ctx).substring(0,1000)+'...');
+      + expr + '\nContext: [' + Object.keys(ctx) + ']');
 
     if (!onepass && /(\$[A-Za-z_]|[()])/.test(expr)) {
       for (let i = 0; i < RiScript.MAX_TRIES && expr !== last; i++) {
         last = expr;
         if (!expr) break;
         expr = rs.lexParseVisit(expr, ctx, opts);
-        trace && console.log('\nPass#' + (i + 2) + ': ' + expr 
-          + '\n-------------------------------------------------------\n');        
+        trace && console.log('\nPass#' + (i + 2) + ': ' + expr
+          + '\n-------------------------------------------------------\n');
         if (i >= RiScript.MAX_TRIES - 1) throw Error('Unable to resolve: "'
           + input + '" after ' + RiScript.MAX_TRIES + ' tries. An infinite loop?');
       }
@@ -187,7 +186,7 @@ class RiScript {
     }
     Object.keys(name).forEach(k => {
       RiScript.transforms[k] = name[k];
-    }); 
+    });
   }
 
   static removeTransform(name) { // DOC:
@@ -209,7 +208,7 @@ class RiScript {
 /// Prefixes the string with 'a' or 'an' as appropriate.
 /// </summary>
 function articlize() {
-  return ("aeiou".indexOf(this[0].toLowerCase()) > -1 ? "an" : "a") + ' ' + this;
+  return RiScript.RiTa.articlize(this.toString());
 }
 
 /// <summary>
@@ -239,7 +238,7 @@ function quotify() {
 function pluralize() {
   if (this.indexOf(' ') > -1) throw Error
     ('pluralize expected a single word, got "' + this + '"');
-  return RiScript.RiTa.pluralize(this);
+  return RiScript.RiTa.pluralize(this.toString());
 }
 
 RiScript.MAX_TRIES = 100;

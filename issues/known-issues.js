@@ -4,6 +4,10 @@ const RiScript = require('../src/riscript');
 
 describe('RiTa.KnownIssues', () => {
 
+  it('Should use phones for articlize', () => {
+    expect(RiTa.articlize("honor")).eq('an honor');
+  });
+
   it('Should throw on infinite recursions', () => {
     console.log(RiTa.evaluate('$s', { s: '$a', a: '$s' }));
     expect(() => RiTa.evaluate('$s', { s: '$a', a: '$s' })).to.throw();
@@ -15,11 +19,11 @@ describe('RiTa.KnownIssues', () => {
 
   it('Should handle RiTa function transforms with args', () => {
     expect(RiTa.evaluate('Is $RiTa.presentParticiple("lie") wrong?',
-       {}, { trace: 1, singlePass: 1 })).eq("Is lying wrong?");
+      {}, { trace: 1, singlePass: 1 })).eq("Is lying wrong?");
   });
 
-  0 && it('1: pluralize or singularize fails', () => { 
-    let testPairs = [  ]; // SS FAILING ITEMS HERE
+  0 && it('1: pluralize or singularize fails', () => {
+    let testPairs = []; // SS FAILING ITEMS HERE
     let res1, res2, res3, i = 0, dbug = true;
     if (!testPairs.length) return;
     dbug && console.log(testPairs[i] + '/' + testPairs[i + 1]);
@@ -39,10 +43,10 @@ describe('RiTa.KnownIssues', () => {
 
     ok(res3, 'FAIL: isPlural(' + testPairs[i] + ') was false\n\n');
   });
-  
-  0 && it('simple evaluations', function() {
+
+  0 && it('simple evaluations', function () {
     // should this throw? maybe yes: can do foo&dot;bar - need better error
-    expect(RiTa.evaluate('foo.bar', {}, 1)).eq('foo.bar'); 
+    expect(RiTa.evaluate('foo.bar', {}, 1)).eq('foo.bar');
   });
 
   it('Should allow transforms on assignments', () => {   // TODO

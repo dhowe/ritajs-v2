@@ -31,12 +31,10 @@ class RiTa {
     return RiScript.addTransform(...arguments);
   }
 
-  static removeTransform() {
-    return RiScript.removeTransform(...arguments);
-  }
-
-  static getTransforms() {
-    return RiScript.getTransforms();
+  static articlize(s) { // TODO: add to api
+    let phones = RiTa.phones(s);
+    return (phones && phones.length 
+      && /[aeiou]/.test(phones[0]) ? 'an ' : 'a ') + s;
   }
 
   static alliterations() {
@@ -69,6 +67,10 @@ class RiTa {
 
   static evaluate() { // DOC:
     return RiScript.eval(...arguments);
+  }
+
+  static getTransforms() {
+    return RiScript.getTransforms();
   }
 
   static hasLexicon() {
