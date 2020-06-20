@@ -561,14 +561,14 @@ describe('RiTa.RiScript', () => {
 
   describe('Transform', () => {
 
-/*     it('Should handle add transforms', () => {
-      let orig = RiTa.getTransforms().length;
-      //RiTa.addTransform('capA', () => 'A');
-      expect(RiTa.getTransforms().length).eq(orig + 1);
-      expect(RiTa.evaluate('.capA()', 0, { trace: 0 })).eq('A');
-      expect(RiTa.evaluate('(b).capA()', 0, { trace: 0 })).eq('A');
-    });
- */
+    /*     it('Should handle add transforms', () => {
+          let orig = RiTa.getTransforms().length;
+          //RiTa.addTransform('capA', () => 'A');
+          expect(RiTa.getTransforms().length).eq(orig + 1);
+          expect(RiTa.evaluate('.capA()', 0, { trace: 0 })).eq('A');
+          expect(RiTa.evaluate('(b).capA()', 0, { trace: 0 })).eq('A');
+        });
+     */
     it('Should use transforms in context', () => {
       let ctx = { 'capB': (s) => s || 'B' };
       expect(RiTa.evaluate('.capB()', ctx, { trace: 0 })).eq('B');
@@ -665,11 +665,10 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle custom transforms', () => {
-      //expect(String.Blah).eq(undefined);
-      //RiTa.addTransform('Blah', () => 'Blah');
       let Blah = () => 'Blah';
       expect(RiTa.evaluate('That is (ant).Blah().', { Blah })).eq('That is Blah.');
-      //expect(String.Blah).eq(undefined);
+      let ctx = { Blah2: () => 'Blah2' };
+      expect(RiTa.evaluate('That is (ant).Blah2().', ctx)).eq('That is Blah2.');
     });
   });
 

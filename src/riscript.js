@@ -17,11 +17,9 @@ class RiScript {
   static eval(input, ctx, opts = {}) {
 
     ctx = ctx || {};
-    
+
     // make sure we have RiTa in context
-    if (!ctx.hasOwnProperty('RiTa')) {
-      ctx.RiTa = RiScript.RiTa;
-    }
+    if (!ctx.hasOwnProperty('RiTa')) ctx.RiTa = RiScript.RiTa;
     let onepass = opts.singlePass; // TODO: doc
     let last = input, trace = opts.trace;
     let rs = new RiScript().pushTransforms(ctx);
@@ -183,6 +181,11 @@ class RiScript {
   isParseable(s) {
     return /([()]|\$[A-Za-z_][A-Za-z_0-9-]*)/.test(s);
   }
+
+  static addTransform(name, func) {
+    RiScript.transforms[name] = func;
+  }
+
   /* 
     static addTransform(name, func) { // DOC: object case
       if (typeof name === 'string') {

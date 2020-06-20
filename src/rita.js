@@ -27,9 +27,9 @@ class RiTa {
     throw Error('Invalid instantiation');
   }
 
-  /*   static addTransform() {
+  static addTransform() {
     return RiScript.addTransform(...arguments);
-  } */
+  }
 
   static articlize(s) { // TODO: add to api
     let phones = RiTa.phones(s);
@@ -69,9 +69,9 @@ class RiTa {
     return RiScript.eval(...arguments);
   }
 
-/*   static getTransforms() {
+  static getTransforms() {
     return RiScript.getTransforms();
-  } */
+  }
 
   static hasLexicon() {
     return RiTa.lexicon().size() > 0;

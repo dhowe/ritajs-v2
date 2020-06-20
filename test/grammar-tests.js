@@ -198,8 +198,13 @@ describe('RiTa.Grammar', () => {
         eq(rg.expand(), "DOG");
     });
 
-    it("should handle symbol transforms", () => {
+    it("should handle custom transforms", () => {
+        let context = { randomPosition: () => 'jobArea jobType' };
+        let rg = new RiTa.Grammar({ start: "My .randomPosition()."}, context);
+        expect(rg.expand()).eq("My jobArea jobType.");
+    });
 
+    it("should handle symbol transforms", () => {
         let rg = new Grammar({
             start: "$tmpl",
             tmpl: "$jrSr.capitalize()",

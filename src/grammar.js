@@ -7,8 +7,9 @@ const maxTries = 100;
 
 class Grammar {
 
-  constructor(rules) {
+  constructor(rules, context) {
     this.rules = {};
+    this.context = context || {};
     rules && this.setRules(rules);
   }
 
@@ -38,15 +39,14 @@ class Grammar {
     return this;
   }
 
-  expand(rule = 'start', context, opts) {
+  expand(rule = 'start', opts) {
 
     // TODO: test with missing args (check all cases)
     if (arguments.length && typeof arguments[0] !== 'string') {
-      context = rule;
-      opts = context;
+      opts = rule;
       rule = 'start';
     }
-    let ctx = deepmerge(context, this.rules);
+    let ctx = deepmerge(this.context, this.rules);
     if (rule.startsWith('$')) rule = rule.substring(1);
     if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
     return RiScript.eval(ctx[rule], ctx, opts);
