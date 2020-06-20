@@ -606,8 +606,6 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle symbol transforms', () => {
-      let silent = RiTa.SILENCE_LTS;
-      RiTa.SILENCE_LTS = true;
       expect(RiTa.evaluate('$dog.toUpperCase()', { dog: 'spot' }, { trace: 0 })).eq('SPOT');
       expect(RiTa.evaluate('$dog.capitalize()', { dog: 'spot' }, { trace: 0 })).eq('Spot');
       expect(RiTa.evaluate('($dog).capitalize()', { dog: 'spot' }, { trace: 0 })).eq('Spot');
@@ -623,7 +621,6 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(Abe Lincoln).articlize().capitalize()', { dog: 'abe' }, { trace: 0 })).eq('An Abe Lincoln');
       expect(RiTa.evaluate("<li>$start</li>\n$start=($jrSr).capitalize()\n$jrSr=(junior|junior)"))
         .eq("<li>Junior</li>");
-      RiTa.SILENCE_LTS = silent;
     });
 
     it('Should parse object properties', () => {

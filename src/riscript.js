@@ -182,11 +182,19 @@ class RiScript {
     return /([()]|\$[A-Za-z_][A-Za-z_0-9-]*)/.test(s);
   }
 
-  static addTransform(name, func) { // DOC:
+  static addTransform(name, func) { 
     RiScript.transforms[name] = func;
     return RiScript.transforms;
   }
 
+  static articlize(s) {
+    let silent = RiTa.SILENCE_LTS;
+    RiTa.SILENCE_LTS = true;    
+    let phones = RiTa.phones(s);
+    return (phones && phones.length
+      && /[aeiou]/.test(phones[0]) ? 'an ' : 'a ') + s;
+    RiTa.SILENCE_LTS = silent;
+  }
   /* 
     static addTransform(name, func) { // DOC: object case
       if (typeof name === 'string') {
@@ -196,7 +204,6 @@ class RiScript {
         RiScript.transforms[k] = name[k];
       });
     }
-  
     static removeTransform(name) { // DOC:
       let obj = {};
       if (typeof name === 'string') {
@@ -204,20 +211,20 @@ class RiScript {
       }
       Object.keys(name).forEach(k => delete RiScript.transforms[k]);
     }
-  
     static getTransforms() { // DOC:
       return Object.keys(RiScript.transforms);
     } */
+    
 }
 
 // -------------------- Default Transforms ----------------------
 
 /// <summary>
-/// Prefixes the string with 'a' or 'an' as appropriate.
+/// articlize: Prefixes the string with 'a' or 'an' as appropriate.
 /// </summary>
-function articlize(s) {
+/* function articlize(s) {
   return RiScript.RiTa.articlize(s);
-}
+} */
 
 /// <summary>
 /// Capitalizes the first character.
@@ -250,6 +257,7 @@ function pluralize(s) {
 }
 
 RiScript.MAX_TRIES = 100;
-RiScript.transforms = { capitalize, articlize, quotify, pluralize, qq: quotify, uc: toUpper, ucf: capitalize };
+RiScript.transforms = { capitalize, quotify, pluralize, qq: quotify, 
+  uc: toUpper, ucf: capitalize, articlize: RiScript.articlize };
 
 module && (module.exports = RiScript);

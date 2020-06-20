@@ -32,9 +32,7 @@ class RiTa {
   }
 
   static articlize(s) { // TODO: add to api
-    let phones = RiTa.phones(s);
-    return (phones && phones.length 
-      && /[aeiou]/.test(phones[0]) ? 'an ' : 'a ') + s;
+    return RiScript.articlize(s);
   }
 
   static alliterations() {

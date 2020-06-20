@@ -219,6 +219,8 @@ class PosTagger {
 
       let word = words[i], tag = result[i];
 
+      if (!tag) throw Error('unexpected state');
+
       // transform 1a: DT, {VBD | VBP | VB} --> DT, NN
       if (i > 0 && (result[i - 1] === "dt")) {
 

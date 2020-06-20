@@ -28,6 +28,7 @@ class Grammar {
   }
 
   addRule(name, rule) {
+    if (!name || !name.length) throw Error('expected [string] name');
     if (name.startsWith('$')) name = name.substring(1);
     if (Array.isArray(rule)) rule = joinChoice(rule);
 
