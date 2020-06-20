@@ -29,7 +29,7 @@ class RiScript {
     trace && console.log('\nInput1: ' + input + '\nResult1: '
       + expr + '\nContext: [' + Object.keys(ctx) + ']');
 
-    if (!onepass && /(\$[A-Za-z_]|[()])/.test(expr)) {
+    if (!onepass && rs.isParseable(expr)) { ///(\$[A-Za-z_]|[()])/.test(expr)) {
       for (let i = 0; i < RiScript.MAX_TRIES && expr !== last; i++) {
         last = expr;
         if (!expr) break;
@@ -178,6 +178,10 @@ class RiScript {
   resolveEntities(result) { // &#10; for line break DOC:
     return decode(result.replace(/ +/g, ' '))
       .replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
+  }
+
+  isParseable(s) {
+    return /([()]|\$[A-Za-z_][A-Za-z_0-9-]*)/.test(s);
   }
   /* 
     static addTransform(name, func) { // DOC: object case
