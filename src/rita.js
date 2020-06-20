@@ -128,16 +128,17 @@ class RiTa {
     return RiTa.conjugator.pastParticiple(verb);
   }
 
-  static phones(text) {
-    return RiTa._analyzer().analyze(text).phones;
+  static phones() {
+    return RiTa._analyzer().analyze(...arguments).phones;
   }
 
-  static pos(words, { simple = false, inline = false } = {}) { // DOC:
-    return RiTa.tagger.tag(words, simple, inline, true);
+  static pos() { // DOC:
+    return RiTa.tagger.tag(...arguments);
   }
 
-  static posInline(words, { simple = false } = {}) { // java only?
-    return RiTa.tagger.tag(words, simple, true, true);
+  static posInline(words, opts = {}) { // java only?
+    opts.inline = true;
+    return RiTa.tagger.tag(words, opts);
   }
 
   static pluralize(word) {
@@ -200,12 +201,12 @@ class RiTa {
     return RiTa.stemmer.stem(word);
   }
 
-  static stresses(text) {
-    return RiTa._analyzer().analyze(text).stresses;
+  static stresses() {
+    return RiTa._analyzer().analyze(...arguments).stresses;
   }
 
   static syllables(text) {
-    return RiTa._analyzer().analyze(text).syllables;
+    return RiTa._analyzer().analyze(...arguments).syllables;
   }
 
   static tokenize(text) {

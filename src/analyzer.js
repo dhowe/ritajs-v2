@@ -10,10 +10,9 @@ class Analyzer {
     this.lexicon = RiTa.lexicon();
   }
 
-  analyze(text) {
-
+  analyze(text, opts) {
     let words = RiTa.tokenizer.tokenize(text);
-    let tags = RiTa.tagger.tag(text); // don't fail if no lexicon
+    let tags = RiTa.tagger.tag(text, opts); // don't fail if no lexicon
     let features = {
       phones: '',
       stresses: '',
@@ -23,7 +22,7 @@ class Analyzer {
     }
 
     for (let i = 0; i < words.length; i++) {
-      let { phones, stresses, syllables } = this.analyzeWord(words[i]);
+      let { phones, stresses, syllables } = this.analyzeWord(words[i], opts);
       features.phones += phones;
       features.stresses += stresses;
       features.syllables += syllables;
@@ -36,8 +35,10 @@ class Analyzer {
     return features;
   }
 
-  analyzeWord(word) {
+  analyzeWord(word, opts = {}) {
 
+    let silentLts = opts && opts.silent;
+    
     if (typeof this.cache[word] === 'undefined') {
 
       let useRaw = false, slash = '/', delim = '-';
@@ -56,7 +57,8 @@ class Analyzer {
 
         let ltsPhones = RiTa.lts && RiTa.lts.computePhones(word);
         if (ltsPhones && ltsPhones.length > 0) {
-          if (!RiTa.SILENT && !RiTa.SILENCE_LTS && RiTa.hasLexicon() && word.match(/[a-zA-Z]+/)) {
+          if (!RiTa.SILENT && !RiTa.SILENCE_LTS && !silentLts
+            && RiTa.hasLexicon() && word.match(/[a-zA-Z]+/)) {
             console.log("[RiTa] Used LTS-rules for '" + word + "'");
           }
           rawphones = Util.syllablesFromPhones(ltsPhones);

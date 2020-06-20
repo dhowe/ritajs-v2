@@ -70,18 +70,14 @@ class PosTagger {
     }
   }
 
-  tag(words, simple, inline/*, fatal*/) {
+  tag(words, opts) {
 
+    let simple = opts && opts.simple;
+    let inline = opts && opts.inline;
     let dbug = 0, result = [], choices2d = [];
 
-    if (!words || !words.length) {
-      return inline ? '' : [];
-    }
-
-    if (!Array.isArray(words)) {
-      words = RiTa.tokenizer.tokenize(words);
-    }
-
+    if (!words || !words.length) return inline ? '' : [];
+    if (!Array.isArray(words)) words = RiTa.tokenizer.tokenize(words);
     for (let i = 0, l = words.length; i < l; i++) {
 
       let word = words[i];

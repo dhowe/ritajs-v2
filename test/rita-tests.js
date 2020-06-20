@@ -44,17 +44,6 @@ describe('RiTa.Core', () => {
     expect(RiTa.randomOrdering(['a', 'b'])).to.have.members(['a', 'b']);
   });
 
-  it('Should call articlize', () => {
-    let silent = RiTa.SILENCE_LTS;
-    RiTa.SILENCE_LTS = true;
-    expect(RiTa.articlize("dog")).eq('a dog');
-    expect(RiTa.articlize("ant")).eq('an ant');
-    expect(RiTa.articlize("honor")).eq('an honor');
-    expect(RiTa.articlize("eagle")).eq('an eagle');
-    expect(RiTa.articlize("ermintrout")).eq('an ermintrout');
-    RiTa.SILENCE_LTS = silent;
-  });
-
   it('Should correctly call isQuestion', () => {
     ok(RiTa.isQuestion("what"));
     ok(RiTa.isQuestion("what"));
