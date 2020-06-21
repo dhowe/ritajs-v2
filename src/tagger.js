@@ -211,7 +211,7 @@ class PosTagger {
       if (typeof tag === 'undefined') {
         tag = '';
         if (!RiTa.SILENT) console.warn
-          ('\n\n[WARN] unexpected state in tagger._applyContext for idx=' + i, words, '\n\n');
+          ('\n[WARN] Unexpected state in _applyContext for idx=' + i, words, '\n');
       }
 
       // transform 1a: DT, {VBD | VBP | VB} --> DT, NN

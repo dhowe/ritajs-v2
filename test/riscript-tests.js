@@ -242,7 +242,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$foo=((a | a) | (a | a))', ctx = {}, { trace: 0 })).eq('');
       expect(ctx.foo).eq('a');
 
-      expect(RiTa.evaluate('$foo=().toUpperCase()', ctx = {}, { trace: 0 })).eq(''); // empty string
+      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx = {}, { trace: 0 })).eq(''); // empty string
       expect(ctx.foo).eq('');
     });
 
@@ -562,7 +562,7 @@ describe('RiTa.RiScript', () => {
   describe('Transform', () => {
 
     it('Should handle add transforms', () => {
-      
+
       let orig = RiTa.addTransform('capA', () => 'A').length;
       expect(RiTa.evaluate('.capA()', 0, { trace: 0 })).eq('A');
       expect(RiTa.evaluate('(b).capA()', 0, { trace: 0 })).eq('A');
@@ -591,10 +591,15 @@ describe('RiTa.RiScript', () => {
         {}, { trace: 0 })).eq("Does node equal node?");
     });
 
+  /*   it('XXX', () => {
+      expect(RiTa.evaluate('How many (tooth | tooth).pluralize() do you have?', 0,
+        {trace:1, skipPreParse: 0})).eq('How many teeth do you have?');
+    }); */
+
     it('Should handle choice transforms', () => {
 
       let ctx = {};
-      expect(RiTa.evaluate('$foo=().toUpperCase()', ctx, { trace: 0 })).eq('');
+      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx, { trace: 0 })).eq('');
       expect(ctx.foo).eq('');
 
       expect(RiTa.evaluate('(a).toUpperCase()')).eq('A');
@@ -713,7 +718,7 @@ describe('RiTa.RiScript', () => {
       expect(rs).eq('BAZ');
 
       let ctx = {};
-      expect(RiTa.evaluate('$foo=().toUpperCase()', ctx, 0)).eq('');
+      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx, 0)).eq('');
       expect(ctx.foo).eq('');
 
       expect(RiTa.evaluate('$foo.capitalize()\n$foo=(a|a)')).eq('A');

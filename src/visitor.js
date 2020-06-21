@@ -15,7 +15,7 @@ class Visitor extends RiScriptVisitor {
     this.parent = parent;
     this.pendingSymbols = [];
     this.context = context || {};
-    this.trace = opts && opts.trace;    
+    this.trace = opts && opts.trace;
   }
 
   // Entry point for tree visiting
@@ -34,7 +34,7 @@ class Visitor extends RiScriptVisitor {
   }
 
   visitChars(ctx) {
-    this.trace && console.log('visitChars("' + ctx.getText() 
+    this.trace && console.log('visitChars("' + ctx.getText()
       + '"): tfs=' + (ctx.transforms || "[]"));
     let text = ctx.getText().toString();
     return this.handleTransforms(text, ctx.transforms);
@@ -42,9 +42,8 @@ class Visitor extends RiScriptVisitor {
 
   visitChoice(ctx) {
 
+    // compute all options and weights
     let options = [];
-
-    // compute all options based on their weights
     ctx.wexpr().map((w, k) => {
       let wctx = w.weight();
       let weight = wctx ? parseInt(wctx.INT()) : 1;
@@ -62,9 +61,7 @@ class Visitor extends RiScriptVisitor {
     this.trace && console.log('visitChoice: ' + this.flatten(token),
       "tfs=" + (token.transforms || "[]"));
 
-    // 2nd half is to handle ().func() transforms (removed)
-    //return token.getText().length ? this.visit(token)
-      //: this.handleTransforms('', token.transforms);
+    // and then visit
     return this.visit(token);
   }
 
@@ -87,7 +84,7 @@ class Visitor extends RiScriptVisitor {
 
   visitExpr(ctx) {
     this.trace && console.log('visitExpr(\'' + ctx.getText()
-       + '\'): tfs=' + (ctx.transforms || "[]"));
+      + '\'): tfs=' + (ctx.transforms || "[]"));
     let result = this.visitChildren(ctx);
     return result;
   }
@@ -174,10 +171,10 @@ class Visitor extends RiScriptVisitor {
   }
 
   visitChildren(ctx) {
-    
+
     if (!ctx.children) return '';
 
-    this.trace && console.log('visitChildren(' + ctx.constructor.name + '): "' 
+    this.trace && console.log('visitChildren(' + ctx.constructor.name + '): "'
       + ctx.getText() + '"', ctx.transforms || '[]', '[' + ctx.children.reduce(
         (acc, c) => acc += c.constructor.name + ',', '').replace(/,$/, ']'));
 
@@ -205,7 +202,7 @@ class Visitor extends RiScriptVisitor {
           if (comp.length) {
             if (comp.endsWith(Visitor.FUNCTION)) {
               // strip parens
-              comp = comp.substring(0, comp.length - 2); 
+              comp = comp.substring(0, comp.length - 2);
               // handle transforms in context
               if (typeof this.context[comp] === 'function') {
                 term = this.context[comp](term);
@@ -217,20 +214,20 @@ class Visitor extends RiScriptVisitor {
               else {
                 throw Error('Expecting ' + term + '.' + comp + '() to be a function');
               }
-            // handle object properties
-            } else if (term.hasOwnProperty(comp)) { 
+              // handle object properties
+            } else if (term.hasOwnProperty(comp)) {
               if (typeof term[comp] === 'function') {
                 throw Error('Functions with args not yet supported: $object.' + comp + '(...)');
               }
               term = term[comp];
-            // no-op
+              // no-op
             } else {
               term = term + '.' + comp; // no-op
             }
           }
         }
       }
-      this.trace && console.log('handleTransforms: ' + 
+      this.trace && console.log('handleTransforms: ' +
         (obj.length ? obj : "''") + tfs + ' -> ' + term);
     }
     return term;

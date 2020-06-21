@@ -127,8 +127,9 @@ class RiScript {
 
   preParse(input, opts = {}) {
     let parse = input, pre = '', post = '';
-    if (!opts.skipPreParse) {
-      const re = /[()$|]/;
+    //console.log('preParse', parse);
+    if (!opts.skipPreParse && !/^[${]/.test(parse)) {
+      const re = /[()$|{}]/;
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
       while (preIdx < words.length) {
@@ -137,7 +138,7 @@ class RiScript {
       }
       if (preIdx < words.length) {
         while (postIdx >= 0) {
-          if (re.test(words[preIdx])) break;
+          if (re.test(words[postIdx])) break;
           postIdx--;
         }
       }
@@ -151,8 +152,8 @@ class RiScript {
   lexParseVisit(input, context, opts) {
 
     let { pre, parse, post } = this.preParse(input, opts);
-    //console.log("\nPRE: " + pre,"PARSE: " + parse, "POST: " + post, "\n");
     let tree = parse.length && this.lexParse(parse, opts);
+    opts.trace && console.log('preParse(' + (pre || "''") + ',' + (post || "''") + '):');
     let result = parse.length ? this.createVisitor(context, opts).start(tree) : '';
     return (this.normalize(pre) + ' ' + result + ' ' + this.normalize(post)).trim();
   }
@@ -182,13 +183,13 @@ class RiScript {
     return /([()]|\$[A-Za-z_][A-Za-z_0-9-]*)/.test(s);
   }
 
-  static addTransform(name, func) { 
+  static addTransform(name, func) {
     RiScript.transforms[name] = func;
     return RiScript.transforms;
   }
 
   static articlize(s) {
-    let phones = RiScript.RiTa.phones(s, {silent: true});
+    let phones = RiScript.RiTa.phones(s, { silent: true });
     return (phones && phones.length
       && /[aeiou]/.test(phones[0]) ? 'an ' : 'a ') + s;
   }
@@ -211,7 +212,7 @@ class RiScript {
     static getTransforms() { // DOC:
       return Object.keys(RiScript.transforms);
     } */
-    
+
 }
 
 // -------------------- Default Transforms ----------------------
@@ -254,7 +255,9 @@ function pluralize(s) {
 }
 
 RiScript.MAX_TRIES = 100;
-RiScript.transforms = { capitalize, quotify, pluralize, qq: quotify, 
-  uc: toUpper, ucf: capitalize, articlize: RiScript.articlize };
+RiScript.transforms = {
+  capitalize, quotify, pluralize, qq: quotify,
+  uc: toUpper, ucf: capitalize, articlize: RiScript.articlize
+};
 
 module && (module.exports = RiScript);
