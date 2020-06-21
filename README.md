@@ -1,8 +1,8 @@
 ## Installation
 
 * For node: `npm install rita@beta`
-* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.25/rita-web.js) (1.3mb)
-* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.25/rita-web-nolex.js) (.5mb)
+* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.26/rita-web.js) (1.3mb)
+* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.26/rita-web-nolex.js) (.5mb)
 * For [developers](#developing)
 
 ### Example (node)
@@ -142,7 +142,7 @@ How many (tooth | menu | child).pluralize() do you have?
 How many (tooth | menu | child).pluralize().toUpper() do you have?
 ```
 
-Custom transforms can be added using RiTa.addTransform() or by passing the transform function (to RiTa.evaluate() or to the RiTa.Grammar() constructor as part of the 'context' argument.
+Custom transforms can be added using RiTa.addTransform() or by passing the transform function as the 2nd argument to RiTa.evaluate() or to the RiTa.Grammar() constructor as part of the 'context'.
 
 <!--
 ### Choice

@@ -1,16 +1,28 @@
 const Errors = require('antlr4/error/Errors');
 const { ErrorListener } = require('antlr4/error/ErrorListener');
 
-function LexerErrorHandler() {
-	Errors.ParseCancellationException.call(this);
+// TMP: waiting on fix in antlr4 ------------------------------
+function ParseCancellationEx() {
+	if (!!Error.captureStackTrace) {
+		Error.captureStackTrace(this, Errors.RecognitionException);
+	} else {
+		var stack = new Error().stack;
+	}
 	return this;
 }
+ParseCancellationEx.prototype = Object.create(Error.prototype);
+ParseCancellationEx.prototype.constructor = ParseCancellationEx;
+// ------------------------------------------------------------
 
-LexerErrorHandler.prototype = Object.create(Errors.ParseCancellationException.prototype);
+function LexerErrorHandler() {
+	ParseCancellationEx.call(this);  // remove after fix
+	//Errors.ParseCancellationException.call(this); // uncomment after fix
+	return this;
+}
+LexerErrorHandler.prototype = Object.create(ParseCancellationEx.prototype); // remove after fix
+//LexerErrorHandler.prototype = Object.create(Errors.ParseCancellationException.prototype); // uncomment after fix
 LexerErrorHandler.prototype.constructor = LexerErrorHandler;
 LexerErrorHandler.prototype.syntaxError = function(recognizer, offendingSymbol, line, column, msg, e) {
-	//let tokens = recognizer.atn.getExpectedTokens(recognizer.state, recognizer._ctx).toString(recognizer.literalNames, recognizer.symbolicNames);
-	//throw Error("Lexer failed on " + offendingSymbol + ", expected: " + tokens, Object.keys(offendingSymbol));
 	throw Error("Lexer failed on line " + line + ":" + column + " " + msg);
 };
 
