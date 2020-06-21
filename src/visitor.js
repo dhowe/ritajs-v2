@@ -36,7 +36,8 @@ class Visitor extends RiScriptVisitor {
   visitChars(ctx) {
     this.trace && console.log('visitChars("' + ctx.getText() 
       + '"): tfs=' + (ctx.transforms || "[]"));
-    return this.handleTransforms(ctx.getText().toString(), ctx.transforms);
+    let text = ctx.getText().toString();
+    return this.handleTransforms(text, ctx.transforms);
   }
 
   visitChoice(ctx) {
@@ -193,11 +194,11 @@ class Visitor extends RiScriptVisitor {
   handleTransforms(obj, transforms) {
     let term = obj;
     if (transforms && transforms.length) {
-      let tfs = this.trace ? '' : null; // debugging
+      let tfs = this.trace ? '' : null; // debug
       for (let i = 0; i < transforms.length; i++) {
         let txf = transforms[i];
         txf = (typeof txf === 'string') ? txf : txf.getText();
-        this.trace && (tfs += txf); // debugging
+        this.trace && (tfs += txf); // debug
         let comps = txf.split('.');
         for (let j = 1; j < comps.length; j++) {
           let comp = comps[j];
@@ -229,8 +230,8 @@ class Visitor extends RiScriptVisitor {
           }
         }
       }
-      this.trace //&& (typeof obj !== 'string' || obj.trim().length)
-        && console.log('handleTransforms: ' + (obj.length ? obj : "''") + tfs + ' -> ' + term);
+      this.trace && console.log('handleTransforms: ' + 
+        (obj.length ? obj : "''") + tfs + ' -> ' + term);
     }
     return term;
   }

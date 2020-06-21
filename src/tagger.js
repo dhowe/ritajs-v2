@@ -28,13 +28,11 @@ class PosTagger {
   isAdverb(word) {
     let pos = this.posOptions(word);
     return pos && pos.filter(p => ADVS.includes(p)).length > 0;
-    //return this.checkType(word, ADVS);
   }
 
   isAdjective(word) {
     let pos = this.posOptions(word);
     return pos && pos.filter(p => ADJS.includes(p)).length > 0;
-    //return this.checkType(word, ADJS);
   }
 
   hasTag(choices, tag) {
@@ -48,7 +46,7 @@ class PosTagger {
 
     if (!words || !words.length) return '';
 
-    if (words.length !== tags.length) throw Error('Tagger: invalid state');
+    if (words.length !== tags.length) throw Error('Tagger: invalid state', words);
 
     delimiter = delimiter || '/';
 
@@ -81,18 +79,14 @@ class PosTagger {
     for (let i = 0, l = words.length; i < l; i++) {
 
       let word = words[i];
-      if (word.length < 1) {
-        result.push('');
-        continue;
-      }
-
       if (word.length === 1) {
         result.push(this._handleSingleLetter(word));
-        continue;
       }
-
-      choices2d[i] = this.posOptions(word);
-      result.push(choices2d[i][0] || '');
+      else {
+        let opts = this.posOptions(word);
+        choices2d[i] = opts; // all options
+        result[i] = opts[0]; // first option
+      }
     }
 
     // Adjust pos according to transformation rules
@@ -126,7 +120,7 @@ class PosTagger {
     if (a) return a;
     if (b) return b;
   }
-  
+
   _derivePosData(word) {
     /*
       Try for a verb or noun inflection 
@@ -158,7 +152,7 @@ class PosTagger {
         this._checkPluralNounOrVerb(RiTa.singularize(word), result);
       }
 
-      if (result) return result;
+      if (result.length) return result;
     }
     else if (word.endsWith('ed')) { // simple past or past participle
       let pos = this.lex._posArr(word.substring(0, word.length - 1))
@@ -214,10 +208,10 @@ class PosTagger {
     for (let i = 0, l = words.length; i < l; i++) {
 
       let word = words[i], tag = result[i];
-      if (!tag) {
+      if (typeof tag === 'undefined') {
         tag = '';
         if (!RiTa.SILENT) console.warn
-          ('[WARN] unexpected state in tagger._applyContext');
+          ('\n\n[WARN] unexpected state in tagger._applyContext for idx=' + i, words, '\n\n');
       }
 
       // transform 1a: DT, {VBD | VBP | VB} --> DT, NN
@@ -306,7 +300,7 @@ class PosTagger {
 
       // transform 10(dch): convert common nouns to proper
       // nouns when they start w' a capital
-      if (tag.startsWith("nn") && (word.charAt(0) === word.charAt(0).toUpperCase())) {
+      if (tag.startsWith("nn") && /^[A-Z]/.test(word)) {
 
         //if it is not at the start of a sentence or it is the only word
         // or when it is at the start of a sentence but can't be found in the dictionary
@@ -360,16 +354,17 @@ class PosTagger {
   }
 
   _lexHas(pos, word) { // takes ([n|v|a|r] or a full tag
-    if (typeof word !== 'string') throw Error('Expects string');
-    let tags = this.lex._posArr(word);
-    if (!tags) return false;
-    for (let j = 0; j < tags.length; j++) {
-      if (pos === tags[j]) return true;
-      if (pos === 'n' && NOUNS.includes(tags[j]) ||
-        pos === 'v' && VERBS.includes(tags[j]) ||
-        pos === 'r' && ADVS.includes(tags[j]) ||
-        pos === 'a' && ADJS.includes.isAdjTag(tags[j])) {
-        return true;
+    if (typeof word === 'string') {
+      let tags = this.lex._posArr(word);
+      if (!tags) return false;
+      for (let j = 0; j < tags.length; j++) {
+        if (pos === tags[j]) return true;
+        if (pos === 'n' && NOUNS.includes(tags[j]) ||
+          pos === 'v' && VERBS.includes(tags[j]) ||
+          pos === 'r' && ADVS.includes(tags[j]) ||
+          pos === 'a' && ADJS.includes.isAdjTag(tags[j])) {
+          return true;
+        }
       }
     }
   }

@@ -2,11 +2,11 @@ describe('RiTa.Tagger', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  it('Should correctly call posTags.array', () => {
+  it('Should correctly call pos.array', () => {
     //eql(RiTa.pos([]), []);
     eql(RiTa.pos(["deal"]), ["nn"]);
     eql(RiTa.pos(["freed"]), ["jj"]);
-    eql(RiTa.pos(["the"]), ["dt"]);  
+    eql(RiTa.pos(["the"]), ["dt"]);
     eql(RiTa.pos(["a"]), ["dt"]);
     eql(RiTa.pos("the top seed".split(/ /)), ["dt", "jj", "nn"]);
     eql(RiTa.pos("by illegal means".split(/ /)), ["in", "jj", "nn"]);
@@ -17,7 +17,7 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos("Dave dances".split(/ /)), ["nnp", "vbz"]);
   });
 
-  it('Should correctly call simple posTags.array', () => {
+  it('Should correctly call simple pos.array', () => {
     eql(RiTa.pos([], { simple: true }), []);
     eql(RiTa.pos(["freed"], { simple: true }), ["a"]);
     eql(RiTa.pos(["the"], { simple: true }), ["-"]);
@@ -31,7 +31,7 @@ describe('RiTa.Tagger', () => {
   });
 
 
-  it('Should correctly call posTags.array.inline.simple', () => {
+  it('Should correctly call pos.array.inline.simple', () => {
     let result, answer, txt;
 
     eql(RiTa.pos([], { inline: true, simple: true }), "");
@@ -82,20 +82,19 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos("He has rowed the boat"), ['prp', 'vbz', 'vbn', 'dt', 'nn']);
   });
 
-  it('Should correctly call posTags', () => {
+  it('Should correctly call pos', () => {
     let result, answer, resultArr, answerArr, txt;
 
     eql(RiTa.pos(""), []);
     eql(RiTa.pos("freed"), ["jj"]);
-
-    eql(RiTa.pos("the top seed"), ["dt", "jj", "nn"]);
-
-    eql(RiTa.pos("by illegal means"), ["in", "jj", "nn"]);
-
     eql(RiTa.pos("biped"), ["nn"]);
     eql(RiTa.pos("greed"), ["nn"]);
     eql(RiTa.pos("creed"), ["nn"]);
     eql(RiTa.pos("weed"), ["nn"]);
+
+    eql(RiTa.pos("the top seed"), ["dt", "jj", "nn"]);
+    eql(RiTa.pos("by illegal means"), ["in", "jj", "nn"]);
+    eql(RiTa.pos('Joanny Smith ran away'), ['nnp', 'nnp', 'vbd', 'rb']);
 
     result = RiTa.pos("mammal");
     answer = ["nn"];
@@ -216,7 +215,7 @@ describe('RiTa.Tagger', () => {
     }
   });
 
-  it('Should correctly call posTags.simple', () => {
+  it('Should correctly call pos.simple', () => {
     //eql(RiTa.pos("", { simple: true }), []);
     eql(RiTa.pos("biped", { simple: true }), ["n"]);
     eql(RiTa.pos("greed", { simple: true }), ["n"]);
@@ -228,7 +227,7 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos("freed", { simple: true }), ["a"]);
   });
 
-  it('Should correctly call posTags.inline', () => {
+  it('Should correctly call pos.inline', () => {
     let result, answer, txt;
 
     eql(RiTa.pos("", { inline: true }), "");
@@ -257,7 +256,7 @@ describe('RiTa.Tagger', () => {
   });
 
 
-  it('Should correctly call posTagsInline', () => {
+  it('Should correctly call posInline', () => {
     let result, answer, txt;
 
     eql(RiTa.posInline(""), "");
@@ -285,7 +284,7 @@ describe('RiTa.Tagger', () => {
     eq(result, answer);
   });
 
-  it('Should correctly call posTags.inline.simple', () => {
+  it('Should correctly call pos.inline.simple', () => {
     let result, answer, txt;
 
     eql(RiTa.pos("", { inline: true, simple: true }), "");
@@ -313,7 +312,7 @@ describe('RiTa.Tagger', () => {
     eq(result, answer);
   });
 
-  it('Should correctly call posTagsInline.simple', () => {
+  it('Should correctly call posInline.simple', () => {
     let result, answer, txt;
     eql(RiTa.posInline("asdfaasd", { inline: true, simple: true }), "asdfaasd/n");
 
@@ -459,7 +458,7 @@ describe('RiTa.Tagger', () => {
   });
 
   it('Should correctly call isVerb', () => {
-    
+
     expect(RiTa.isVerb("abandons")).eq(true);
 
     // verbs
@@ -481,12 +480,12 @@ describe('RiTa.Tagger', () => {
     ok(RiTa.isVerb("falsifies"));
     ok(RiTa.isVerb("beautifies"));
     ok(RiTa.isVerb("repossesses"));
-    
+
     ok(!RiTa.isVerb("dancer"));
     ok(!RiTa.isVerb("walker"));
     ok(!RiTa.isVerb("beautiful"));
 
-    ok(RiTa.isVerb("eat"),'eat');
+    ok(RiTa.isVerb("eat"), 'eat');
     ok(RiTa.isVerb("chew"));
 
     ok(RiTa.isVerb("throw")); // +n
