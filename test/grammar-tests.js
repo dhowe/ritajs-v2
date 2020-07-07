@@ -218,6 +218,11 @@ describe('RiTa.Grammar', () => {
         });
         eq(rg.expand({ trace: 0 }), "A");
 
+        rg = new Grammar({
+            start: "$r.pluralize()",
+            r: "( mouse | mouse )"
+        });
+        eq(rg.expand({ trace: 0 }), "mice");
     });
 
     it("should correctly handle special characters", () => {
