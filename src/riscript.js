@@ -249,10 +249,7 @@ function quotify(s) {
 /// Pluralizes the word according to english regular/irregular rules.
 /// </summary>
 function pluralize(s) {
-  s = s.trim();
-  if (s.indexOf(' ') > -1) throw Error
-    ('pluralize expected a single word, got "' + s + '"');
-  return RiScript.RiTa.pluralize(s);
+  return RiScript.RiTa.pluralize(s.trim());
 }
 
 RiScript.MAX_TRIES = 100;

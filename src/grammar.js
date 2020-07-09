@@ -40,16 +40,17 @@ class Grammar {
     return this;
   }
 
-  expand(rule = 'start', opts) {
+  expand(rule = 'start', opts = {}) {
 
-    // TODO: test with missing args (check all cases)
     if (arguments.length && typeof arguments[0] !== 'string') {
       opts = rule;
       rule = 'start';
     }
     let ctx = deepmerge(this.context, this.rules);
+    if (opts.context) ctx = deepmerge(ctx, opts.context);
     if (rule.startsWith('$')) rule = rule.substring(1);
     if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
+    
     return RiScript.eval(ctx[rule], ctx, opts);
   }
 

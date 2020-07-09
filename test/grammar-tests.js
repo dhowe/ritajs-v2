@@ -198,9 +198,20 @@ describe('RiTa.Grammar', () => {
         eq(rg.expand(), "DOG");
     });
 
+    it("should allow context in expand", () => {
+        let context, rg;
+        context = { randomPosition: () => 'jobArea jobType' };
+        rg = new RiTa.Grammar({ start: "My .randomPosition()." });
+        expect(rg.expand({ context })).eq("My jobArea jobType.");
+
+        context = { randomPosition: () => 'jobArea jobType' };
+        rg = new RiTa.Grammar({ stat: "My .randomPosition()." });
+        expect(rg.expand('stat', { context })).eq("My jobArea jobType.");
+    });
+
     it("should handle custom transforms", () => {
         let context = { randomPosition: () => 'jobArea jobType' };
-        let rg = new RiTa.Grammar({ start: "My .randomPosition()."}, context);
+        let rg = new RiTa.Grammar({ start: "My .randomPosition()." }, context);
         expect(rg.expand()).eq("My jobArea jobType.");
     });
 

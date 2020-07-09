@@ -246,14 +246,17 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('');
     });
 
-    it('Should correctly handle transforms on literals', function () {
+    it('Should pluralize phrases', () => {
+      expect(RiTa.evaluate('These (bad feeling).pluralize().')).eq('These bad feelings.');
+      expect(RiTa.evaluate('She (pluralize).pluralize().')).eq('She pluralizes.');
+    })
+
+    it('Should correctly handle transforms on literals', () => {
       expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many "teeth" do you have?');
-
-      // NEXT: CONSIDER adding context to RiTa.Grammar/grammar.expand
-
       expect(RiTa.evaluate('That is (ant).articlize().', 0, { trace: 0 })).eq('That is an ant.');
       expect(RiTa.evaluate('That is an (ant).capitalize().')).eq('That is an Ant.');
     });
+
     /*     it.only('Should handle silents', () => {
           expect(RiTa.evaluate('The $hero=blue (dog | dog)', ctx = {}, {trace:0})).eq('The blue dog');
           expect(ctx.foo).eq('blue');
