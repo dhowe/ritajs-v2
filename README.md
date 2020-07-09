@@ -1,8 +1,8 @@
 ## Installation
 
 * For node: `npm install rita@beta`
-* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.28/rita-web.js) (1.3mb)
-* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.28/rita-web-nolex.js) (.5mb)
+* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.29/rita-web.js) (1.3mb)
+* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.29/rita-web-nolex.js) (.5mb)
 * For [developers](#developing)
 
 ### Example (node)
@@ -97,19 +97,21 @@ RiTaScript can be used as part of any grammar (via RiTa.Grammar) or can be run d
 
 
 ### Choice
-
+Text options to be randomly selected at runtime
 ```
 The weather was (sad | gloomy | depressed).  ->  "The weather was gloomy." 
 I'm (very | super | really) glad to ((meet | know) you | learn about you).  ->  "I'm very glad to know you." 
 ```
 
 ### Weighted Choice
+Assign probabilities to choice selection
+
 ```
 The weather was (sad | gloomy [2] | depressed[4]).  ->  "The weather was depressed." 
 ```
 
 ### Assignment
-Basic assignments do not have output, they simply create or update a symbol
+Basic assignments do not have output, they simply create or update a symbol to be used elsewhere
 
 ```
 $desc=wet and cold
@@ -118,7 +120,7 @@ The weather was $desc  ->  "The weather was wet and cold"
 
 ### Inline Assignment
 
-Inline assignments create/modify a symbol _and_ output its contents
+Inline assignments create or modify a symbol _and_ output its contents
 
 ```
 Jane was from [$place=(New York | Berlin | Shanghai)]. 
@@ -135,14 +137,14 @@ In [$place=(New York | Berlin | Shanghai)] it is cold and wet in winter.
 
 
 ### Transforms
-
+RiScript comes with a number of useful transforms built-in (including pluralize(), capitalize(), articlize(), etc). User-defined transforms can be added using RiTa.addTransform() or by passing the transform function as the 2nd argument to RiTa.evaluate() or to the RiTa.Grammar() constructor as part of the 'context'.
 ```
 The group of boys (run).conjugate().
 How many (tooth | menu | child).pluralize() do you have?
 How many (tooth | menu | child).pluralize().toUpper() do you have?
 ```
 
-Custom transforms can be added using RiTa.addTransform() or by passing the transform function as the 2nd argument to RiTa.evaluate() or to the RiTa.Grammar() constructor as part of the 'context'.
+
 
 <!--
 ### Choice
