@@ -111,7 +111,7 @@ The weather was (sad | gloomy [2] | depressed[4]).  ->  "The weather was depress
 ```
 
 ### Assignment
-Basic assignments do not have output, they simply create or update a symbol to be used elsewhere
+Basic assignments do not have output, they simply create or update a symbol to be used elsewhere (variables in JavaScript may also be used when passed in via the scripts 'context')
 
 ```
 $desc=wet and cold
@@ -137,11 +137,12 @@ In [$place=(New York | Berlin | Shanghai)] it is cold and wet in winter.
 
 
 ### Transforms
-RiScript comes with a number of useful transforms built-in (including pluralize(), capitalize(), articlize(), etc). User-defined transforms can be added using RiTa.addTransform() or by passing the transform function as the 2nd argument to RiTa.evaluate() or to the RiTa.Grammar() constructor as part of the 'context'.
+Allow for modification of symbols, choices, and raw text. RiScript comes with a number of useful transforms enabled (including pluralize(), capitalize(), and articlize()), which can be nested to create complex expressions. User-defined transforms can be added using RiTa.addTransform() or by passing a transform function as part of the script's 'context'.
 ```
-The group of boys (run).conjugate().
 How many (tooth | menu | child).pluralize() do you have?
 How many (tooth | menu | child).pluralize().toUpper() do you have?
+He grew up to be $animal.articlize().
+He grew up to be (anteater).articlize().
 ```
 
 
@@ -199,9 +200,9 @@ In [$place=(New York | Berlin | Shanghai)], it is cold and wet in winter.
 In [$place=(New York | Berlin | Shanghai) it is cold and wet in winter].
 
 ```
--->
-### Symbols
 
+### Symbols
+Variables (or symbols) can be defined in RiScript or in JavaScript (and passed in via the 'context' argument)
 ```
 $desc=dark and gloomy
 The weather was $desc
@@ -211,9 +212,9 @@ The weather was $desc
 /* 'desc' defined in JS */
 The weather was $desc
 ```
-
+-->
 ### Conditionals
-
+Allow for conditional execution, based on the values of one or more variables
 ```
 // 'desc' can be defined in JS or RS */
 {desc='party'} The party was happening

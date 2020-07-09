@@ -255,6 +255,9 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many "teeth" do you have?');
       expect(RiTa.evaluate('That is (ant).articlize().', 0, { trace: 0 })).eq('That is an ant.');
       expect(RiTa.evaluate('That is an (ant).capitalize().')).eq('That is an Ant.');
+      expect(RiTa.evaluate('(ant).articlize().capitalize()', 0, { trace: 0 })).eq('An ant');
+      expect(RiTa.evaluate('(ant).capitalize().articlize()', 0, { trace: 0 })).eq('an Ant');
+
     });
 
     /*     it.only('Should handle silents', () => {
