@@ -257,6 +257,16 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('That is an (ant).capitalize().')).eq('That is an Ant.');
       expect(RiTa.evaluate('(ant).articlize().capitalize()', 0, { trace: 0 })).eq('An ant');
       expect(RiTa.evaluate('(ant).capitalize().articlize()', 0, { trace: 0 })).eq('an Ant');
+    });
+
+    // WORKING HERE NEXT
+    0&& it('Should correctly handle transforms on phrases', () => {
+      expect(RiTa.evaluate('($adj tooth).articlize()', { adj: 'awful' }, { trace: 1 })).eq('an awful tooth');
+
+      expect(RiTa.evaluate('How many (bad teeth).quotify()?')).eq('How many "bad teeth"?');
+      expect(RiTa.evaluate('(awful tooth).articlize()')).eq('an awful tooth');
+      expect(RiTa.evaluate('$adj teeth', { adj: 'awful' })).eq('awful teeth');
+      expect(RiTa.evaluate('an ($adj tooth)', { adj: 'awful' })).eq('an awful tooth');
 
     });
 
@@ -409,6 +419,12 @@ describe('RiTa.RiScript', () => {
       expect(res).eq('I said hello to her');
       res = RiTa.evaluate('$foo=(hello)\n$start=I said $foo to her\n$start', {}, { trace: 0 });
       expect(res).eq('I said hello to her');
+    });
+
+    it('Should return input for undefined symbol', () => {
+      expect(RiTa.evaluate('$a', {}, { silent: 1 })).eq('$a');
+      expect(RiTa.evaluate('$a.capitalize()', {}, { silent: 1 })).eq('$a.capitalize()');
+      expect(RiTa.evaluate('The $a.capitalize() dog.', {}, { silent: 1 })).eq('The $a.capitalize() dog.');
     });
 
     it('Should resolve symbols in context', () => {
@@ -597,10 +613,10 @@ describe('RiTa.RiScript', () => {
         {}, { trace: 0 })).eq("Does node equal node?");
     });
 
-  /*   it('XXX', () => {
-      expect(RiTa.evaluate('How many (tooth | tooth).pluralize() do you have?', 0,
-        {trace:1, skipPreParse: 0})).eq('How many teeth do you have?');
-    }); */
+    /*   it('XXX', () => {
+        expect(RiTa.evaluate('How many (tooth | tooth).pluralize() do you have?', 0,
+          {trace:1, skipPreParse: 0})).eq('How many teeth do you have?');
+      }); */
 
     it('Should handle choice transforms', () => {
 
