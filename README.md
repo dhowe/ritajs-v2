@@ -111,7 +111,7 @@ The weather was (sad | gloomy [2] | depressed[4]).  ->  "The weather was depress
 ```
 
 ### Assignment
-Basic assignments do not have output, they simply create or update a symbol to be used elsewhere (variables in JavaScript may also be used when passed in via the scripts 'context')
+Basic assignments do not have output, they simply create or update a variable to be used elsewhere (variables in JavaScript may also be used when passed in via the scripts 'context')
 
 ```
 $desc=wet and cold
@@ -120,7 +120,7 @@ The weather was $desc  ->  "The weather was wet and cold"
 
 ### Inline Assignment
 
-Inline assignments create or modify a symbol _and_ output its contents
+Inline assignments allow one to easily set a variable, output it, and refer to it later
 
 ```
 Jane was from [$place=(New York | Berlin | Shanghai)]. 
@@ -137,12 +137,13 @@ In [$place=(New York | Berlin | Shanghai)] it is cold and wet in winter.
 
 
 ### Transforms
-Allow for modification of symbols, choices, and raw text. RiScript comes with a number of useful transforms enabled (including pluralize(), capitalize(), and articlize()), which can be nested to create complex expressions. User-defined transforms can be added using RiTa.addTransform() or by passing a transform function as part of the script's 'context'.
+Allow for modification of variables, choices, and raw text. RiScript comes with a number of useful transforms enabled (including pluralize(), capitalize(), and articlize()), which can be nested to create complex expressions. User-defined transforms can be added using RiTa.addTransform() or by passing a transform function as part of the script's 'context'.
 ```
 How many (tooth | menu | child).pluralize() do you have?
 How many (tooth | menu | child).pluralize().toUpper() do you have?
 He grew up to be $animal.articlize().
 He grew up to be (anteater).articlize().
+He grew up to be (anteater).articlize().myCustomTransform().
 ```
 
 
