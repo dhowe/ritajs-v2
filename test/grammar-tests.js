@@ -199,15 +199,14 @@ describe('RiTa.Grammar', () => {
         eq(rg.expand(), "DOG");
     });
 
-    // WORKING HERE NEXT
-    0 && it("should pluralize phrases in a transform", () => {
+    it("should pluralize phrases in a transform", () => {
         let ctx = {
             pluralise: (s) => {
                 s = s.trim();
                 if (s.includes(' ')) {
                     let words = RiTa.tokenize(s);
                     let last = words.pop();
-                    words.add(RiTa.pluralize(last));
+                    words.push(RiTa.pluralize(last));
                     return RiTa.untokenize(words);
                 }
                 return RiTa.pluralize(s);
@@ -219,9 +218,8 @@ describe('RiTa.Grammar', () => {
         }, ctx);
         let res = rg.expand();
         expect(res).eq('bad feelings');
-
     });
-    
+
     it("should allow context in expand", () => {
         let context, rg;
         context = { randomPosition: () => 'jobArea jobType' };

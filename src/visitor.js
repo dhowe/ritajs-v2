@@ -82,12 +82,12 @@ class Visitor extends RiScriptVisitor {
     return this.visitExpr(ctx.expr());
   }
 
-  visitExpr(ctx) {
+/*   visitExpr(ctx) {
     this.trace && console.log('visitExpr(\'' + ctx.getText()
       + '\'): tfs=' + (ctx.transforms || "[]"));
     let result = this.visitChildren(ctx);
     return result;
-  }
+  } */
 
   /* output expr value and create a mapping in the symbol table */
   visitInline(ctx) {
@@ -174,15 +174,23 @@ class Visitor extends RiScriptVisitor {
 
     if (!ctx.children) return '';
 
-    this.trace && console.log('visitChildren(' + ctx.constructor.name + '): "'
+    this.trace && console.log('visitChildren['+ctx.children.length+'](' + ctx.constructor.name + '): "'
       + ctx.getText() + '"', ctx.transforms || '[]', '[' + ctx.children.reduce(
         (acc, c) => acc += c.constructor.name + ',', '').replace(/,$/, ']'));
 
+
+    // if we have only one child, transforms apply to it
+    if (ctx.children.length === 1) {
+      let tok = ctx.children[0];
+      tok.transforms = this.inheritTransforms(tok, ctx);
+      //console.log('ONECHILDPOLICY', tok.transforms);
+      return this.visit(tok);
+    }
+
     // visit each child, pass transforms, and merge their output
-    return ctx.children.reduce((acc, child) => {
-      child.transforms = ctx.transforms;
-      return acc + this.visit(child);
-    }, '');
+    let result =  ctx.children.reduce((acc, child) => acc + this.visit(child),'');
+
+    return this.handleTransforms(result, ctx.transforms);
   }
 
   // ---------------------- Helpers ---------------------------
