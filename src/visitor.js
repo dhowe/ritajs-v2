@@ -82,18 +82,17 @@ class Visitor extends RiScriptVisitor {
     return this.visitExpr(ctx.expr());
   }
 
-/*   visitExpr(ctx) {
-    this.trace && console.log('visitExpr(\'' + ctx.getText()
-      + '\'): tfs=' + (ctx.transforms || "[]"));
-    let result = this.visitChildren(ctx);
-    return result;
-  } */
+  /*   visitExpr(ctx) {
+      this.trace && console.log('visitExpr(\'' + ctx.getText()
+        + '\'): tfs=' + (ctx.transforms || "[]"));
+      let result = this.visitChildren(ctx);
+      return result;
+    } */
 
   /* output expr value and create a mapping in the symbol table */
   visitInline(ctx) {
-    //this.visitAssign(ctx);
-    let orig = ctx.getText();
     let token = ctx.expr();
+    let orig = ctx.getText();
     let tokText = token.getText();
     let id = symbolName(ctx.symbol().getText());
     token.transforms = this.inheritTransforms(token, ctx);
@@ -105,10 +104,8 @@ class Visitor extends RiScriptVisitor {
     this.trace && console.log('visitInline2: $' + id + '=' + this.context[id]);
 
     // if the inline is not fully resolved, save it for next time
-    //if (/(\$|[()])/.test(this.context[id])) {
     if (this.parent.isParseable(this.context[id])) {
       this.pendingSymbols.push(id);
-      //console.log('HIT', rs, this.pendingSymbols);
       return orig.replace(tokText, this.context[id]);
     }
     return this.context[id];
@@ -118,6 +115,7 @@ class Visitor extends RiScriptVisitor {
   visitSymbol(ctx) {
 
     let ident = ctx.SYM();
+
     // hack: for blank .func() cases
     if (!ident) return this.handleTransforms('', ctx.transform());
 
@@ -146,6 +144,7 @@ class Visitor extends RiScriptVisitor {
       term = ctx.getText();
     }
     let tfs = ctx.transforms;
+
     if (typeof term === 'string') {
       if (term === Visitor.EOF) return '';
       term = this.parent.normalize(term);
@@ -154,18 +153,22 @@ class Visitor extends RiScriptVisitor {
 
       // Handle unresolved symbols and groups by simply
       // re-appending transforms to be handled in next pass
-      //if (/([()]|\$[A-Za-z_][A-Za-z_0-9-]*)/.test(term)) {
       if (this.parent.isParseable(term)) {
         return term + (tfs ? tfs.reduce((acc, val) => acc +
           (typeof val === 'string' ? val : val.getText()), '') : '');
       }
-    } else if (typeof term === 'object') {
+    }
+    else if (typeof term === 'object') {
       // Here we've resolved a symbol to an object in visitSymbol
       this.trace && console.log('visitTerminal2(' + (typeof term) + '): "'
         + JSON.stringify(term) + '" tfs=[' + (tfs || '') + ']');
     }
+    else if (typeof term === 'function') {
+      this.trace && console.log('visitFunction(""): tfs=[' + (tfs || '') + ']');
+    }
     else {
-      this.trace && console.log('visitTerminal2(""): tfs=[' + (tfs || '') + ']');
+      throw Error('Bad');
+
     }
     return this.handleTransforms(term, tfs);
   }
@@ -174,10 +177,9 @@ class Visitor extends RiScriptVisitor {
 
     if (!ctx.children) return '';
 
-    this.trace && console.log('visitChildren['+ctx.children.length+'](' + ctx.constructor.name + '): "'
+    this.trace && console.log('visitChildren(' + ctx.constructor.name + '): "'
       + ctx.getText() + '"', ctx.transforms || '[]', '[' + ctx.children.reduce(
         (acc, c) => acc += c.constructor.name + ',', '').replace(/,$/, ']'));
-
 
     // if we have only one child, transforms apply to it
     if (ctx.children.length === 1) {
@@ -188,8 +190,7 @@ class Visitor extends RiScriptVisitor {
     }
 
     // visit each child, pass transforms, and merge their output
-    let result =  ctx.children.reduce((acc, child) => acc + this.visit(child),'');
-
+    let result = ctx.children.reduce((acc, child) => acc + this.visit(child), '');
     return this.handleTransforms(result, ctx.transforms);
   }
 

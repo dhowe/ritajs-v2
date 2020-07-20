@@ -614,8 +614,7 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle RiTa function transforms', () => {
-      expect(RiTa.evaluate('Does $RiTa.env() equal node?',
-        {})).eq("Does node equal node?");
+      expect(RiTa.evaluate('Does $RiTa.env() equal node?')).eq("Does node equal node?");
     });
 
     /*   it('XXX', () => {
