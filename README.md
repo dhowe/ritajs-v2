@@ -1,8 +1,8 @@
 ## Installation
 
 * For node: `npm install rita@beta`
-* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.29/rita-web.js) (1.3mb)
-* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.29/rita-web-nolex.js) (.5mb)
+* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.30/rita-web.js) (1.3mb)
+* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.30/rita-web-nolex.js) (.5mb)
 * For [developers](#developing)
 
 ### Example (node)
@@ -97,21 +97,19 @@ RiTaScript can be used as part of any grammar (via RiTa.Grammar) or can be run d
 
 
 ### Choice
-Text options to be randomly selected at runtime
+
 ```
 The weather was (sad | gloomy | depressed).  ->  "The weather was gloomy." 
 I'm (very | super | really) glad to ((meet | know) you | learn about you).  ->  "I'm very glad to know you." 
 ```
 
 ### Weighted Choice
-Assign probabilities to choice selection
-
 ```
 The weather was (sad | gloomy [2] | depressed[4]).  ->  "The weather was depressed." 
 ```
 
 ### Assignment
-Basic assignments do not have output, they simply create or update a variable to be used elsewhere (variables in JavaScript may also be used when passed in via the scripts 'context')
+Basic assignments do not have output, they simply create or update a symbol
 
 ```
 $desc=wet and cold
@@ -120,7 +118,7 @@ The weather was $desc  ->  "The weather was wet and cold"
 
 ### Inline Assignment
 
-Inline assignments allow one to easily set a variable, output it, and refer to it later
+Inline assignments create/modify a symbol _and_ output its contents
 
 ```
 Jane was from [$place=(New York | Berlin | Shanghai)]. 
@@ -137,16 +135,14 @@ In [$place=(New York | Berlin | Shanghai)] it is cold and wet in winter.
 
 
 ### Transforms
-Allow for modification of variables, choices, and raw text. RiScript comes with a number of useful transforms enabled (including pluralize(), capitalize(), and articlize()), which can be nested to create complex expressions. User-defined transforms can be added using RiTa.addTransform() or by passing a transform function as part of the script's 'context'.
+
 ```
+The group of boys (run).conjugate().
 How many (tooth | menu | child).pluralize() do you have?
 How many (tooth | menu | child).pluralize().toUpper() do you have?
-He grew up to be $animal.articlize().
-He grew up to be (anteater).articlize().
-He grew up to be (anteater).articlize().myCustomTransform().
 ```
 
-
+Custom transforms can be added using RiTa.addTransform() or by passing the transform function as the 2nd argument to RiTa.evaluate() or to the RiTa.Grammar() constructor as part of the 'context'.
 
 <!--
 ### Choice
@@ -201,9 +197,9 @@ In [$place=(New York | Berlin | Shanghai)], it is cold and wet in winter.
 In [$place=(New York | Berlin | Shanghai) it is cold and wet in winter].
 
 ```
-
+-->
 ### Symbols
-Variables (or symbols) can be defined in RiScript or in JavaScript (and passed in via the 'context' argument)
+
 ```
 $desc=dark and gloomy
 The weather was $desc
@@ -213,9 +209,9 @@ The weather was $desc
 /* 'desc' defined in JS */
 The weather was $desc
 ```
--->
+
 ### Conditionals
-Allow for conditional execution, based on the values of one or more variables
+
 ```
 // 'desc' can be defined in JS or RS */
 {desc='party'} The party was happening
