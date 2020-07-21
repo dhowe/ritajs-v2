@@ -100,6 +100,11 @@ class SeededRandom {
     return o;
   }
 
+  shuffle(arr) {
+    let ro = this.randomOrdering(arr.length);
+    return ro.map(e => arr[e]);
+  }
+
   randomItem(arr, func) {
     let crand = this.randomFloat();
     let item = arr[Math.floor(crand * arr.length)];

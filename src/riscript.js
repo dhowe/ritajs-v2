@@ -10,8 +10,8 @@ class RiScript {
   constructor() {
     this.lexer = undefined;
     this.parser = undefined;
-    this.visitor = undefined;
     this.appliedTransforms = [];
+    this.visitor = new Visitor(this);
   }
 
   static eval() {
@@ -158,13 +158,8 @@ class RiScript {
     let { pre, parse, post } = this.preParse(input, opts);
     let tree = parse.length && this.lexParse(parse, opts);
     opts.trace && console.log('preParse(' + (pre || "''") + ',' + (post || "''") + '):');
-    let result = parse.length ? this.createVisitor(context, opts).start(tree) : '';
+    let result = parse.length ? this.visitor.init(context, opts).start(tree) : '';
     return (this.normalize(pre) + ' ' + result + ' ' + this.normalize(post)).trim();
-  }
-
-  lexParseVisitOrig(input, context, opts) {
-    let tree = this.lexParse(input, opts);
-    return this.createVisitor(context, opts).start(tree);;
   }
 
   normalize(s) {
@@ -173,10 +168,12 @@ class RiScript {
         .replace(/\\n/, '')
         .replace(/\n/, ' ') : '';
   }
-
+/* 
   createVisitor(context, opts) {
-    return new Visitor(this, context, opts);
-  }
+    if (!this.visitor) this.visitor = new Visitor(this);
+    ;
+    return this.visitor;
+  } */
 
   resolveEntities(result) { // &#10; for line break DOC:
     return decode(result.replace(/ +/g, ' '))
@@ -198,9 +195,10 @@ class RiScript {
       && /[aeiou]/.test(phones[0]) ? 'an ' : 'a ') + s;
   }
 
-  static seq(s) {
-    return "seq";
+  static identity(s) {
+    return s;
   }
+
   /* 
     static addTransform(name, func) { // DOC: object case
       if (typeof name === 'string') {
@@ -264,7 +262,7 @@ RiScript.MAX_TRIES = 100;
 RiScript.transforms = {
   capitalize, quotify, pluralize, 
   qq: quotify, uc: toUpper, ucf: capitalize, 
-  articlize: RiScript.articlize, seq: RiScript.seq
+  articlize: RiScript.articlize, seq: RiScript.identity, rseq: RiScript.identity
 };
 
 module && (module.exports = RiScript);

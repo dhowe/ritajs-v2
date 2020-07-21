@@ -1,6 +1,3 @@
-// const expect = require('chai').expect;
-// const RiTa = require('../src/rita_api');
-//const expect = chai.expect;
 
 describe('RiTa.Core', () => {
 

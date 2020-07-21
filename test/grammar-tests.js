@@ -38,6 +38,51 @@ describe('RiTa.Grammar', () => {
         ok(typeof new Grammar() !== 'undefined');
     });
 
+    it('Should support seq() transforms', () => {
+        let opts = ['a', 'b', 'c', 'd'];
+        let rule = '(' + opts.join('|') + ').seq()';
+        rg = new Grammar({ start: rule });
+        console.log(rule);
+        for (let i = 0; i < 4; i++) {
+            let res = rg.expand();
+            console.log(i, ':', res);
+            expect(res).eq(opts[i]);
+        }
+
+        rule = '(' + opts.join('|') + ').seq().capitalize()';
+        rg = new Grammar({ start: rule });
+        console.log(rule);
+        for (let i = 0; i < 4; i++) {
+            let res = rg.expand();
+            console.log(i, ':', res);
+            expect(res).eq(opts[i].toUpperCase());
+        }
+    });
+
+    it('Should support rseq() transforms', () => {
+        let opts = ['a', 'b', 'c', 'd'], result = [];
+        let rule = '(' + opts.join('|') + ').rseq()';
+        rg = new Grammar({ start: rule });
+        console.log(rule);
+        for (let i = 0; i < 4; i++) {
+            let res = rg.expand();
+            console.log(i, ':', res);
+            result.push(res);
+        }
+        expect(result).to.have.members(opts);
+
+        rule = '(' + opts.join('|') + ').rseq().capitalize()';
+        rg = new Grammar({ start: rule });
+        result = [];
+        console.log(rule);
+        for (let i = 0; i < 4; i++) {
+            let res = rg.expand();
+            console.log(i, ':', res);
+            result.push(res);
+        }
+        expect(result).to.have.members(opts.map(o => o.toUpperCase()));
+    });
+
     it('should correctly resolve inlines', () => {
         let rg, rs;
 

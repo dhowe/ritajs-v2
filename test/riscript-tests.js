@@ -1,3 +1,4 @@
+const RiScript = require('../src/riscript');
 const Operator = RiTa.Operator;
 
 describe('RiTa.RiScript', () => {
@@ -613,30 +614,48 @@ describe('RiTa.RiScript', () => {
       RiTa.addTransform('capA');
     });
 
-
-
-    0 && it('Should support seq() transform', () => {
-      let opts = ['a','b','c','d'];
-      let rule = '('+opts.join('|')+').seq()';
-      console.log(rule);
-      for (let i = 0; i < 4; i++) {
-        let res = RiTa.evaluate(rule, 0, TT);
-        console.log('RES:', res);
-        expect(res).eq(opts[i]);
-      }
-    }); 
-
-
-
-
     it('Should handle RiTa function transforms', () => {
       expect(RiTa.evaluate('Does $RiTa.env() equal node?')).eq("Does node equal node?");
     });
 
-    /*   it('XXX', () => {
-        expect(RiTa.evaluate('How many (tooth | tooth).pluralize() do you have?', 0,
-          {trace:1, skipPreParse: 0})).eq('How many teeth do you have?');
-      }); */
+    it('Should handle seq() transforms', () => {
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '(' + opts.join('|') + ').seq()';
+      let rg = new RiScript();
+      for (let i = 0; i < 4; i++) {
+        let res = rg.evaluate(rule);
+        console.log(i, ':', res);
+        expect(res).eq(opts[i]);
+      }
+
+      let rule2 = '(' + opts.join('|') + ').seq().capitalize()';
+      for (let i = 0; i < 4; i++) {
+        let res = rg.evaluate(rule2);
+        console.log(i, ':', res);
+        expect(res).eq(opts[i].toUpperCase());
+      }
+    });
+
+    it('Should handle rseq() transforms', () => {
+      let opts = ['a', 'b', 'c', 'd'], result = [];
+      let rule = '(' + opts.join('|') + ').rseq()';
+      let rg = new RiScript();
+      for (let i = 0; i < 4; i++) {
+        let res = rg.evaluate(rule);
+        console.log(i, ':', res);
+        result.push(res);
+      }
+      expect(result).to.have.members(opts);
+
+      let rule2 = '(' + opts.join('|') + ').rseq().capitalize()';
+      result = [];
+      for (let i = 0; i < 4; i++) {
+        let res = rg.evaluate(rule2);
+        console.log(i, ':', res);
+        result.push(res);
+      }
+      expect(result).to.have.members(opts.map(o => o.toUpperCase()));
+    });
 
     it('Should handle choice transforms', () => {
 
