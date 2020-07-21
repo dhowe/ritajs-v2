@@ -613,6 +613,17 @@ describe('RiTa.RiScript', () => {
       RiTa.addTransform('capA');
     });
 
+    /*it('Should support seq() transform', () => {
+      let opts = ['a','b','c','d'];
+      let rule = '('+opts.join('|')+').seq()';
+      console.log(rule);
+      /* for (let i = 0; i < 4; i++) {
+        const element = array[i];
+        
+      } */
+   /*    expect(RiTa.evaluate(rule)).eq("a");
+    }); */
+
     it('Should handle RiTa function transforms', () => {
       expect(RiTa.evaluate('Does $RiTa.env() equal node?')).eq("Does node equal node?");
     });

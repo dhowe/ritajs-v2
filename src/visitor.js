@@ -130,6 +130,11 @@ class Visitor extends RiScriptVisitor {
     textContext.transforms = ctx.transforms || [];
     ctx.transform().map(t => textContext.transforms.push(t.getText()));
 
+    if (0 && typeof text !== 'string') {
+       // Here we have a nested object (or RiTa call)
+      console.log("***** NOPE", typeof text, text === RiTa, textContext.transforms);
+    }
+
     this.trace && console.log('visitSymbol($' + ident + ')'
       + ' tfs=[' + (textContext.transforms || '') + '] ctx[\''
       + ident + '\']=' + (ident === 'RiTa' ? '{RiTa}' : textContext.text));
@@ -139,37 +144,39 @@ class Visitor extends RiScriptVisitor {
 
   visitTerminal(ctx) {
 
-    let term = ctx;
+    let term = ctx, tfs = ctx.transforms;
     if (typeof ctx.getText === 'function') {
       term = ctx.getText();
     }
-    let tfs = ctx.transforms;
 
     if (typeof term === 'string') {
+
       if (term === Visitor.EOF) return '';
       term = this.parent.normalize(term);
       this.trace && /\S/.test(term) && console.log
         ('visitTerminal("' + term + '") tfs=[' + (tfs || '') + ']');
 
-      // Handle unresolved symbols and groups by simply
-      // re-appending transforms to be handled in next pass
+      // Re-append transforms on unresolved symbols/groups for next pass
       if (this.parent.isParseable(term)) {
         return term + (tfs ? tfs.reduce((acc, val) => acc +
           (typeof val === 'string' ? val : val.getText()), '') : '');
       }
     }
     else if (typeof term === 'object') {
+
       // Here we've resolved a symbol to an object in visitSymbol
       this.trace && console.log('visitTerminal2(' + (typeof term) + '): "'
         + JSON.stringify(term) + '" tfs=[' + (tfs || '') + ']');
     }
     else if (typeof term === 'function') {
+
+      // Only happens when calling a RiTa function?
       this.trace && console.log('visitFunction(""): tfs=[' + (tfs || '') + ']');
     }
     else {
-      throw Error('Bad');
-
+      throw Error('Unexpected terminal type=' + (typeof term)); // never
     }
+
     return this.handleTransforms(term, tfs);
   }
 
