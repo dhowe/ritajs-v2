@@ -41,20 +41,18 @@ describe('RiTa.Grammar', () => {
     it('Should support seq() transforms', () => {
         let opts = ['a', 'b', 'c', 'd'];
         let rule = '(' + opts.join('|') + ').seq()';
-        rg = new Grammar({ start: rule });
-        console.log(rule);
+        let rs = new Grammar({ start: rule });
         for (let i = 0; i < 4; i++) {
-            let res = rg.expand();
-            console.log(i, ':', res);
+            let res = rs.expand();
+            //console.log(i, ':', res);
             expect(res).eq(opts[i]);
         }
 
         rule = '(' + opts.join('|') + ').seq().capitalize()';
-        rg = new Grammar({ start: rule });
-        console.log(rule);
+        rs = new Grammar({ start: rule });
         for (let i = 0; i < 4; i++) {
-            let res = rg.expand();
-            console.log(i, ':', res);
+            let res = rs.expand();
+           // console.log(i, ':', res);
             expect(res).eq(opts[i].toUpperCase());
         }
     });
@@ -62,22 +60,20 @@ describe('RiTa.Grammar', () => {
     it('Should support rseq() transforms', () => {
         let opts = ['a', 'b', 'c', 'd'], result = [];
         let rule = '(' + opts.join('|') + ').rseq()';
-        rg = new Grammar({ start: rule });
-        console.log(rule);
+        let rs = new Grammar({ start: rule });
         for (let i = 0; i < 4; i++) {
-            let res = rg.expand();
-            console.log(i, ':', res);
+            let res = rs.expand();
+            //console.log(i, ':', res);
             result.push(res);
         }
         expect(result).to.have.members(opts);
 
         rule = '(' + opts.join('|') + ').rseq().capitalize()';
-        rg = new Grammar({ start: rule });
+        rs = new Grammar({ start: rule });
         result = [];
-        console.log(rule);
         for (let i = 0; i < 4; i++) {
-            let res = rg.expand();
-            console.log(i, ':', res);
+            let res = rs.expand();
+            //console.log(i, ':', res);
             result.push(res);
         }
         expect(result).to.have.members(opts.map(o => o.toUpperCase()));

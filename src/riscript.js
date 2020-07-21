@@ -24,6 +24,7 @@ class RiScript {
 
     // make sure we have RiTa in context
     if (!ctx.hasOwnProperty('RiTa')) ctx.RiTa = RiScript.RiTa;
+
     let onepass = opts.singlePass; // TODO: doc
     let last = input, trace = opts.trace;
     let rs = this.pushTransforms(ctx);

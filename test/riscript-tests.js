@@ -1,6 +1,9 @@
 const RiScript = require('../src/riscript');
 const Operator = RiTa.Operator;
 
+// TODO: tests failing bevause of RiScript.RiTa nesting
+// NEXT
+
 describe('RiTa.RiScript', () => {
 
   const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 };
@@ -615,23 +618,24 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle RiTa function transforms', () => {
-      expect(RiTa.evaluate('Does $RiTa.env() equal node?')).eq("Does node equal node?");
+      let rs = new RiScript();
+      expect(rs.evaluate('Does $RiTa.env() equal node?')).eq("Does node equal node?");
     });
 
     it('Should handle seq() transforms', () => {
       let opts = ['a', 'b', 'c', 'd'];
       let rule = '(' + opts.join('|') + ').seq()';
-      let rg = new RiScript();
-      for (let i = 0; i < 4; i++) {
-        let res = rg.evaluate(rule);
-        console.log(i, ':', res);
+      let rs = new RiScript();
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule);
+        //console.log(i, ':', res);
         expect(res).eq(opts[i]);
       }
 
       let rule2 = '(' + opts.join('|') + ').seq().capitalize()';
-      for (let i = 0; i < 4; i++) {
-        let res = rg.evaluate(rule2);
-        console.log(i, ':', res);
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule2);
+        //console.log(i, ':', res);
         expect(res).eq(opts[i].toUpperCase());
       }
     });
@@ -639,22 +643,31 @@ describe('RiTa.RiScript', () => {
     it('Should handle rseq() transforms', () => {
       let opts = ['a', 'b', 'c', 'd'], result = [];
       let rule = '(' + opts.join('|') + ').rseq()';
-      let rg = new RiScript();
-      for (let i = 0; i < 4; i++) {
-        let res = rg.evaluate(rule);
-        console.log(i, ':', res);
+      let rs = new RiScript();
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule);
+        //console.log(i, ':', res);
         result.push(res);
       }
       expect(result).to.have.members(opts);
 
       let rule2 = '(' + opts.join('|') + ').rseq().capitalize()';
       result = [];
-      for (let i = 0; i < 4; i++) {
-        let res = rg.evaluate(rule2);
-        console.log(i, ':', res);
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule2);
+        //console.log(i, ':', res);
         result.push(res);
       }
       expect(result).to.have.members(opts.map(o => o.toUpperCase()));
+
+      let last;
+      for (let i = 0; i < opts.length * 10; i++) {
+        let res = rs.evaluate(rule2);
+        //console.log(i, ':', res);
+        expect(res).not.eq(last);
+        last = res;
+      }
+
     });
 
     it('Should handle choice transforms', () => {

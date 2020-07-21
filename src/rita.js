@@ -246,8 +246,6 @@ class RiTa {
   }
 }
 
-RiScript.RiTa = RiTa;
-
 // CLASSES
 RiTa.Grammar = Grammar;
 RiTa.Markov = Markov;
@@ -311,5 +309,6 @@ RiTa.SPLIT_CONTRACTIONS = false;
 // Set to false to reduce memory (likely slower)
 RiTa.CACHING = true;
 
+RiScript.RiTa = RiTa;
 
 module && (module.exports = RiTa);
