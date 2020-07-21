@@ -14,7 +14,11 @@ class RiScript {
     this.appliedTransforms = [];
   }
 
-  static eval(input, ctx, opts = {}) {
+  static eval() {
+    return new RiScript().evaluate(...arguments);
+  }
+
+  evaluate(input, ctx, opts = {}) {
 
     ctx = ctx || {};
 
@@ -22,7 +26,7 @@ class RiScript {
     if (!ctx.hasOwnProperty('RiTa')) ctx.RiTa = RiScript.RiTa;
     let onepass = opts.singlePass; // TODO: doc
     let last = input, trace = opts.trace;
-    let rs = new RiScript().pushTransforms(ctx);
+    let rs = this.pushTransforms(ctx);
     let expr = rs.lexParseVisit(input, ctx, opts);
     trace && console.log('\nInput1: ' + input + '\nResult1: '
       + expr + '\nContext: [' + Object.keys(ctx) + ']');
@@ -193,6 +197,10 @@ class RiScript {
     return (phones && phones.length
       && /[aeiou]/.test(phones[0]) ? 'an ' : 'a ') + s;
   }
+
+  static seq(s) {
+    return "seq";
+  }
   /* 
     static addTransform(name, func) { // DOC: object case
       if (typeof name === 'string') {
@@ -254,8 +262,9 @@ function pluralize(s) {
 
 RiScript.MAX_TRIES = 100;
 RiScript.transforms = {
-  capitalize, quotify, pluralize, qq: quotify,
-  uc: toUpper, ucf: capitalize, articlize: RiScript.articlize
+  capitalize, quotify, pluralize, 
+  qq: quotify, uc: toUpper, ucf: capitalize, 
+  articlize: RiScript.articlize, seq: RiScript.seq
 };
 
 module && (module.exports = RiScript);

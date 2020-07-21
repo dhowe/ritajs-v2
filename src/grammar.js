@@ -10,6 +10,7 @@ class Grammar {
   constructor(rules, context) {
     this.rules = {};
     this.context = context || {};
+    this.compiler = new RiScript();
     rules && this.setRules(rules);
   }
 
@@ -51,7 +52,7 @@ class Grammar {
     if (rule.startsWith('$')) rule = rule.substring(1);
     if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
     
-    return RiScript.eval(ctx[rule], ctx, opts);
+    return this.compiler.evaluate(ctx[rule], ctx, opts);
   }
 
   toString(lb='\n') { // TODO
@@ -68,6 +69,7 @@ class Grammar {
     return this;
   }
 
+  // TODO: should be instance methods?
   addTransform() { RiScript.addTransform(...arguments); return this }
   removeTransform() { RiScript.removeTransform(...arguments); return this }
   getTransforms() { return RiScript.getTransforms(); }
