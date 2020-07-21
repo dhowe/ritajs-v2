@@ -23,7 +23,7 @@ class RiScript {
     ctx = ctx || {};
 
     // make sure we have RiTa in context
-    if (!ctx.hasOwnProperty('RiTa')) ctx.RiTa = RiScript.RiTa;
+    if (!ctx.hasOwnProperty('RiTa')) ctx.RiTa = RiTa();
 
     let onepass = opts.singlePass; // TODO: doc
     let last = input, trace = opts.trace;
@@ -43,7 +43,7 @@ class RiScript {
           + input + '" after ' + RiScript.MAX_TRIES + ' tries. An infinite loop?');
       }
     }
-    if (!opts.silent && !RiScript.RiTa.SILENT && /\$[A-Za-z_]/.test(expr)) {
+    if (!opts.silent && !RiScript.parent.SILENT && /\$[A-Za-z_]/.test(expr)) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
     }
     return rs.popTransforms(ctx).resolveEntities(expr);
@@ -191,7 +191,7 @@ class RiScript {
   }
 
   static articlize(s) {
-    let phones = RiScript.RiTa.phones(s, { silent: true });
+    let phones = RiTa().phones(s, { silent: true });
     return (phones && phones.length
       && /[aeiou]/.test(phones[0]) ? 'an ' : 'a ') + s;
   }
@@ -222,13 +222,16 @@ class RiScript {
 
 }
 
+function RiTa() { return RiScript.parent; }
+
+
 // -------------------- Default Transforms ----------------------
 
 /// <summary>
 /// articlize: Prefixes the string with 'a' or 'an' as appropriate.
 /// </summary>
 /* function articlize(s) {
-  return RiScript.RiTa.articlize(s);
+  return RiTa().articlize(s);
 } */
 
 /// <summary>
@@ -256,7 +259,7 @@ function quotify(s) {
 /// Pluralizes the word according to english regular/irregular rules.
 /// </summary>
 function pluralize(s) {
-  return RiScript.RiTa.pluralize(s.trim());
+  return RiTa().pluralize(s.trim());
 }
 
 RiScript.MAX_TRIES = 100;

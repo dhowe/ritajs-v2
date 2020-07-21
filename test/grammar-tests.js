@@ -1,6 +1,6 @@
-const { expect } = require('chai');
-
+//const { expect } = require('chai');
 const Grammar = RiTa.Grammar;
+
 describe('RiTa.Grammar', () => {
 
     if (typeof module !== 'undefined') require('./before');
@@ -42,7 +42,7 @@ describe('RiTa.Grammar', () => {
         let opts = ['a', 'b', 'c', 'd'];
         let rule = '(' + opts.join('|') + ').seq()';
         let rs = new Grammar({ start: rule });
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < opts.length; i++) {
             let res = rs.expand();
             //console.log(i, ':', res);
             expect(res).eq(opts[i]);
@@ -50,7 +50,7 @@ describe('RiTa.Grammar', () => {
 
         rule = '(' + opts.join('|') + ').seq().capitalize()';
         rs = new Grammar({ start: rule });
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < opts.length; i++) {
             let res = rs.expand();
            // console.log(i, ':', res);
             expect(res).eq(opts[i].toUpperCase());
@@ -61,7 +61,7 @@ describe('RiTa.Grammar', () => {
         let opts = ['a', 'b', 'c', 'd'], result = [];
         let rule = '(' + opts.join('|') + ').rseq()';
         let rs = new Grammar({ start: rule });
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < opts.length; i++) {
             let res = rs.expand();
             //console.log(i, ':', res);
             result.push(res);
@@ -71,7 +71,7 @@ describe('RiTa.Grammar', () => {
         rule = '(' + opts.join('|') + ').rseq().capitalize()';
         rs = new Grammar({ start: rule });
         result = [];
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < opts.length; i++) {
             let res = rs.expand();
             //console.log(i, ':', res);
             result.push(res);

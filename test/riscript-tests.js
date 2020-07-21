@@ -1,5 +1,6 @@
-const RiScript = require('../src/riscript');
+//const RiScript = require('../src/riscript');
 const Operator = RiTa.Operator;
+const RiScript =  RiTa.RiScript
 
 // TODO: tests failing bevause of RiScript.RiTa nesting
 // NEXT
@@ -617,8 +618,9 @@ describe('RiTa.RiScript', () => {
       RiTa.addTransform('capA');
     });
 
-    it('Should handle RiTa function transforms', () => {
+    it('Should handle RiTa function transforms', () => { // why???
       let rs = new RiScript();
+      expect(rs.evaluate('Does $RiTa.env() equal node?')).eq("Does node equal node?");
       expect(rs.evaluate('Does $RiTa.env() equal node?')).eq("Does node equal node?");
     });
 

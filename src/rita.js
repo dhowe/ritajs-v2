@@ -247,11 +247,13 @@ class RiTa {
 }
 
 // CLASSES
+RiTa.RiScript = RiScript;
 RiTa.Grammar = Grammar;
 RiTa.Markov = Markov;
 RiTa.Operator = Operator;
 RiTa.Markov.parent = RiTa;
 RiTa.Grammar.parent = RiTa;
+RiTa.RiScript.parent = RiTa;
 
 // COMPONENTS
 RiTa.stemmer = new Stemmer(RiTa);
@@ -309,6 +311,6 @@ RiTa.SPLIT_CONTRACTIONS = false;
 // Set to false to reduce memory (likely slower)
 RiTa.CACHING = true;
 
-RiScript.RiTa = RiTa;
+//RiScript.RiTa = RiTa;
 
 module && (module.exports = RiTa);

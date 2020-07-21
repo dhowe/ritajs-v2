@@ -1,4 +1,3 @@
-const RiScript = require('./riscript');
 const deepmerge = require('deepmerge');
 const maxTries = 100;
 
@@ -10,7 +9,7 @@ class Grammar {
   constructor(rules, context) {
     this.rules = {};
     this.context = context || {};
-    this.compiler = new RiScript();
+    this.compiler = new (RiTa()).RiScript();
     rules && this.setRules(rules);
   }
 
@@ -74,6 +73,8 @@ class Grammar {
   removeTransform() { RiScript.removeTransform(...arguments); return this }
   getTransforms() { return RiScript.getTransforms(); }
 }
+
+function RiTa() { return Grammar.parent; }
 
 function joinChoice(arr) {
   let opts = '(';
