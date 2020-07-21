@@ -2,11 +2,17 @@ const Util = require("./util");
 
 let RiTa;
 
+/**
+ * Provides the phone list for words using the CMU6 letter-to-sound (LTS) rules,
+ * which are based on the Black, Lenzo, and Pagel paper, "Issues in Building
+ * General Letter-to-Sound Rules." Proceedings of ECSA Workshop on Speech
+ * Synthesis, pages 77-80, Australia, 1998.
+ */
 class LetterToSound {
 
   constructor(parent) {
     RiTa = parent;
-    this.cache = {}; // TODO
+    this.cache = {}; // TODO: lts cache
     this.letterIndex = {};
     this.fval_buff = [];
     this.numStates = 0;
@@ -19,16 +25,13 @@ class LetterToSound {
   createState(type) {
 
     if (type === "S") {
-
       let index = parseInt(this.tokenizer.nextToken());
       let c = this.tokenizer.nextToken();
       let qtrue = parseInt(this.tokenizer.nextToken());
       let qfalse = parseInt(this.tokenizer.nextToken());
-
       return new DecisionState(index, c.charAt(0), qtrue, qfalse);
 
     } else if (type === "P") {
-
       return new FinalState(this.tokenizer.nextToken());
     }
 
@@ -38,10 +41,8 @@ class LetterToSound {
   // Creates a word from an input line and adds it to the state machine
   parseAndAdd(line) {
 
-    // WORKING HERE 9/14 (is this RiTa.this.tokenizer?)
     this.tokenizer.tokenize(line, ' ');
     let type = this.tokenizer.nextToken();
-
     if (type === "S" || type === "P") {
       this.stateMachine[this.numStates++] = this.createState(type, this.tokenizer);
     } else if (type === "I") {
@@ -57,46 +58,7 @@ class LetterToSound {
       this.stateMachine = [];
       this.stateMachineSize = parseInt(this.tokenizer.nextToken());
     }
-  }
-
-  computePhones(input) {
-
-    // use cached value if possible
-    if (!this.cache && typeof this.cache[input] === 'undefined') {
-
-      let result = [];
-      let delim = '-';
-
-      if (typeof input === 'string') {
-        if (!input.length) return '';
-        input = RiTa.tokenize(input);
-      }
-
-      for (let i = 0; i < input.length; i++) {
-        let ph = this.computePhones(input[i]);
-        result[i] = ph ? ph.join(delim) : '';
-      }
-
-      result = result.join(delim).replace(/ax/g, 'ah');
-      result = result.replace("/0/g", "");
-
-      if (result.length > 0 && result.indexOf("1") < 0 && result.indexOf(" ") < 0) {
-        let ph = result.split("-");
-        result = "";
-        for (let i = 0; i < ph.length; i++) {
-          if (/[aeiou]/.test(ph[i])) ph[i] += "1";
-          result += ph[i] + "-";
-        }
-        if (ph.length > 1) result = result.substring(0, result.length - 1);
-      }
-      
-      if (!RiTa.CACHING) return result;
-
-      // cache the value for later
-      this.cache[input] = result;
-    }
-
-    return this.cache[input];
+    else throw Error('Unexpected state');
   }
 
   computePhones(word) {
@@ -111,27 +73,21 @@ class LetterToSound {
     if (!LetterToSound.RULES) {
       if (!this.warnedForNoLTS) {
         this.warnedForNoLTS = true;
-        console.warn("[WARN] No LTS-rules found: for word features outside the lexicon, use a larger version of RiTa.");
+        console.warn("[WARN] No LTS-rules found: for word features "
+          + "outside the lexicon, use a larger version of RiTa.");
       }
       return null;
     }
 
     word = word.toLowerCase();
-
     if (isNum(word)) {
-
       word = (word.length > 1) ? word.split('') : [word];
-
       for (let k = 0; k < word.length; k++) {
-
         dig = parseInt(word[k]);
-        if (dig < 0 || dig > 9) {
-          throw Error("Attempt to pass multi-digit number to LTS: '" + word + "'");
-        }
-
+        if (dig < 0 || dig > 9) throw Error
+          ("Attempt to pass multi-digit number to LTS: '" + word + "'");
         phoneList.push(Util.Phones.digits[dig]);
       }
-
       return phoneList;
     }
 
@@ -139,20 +95,18 @@ class LetterToSound {
     tmp = "000#" + word.trim() + "#000", full_buff = tmp.split('');
 
     for (let pos = 0; pos < word.length; pos++) {
-
       for (let i = 0; i < windowSize; i++) {
-
         this.fval_buff[i] = full_buff[pos + i];
         this.fval_buff[i + windowSize] =
           full_buff[i + pos + 1 + windowSize];
       }
 
-      c = word.charAt(pos);
+      c = word[pos];
       if (c == "'") continue;
       startIndex = this.letterIndex[c];
 
       // must check for null here, not 0 (and not ===)
-      if (!isNum(startIndex)) {
+      if (isNaN(parseFloat(startIndex)) || !isFinite(startIndex)) { // isNum
         if (!RiTa.SILENT && !RiTa.SILENCE_LTS) {
           console.warn("Unable to generate LTS for '" + word + "', no index for '" +
             c + "', isDigit=" + isNum(c) + ", isPunct=" + RiTa.isPunctuation(c));
@@ -161,15 +115,11 @@ class LetterToSound {
       }
 
       stateIndex = parseInt(startIndex);
-
       currentState = this.getState(stateIndex);
-
       while (!(currentState instanceof FinalState)) {
-
         stateIndex = currentState.getNextState(this.fval_buff);
         currentState = this.getState(stateIndex);
       }
-
       currentState.append(phoneList);
     }
 
@@ -177,7 +127,6 @@ class LetterToSound {
   }
 
   getState(i) {
-
     if (typeof i === 'number') {
       let state = null;
       if (this.stateMachine[i] === ' ') {
@@ -187,40 +136,31 @@ class LetterToSound {
       }
       return state;
     } else {
-      //let this.tokenizer = new LtsTokenizer(i);
       this.tokenizer.tokenize(i);
       return this.getState(this.tokenizer.nextToken(), this.tokenizer);
     }
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
 class LtsTokenizer {
-
   tokenize(str, delim) {
     this.idx = 0;
     this.tokens = str.split(delim || ' ');
   }
-
   nextToken() {
     return (this.idx < this.tokens.length) ? this.tokens[this.idx++] : null;
   }
 }
 
 class DecisionState {
-
   constructor(index, c, qtrue, qfalse) {
-
     this.c = c;
     this.index = index;
     this.qtrue = qtrue;
     this.qfalse = qfalse;
   }
-
-  type() {
-    return "DecisionState";
-  }
-
   getNextState(chars) {
     return (chars[this.index] == this.c) ? this.qtrue : this.qfalse;
   }
@@ -232,28 +172,23 @@ class FinalState {
 
   // "epsilon" is used to indicate an empty list.
   constructor(phones) {
-
     this.phoneList = [];
-
-    if (phones === ("epsilon")) {
-      this.phoneList = null;
-    } else if (Array.isArray(phones)) {
-      this.phoneList = phones;
-    } else {
-      let i = phones.indexOf('-');
-      if (i != -1) {
-        this.phoneList[0] = phones.substring(0, i);
-        this.phoneList[1] = phones.substring(i + 1);
+    if (phones !== ("epsilon")) {
+      if (Array.isArray(phones)) {
+        this.phoneList = phones;
       } else {
-        this.phoneList[0] = phones;
+        let i = phones.indexOf('-');
+        if (i != -1) {
+          this.phoneList[0] = phones.substring(0, i);
+          this.phoneList[1] = phones.substring(i + 1);
+        } else {
+          this.phoneList[0] = phones;
+       }
       }
     }
   }
 
-  type() { return "FinalState"; }
-
   append(array) {
-
     if (!this.phoneList) return;
     for (let i = 0; i < this.phoneList.length; i++)
       array.push(this.phoneList[i]);
