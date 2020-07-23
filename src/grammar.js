@@ -1,5 +1,4 @@
-const deepmerge = require('deepmerge');
-const maxTries = 100;
+const deepMerge = require('deepmerge');
 
 // TODO: handling weighting of rules?
 // expandFrom? expandWith?
@@ -46,22 +45,22 @@ class Grammar {
       opts = rule;
       rule = 'start';
     }
-    let ctx = deepmerge(this.context, this.rules);
-    if (opts.context) ctx = deepmerge(ctx, opts.context);
+    let ctx = deepMerge(this.context, this.rules);
+    if (opts.context) ctx = deepMerge(ctx, opts.context);
     if (rule.startsWith('$')) rule = rule.substring(1);
     if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
-    
+
     return this.compiler.evaluate(ctx[rule], ctx, opts);
   }
 
-  toString(lb='\n') { // TODO
+  toString(lb = '\n') { // TODO
     let s = '';
     Object.keys(rules).forEach(r => s += r + ':' + rules[r] + lb);
     return s;
   }
 
   removeRule(name) {
-    if (typeof name === 'string') {
+    if (name) {
       if (name.startsWith('$')) name = name.substring(1);
       delete this.rules[name];
     }

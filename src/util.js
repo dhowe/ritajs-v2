@@ -17,8 +17,8 @@ class Util {
         nucleus = syl[2],
         coda = syl[3];
 
-      if (stress !== undefined && nucleus.length)  nucleus[0] += ('' + stress);// dch
-      
+      if (stress !== undefined && nucleus.length) nucleus[0] += ('' + stress);// dch
+
       let data = [];
       for (j = 0; j < onset.length; j++) data.push(onset[j]);
       for (j = 0; j < nucleus.length; j++) data.push(nucleus[j]);
@@ -43,7 +43,7 @@ class Util {
       if (!phoneme.length) continue;
 
       let last = phoneme.charAt(phoneme.length - 1);
-      if (isNum(last)) {
+      if (this.isNum(last)) {
         stress = parseInt(last);
         phoneme = phoneme.substring(0, phoneme.length - 1);
       }
@@ -108,11 +108,12 @@ class Util {
     }
     return Util.syllablesToPhones(syllables);
   }
+
+  static isNum(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+  }
 }
 
-function isNum(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
 
 function extend(l1, l2) {
   for (let i = 0; i < l2.length; i++) l1.push(l2[i]);
@@ -137,12 +138,9 @@ class RE {
     return this.truncate(word) + this.suffix;
   }
 
-  analyze(word) {
-    return this.suffix != '' && word.endsWith(this.suffix);
-  }
-
   truncate(word) {
-    return (this.offset === 0) ? word : word.substr(0, word.length - this.offset);
+    return (this.offset === 0) ? word :
+      word.substr(0, word.length - this.offset);
   }
 
   toString() {

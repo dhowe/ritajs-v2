@@ -9,7 +9,7 @@ class Markov {
     // options (TODO: clarify/document options)
     this.trace = opts.trace;
     this.mlm = opts.maxLengthMatch;
-    this.logDuplicates = opts.logDuplicates;
+    this.logDuplicates = opts.logDuplicates; 
     this.maxAttempts = opts.maxAttempts || 99;
     this.disableInputChecks = opts.disableInputChecks;
     this.tokenize = opts.tokenize || RiTa().tokenize;

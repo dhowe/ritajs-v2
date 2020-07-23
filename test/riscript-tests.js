@@ -1,9 +1,5 @@
-//const RiScript = require('../src/riscript');
-const Operator = RiTa.Operator;
 const RiScript =  RiTa.RiScript
-
-// TODO: tests failing bevause of RiScript.RiTa nesting
-// NEXT
+const Operator = RiTa.Operator;
 
 describe('RiTa.RiScript', () => {
 

@@ -97,7 +97,7 @@ RiTaScript can be used as part of any grammar (via RiTa.Grammar) or can be run d
 
 
 ### Choice
-Text options to be randomly selected at runtime
+Select a random choice from a group of options:
 ```
 The weather was (sad | gloomy | depressed).  ->  "The weather was gloomy." 
 I'm (very | super | really) glad to ((meet | know) you | learn about you).  ->  "I'm very glad to know you." 
@@ -140,7 +140,7 @@ The weather was $desc  ->  "The weather was wet and cold"
 
 ### Inline Assignment
 
-Inline assignments allow one to easily set a variable, output it, and refer to it later
+Inline assignments allow one to easily set a variable, output it, and refer to it later:
 
 ```
 Jane was from [$place=(New York | Berlin | Shanghai)]. 

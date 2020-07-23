@@ -239,7 +239,7 @@ class PosTagger {
       // transform 2: convert a noun to a number (cd) if it is
       // all digits and/or a decimal "."
       if (tag.startsWith("n") && !choices[i]) {
-        if (isNum(word)) {
+        if (Util.isNum(word)) {
           tag = "cd";
           dbug && this._log(2, word, tag);
         } // mods: dch (add choice check above) <---- ? >

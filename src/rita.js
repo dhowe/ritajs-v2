@@ -23,10 +23,6 @@ const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
 
 class RiTa {
 
-  constructor() {
-    throw Error('Invalid instantiation');
-  }
-
   static addTransform() {
     return RiScript.addTransform(...arguments);
   }

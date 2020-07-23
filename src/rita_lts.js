@@ -66,8 +66,6 @@ class LetterToSound {
     let dig, phoneList = [], windowSize = 4,
       full_buff, tmp, currentState, startIndex, stateIndex, c;
 
-    function isNum(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
-
     if (!word || !word.length || RiTa.isPunctuation(word)) return null;
 
     if (!LetterToSound.RULES) {
@@ -80,7 +78,7 @@ class LetterToSound {
     }
 
     word = word.toLowerCase();
-    if (isNum(word)) {
+    if (Util.isNum(word)) {
       word = (word.length > 1) ? word.split('') : [word];
       for (let k = 0; k < word.length; k++) {
         dig = parseInt(word[k]);
@@ -109,7 +107,7 @@ class LetterToSound {
       if (isNaN(parseFloat(startIndex)) || !isFinite(startIndex)) { // isNum
         if (!RiTa.SILENT && !RiTa.SILENCE_LTS) {
           console.warn("Unable to generate LTS for '" + word + "', no index for '" +
-            c + "', isDigit=" + isNum(c) + ", isPunct=" + RiTa.isPunctuation(c));
+            c + "', isDigit=" + Util.isNum(c) + ", isPunct=" + RiTa.isPunctuation(c));
         }
         return null;
       }
@@ -122,7 +120,6 @@ class LetterToSound {
       }
       currentState.append(phoneList);
     }
-
     return phoneList;
   }
 
