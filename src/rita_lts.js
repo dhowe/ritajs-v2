@@ -30,11 +30,9 @@ class LetterToSound {
       let qtrue = parseInt(this.tokenizer.nextToken());
       let qfalse = parseInt(this.tokenizer.nextToken());
       return new DecisionState(index, c.charAt(0), qtrue, qfalse);
-
     } else if (type === "P") {
       return new FinalState(this.tokenizer.nextToken());
     }
-
     throw Error("Unexpected type: " + type);
   }
 
@@ -47,18 +45,15 @@ class LetterToSound {
       this.stateMachine[this.numStates++] = this.createState(type, this.tokenizer);
     } else if (type === "I") {
       let index = parseInt(this.tokenizer.nextToken());
-      if (index != this.numStates) {
-        throw Error("Bad I in file.");
+      if (index != this.numStates) { 
+        throw Error("Bad index in file.");
       } else {
-        let c = this.tokenizer.nextToken();
-        this.letterIndex[c] = index;
+        this.letterIndex[this.tokenizer.nextToken()] = index;
       }
-      //log(type+" : "+c+" : "+index + " "+this.letterIndex[c]);
     } else if (type == "T") {
       this.stateMachine = [];
       this.stateMachineSize = parseInt(this.tokenizer.nextToken());
     }
-    else throw Error('Unexpected state');
   }
 
   computePhones(word) {

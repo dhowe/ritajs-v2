@@ -1,4 +1,7 @@
 // adapted from
+
+const Util = require("./util");
+
 // https://github.com/bmurray7/mersenne-twister-examples/blob/master/javascript-mersenne-twister.js
 class SeededRandom {
 
@@ -94,16 +97,16 @@ class SeededRandom {
   // API ////////////////////////////////////////////////////////////////////
 
   randomOrdering(arg) {
+    if (!(Array.isArray(arg) || Util.isNum(arg))) throw Error('Expects [] or int');
     let o = Array.isArray(arg) ? arg : Array.from(Array(arg).keys());
     for (let j, x, i = o.length; i; j = parseInt(this.random() * i),
       x = o[--i], o[i] = o[j], o[j] = x) { /* shuffle */ }
     return o;
   }
 
-  shuffle(arr) {
-    let ro = this.randomOrdering(arr.length);
-    return ro.map(e => arr[e]);
-  }
+  /* shuffle(arr) {
+   return this.randomOrdering(arr.length).map(e => arr[e])
+  } */
 
   randomItem(arr, func) {
     let crand = this.randomFloat();

@@ -196,6 +196,7 @@ class RiScript {
       && /[aeiou]/.test(phones[0]) ? 'an ' : 'a ') + s;
   }
 
+  // a no-op transform for sequences
   static identity(s) {
     return s;
   }
@@ -266,7 +267,10 @@ RiScript.MAX_TRIES = 100;
 RiScript.transforms = {
   capitalize, quotify, pluralize, 
   qq: quotify, uc: toUpper, ucf: capitalize, 
-  articlize: RiScript.articlize, seq: RiScript.identity, rseq: RiScript.identity
+  articlize: RiScript.articlize,
+  seq: RiScript.identity,
+  rseq: RiScript.identity,
+  norep: RiScript.identity
 };
 
 module && (module.exports = RiScript);

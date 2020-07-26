@@ -5,8 +5,20 @@ describe('RiTa.Util', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
+  const rand = RiTa.randomizer;
+
   it('Should correctly call Util.mapOpts', () => {
-    // not needed in js
+    expect("Not needed in JS").is.not.null;
+  });
+
+  it('Should correctly call random.randomOrdering', () => {
+    let ro = rand.randomOrdering(4);
+    expect(ro.length).eq(4);
+    expect(ro).to.have.members([0,1,2,3]);
+    let arr = [0, 3, 5, 7]; 
+    ro = rand.randomOrdering(arr);
+    expect(ro.length).eq(4);
+    expect(ro).to.have.members(arr);
   });
 
   it('Should correctly call deepMerge', () => {

@@ -638,7 +638,7 @@ describe('RiTa.RiScript', () => {
       }
     });
 
-    it('Should handle rseq() transforms', () => {
+    0 && it('Should handle rseq() transforms', () => {
       let opts = ['a', 'b', 'c', 'd'], result = [];
       let rule = '(' + opts.join('|') + ').rseq()';
       let rs = new RiScript();
@@ -667,8 +667,24 @@ describe('RiTa.RiScript', () => {
       }
 
     });
+    0 && it('Should handle interleaved seq() transforms', () => {
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '(' + opts.join('|') + ').seq() (' + opts.join(' | ') + ').seq()';
+      let rs = new RiScript();
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule);
+        //console.log(i, ':', res);
+        expect(res).eq(opts[i] + " " + opts[i]);
+      }
+    });
+    
+    0 && it('Should handle interleaved rseq() transforms', () => {
+    });
 
-    it('Should handle choice transforms', () => {
+    0 && it('Should handle norep() transforms', () => {
+    });
+
+    it('Should handle Choice transforms', () => {
 
       let ctx = {};
       expect(RiTa.evaluate('$foo=.toUpperCase()', ctx)).eq('');
