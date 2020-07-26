@@ -15,7 +15,7 @@ class ChoiceState {
     this.type = 0
     this.index = 0;
     this.options = []
-    this.id = ++parent.indexer;
+    this.id = parent.indexer;
     
     ctx.wexpr().map((w, k) => {
       let wctx = w.weight();
@@ -30,7 +30,11 @@ class ChoiceState {
       TYPES.forEach(s => tf.includes('.'+s) && (this.type = s));
     }
 
-    if (parent.trace) ;console.log('new ChoiceState('
+    if (this.type === RSEQUENCE) this.options =
+       RiTa.randomizer.randomOrdering(this.options);
+
+
+    if (parent.trace) console.log('new ChoiceState#'+this.id+'('
       + this.options.map(o => o.getText()) + "," + this.type + ")");
   }
 
@@ -44,6 +48,7 @@ class ChoiceState {
   }
 
   selectNoRepeat() {
+    //console.log('selectNoRepeat');
     let cand;
     while (cand == this.last) {
       cand = RiTa.randomizer.randomItem(this.options);
@@ -52,18 +57,21 @@ class ChoiceState {
   }
 
   selectSequence() {
+    //console.log('selectSequence');
     let idx = this.index++ % this.options.length;
-    return (this.last = this.options[idx]);
+    //console.log('IDX', idx);
+    return (this.last = this.options[idx]);d
   }
 
 
   selectRandSequence() {
+    //console.log('selectRandSequence', this.index);
+
     while (this.index == this.options.length) {
       this.options = RiTa.randomizer.randomOrdering(this.options);
+      //console.log('rand: ', this.options);
       // make sure we are not repeating
-      if (this.options[0] != this.last) {
-        this.index = 0;
-      }
+      if (this.options[0] != this.last) this.index = 0;
     }
     return this.selectSequence();
   }
@@ -75,8 +83,8 @@ class ChoiceState {
 class Visitor extends RiScriptVisitor {
 
   constructor(parent) {
+    
     super();
-    this.indexer = 0;
     this.sequences = {};
     this.parent = parent;
   }
@@ -90,6 +98,7 @@ class Visitor extends RiScriptVisitor {
 
   // Entry point for tree visiting
   start(ctx) {
+    this.indexer = 0;
     return this.visitScript(ctx).trim();
   }
 
@@ -111,26 +120,14 @@ class Visitor extends RiScriptVisitor {
   }
 
   visitChoice(ctx) {
-    let choice = this.sequences[this.indexer];
+    let choice = this.sequences[++this.indexer];
     if (!choice) {
       choice = new ChoiceState(this, ctx);
       if (choice.type) this.sequences[choice.id] = choice;
+      //console.log('numSeqs:',Object.keys(this.sequences).length);
     } 
     let token = choice.select();
-    //if (!token) return this.emptyExpr();
-    console.log('TOK: ',token.getText());
-    /*     let txs = ctx.transform();
-        let seqs = ['seq', 'rseq', 'norep'];
-        if (txs.length) {
-          let flat = this.flatten(txs);
-          for (let i = 0; i < seqs.length; i++) {
-            if (flat.includes(seq[i])) 
-            
-          }
-          console.log(flat);
-        }
-    
-     */
+
     // merge transforms on entire choice and selected option
     token.transforms = this.inheritTransforms(token, ctx);
     this.trace && console.log('visitChoice: ' + this.flatten(token),

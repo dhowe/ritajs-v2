@@ -1,4 +1,4 @@
-const RiScript =  RiTa.RiScript
+const RiScript = RiTa.RiScript
 const Operator = RiTa.Operator;
 
 describe('RiTa.RiScript', () => {
@@ -626,7 +626,7 @@ describe('RiTa.RiScript', () => {
       let rs = new RiScript();
       for (let i = 0; i < opts.length; i++) {
         let res = rs.evaluate(rule);
-        //console.log(i, ':', res);
+        //console.log('got', i, ':', res);
         expect(res).eq(opts[i]);
       }
 
@@ -638,7 +638,7 @@ describe('RiTa.RiScript', () => {
       }
     });
 
-    0 && it('Should handle rseq() transforms', () => {
+    it('Should handle rseq() transforms', () => {
       let opts = ['a', 'b', 'c', 'd'], result = [];
       let rule = '(' + opts.join('|') + ').rseq()';
       let rs = new RiScript();
@@ -667,7 +667,8 @@ describe('RiTa.RiScript', () => {
       }
 
     });
-    0 && it('Should handle interleaved seq() transforms', () => {
+
+    it('Should handle interleaved seq() transforms', () => {
       let opts = ['a', 'b', 'c', 'd'];
       let rule = '(' + opts.join('|') + ').seq() (' + opts.join(' | ') + ').seq()';
       let rs = new RiScript();
@@ -677,11 +678,34 @@ describe('RiTa.RiScript', () => {
         expect(res).eq(opts[i] + " " + opts[i]);
       }
     });
-    
-    0 && it('Should handle interleaved rseq() transforms', () => {
+
+    it('Should handle interleaved rseq() transforms', () => {
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '(' + opts.join('|') + ').rseq() (' + opts.join(' | ') + ').rseq()';
+      let rs = new RiScript();
+      let results = [];
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule);
+        let parts = res.split(' ');
+        //console.log(i, ':', res);
+        results.push(parts[0], parts[0]);
+      }
+      //console.log('res', results);
+      expect(results.length).eq(opts.length * 2);
+
     });
 
-    0 && it('Should handle norep() transforms', () => {
+    it('Should handle norep() transforms', () => {
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '(' + opts.join('|') + ').seq()';
+      let rs = new RiScript();
+      let last;
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule);
+        //console.log('got', i, ':', res);
+        expect(res != last).is.true;
+        last = res;
+      }
     });
 
     it('Should handle Choice transforms', () => {
