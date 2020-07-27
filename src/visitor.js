@@ -33,7 +33,6 @@ class ChoiceState {
     if (this.type === RSEQUENCE) this.options =
        RiTa.randomizer.randomOrdering(this.options);
 
-
     if (parent.trace) console.log('new ChoiceState#'+this.id+'('
       + this.options.map(o => o.getText()) + "," + this.type + ")");
   }
@@ -48,12 +47,13 @@ class ChoiceState {
   }
 
   selectNoRepeat() {
-    //console.log('selectNoRepeat');
-    let cand;
-    while (cand == this.last) {
+    let cand = this.last;
+    do {
       cand = RiTa.randomizer.randomItem(this.options);
-    }
-    return (this.last = cand);
+    } while (cand == this.last);
+    this.last = cand;
+    //console.log('selectNoRepeat',cand.getText());
+    return this.last;
   }
 
   selectSequence() {
@@ -397,6 +397,7 @@ class Visitor extends RiScriptVisitor {
   }
 
   inheritTransforms(token, ctx) {
+    if (!token) throw Error('No token');
     let ctxTransforms = ctx.transform ? ctx.transform().map(t => t.getText()) : [];
     ctxTransforms = mergeArrays(ctxTransforms, ctx.transforms);
     if (typeof token.transforms === 'undefined') return ctxTransforms;
