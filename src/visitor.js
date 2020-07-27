@@ -8,6 +8,21 @@ const EmptyExpr = new RiScriptParser.ExprContext();
 const RSEQUENCE = 'rseq', SEQUENCE = 'seq', NOREPEAT = 'norep';
 const TYPES = [RSEQUENCE, SEQUENCE, NOREPEAT];
 
+class TextContext extends antlr4.ParserRuleContext {
+  constructor(text) {
+    this.text = text;
+    console.log(antlr4.Token.HIDDEN_CHANNEL);
+    this.symbol = new antlr4.CommonToken(undefined, antlr4.Token.HIDDEN_CHANNEL);
+    //new antlr4.CommonToken(antlr4.Token.HIDDEN_CHANNEL);
+  }
+  getText() {
+    return this.text;
+  }
+  getSymbol() {
+    return this.symbol;
+  }
+}
+
 class ChoiceState {
 
   constructor(parent, ctx) {
@@ -16,7 +31,7 @@ class ChoiceState {
     this.index = 0;
     this.options = []
     this.id = parent.indexer;
-    
+
     ctx.wexpr().map((w, k) => {
       let wctx = w.weight();
       let weight = wctx ? parseInt(wctx.INT()) : 1;
@@ -27,13 +42,13 @@ class ChoiceState {
     let txs = ctx.transform();
     if (txs.length) {
       let tf = txs[0].getText();
-      TYPES.forEach(s => tf.includes('.'+s) && (this.type = s));
+      TYPES.forEach(s => tf.includes('.' + s) && (this.type = s));
     }
 
     if (this.type === RSEQUENCE) this.options =
-       RiTa.randomizer.randomOrdering(this.options);
+      RiTa.randomizer.randomOrdering(this.options);
 
-    if (parent.trace) console.log('new ChoiceState#'+this.id+'('
+    if (parent.trace) console.log('new ChoiceState#' + this.id + '('
       + this.options.map(o => o.getText()) + "," + this.type + ")");
   }
 
@@ -60,7 +75,7 @@ class ChoiceState {
     //console.log('selectSequence');
     let idx = this.index++ % this.options.length;
     //console.log('IDX', idx);
-    return (this.last = this.options[idx]);d
+    return (this.last = this.options[idx]); d
   }
 
 
@@ -83,7 +98,6 @@ class ChoiceState {
 class Visitor extends RiScriptVisitor {
 
   constructor(parent) {
-    
     super();
     this.sequences = {};
     this.parent = parent;
@@ -102,6 +116,104 @@ class Visitor extends RiScriptVisitor {
     return this.visitScript(ctx).trim();
   }
 
+  // choice / inline / symbol
+  visitChoice(ctx) {
+    let choice = this.sequences[++this.indexer];
+    if (!choice) {
+      choice = new ChoiceState(this, ctx);
+      if (choice.type) this.sequences[choice.id] = choice;
+      //console.log('numSeqs:',Object.keys(this.sequences).length);
+    }
+    let token = choice.select();
+    this.passTransforms(token, ctx.transform());
+
+    /* merge transforms on entire choice and selected option
+    token.transforms = this.inheritTransforms(token, ctx);*/
+    this.trace && console.log('visitChoice: ' + this.flatten(token),
+      "tfs=" + (this.transforms(token) || "[]"));// this.flatten(options));
+
+    // and then visit
+    return this.visit(token);
+  }
+
+  /* output expr value and create a mapping in the symbol table */
+  visitInline(ctx) {
+    let token = ctx.expr();
+    let orig = ctx.getText();
+    let tokText = token.getText();
+    let id = symbolName(ctx.symbol().getText());
+
+    this.passTransforms(token, ctx.transform());
+    //token.transforms = this.inheritTransforms(token, ctx);
+
+    this.trace && console.log('visitInline[pre]: ' + id + '=' +
+      this.flatten(token) + ' tfs=[' + (this.transforms(token) || '') + ']');
+
+    this.context[id] = this.visit(token);
+    this.trace && console.log('visitInline[pos]: $' + id + '=' + this.context[id]);
+
+    // if the inline is not fully resolved, save it for next time
+    if (this.parent.isParseable(this.context[id])) {
+      this.pendingSymbols.push(id);
+      return orig.replace(tokText, this.context[id]);
+    }
+
+    return this.context[id];
+  }
+
+  /* visit the resolved symbol */
+  visitSymbol(ctx) {
+
+    let ident = ctx.SYM();
+
+    // hack: for blank .func() cases
+    if (!ident) return this.handleTransforms('', ctx.transform());
+
+    ident = symbolName(ident.getText());
+    // the symbol is pending so just return it
+    if (this.pendingSymbols.includes(ident)) return '$' + ident;
+
+    let text = this.context[ident] || '$' + ident;
+    let textContext = new TextContext(text);
+    this.passTransforms(textContext, ctx.transform());
+    // hack to pass transforms along to visitTerminal
+    /*     let textContext = { text, getText: () => text };
+        textContext.transforms = ctx.transforms || [];
+        ctx.transform().map(t => textContext.transforms.push(t.getText()) );*/
+
+    if (0 && typeof text !== 'string') {
+      // Here we have a nested object (or RiTa call)
+      console.log("***** NOPE", typeof text, text === RiTa, textContext.transforms);
+    }
+
+    this.trace && console.log('visitSymbol($' + ident + ')'
+      + ' tfs=[' + (this.transforms(textContext) || '') + '] ctx[\''
+      + ident + '\']=' + (ident === 'RiTa' ? '{RiTa}' : textContext.text));
+
+    return this.visitTerminal(textContext);
+  }
+
+  transforms(ctx) {
+    //console.log(ctx.constructor.name, ctx.parent.constructor.name);
+    return this.ruleByType(ctx, RiScriptParser.TransformContext)
+    //return ctx.getRuleContexts(TransformContext.class);
+  }
+
+  ruleByType(ctx, type) {
+    if (!ctx.children) return [];
+    return ctx.children.filter(c => c instanceof type);
+    /* 
+      var contexts = [];
+      for (var j = 0; j < this.children.length; j++) {
+        var child = this.children[j];
+        if (child instanceof ctxType) {
+          contexts.push(child);
+        }
+      }
+      return contexts;
+    } */
+  };
+
   visitAssign(ctx) {
     // visit value and create a mapping in the symbol table */
     let token = ctx.expr();
@@ -112,66 +224,13 @@ class Visitor extends RiScriptVisitor {
     return ''; // no output on vanilla assign
   }
 
-  visitChars(ctx) {
-    this.trace && console.log('visitChars("' + ctx.getText()
-      + '"): tfs=' + (ctx.transforms || "[]"));
-    let text = ctx.getText().toString();
-    return this.handleTransforms(text, ctx.transforms);
-  }
-
-  visitChoice(ctx) {
-    let choice = this.sequences[++this.indexer];
-    if (!choice) {
-      choice = new ChoiceState(this, ctx);
-      if (choice.type) this.sequences[choice.id] = choice;
-      //console.log('numSeqs:',Object.keys(this.sequences).length);
-    } 
-    let token = choice.select();
-
-    // merge transforms on entire choice and selected option
-    token.transforms = this.inheritTransforms(token, ctx);
-    this.trace && console.log('visitChoice: ' + this.flatten(token),
-      "tfs=" + (token.transforms || "[]"), this.flatten(options));
-
-    // and then visit
-    return this.visit(token);
-  }
-
-  visitChoiceX(ctx) {
-
-    // compute all options and weights
-    let options = [];
-    ctx.wexpr().map((w, k) => {
-      let wctx = w.weight();
-      let weight = wctx ? parseInt(wctx.INT()) : 1;
-      let expr = w.expr() || emptyExpr();
-      for (let i = 0; i < weight; i++) {
-        options.push(expr);
-      }
-    });
-
-    // handle sequences if we have any
-    let token, txs = ctx.transform();
-    if (txs.length && txs.filter(t => t.getText().includes('.seq()')).length) {
-      token = this.handleSequence(options, false);
+  /*   visitChars(ctx) {
+      this.trace && console.log('visitChars("' + ctx.getText()
+        + '"): tfs=' + (ctx.transforms || "[]"));
+      let text = ctx.getText().toString();
+      return this.handleTransforms(text, ctx.transforms);
     }
-    else if (txs.length && txs.filter(t => t.getText().includes('.rseq()')).length) {
-      token = this.handleSequence(options, true);
-    }
-
-    // then pick a random one if we need
-    token = token || randomElement(options) || emptyExpr();
-    //let token = randomElement(options) || emptyExpr();
-
-    // merge transforms on entire choice and selected option
-    token.transforms = this.inheritTransforms(token, ctx);
-    this.trace && console.log('visitChoice: ' + this.flatten(token),
-      "tfs=" + (token.transforms || "[]"), this.flatten(options));
-
-    // and then visit
-    return this.visit(token);
-  }
-
+   */
   visitCexpr(ctx) {
     let conds = ctx.cond();
     this.trace && console.log('visitCexpr(' + ctx.expr().getText() + ')',
@@ -189,12 +248,12 @@ class Visitor extends RiScriptVisitor {
     return this.visitExpr(ctx.expr());
   }
 
-  handleSequence(options, shuffle) {
-    if (!this.sequence) {
-      this.sequence = new Sequence(options, shuffle);
-    }
-    return this.sequence.next();
-  }
+  /*   handleSequence(options, shuffle) {
+      if (!this.sequence) {
+        this.sequence = new Sequence(options, shuffle);
+      }
+      return this.sequence.next();
+    } */
   /*   visitExpr(ctx) {
       this.trace && console.log('visitExpr(\'' + ctx.getText()
         + '\'): tfs=' + (ctx.transforms || "[]"));
@@ -202,60 +261,13 @@ class Visitor extends RiScriptVisitor {
       return result;
     } */
 
-  /* output expr value and create a mapping in the symbol table */
-  visitInline(ctx) {
-    let token = ctx.expr();
-    let orig = ctx.getText();
-    let tokText = token.getText();
-    let id = symbolName(ctx.symbol().getText());
-    token.transforms = this.inheritTransforms(token, ctx);
-
-    this.trace && console.log('visitInline[pre]: ' + id + '=' +
-      this.flatten(token) + ' tfs=[' + (token.transforms || '') + ']');
-
-    this.context[id] = this.visit(token);
-    this.trace && console.log('visitInline[pos]: $' + id + '=' + this.context[id]);
-
-    // if the inline is not fully resolved, save it for next time
-    if (this.parent.isParseable(this.context[id])) {
-      this.pendingSymbols.push(id);
-      return orig.replace(tokText, this.context[id]);
-    }
-    return this.context[id];
-  }
-
-  /* visit the resolved symbol */
-  visitSymbol(ctx) {
-
-    let ident = ctx.SYM();
-
-    // hack: for blank .func() cases
-    if (!ident) return this.handleTransforms('', ctx.transform());
-
-    ident = symbolName(ident.getText());
-    // the symbol is pending so just return it
-    if (this.pendingSymbols.includes(ident)) return '$' + ident;
-
-    let text = this.context[ident] || '$' + ident;
-
-    // hack to pass transforms along to visitTerminal
-    let textContext = { text, getText: () => text };
-    textContext.transforms = ctx.transforms || [];
-    ctx.transform().map(t => textContext.transforms.push(t.getText()));
-
-    if (0 && typeof text !== 'string') {
-      // Here we have a nested object (or RiTa call)
-      console.log("***** NOPE", typeof text, text === RiTa, textContext.transforms);
-    }
-
-    this.trace && console.log('visitSymbol($' + ident + ')'
-      + ' tfs=[' + (textContext.transforms || '') + '] ctx[\''
-      + ident + '\']=' + (ident === 'RiTa' ? '{RiTa}' : textContext.text));
-
-    return this.visitTerminal(textContext);
-  }
-
   visitTerminal(ctx) {
+    let term = ctx.getText();
+    let tfs = this.transforms(ctx);
+    return this.handleTransforms(term, tfs);
+  }
+
+  visitTerminalX(ctx) {
 
     let term = ctx, tfs = ctx.transforms;
     if (typeof ctx.getText === 'function') {
@@ -394,6 +406,14 @@ class Visitor extends RiScriptVisitor {
   flattenChoice(toks) {
     if (!Array.isArray(toks)) toks = [toks];
     return toks.reduce((acc, t) => acc += '[' + this.getRuleName(t) + ':' + t.getText() + ']', 'choice: ');
+  }
+
+  passTransforms(ctx, txs) {
+    ctx = ctx || RuleContext.EMPTY;
+    let children = ctx.children || [];
+    if (txs != null) txs.forEach(tx => children.push(tx));
+    ctx.children = children;
+    return ctx;
   }
 
   inheritTransforms(token, ctx) {

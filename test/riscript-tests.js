@@ -707,6 +707,15 @@ describe('RiTa.RiScript', () => {
       }
     });
 
+    it('TEST', () => {
+      
+      // WORKING HERE
+      
+      //let rsp = require('../grammar/.antlr/RiScriptParser').RiScriptParser.TransformContext;
+      //console.log("tc", typeof rsp);
+      expect(RiTa.evaluate('(a).toUpperCase()',0,TT)).eq('A');
+    });
+
     it('Should handle Choice transforms', () => {
 
       let ctx = {};
