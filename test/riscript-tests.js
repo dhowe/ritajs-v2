@@ -586,7 +586,6 @@ describe('RiTa.RiScript', () => {
     });
   });
 
-
   describe('Transform', () => {
 
     it('Should handle add transforms', () => {

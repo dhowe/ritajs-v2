@@ -123,6 +123,17 @@ The weather was (sad | gloomy | depressed).rseq()  ->
   ...
 ```
 
+Use the norep() transform to ensure outputs never repeats:
+```
+The weather was (sad | gloomy | depressed).norep()  ->  
+  0) "The weather was depressed" 
+  1) "The weather was gloomy" 
+  2) "The weather was depressed" 
+  3) "The weather was sad" 
+  4) "The weather was gloomy" 
+  ...
+```
+
 ### Weighted Choice
 Assign probabilities to choice selection
 
