@@ -7,7 +7,7 @@ describe('RiTa.Analyzer', () => {
 
   it('Should correctly call analyze.lts', () => {
     let silent = RiTa.SILENCE_LTS;
-    RiTa.SILENCE_LTS = true;
+    //RiTa.SILENCE_LTS = true;
     let feats;
     feats = RiTa.analyze("cloze");
     expect(feats.pos).eq("nn");
@@ -43,13 +43,15 @@ describe('RiTa.Analyzer', () => {
     expect(feats.tokens).eq("chevrolet");
     expect(feats.syllables).eq(hasLex ? "sh-eh-v/r-ow/l-ey" : 'ch-eh-v/r-ow/l-ah-t');
   });
-
+  
   it('Should correctly call stresses', () => {
 
     let result, answer, word;
 
     eq(RiTa.stresses(""), "");
     eq(RiTa.stresses("women"), "1/0", "women");
+    eq(RiTa.stresses("abatements"), "0/1/0", "abatements");
+
     eq(RiTa.stresses("The emperor had no clothes on"), "0 1/0/0 1 1 1 1");
     eq(RiTa.stresses("The emperor had no clothes on."), "0 1/0/0 1 1 1 1 .");
     eq(RiTa.stresses("The emperor had no clothes on. The King is fat."), "0 1/0/0 1 1 1 1 . 0 1 1 1 .");
@@ -80,7 +82,7 @@ describe('RiTa.Analyzer', () => {
 
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
-    
+
     let result, answer;
 
     eq(RiTa.phones(""), "");
@@ -91,7 +93,7 @@ describe('RiTa.Analyzer', () => {
     eq(RiTa.phones("flowers"), "f-l-aw-er-z");
     eq(RiTa.phones("mice"), "m-ay-s");
     eq(RiTa.phones("ant"), "ae-n-t");
-    
+
     expect(RiTa.phones("deforestations")).eq('d-ih-f-ao-r-ih-s-t-ey-sh-ah-n-z');
     expect(RiTa.phones("schizophrenias")).eq('s-k-ih-t-s-ah-f-r-iy-n-iy-ah-z');
 
@@ -156,6 +158,7 @@ describe('RiTa.Analyzer', () => {
       "hives", "hive",
       "dives", "dive",
       "octopuses", "octopus",
+      "abalone", "abalone",
       "wildlife", "wildlife",
       "media", "medium",
       "millennia", "millennium",
@@ -163,8 +166,9 @@ describe('RiTa.Analyzer', () => {
       "concerti", "concerto",
       "septa", "septum",
       "termini", "terminus",
-      "larvas", "larva",
-      "vertebras", "vertebra",
+      "larvae", "larva",
+      "minutiae", "minutia",
+      "vertebrae", "vertebra",
       "hooves", "hoof",
       "thieves", "thief",
       "rabbis", "rabbi",
@@ -336,7 +340,7 @@ describe('RiTa.Analyzer', () => {
       eq(res2, testPairs[i], 'FAIL: pluralize(' + testPairs[i + 1]
         + ') was ' + res2 + ', but expected ' + testPairs[i] + '\n        '
         + 'singularize(' + testPairs[i] + ') was ' + res1 + '\n\n');
-      
+
       // isPlural
       ok(res3, 'FAIL: isPlural(' + testPairs[i] + ') was false\n\n');
     }

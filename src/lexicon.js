@@ -16,7 +16,6 @@ class Lexicon {
 
     // only allow consonant inputs
     if (RiTa.VOWELS.includes(theWord.charAt(0))) {
-      if (!RiTa.SILENT) console.warn
       if (!opts.silent && !RiTa.SILENT) console.warn
         ('Expects a word starting with a consonant, got: ' + theWord);
       return [];
@@ -26,7 +25,7 @@ class Lexicon {
     const fss = this._firstStressedSyl(theWord);
     if (!fss) return [];
     const phone = this._firstPhone(fss);
-    let result = []; 
+    let result = [];
 
     // make sure we parsed first phoneme
     if (!phone) {
@@ -40,7 +39,7 @@ class Lexicon {
       // check word length and syllables 
       if (word === theWord || !this.checkCriteria(word, dict[word], opts)) {
         continue;
-      }      
+      }
       if (opts.targetPos) {
         word = this.matchPos(word, dict[word], opts);
         if (!word) continue;
@@ -102,7 +101,6 @@ class Lexicon {
     throw Error('No random word with options: ' + JSON.stringify(opts));
   }
 
-
   spellsLike(word, opts = {}) {
     if (!word || !word.length) return [];
     opts.type = 'letter';
@@ -125,7 +123,10 @@ class Lexicon {
   search(regex, opts = {}) {
     let dict = this._dict(true);
     let words = Object.keys(dict);
+
+    // TODO: what about all words with specified pos?
     if (typeof regex === 'undefined') return words;
+
     if (typeof regex === 'string') {
       // if we have a stress string without slashes, add them
       if (opts.type === 'stresses' && /^[01]+$/.test(regex)) {
@@ -134,7 +135,8 @@ class Lexicon {
       regex = new RegExp(regex);
     }
     this.parseArgs(opts);
-    let func, result = [];
+    let result = [];
+    let func = undefined; // TODO: optimized (use raw data)
     if (opts.type === 'stresses') func = RiTa.stresses;
     else if (opts.type === 'phones') func = RiTa.phones;
     let tmp = RiTa.SILENCE_LTS;
@@ -230,13 +232,11 @@ class Lexicon {
   }
 
   matchPos(word, rdata, opts, strict) {
-    // here we check only the first pos (should we check all?)
-    if (strict) {
-      if (opts.targetPos !== rdata[1].split(' ')[0]) return;
-    }
-    else {
-      if (!rdata[1].split(' ').includes(opts.targetPos)) return;
-    }
+    let posArr = rdata[1].split(' ');
+
+    // check the pos here (based on strict flag)
+    if ((strict && opts.targetPos !== posArr[0]) ||
+      !posArr.includes(opts.targetPos)) return;
 
     // we've matched our pos, pluralize or inflect if needed
     let result = word;
@@ -312,23 +312,18 @@ class Lexicon {
           person: RiTa.FIRST_PERSON,
           tense: RiTa.PAST_TENSE
         });
-        break;
       case 'vbg':
         return RiTa.presentParticiple(word);
-        break;
       case 'vbn':
         return RiTa.pastParticiple(word);
-        break;
       case 'vbp':
-        return RiTa.conjugate(word); // no args
-        break;
+        return word;
       case 'vbz':
         return RiTa.conjugate(word, {
           number: RiTa.SINGULAR,
           person: RiTa.THIRD_PERSON,
           tense: RiTa.PRESENT_TENSE
         });
-        break;
       default: throw Error('Unexpected pos: ' + pos);
     }
   }
@@ -485,8 +480,8 @@ class Lexicon {
   // med for 2 strings (or 2 arrays)
   minEditDist(source, target) {
 
-    let i, j, matrix = []; // matrix
     let cost; // cost
+    let i, j, matrix = []; // matrix
     let sI; // ith character of s
     let tJ; // jth character of t
 

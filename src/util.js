@@ -17,7 +17,7 @@ class Util {
         nucleus = syl[2],
         coda = syl[3];
 
-      if (stress !== undefined && nucleus.length) nucleus[0] += ('' + stress);// dch
+      if (stress && nucleus.length) nucleus[0] += stress;
 
       let data = [];
       for (j = 0; j < onset.length; j++) data.push(onset[j]);
@@ -33,18 +33,18 @@ class Util {
 
     if (!input || !input.length) return '';
 
-    let dbug, none, internuclei = [];
+    let dbug, internuclei = [];
     let syllables = []; // returned data structure
     let sylls = typeof input == 'string' ? input.split('-') : input;
 
     for (let i = 0; i < sylls.length; i++) {
 
-      let phoneme = sylls[i].trim(), stress = none;
+      let phoneme = sylls[i].trim(), stress;
       if (!phoneme.length) continue;
 
       let last = phoneme.charAt(phoneme.length - 1);
       if (this.isNum(last)) {
-        stress = parseInt(last);
+        stress = last;
         phoneme = phoneme.substring(0, phoneme.length - 1);
       }
 
@@ -53,7 +53,7 @@ class Util {
       if (Util.Phones.vowels.includes(phoneme)) {
 
         // Split the consonants seen since the last nucleus into coda and onset.
-        let coda = none, onset = none;
+        let coda, onset;
 
         // Make the largest onset we can. The 'split' variable marks the break point.
         for (let split = 0; split < internuclei.length + 1; split++) {
@@ -101,7 +101,7 @@ class Util {
     // We may have even not found a nucleus.
     if (internuclei.length > 0) {
       if (syllables.length === 0) {
-        syllables.push([[none], internuclei, [], []]);
+        syllables.push([[undefined], internuclei, [], []]);
       } else {
         extend(syllables[syllables.length - 1][3], internuclei);
       }

@@ -180,6 +180,7 @@ describe('RiTa.Lexicon', function () {
 
   it('Should correctly call search with pos, limit', () => {
 
+    //console.log(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }));
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }))
       .eql(['abalone', 'abandonment', 'abatement', 'abbreviation', 'abdomen']);
 
@@ -194,7 +195,7 @@ describe('RiTa.Lexicon', function () {
 
     expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', pos: 'v', limit: 5 }))
       .eql(["fantasize"]);
-
+ 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'nns' }))
       .eql(['abalone', 'abandonments', 'abatements', 'abbreviations', 'abdomens']);
 

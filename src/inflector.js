@@ -4,6 +4,7 @@ const RE = Util.RE;
 const MODALS = Util.MODALS;
 const DEFAULT_IS_PLURAL = /(ae|ia|s)$/;
 const DEFAULT_SINGULAR_RULE = RE("^.*s$", 1);
+const DEFAULT_PLURAL_RULE = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s");
 
 const SINGULAR_RULES = [
   RE("^(apices|cortices)$", 4, "ex"),
@@ -32,8 +33,7 @@ const SINGULAR_RULES = [
   RE("geese", 4, "oose"),
   RE("^concerti$", 1, "o"),
   RE("people$", 4, "rson"),
-  //RE("^(minuti)a$", 0, 'e'),
-  RE("^(minuti)ae$", 1),
+  RE("^(vertebr|larv|minuti)ae$", 1),
   RE("^oxen", 2),
   RE("esses$", 2),
   RE("(treatises|chemises)$", 1),
@@ -42,7 +42,6 @@ const SINGULAR_RULES = [
   DEFAULT_SINGULAR_RULE
 ];
 
-const DEFAULT_PLURAL_RULE = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s");
 const PLURAL_RULES = [
   RE("(human|german|roman)$", 0, "s"),
   RE("^(monarch|loch|stomach|epoch|ranch)$", 0, "s"),
@@ -69,8 +68,7 @@ const PLURAL_RULES = [
   RE("schema$", 0, "ta"),
   RE("^(bus|gas)$", 0, "es"),
   RE("child$", 0, "ren"),
-  //RE("^(vertebr|larv|minuti)ae$", 1),
-  RE("^(minuti)a$", 0, 'e'),
+  RE("^(vertebr|larv|minuti)a$", 0, "e"),
   RE("^(maharaj|raj|myn|mull)a$", 0, "hs"),
   RE("^aide-de-camp$", 8, "s-de-camp"),
   RE("^weltanschauung$", 0, "en"),
@@ -92,6 +90,9 @@ const PLURAL_RULES = [
 
 let RiTa;
 
+const PLURALIZE = 1;
+const SINGULARIZE = 2;
+
 class Inflector {
 
   constructor(parent) {
@@ -109,11 +110,12 @@ class Inflector {
       return word;
     }
 
-    let rules = type === 'singularize' ? SINGULAR_RULES : PLURAL_RULES;
+    let rules = type === SINGULARIZE ? SINGULAR_RULES : PLURAL_RULES;
     for (let i = 0; i < rules.length; i++) {
       let rule = rules[i];
+      //console.log(i+") "+rule.raw, rule.suffix);
       if (rule.applies(check)) {
-        dbug && console.log(word + ' hit', rule);
+        dbug && console.log(word + ' hit rule #'+i, rule);
         return rules[i].fire(word);
       }
     }
@@ -122,11 +124,11 @@ class Inflector {
   }
 
   singularize(word, opts) {
-    return this.adjustNumber(word, this.singularize.name, (opts && opts.dbug));
+    return this.adjustNumber(word, SINGULARIZE, (opts && opts.dbug));
   }
 
   pluralize(word, opts) {
-    return this.adjustNumber(word, this.pluralize.name, (opts && opts.dbug));
+    return this.adjustNumber(word, PLURALIZE, (opts && opts.dbug));
   }
 
   isPlural(word, opts) { // add to API?

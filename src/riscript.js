@@ -29,10 +29,10 @@ class RiScript {
     let last = input, trace = opts.trace;
     let rs = this.pushTransforms(ctx);
     let expr = rs.lexParseVisit(input, ctx, opts);
-    trace && console.log('\nInput1: ' + input + '\nResult1: '
+    trace && console.log('\nInput1: ' + input.replace(/\r?\n/g, "\\n") + '\nResult1: '
       + expr + '\nContext: [' + Object.keys(ctx) + ']');
 
-    if (!onepass && rs.isParseable(expr)) { ///(\$[A-Za-z_]|[()])/.test(expr)) {
+    if (!onepass && rs.isParseable(expr)) {
       for (let i = 0; i < RiScript.MAX_TRIES && expr !== last; i++) {
         last = expr;
         if (!expr) break;
@@ -157,8 +157,8 @@ class RiScript {
   lexParseVisit(input, context, opts) {
 
     let { pre, parse, post } = this.preParse(input, opts);
+    opts.trace && console.log('preParse("' + (pre || '') + '", "' + (post || '') + '"):');
     let tree = parse.length && this.lexParse(parse, opts);
-    opts.trace && console.log('preParse(' + (pre || "''") + ',' + (post || "''") + '):');
     let result = parse.length ? this.visitor.init(context, opts).start(tree) : '';
     return (this.normalize(pre) + ' ' + result + ' ' + this.normalize(post)).trim();
   }

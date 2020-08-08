@@ -707,6 +707,11 @@ describe('RiTa.RiScript', () => {
       }
     });
 
+    0 && it('TEMP', () => {
+      RiTa.evaluate("$a=(a|a)\n$a.toUpperCase()",
+        { a: "$b", b: "hello" }, { "singlePass": false, "trace": true });
+    })
+
     it('Should handle Choice transforms', () => {
 
       let ctx = {};
@@ -788,10 +793,14 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle custom transforms', () => {
-      let Blah = () => 'Blah';
+/*       let Blah = () => 'Blah';
       expect(RiTa.evaluate('That is (ant).Blah().', { Blah })).eq('That is Blah.');
       let ctx = { Blah2: () => 'Blah2' };
       expect(RiTa.evaluate('That is (ant).Blah2().', ctx)).eq('That is Blah2.');
+ */
+      let Blah3 = () => 'Blah3';
+      RiTa.addTransform("Blah3", Blah3);
+      expect(RiTa.evaluate('That is (ant).Blah3().')).eq('That is Blah3.');
     });
   });
 
@@ -872,8 +881,7 @@ describe('RiTa.RiScript', () => {
         '$verb = shoots',
         '$start'
       ].join('\n') + '\n';
-      //console.log(script);
-      let rs = RiTa.evaluate(script, undefined);
+      let rs = RiTa.evaluate(script, null);
       expect(rs).eq('the woman shoots the woman.');
     });
 

@@ -3,7 +3,7 @@
   "version": "2.0.0-beta.32",
   "author": "Daniel C. Howe",
   "license": "GPL-3.0",
-  "description": "RiTa: A toolkit for natural language and computational literature",
+  "description": "A toolkit for generative natural language",
   "homepage": "https://rednoise.org/rita",
   "repository": {
     "type": "git",

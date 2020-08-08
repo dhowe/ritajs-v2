@@ -33,7 +33,7 @@ class ChoiceState {
     if (this.type === RSEQUENCE) this.options =
        RiTa.randomizer.randomOrdering(this.options);
 
-    if (parent.trace) console.log('new ChoiceState#'+this.id+'('
+    if (parent.trace) console.log('  new ChoiceState#'+this.id+'('
       + this.options.map(o => o.getText()) + "," + this.type + ")");
   }
 
@@ -131,42 +131,7 @@ class Visitor extends RiScriptVisitor {
     // merge transforms on entire choice and selected option
     token.transforms = this.inheritTransforms(token, ctx);
     this.trace && console.log('visitChoice: ' + this.flatten(token),
-      "tfs=" + (token.transforms || "[]"), this.flatten(options));
-
-    // and then visit
-    return this.visit(token);
-  }
-
-  visitChoiceX(ctx) {
-
-    // compute all options and weights
-    let options = [];
-    ctx.wexpr().map((w, k) => {
-      let wctx = w.weight();
-      let weight = wctx ? parseInt(wctx.INT()) : 1;
-      let expr = w.expr() || emptyExpr();
-      for (let i = 0; i < weight; i++) {
-        options.push(expr);
-      }
-    });
-
-    // handle sequences if we have any
-    let token, txs = ctx.transform();
-    if (txs.length && txs.filter(t => t.getText().includes('.seq()')).length) {
-      token = this.handleSequence(options, false);
-    }
-    else if (txs.length && txs.filter(t => t.getText().includes('.rseq()')).length) {
-      token = this.handleSequence(options, true);
-    }
-
-    // then pick a random one if we need
-    token = token || randomElement(options) || emptyExpr();
-    //let token = randomElement(options) || emptyExpr();
-
-    // merge transforms on entire choice and selected option
-    token.transforms = this.inheritTransforms(token, ctx);
-    this.trace && console.log('visitChoice: ' + this.flatten(token),
-      "tfs=" + (token.transforms || "[]"), this.flatten(options));
+      "tfs=" + (token.transforms || "[]"));
 
     // and then visit
     return this.visit(token);
@@ -210,11 +175,11 @@ class Visitor extends RiScriptVisitor {
     let id = symbolName(ctx.symbol().getText());
     token.transforms = this.inheritTransforms(token, ctx);
 
-    this.trace && console.log('visitInline[pre]: ' + id + '=' +
+    this.trace && console.log('visitInline: ' + id + '=' +
       this.flatten(token) + ' tfs=[' + (token.transforms || '') + ']');
 
     this.context[id] = this.visit(token);
-    this.trace && console.log('visitInline[pos]: $' + id + '=' + this.context[id]);
+    this.trace && console.log('resolveInline: $' + id + '=' + this.context[id]);
 
     // if the inline is not fully resolved, save it for next time
     if (this.parent.isParseable(this.context[id])) {
@@ -234,7 +199,10 @@ class Visitor extends RiScriptVisitor {
 
     ident = symbolName(ident.getText());
     // the symbol is pending so just return it
-    if (this.pendingSymbols.includes(ident)) return '$' + ident;
+    if (this.pendingSymbols.includes(ident)) {
+      //console.log("IGNORE PENDING");
+      return '$' + ident;
+    }
 
     let text = this.context[ident] || '$' + ident;
 
@@ -298,8 +266,9 @@ class Visitor extends RiScriptVisitor {
     if (!ctx.children) return '';
 
     this.trace && console.log('visitChildren(' + ctx.constructor.name + '): "'
-      + ctx.getText() + '"', ctx.transforms || '[]', '[' + ctx.children.reduce(
-        (acc, c) => acc += c.constructor.name + ',', '').replace(/,$/, ']'));
+      + ctx.getText().replace(/\r?\n/g,"\\n") + '"', ctx.transforms || '[]', '[' 
+      + ctx.children.reduce((acc, c) => acc += c.constructor.name + ',', '')
+      .replace(/,$/, ']'));
 
     // if we have only one child, transforms apply to it
     if (ctx.children.length === 1) {

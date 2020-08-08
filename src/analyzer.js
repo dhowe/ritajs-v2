@@ -38,22 +38,22 @@ class Analyzer {
   analyzeWord(word, opts = {}) {
 
     let silentLts = opts && opts.silent;
-    
+
     if (typeof this.cache[word] === 'undefined') {
 
       let useRaw = false, slash = '/', delim = '-';
-      let rawphones = this.lexicon._rawPhones(word, { noLts: true });
+      let rawPhones = this.lexicon._rawPhones(word, { noLts: true });
 
       // if its a simple plural ending in 's',
       // and the singular is in the lexicon, add '-z' to end
-      if (!rawphones && word.endsWith('s')) {
+      if (!rawPhones && word.endsWith('s')) {
         let sing = RiTa.singularize(word);
-        rawphones = this.lexicon._rawPhones(sing, { noLts: true });
-        rawphones && (rawphones += '-z'); // add 's' phone
+        rawPhones = this.lexicon._rawPhones(sing, { noLts: true });
+        rawPhones && (rawPhones += '-z'); // add 's' phone
       }
 
       // if no phones yet, try the lts-engine
-      if (!rawphones) {
+      if (!rawPhones) {
 
         let ltsPhones = RiTa.lts && RiTa.lts.computePhones(word);
         if (ltsPhones && ltsPhones.length > 0) {
@@ -61,21 +61,22 @@ class Analyzer {
             && RiTa.hasLexicon() && word.match(/[a-zA-Z]+/)) {
             console.log("[RiTa] Used LTS-rules for '" + word + "'");
           }
-          rawphones = Util.syllablesFromPhones(ltsPhones);
-        } else {
-          rawphones = word;
+          rawPhones = Util.syllablesFromPhones(ltsPhones);
+        }
+        else {
+          rawPhones = word;
           useRaw = true;
         }
       }
 
       let stresses = '';
-      let sp = rawphones.replace(/[0-2]/g, '').replace(/ /g, delim) + ' ';
+      let sp = rawPhones.replace(/[0-2]/g, '').replace(/ /g, delim) + ' ';
       let phones = (sp === 'dh ') ? 'dh-ah ' : sp; // special case
-      let ss = rawphones.replace(/ /g, slash).replace(/1/g, '') + ' ';
+      let ss = rawPhones.replace(/ /g, slash).replace(/1/g, '') + ' ';
       let syllables = (ss === 'dh ') ? 'dh-ah ' : ss;
 
       if (!useRaw) {
-        let stressyls = rawphones.split(' ');
+        let stressyls = rawPhones.split(' ');
         for (let j = 0; j < stressyls.length; j++) {
           if (!stressyls[j].length) continue;
           stresses += stressyls[j].includes(RiTa.STRESSED) ? RiTa.STRESSED : RiTa.UNSTRESSED;
