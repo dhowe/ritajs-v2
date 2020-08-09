@@ -103,6 +103,7 @@ The weather was (sad | gloomy | depressed).  ->  "The weather was gloomy."
 I'm (very | super | really) glad to ((meet | know) you | learn about you).  ->  "I'm very glad to know you." 
 ```
 <br>
+
 Use the seq() transform to output the Choice options in a linear sequence:
 ```
 The weather was (sad | gloomy | depressed).seq()  ->  
