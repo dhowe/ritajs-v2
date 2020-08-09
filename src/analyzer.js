@@ -56,7 +56,6 @@ class Analyzer {
 
       // if no phones yet, try the lts-engine
       if (!rawPhones) {
-
         let ltsPhones = RiTa.lts && RiTa.lts.computePhones(word);
         if (ltsPhones && ltsPhones.length > 0) {
           if (!RiTa.SILENT && !RiTa.SILENCE_LTS && !silentLts

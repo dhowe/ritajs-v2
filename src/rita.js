@@ -35,8 +35,8 @@ class RiTa {
     return RiTa.lexicon().alliterations(...arguments);
   }
 
-  static analyze(text) {
-    return RiTa._analyzer().analyze(text);
+  static analyze() {
+    return RiTa._analyzer().analyze(...arguments);
   }
 
   static concordance() { // DOC:
@@ -91,8 +91,8 @@ class RiTa {
     return RiTa.tagger.isAdverb(word);
   }
 
-  static isAlliteration(word1, word2) {
-    return RiTa.lexicon().isAlliteration(word1, word2);
+  static isAlliteration() {
+    return RiTa.lexicon().isAlliteration(...arguments);
   }
 
   static isNoun(word) {
@@ -108,8 +108,8 @@ class RiTa {
       (RiTa.tokenize(sentence)[0].toLowerCase());
   }
 
-  static isRhyme(word1, word2) {
-    return RiTa.lexicon().isRhyme(word1, word2);
+  static isRhyme() {
+    return RiTa.lexicon().isRhyme(...arguments);
   }
 
   static isVerb(word) {
@@ -120,8 +120,8 @@ class RiTa {
     return RiTa.concorder.kwic(...arguments);
   }
 
-  static pastParticiple(verb) {
-    return RiTa.conjugator.pastParticiple(verb);
+  static pastParticiple() {
+    return RiTa.conjugator.pastParticiple(...arguments);
   }
 
   static phones() {
@@ -141,8 +141,8 @@ class RiTa {
     return RiTa.inflector.pluralize(...arguments);
   }
 
-  static presentParticiple(verb) {
-    return RiTa.conjugator.presentParticiple(verb);
+  static presentParticiple() {
+    return RiTa.conjugator.presentParticiple(...arguments);
   }
 
   static random() {
@@ -153,12 +153,12 @@ class RiTa {
     return Math.floor(RiTa.random(...arguments));
   }
 
-  static randomOrdering(num) {
-    return RiTa.randomizer.randomOrdering(num);
+  static randomOrdering() {
+    return RiTa.randomizer.randomOrdering(...arguments);
   }
 
-  static randomSeed(theSeed) {
-    return RiTa.randomizer.seed(theSeed);
+  static randomSeed() {
+    return RiTa.randomizer.seed(...arguments);
   }
 
   static randomWord() {
@@ -177,15 +177,15 @@ class RiTa {
     return RiTa.lexicon().search(...arguments);
   }
 
-  static sentences(text) {
-    return RiTa.tokenizer.sentences(text);
+  static sentences() {
+    return RiTa.tokenizer.sentences(...arguments);
   }
 
   static spellsLike() { // DOC:
     return RiTa.lexicon().spellsLike(...arguments);
   }
 
-  static singularize(word) {
+  static singularize() {
     return RiTa.inflector.singularize(...arguments);
   }
 
@@ -193,24 +193,24 @@ class RiTa {
     return RiTa.lexicon().soundsLike(...arguments);
   }
 
-  static stem(word) {
-    return RiTa.stemmer.stem(word);
+  static stem() {
+    return RiTa.stemmer.stem(...arguments);
   }
 
   static stresses() {
     return RiTa._analyzer().analyze(...arguments).stresses;
   }
 
-  static syllables(text) {
+  static syllables() {
     return RiTa._analyzer().analyze(...arguments).syllables;
   }
 
-  static tokenize(text) {
-    return RiTa.tokenizer.tokenize(text);
+  static tokenize() {
+    return RiTa.tokenizer.tokenize(...arguments);
   }
 
-  static untokenize(words) {
-    return RiTa.tokenizer.untokenize(words);
+  static untokenize() {
+    return RiTa.tokenizer.untokenize(...arguments);
   }
 
   /////////////////////////////////////////////////////////////////

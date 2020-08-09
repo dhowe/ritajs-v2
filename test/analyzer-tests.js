@@ -6,22 +6,17 @@ describe('RiTa.Analyzer', () => {
   if (typeof module !== 'undefined') require('./before');
 
   it('Should correctly call analyze.lts', () => {
-    let silent = RiTa.SILENCE_LTS;
-    //RiTa.SILENCE_LTS = true;
     let feats;
-    feats = RiTa.analyze("cloze");
+    feats = RiTa.analyze("cloze", { silent: 1 });
     expect(feats.pos).eq("nn");
     expect(feats.tokens).eq("cloze");
     expect(feats.syllables).eq("k-l-ow-z");
-    RiTa.SILENCE_LTS = silent;
+    //RiTa.SILENCE_LTS = silent;
   });
 
   it('Should correctly call syllables.lts', () => {
-    let silent = RiTa.SILENCE_LTS;
-    RiTa.SILENCE_LTS = true;
-    let result = RiTa.syllables('The Laggin');
+    let result = RiTa.syllables('The Laggin', {silent:1});
     expect(result).eq('dh-ah l-ae/g-ih-n', 'got \'' + result + "'");
-    RiTa.SILENCE_LTS = silent;
   });
 
   it('Should correctly call analyze', () => {
@@ -43,7 +38,7 @@ describe('RiTa.Analyzer', () => {
     expect(feats.tokens).eq("chevrolet");
     expect(feats.syllables).eq(hasLex ? "sh-eh-v/r-ow/l-ey" : 'ch-eh-v/r-ow/l-ah-t');
   });
-  
+
   it('Should correctly call stresses', () => {
 
     let result, answer, word;

@@ -1,6 +1,7 @@
 describe('RiTa.Lexicon', function () {
 
   this.timeout(5000);
+  const lex = RiTa.lexicon(); // first load
 
   if (typeof module !== 'undefined') require('./before');
 
@@ -74,7 +75,7 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should correctly call randomWord.nns', () => {
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 5; i++) {
       let result = RiTa.randomWord({ pos: "nns" });
       if (!RiTa.inflector.isPlural(result)) {
         // For now, just warn here as there are too many edge cases (see #521)
@@ -95,32 +96,26 @@ describe('RiTa.Lexicon', function () {
 
     let pos = ["nn", "jj", "jjr", "wp"];
     for (let j = 0; j < pos.length; j++) {
-      for (let i = 0; i < 5; i++) {
-        let result = RiTa.randomWord({ pos: pos[j] });
-        let best = RiTa.lexicon()._bestPos(result);
-        //console.log(result+": "+pos[j]+" ?= "+best);
-        expect(pos[j]).eq(best, result);
-      }
+      let result = RiTa.randomWord({ pos: pos[j] });
+      let best = RiTa.lexicon()._bestPos(result);
+      //console.log(result+": "+pos[j]+" ?= "+best);
+      expect(pos[j]).eq(best, result);
     }
   });
 
   it('Should correctly call randomWord.syls', () => {
     let i, result, syllables, num;
-    for (i = 0; i < 10; i++) {
-      result = RiTa.randomWord({ numSyllables: 3 });
-      syllables = RiTa.syllables(result);
-      num = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
-      expect(result.length > 0, 'failed1 on: ' + result).to.be.true;
-      expect(num === 3, result + ": " + syllables).to.be.true; // "3 syllables: "
-    }
+    result = RiTa.randomWord({ numSyllables: 3 });
+    syllables = RiTa.syllables(result);
+    num = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
+    expect(result.length > 0, 'failed1 on: ' + result).to.be.true;
+    expect(num === 3, result + ": " + syllables).to.be.true; // "3 syllables: "
 
-    for (i = 0; i < 10; i++) {
-      result = RiTa.randomWord({ numSyllables: 5 });
-      syllables = RiTa.syllables(result);
-      num = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
-      expect(result.length).gt(0, 'failed2 on ' + result);
-      expect(num === 5, result + ": " + syllables).to.be.true; // "5 syllables: "
-    }
+    result = RiTa.randomWord({ numSyllables: 5 });
+    syllables = RiTa.syllables(result);
+    num = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
+    expect(result.length).gt(0, 'failed2 on ' + result);
+    expect(num === 5, result + ": " + syllables).to.be.true; // "5 syllables: "
   });
 
   it('Should correctly call search without opts', () => {
@@ -181,6 +176,7 @@ describe('RiTa.Lexicon', function () {
   it('Should correctly call search with pos, limit', () => {
 
     //console.log(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }));
+
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }))
       .eql(['abalone', 'abandonment', 'abatement', 'abbreviation', 'abdomen']);
 
@@ -195,7 +191,7 @@ describe('RiTa.Lexicon', function () {
 
     expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', pos: 'v', limit: 5 }))
       .eql(["fantasize"]);
- 
+
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'nns' }))
       .eql(['abalone', 'abandonments', 'abatements', 'abbreviations', 'abdomens']);
 
@@ -255,45 +251,36 @@ describe('RiTa.Lexicon', function () {
       let ent = RiTa.lexicon()[test];
       return ('(' + epos + ') Fail: ' + result + ': expected ' + epos + ', got ' + (ent ? ent[1] : 'null'));
     }
+    let pos, result, syllables;
 
-    for (let j = 0; j < 1; j++) {
+    result = RiTa.randomWord({ numSyllables: 3, pos: "vbz" });
+    //console.log(result);
+    expect(result.length > 0, "randomWord vbz: " + result).to.be.true;
+    syllables = RiTa.syllables(result);
+    expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(3, "GOT: " + result + ' (' + syllables + ')');
+    expect(RiTa.isVerb(result)).eq(true, fail(result, 'vbz'));
 
-      let pos, result, syllables;
-      let tmp = RiTa.SILENCE_LTS;
-      RiTa.SILENCE_LTS = true;
+    result = RiTa.randomWord({ numSyllables: 1, pos: "n" });
+    expect(result.length > 0, "randomWord n: " + result).to.be.true;
+    syllables = RiTa.syllables(result);
+    expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
+    expect(RiTa.isNoun(result)).eq(true, fail(result, 'n'));
 
-      for (let i = 0; i < 5; i++) {
-        result = RiTa.randomWord({ numSyllables: 3, pos: "vbz" });
-        //console.log(result);
-        expect(result.length > 0, "randomWord vbz: " + result).to.be.true;
-        syllables = RiTa.syllables(result);
-        expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(3, "GOT: " + result + ' (' + syllables + ')');
-        expect(RiTa.isVerb(result)).eq(true, fail(result, 'vbz'));
+    result = RiTa.randomWord({ numSyllables: 1, pos: "nns" });
+    expect(result.length > 0, "randomWord nns: " + result).to.be.true;
+    syllables = RiTa.syllables(result);
+    expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
+    expect(RiTa.isNoun(result)).eq(true, fail(result, 'nns'));
+    // TODO: still failing occasionally on: proves, torpedoes, strives, times, etc.
 
-        result = RiTa.randomWord({ numSyllables: 1, pos: "n" });
-        expect(result.length > 0, "randomWord n: " + result).to.be.true;
-        syllables = RiTa.syllables(result);
-        expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
-        expect(RiTa.isNoun(result)).eq(true, fail(result, 'n'));
-
-        result = RiTa.randomWord({ numSyllables: 1, pos: "nns" });
-        expect(result.length > 0, "randomWord nns: " + result).to.be.true;
-        syllables = RiTa.syllables(result);
-        expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(1, "GOT: " + result + ' (' + syllables + ')');
-        expect(RiTa.isNoun(result)).eq(true, fail(result, 'nns'));
-        // TODO: still failing occasionally on: proves, torpedoes, strives, times, etc.
-
-        result = RiTa.randomWord({ numSyllables: 5, pos: "nns" });
-        expect(result.length > 0, "randomWord nns: " + result).to.be.true;
-        syllables = RiTa.syllables(result);
-        let count = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
-        if (count !== 5) console.warn("Syllabifier problem: "
-          + result + ".syllables was " + count + ', expected 5');
-        pos = RiTa.pos(result)[0];
-        expect(RiTa.isNoun(result)).eq(true, fail(result, 'nns'));
-        RiTa.SILENCE_LTS = tmp;
-      }
-    }
+    result = RiTa.randomWord({ numSyllables: 5, pos: "nns" });
+    expect(result.length > 0, "randomWord nns: " + result).to.be.true;
+    syllables = RiTa.syllables(result);
+    let count = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
+    if (count !== 5) console.warn("Syllabifier problem: "
+      + result + ".syllables was " + count + ', expected 5');
+    pos = RiTa.pos(result)[0];
+    expect(RiTa.isNoun(result)).eq(true, fail(result, 'nns'));
   });
 
   it('Should correctly call alliterations.numSyllables', () => {
