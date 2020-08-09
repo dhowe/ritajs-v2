@@ -10,6 +10,11 @@ class Lexicon {
     this.lexWarned = false;
   }
 
+  hasWord(word, fatal) {
+    if (!word || !word.length) return false;
+    return this._dict(fatal).hasOwnProperty(word.toLowerCase());
+  }
+
   alliterations(theWord, opts = {}) {
 
     this.parseArgs(opts);
@@ -115,12 +120,8 @@ class Lexicon {
       : this.similarByType(word, opts);
   }
 
-  hasWord(word, fatal) {
-    if (!word || !word.length) return false;
-    return this._dict(fatal).hasOwnProperty(word.toLowerCase());
-  }
-
   search(regex, opts = {}) {
+
     let dict = this._dict(true);
     let words = Object.keys(dict);
 
@@ -134,11 +135,11 @@ class Lexicon {
       }
       regex = new RegExp(regex);
     }
+
     this.parseArgs(opts);
+    let analyzer = /(stresses|phones)/.test(opts.type) ? RiTa._analyzer() : 0;
+
     let result = [];
-    let func = undefined; // TODO: optimized (use raw data)
-    if (opts.type === 'stresses') func = RiTa.stresses;
-    else if (opts.type === 'phones') func = RiTa.phones;
     let tmp = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
     for (let i = 0; i < words.length; i++) {
@@ -148,8 +149,13 @@ class Lexicon {
         word = this.matchPos(word, dict[word], opts);
         if (!word) continue;
       }
-      if (typeof func !== 'undefined') {
-        if (regex.test(func(word))) result.push(word);
+      if (opts.type === 'stresses') {
+        let stresses = analyzer.analyzeWord(word).stresses;
+        if (regex.test(stresses)) result.push(word);
+      }
+      else if (opts.type === 'phones') {
+        let phones = analyzer.analyzeWord(word).phones;
+        if (regex.test(phones)) result.push(word);
       }
       else {
         if (regex.test(word)) result.push(word);
@@ -157,6 +163,7 @@ class Lexicon {
       if (result.length === opts.limit) break;
     }
     RiTa.SILENCE_LTS = tmp;
+
     return result;
   }
 
@@ -244,7 +251,7 @@ class Lexicon {
       if (this.isMassNoun(word, rdata[1])) return;
       result = RiTa.pluralize(word);
     }
-    if (opts.conjugate) { // inflect
+    else if (opts.conjugate) { // inflect
       result = this.reconjugate(word, opts.pos);
     }
 

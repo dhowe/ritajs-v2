@@ -264,6 +264,7 @@ describe('RiTa.Lexicon', function () {
 
       for (let i = 0; i < 5; i++) {
         result = RiTa.randomWord({ numSyllables: 3, pos: "vbz" });
+        //console.log(result);
         expect(result.length > 0, "randomWord vbz: " + result).to.be.true;
         syllables = RiTa.syllables(result);
         expect(syllables.split(RiTa.SYLLABLE_BOUNDARY).length).eq(3, "GOT: " + result + ' (' + syllables + ')');

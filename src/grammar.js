@@ -1,7 +1,8 @@
 const deepMerge = require('deepmerge');
 
-// TODO: handling weighting of rules?
-// expandFrom? expandWith?
+// TODO: 
+//    add fromJSON toJSON
+//    expandFrom? expandWith?
 
 class Grammar {
 

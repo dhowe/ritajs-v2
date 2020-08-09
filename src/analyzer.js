@@ -39,7 +39,9 @@ class Analyzer {
 
     let silentLts = opts && opts.silent;
 
-    if (typeof this.cache[word] === 'undefined') {
+    // check the cache first
+    let result = RiTa.CACHING && this.cache[word]; 
+    if (typeof result === 'undefined') {
 
       let useRaw = false, slash = '/', delim = '-';
       let rawPhones = this.lexicon._rawPhones(word, { noLts: true });
@@ -69,12 +71,14 @@ class Analyzer {
         }
       }
 
+      // compute phones and syllables
       let stresses = '';
-      let sp = rawPhones.replace(/[0-2]/g, '').replace(/ /g, delim) + ' ';
+      let sp = rawPhones.replace(/1/g, '').replace(/ /g, delim) + ' ';
       let phones = (sp === 'dh ') ? 'dh-ah ' : sp; // special case
       let ss = rawPhones.replace(/ /g, slash).replace(/1/g, '') + ' ';
       let syllables = (ss === 'dh ') ? 'dh-ah ' : ss;
 
+      // compute stresses if needed
       if (!useRaw) {
         let stressyls = rawPhones.split(' ');
         for (let j = 0; j < stressyls.length; j++) {
@@ -87,12 +91,13 @@ class Analyzer {
       }
       if (!stresses.endsWith(' ')) stresses += ' ';
 
-      let features = { phones, stresses, syllables };
-      if (!RiTa.CACHING) return features;
-      this.cache[word] = features;
+      result = { phones, stresses, syllables };
+
+      // add to cache if enabled
+      if (RiTa.CACHING) this.cache[word] = result;
     }
 
-    return this.cache[word];
+    return result;
   }
 }
 
