@@ -1,7 +1,7 @@
 const Util = require("./util");
 
 const RE = Util.RE;
-const MODALS = Util.MODALS;
+const MASS_NOUNS = Util.MASS_NOUNS;
 const DEFAULT_IS_PLURAL = /(ae|ia|s)$/;
 const DEFAULT_SINGULAR_RULE = RE("^.*s$", 1);
 const DEFAULT_PLURAL_RULE = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s");
@@ -104,9 +104,8 @@ class Inflector {
     if (!word || !word.length) return '';
 
     let check = word.toLowerCase();
-
-    if (MODALS.includes(check)) {
-      dbug && console.log(word + ' hit MODALS');
+    if (MASS_NOUNS.includes(check)) {
+      dbug && console.log(word + ' hit MASS_NOUNS');
       return word;
     }
 
@@ -119,7 +118,6 @@ class Inflector {
         return rules[i].fire(word);
       }
     }
-
     return word;
   }
 
@@ -140,7 +138,7 @@ class Inflector {
 
     word = word.toLowerCase();
 
-    if (MODALS.includes(word)) return true;
+    if (MASS_NOUNS.includes(word)) return true;
 
     let dict = RiTa.lexicon()._dict(fatal);
     let sing = RiTa.singularize(word);

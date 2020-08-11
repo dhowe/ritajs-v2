@@ -1,6 +1,6 @@
 // a modified prt of the Pling stemmer as documented here: http://resources.mpi-inf.mpg.de/yago-naga/javatools/doc/javatools/parsers/PlingStemmer.html
 
-const { MODALS } = require("./util");
+const { MASS_NOUNS } = require("./util");
 
 /* Words that end in '-se' in their plural forms (like 'nurse' etc.) */
 const categorySE_SES = ['abuses', 'apocalypses', 'blouses', 'bruises', 'chaises', 'cheeses', 'chemises', 'clauses', 'corpses', 'courses', 'crazes', 'creases', 'cruises', 'curses', 'databases', 'dazes', 'dives', 'defenses', 'demises', 'discourses', 'diseases', 'doses', 'eclipses', 'enterprises', 'expenses', 'friezes', 'fuses', 'glimpses', 'guises', 'hearses', 'horses', 'houses', 'impasses', 'impulses', 'kamikazes', 'mazes', 'mousses', 'noises', 'nooses', 'noses', 'nurses', 'obverses', 'offenses', 'oozes', 'overdoses', 'phrases', 'posses', 'premises', 'pretenses', 'proteases', 'pulses', 'purposes', 'purses', 'racehorses', 'recluses', 'recourses', 'relapses', 'responses', 'roses', 'ruses', 'spouses', 'stripteases', 'subleases', 'sunrises', 'tortoises', 'trapezes', 'treatises', 'toes', 'universes', 'uses', 'vases', 'verses', 'vises', 'wheelbases', 'wheezes'];
@@ -109,7 +109,7 @@ class PlingStemmer {
     if (categoryEX_ICES.includes(s)) return (this.cut(s, "ices") + "ex");
 
     // Words that do not inflect in the plural
-    if (s.endsWith("ois") || s.endsWith("itis") || category00.includes(s) || categoryICS.includes(s) || MODALS.includes(s)) {
+    if (s.endsWith("ois") || s.endsWith("itis") || category00.includes(s) || categoryICS.includes(s) || MASS_NOUNS.includes(s)) {
       return s;
     }
 

@@ -1,4 +1,4 @@
-const { MODALS } = require("./util");
+const { MASS_NOUNS } = require("./util");
 
 const ADJS = ['jj', 'jjr', 'jjs'];
 const ADVS = ['rb', 'rbr', 'rbs', 'rp'];
@@ -222,7 +222,7 @@ class PosTagger {
           // transform 7: if a word has been categorized as a
           // common noun and it ends with "s", then set its type to plural common noun (NNS)
           if (word.match(/^.*[^s]s$/)) {
-            if (!MODALS.includes(word)) {
+            if (!MASS_NOUNS.includes(word)) {
               tag = "nns";
             }
           }
