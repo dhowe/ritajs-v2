@@ -1,8 +1,12 @@
-var ALL_PHONES = ['aa','ae','ah','ao','aw','ay','b','ch','d','dh','eh','er','ey','f','g','hh','ih','iy','jh', 'k','l', 'm','n','ng','ow','oy','p','r','s','sh','t','th','uh', 'uw','v','w','y','z','zh'];
+const ALL_PHONES = ['aa','ae','ah','ao','aw','ay','b','ch','d','dh','eh','er','ey','f','g','hh','ih','iy','jh', 'k','l', 'm','n','ng','ow','oy','p','r','s','sh','t','th','uh', 'uw','v','w','y','z','zh'];
 
-var tagsDict, word, sy, ph, ss;
-var bubbles = [], colors = [];
-var pos = '', maxWordLength = 12;
+let tagsDict, word, sy, ph, ss;
+let bubbles = [], colors = [];
+let pos = '';
+
+let lexicon;
+
+const maxWordLength = 12;
 
 function setup() {
 
@@ -10,13 +14,13 @@ function setup() {
   noStroke();
 
   // load Lexicon
-  lexicon = new RiLexicon();
+  lexicon = RiTa.lexicon();
 
   // initialize color palette
   colors = colorGradient();
 
   // initialize bubbles
-  for (var i = 0; i < maxWordLength; i++) {
+  for (let i = 0; i < maxWordLength; i++) {
     bubbles[i] = new Bubble('', 0);
   }
 
@@ -37,14 +41,14 @@ function draw() {
 
    //IPA
   textSize(18);
-  ipaPhones = arpaToIPA(lexicon._getRawPhones(word));
+  ipaPhones = arpaToIPA(lexicon._rawPhones(word));
   text("/" + ipaPhones + "/", 80, 75);
   // pos-tag
   textSize(14);
   textStyle(ITALIC);
   text(pos.toLowerCase(), 80, 105);
 
-  for (var i = 0; i < bubbles.length; i++)
+  for (let i = 0; i < bubbles.length; i++)
     bubbles[i].draw(i);
 }
 
@@ -52,26 +56,26 @@ function selectWord() { // called every 4 sec by timer
 
   // random word with <= 12 letters
   do {
-    word = lexicon.randomWord();
+    word = RiTa.randomWord();
   } while (word && word.length > maxWordLength);
 
   // get various features
-  sy = RiTa.getSyllables(word);
-  ph = RiTa.getPhonemes(word);
-  ss = RiTa.getStresses(word);
+  sy = RiTa.syllables(word);
+  ph = RiTa.phones(word);
+  ss = RiTa.stresses(word);
 
   // get (WordNet-style) pos-tags
-  var tags = RiTa.getPosTags(word, true);
+  const tags = RiTa.pos(word, { simple: true });
   pos = tagName(tags[0]);
 
   // reset the bubbles
-  for (var i = 0; i < bubbles.length; i++) {
+  for (let i = 0; i < bubbles.length; i++) {
     bubbles[i].reset();
   }
 
   // update the bubbles for the new word
-  var phs = ph.split('-');
-  for (var i = 0; i < phs.length; i++) {
+  const phs = ph.split('-');
+  for (let i = 0; i < phs.length; i++) {
     bubbles[i].update(phs[i], i * 50 + 100, phonemeColor(phs[i]));
   }
 
@@ -140,13 +144,13 @@ function Bubble(phoneme, x) {
 function addSyllables(syllables, bubbles) {
 
   // Split each syllable
-  var syllable = syllables.split('/');
+  const syllable = syllables.split('/');
 
   // Record the past phonemes number
-  for (var i = 0, past = 0; i < syllable.length; i++) {
-    var phs = syllable[i].split('-');
+  for (let i = 0, past = 0; i < syllable.length; i++) {
+    const phs = syllable[i].split('-');
 
-    for (var j = 1; j < phs.length; j++)
+    for (let j = 1; j < phs.length; j++)
       bubbles[past + j].adjustDistance(-20 * j);
 
     past += phs.length;
@@ -156,17 +160,17 @@ function addSyllables(syllables, bubbles) {
 function addStress(stresses, syllables, bubbles) {
 
   // Split stresses & syllables
-  var stress = stresses.split('/'),
+  const stress = stresses.split('/'),
     syllable = syllables.split('/');
 
   // Record the previous phoneme count
-  for (var i = 0, past = 0; i < stress.length; i++) {
+  for (let i = 0, past = 0; i < stress.length; i++) {
 
-    var phs = syllable[i].split('-');
+    const phs = syllable[i].split('-');
 
     // if the syllable is stressed, grow its bubbles
     if (parseInt(stress[i]) == 1) {
-      for (var j = 0; j < phs.length; j++)
+      for (let j = 0; j < phs.length; j++)
         bubbles[past + j].grow();
     }
 
@@ -190,16 +194,17 @@ function tagName(tag) {
 
 function phonemeColor(phoneme) {
 
-  var idx = ALL_PHONES.indexOf(phoneme);
+  const idx = ALL_PHONES.indexOf(phoneme);
   return idx > -1 ? colors[idx] : 0;
 }
 
 function colorGradient() {
 
   colorMode(HSB, 1, 1, 1, 1);
-  var tmp = [], apl = ALL_PHONES.length;
-  for (var i = 0; i < apl; i++) {
-    var h = map(i, 0, apl, .2, .8);
+  let tmp = [];
+  const apl = ALL_PHONES.length;
+  for (let i = 0; i < apl; i++) {
+    const h = map(i, 0, apl, .2, .8);
     tmp[i] = color(h, .9, .9, .6);
   }
   colorMode(RGB, 255, 255, 255, 255);

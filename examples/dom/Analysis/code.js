@@ -1,9 +1,9 @@
-var dbug = false, ALL_PHONES = ['aa','ae','ah','ao','aw','ay','b','ch','d','dh','eh','er','ey','f','g','hh','ih','iy','jh', 'k','l', 'm','n','ng','ow','oy','p','r','s','sh','t','th','uh', 'uw','v','w','y','z','zh'];
+const dbug = false, ALL_PHONES = ['aa','ae','ah','ao','aw','ay','b','ch','d','dh','eh','er','ey','f','g','hh','ih','iy','jh', 'k','l', 'm','n','ng','ow','oy','p','r','s','sh','t','th','uh', 'uw','v','w','y','z','zh'];
 
 $(document).ready(function () {
 
-  var word, lexicon = new RiLexicon();
-  var sy, ph, ss, hues = colorGradient();
+  const lexicon = RiTa.lexicon();
+  let sy, ph, ss, hues = colorGradient();
 
   clearBubble();
   selectWord();
@@ -17,15 +17,15 @@ $(document).ready(function () {
     } while (word && word.length > 12);
 
     // get various features
-    sy = RiTa.getSyllables(word);
-    ph = RiTa.getPhonemes(word);
-    ss = RiTa.getStresses(word);
+    sy = RiTa.syllables(word);
+    ph = RiTa.phones(word);
+    ss = RiTa.stresses(word);
 
     dbug && console.log(sy);
 
-    var tags = RiTa.getPosTags(word, true);
-    var pos = tagName(tags[0]);
-    var ipaPhones = ipaPhones = arpaToIPA(lexicon._getRawPhones(word));
+    const tags = RiTa.pos(word, true);
+    const pos = tagName(tags[0]);
+    const ipaPhones = arpaToIPA(lexicon._rawPhones(word));
 
     $('#word').text(word);
     $('#pos').text(pos);
@@ -80,7 +80,7 @@ $(document).ready(function () {
 
     $('.bubbles').children().each(function (index) {
       (function (that, i) {
-        var t = setTimeout(function () {
+        const t = setTimeout(function () {
           $(that).animate({
             'margin-top': 180,
           }, "slow");
@@ -93,15 +93,15 @@ $(document).ready(function () {
 
     dbug && console.log("addSyllables");
 
-    var syllable = syllables.split("/");
-    for (var i = 0, past = 0; i < syllable.length; i++) {
-      var phs = syllable[i].split("-");
+    const syllable = syllables.split("/");
+    for (let i = 0, past = 0; i < syllable.length; i++) {
+      const phs = syllable[i].split("-");
       //add extra space between each syllables
       $('.bubbles').children().eq(past).css("margin-left", "10px");
 
-      for (var j = 1; j < phs.length; j++) {
+      for (let j = 1; j < phs.length; j++) {
         (function (j) {
-          var bubble = $('.bubbles').children().eq(j + past);
+          const bubble = $('.bubbles').children().eq(j + past);
           if(bubble.hasClass('stressed'))
              bubble.css("margin-left", "-20px");
            else
@@ -115,15 +115,15 @@ $(document).ready(function () {
   function addStress(stresses, syllables, bubbles) {
     dbug && console.log("addStress");
     // Split stresses and syllables
-    var stress = stresses.split('/'), syllable = syllables.split('/');
+    const stress = stresses.split('/'), syllable = syllables.split('/');
 
-    for (var i = 0, past = 0; i < stress.length; i++) {
+    for (let i = 0, past = 0; i < stress.length; i++) {
 
-      var phs = syllable[i].split('-');
+      const phs = syllable[i].split('-');
 
       // if the syllable is stressed, grow its bubbles
       if (parseInt(stress[i]) == 1) {
-        for (var j = 0; j < phs.length; j++) {
+        for (let j = 0; j < phs.length; j++) {
           (function (j) {
             $('.bubbles').children().eq(j + past).addClass("stressed");
           })(j);
@@ -134,26 +134,24 @@ $(document).ready(function () {
   }
 
   function tagName(tag) {
-    if (tagsDict == null) {
-      var tagsDict = {
+      const tagsDict = {
         'n': 'Noun',
         'v': 'Verb',
         'r': 'Adverb',
         'a': 'Adjective'
       };
-    }
     return tag != null ? tagsDict[tag] : null;
   }
 
   function phonemeColor(phoneme) {
-    var idx = ALL_PHONES.indexOf(phoneme);
+    const idx = ALL_PHONES.indexOf(phoneme);
     return idx > -1 ? hues[idx] : 0;
   }
 
   function colorGradient() {
-    var tmp = [];
-    for (var i = 0; i < ALL_PHONES.length; i++) {
-      var h = Math.floor(map(i, 0, ALL_PHONES.length, .2 * 360, .8 * 360));
+    let tmp = [];
+    for (let i = 0; i < ALL_PHONES.length; i++) {
+      const h = Math.floor(map(i, 0, ALL_PHONES.length, .2 * 360, .8 * 360));
       tmp[i] = h;
     }
     return tmp;
