@@ -388,12 +388,11 @@ describe('RiTa.Core', () => {
 
   it('Should correctly call concordance', () => {
 
-    let data = RiTa.concordance("The dog ate the cat");
-
-    eq(Object.keys(data).length, 5);
-    eq(data["the"], 1);
-    eq(data["The"], 1);
-    eq(data["THE"], undefined);
+    let data = RiTa.concordance("The dog ate the cat"); //default
+    expect(Object.keys(data).length).eq(5);
+    expect(data["the"]).eq(1);
+    expect(data["The"]).eq(1);
+    expect(data["THE"]).eq(undefined);
 
     data = RiTa.concordance("The dog ate the cat", {
       ignoreCase: false,
@@ -401,52 +400,66 @@ describe('RiTa.Core', () => {
       ignorePunctuation: false,
     });
 
-    eq(Object.keys(data).length, 5); // same results
-    eq(data["the"], 1);
-    eq(data["The"], 1);
-    eq(data["THE"], undefined);
+    expect(Object.keys(data).length).eq(5);
+    expect(data["the"]).eq(1);
+    expect(data["The"]).eq(1);
+    expect(data["THE"]).eq(undefined); // same result
 
     data = RiTa.concordance("The dog ate the cat", {
       ignoreCase: true
     });
+    expect(Object.keys(data).length).eq(4);
+    expect(data["the"]).eq(2);
+    expect(data["The"]).eq(undefined);
+    expect(data["THE"]).eq(undefined);
 
-    eq(data["the"], 2);
-    eq(data["The"], undefined);
-    eq(data["THE"], undefined);
-
-    data = RiTa.concordance("The dog ate the cat", {
-      ignoreStopWords: true
+    data = RiTa.concordance("The Dog ate the cat.", {
+      ignoreCase: true,
+      ignoreStopWords: true,
+      ignorePunctuation: true,
     });
 
-    eq(Object.keys(data).length, 4);
-    eq(data["The"], undefined);
+    expect(Object.keys(data).length).eq(3);
+    expect(data["dog"]).eq(1);
+    expect(data["the"]).eq(undefined);
+    expect(data["THE"]).eq(undefined);
 
-    data = RiTa.concordance("It was a dream of you.", {
-      ignoreStopWords: true
-    });
-    
-
-    eq(Object.keys(data).length, 1);
-    eq(data["It"], undefined);
-    eq(data["dream"], 1);
+    data = RiTa.concordance("The dog ate the cat"); //opts should be back to default
+    expect(Object.keys(data).length).eq(5);
+    expect(data["the"]).eq(1);
+    expect(data["The"]).eq(1);
+    expect(data["THE"]).eq(undefined);
 
     data = RiTa.concordance("'What a wonderful world;!:,?.'\"", {
       ignorePunctuation: true
     });
+    expect(Object.keys(data).length).eq(4);
+    expect(data["!"]).eq(undefined);
 
-    eq(Object.keys(data).length, 4);
-    eq(data["!"], undefined);
+
+    data = RiTa.concordance("The dog ate the cat", {
+      ignoreStopWords: true
+    });
+
+    expect(Object.keys(data).length).eq(3);
+    expect(data["The"]).eq(undefined);
+
+    data = RiTa.concordance("It was a dream of you.", {
+      ignoreStopWords: true
+    });
+    expect(Object.keys(data).length).eq(1);
+    expect(data["It"]).eq(undefined);
+    expect(data["dream"]).eq(1);
 
     data = RiTa.concordance("Fresh fried fish, Fish fresh fried.", {
       wordsToIgnore: ["fish"],
-      ignoreCase: true
+      ignoreCase: true,
+      ignorePunctuation: true
     });
-
-    eq(Object.keys(data).length, 2);
-    eq(data["fresh"], 2);
-    eq(data["fried"], 2);
-    eq(data["fish"], undefined);
-
+    expect(Object.keys(data).length).eq(2);
+    expect(data["fish"]).eq(undefined);
+    expect(data["fresh"]).eq(2);
+    expect(data["fried"]).eq(2);
   });
 
   it('Should correctly call sentences', () => {

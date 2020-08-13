@@ -8,7 +8,7 @@ class Concorder {
     this.wordsToIgnore = [];
     this.ignoreCase = false;
     this.ignoreStopWords = false;
-    this.ignorePunctuation = false; 
+    this.ignorePunctuation = false;
   }
 
   concordance(text, options) {
@@ -48,6 +48,10 @@ class Concorder {
   ///////////////////////////////////////////////////////////////////////////
 
   _parseOptions(options) {
+    // First step: reset to default on every parse
+    this.ignoreCase = false;
+    this.ignoreStopWords = false;
+    this.ignorePunctuation = false;
     if (options) {
       options.ignoreCase && (this.ignoreCase = true);
       options.ignoreStopWords && (this.ignoreStopWords = true);
@@ -76,6 +80,10 @@ class Concorder {
 
   _isIgnorable(key) {
     if (this.ignorePunctuation && RiTa.isPunctuation(key)) {
+      return true;
+    }
+    if (this.ignoreStopWords && RiTa.isStopWords(key)) {
+      console.log("Ignore Stopwords:", key);
       return true;
     }
     for (let i = 0; i < this.wordsToIgnore.length; i++) {
