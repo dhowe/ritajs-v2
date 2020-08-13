@@ -407,8 +407,7 @@ class Lexicon {
       }
     }
   }
-
-
+  
   _lastStressedVowelPhonemeToEnd(word) {
     if (word && word.length) {
       let raw = this._lastStressedPhoneToEnd(word);

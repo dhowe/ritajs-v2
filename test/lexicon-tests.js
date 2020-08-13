@@ -193,7 +193,7 @@ describe('RiTa.Lexicon', function () {
       .eql(["fantasize"]);
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'nns' }))
-      .eql(['abandonments', 'abatements', 'abbreviations', 'abdomens', "abductions"]);
+      .eql(['abandonments', 'abatements', 'abbreviations', 'abdomens', "abductions`"]);
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'nns', numSyllables: 3 }))
       .eql(['abatements', 'abdomens', "abductions", "abeyances", "abortions" ]);
