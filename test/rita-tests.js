@@ -387,7 +387,66 @@ describe('RiTa.Core', () => {
   });
 
   it('Should correctly call concordance', () => {
-    // TODO:
+
+    let data = RiTa.concordance("The dog ate the cat");
+
+    equal(Object.keys(data).length, 5);
+    equal(data["the"], 1);
+    equal(data["The"], 1);
+    equal(data["THE"], undefined);
+
+    data = RiTa.concordance("The dog ate the cat", {
+      ignoreCase: false,
+      ignoreStopWords: false,
+      ignorePunctuation: false,
+    });
+
+    equal(Object.keys(data).length, 5); // same results
+    equal(data["the"], 1);
+    equal(data["The"], 1);
+    equal(data["THE"], undefined);
+
+    data = RiTa.concordance("The dog ate the cat", {
+      ignoreCase: true
+    });
+
+    equal(Object.keys(data).length, 4);
+    equal(data["the"], 2);
+    equal(data["The"], undefined);
+    equal(data["THE"], undefined);
+
+    data = RiTa.concordance("The dog ate the cat", {
+      ignoreStopWords: true
+    });
+
+    equal(Object.keys(data).length, 3);
+    equal(data["the"], undefined);
+
+    data = RiTa.concordance("It was a dream of you.", {
+      ignoreStopWords: true
+    });
+
+    equal(Object.keys(data).length, 1);
+    equal(data["It"], undefined);
+    equal(data["dream"], 1);
+
+    data = RiTa.concordance("'What a wonderful world;!:,?.'\"", {
+      ignorePunctuation: true
+    });
+
+    equal(Object.keys(data).length, 4);
+    equal(data["!"], undefined);
+
+    data = RiTa.concordance("Fresh fried fish, Fish fresh fried.", {
+      wordsToIgnore: ["fish"],
+      ignoreCase: true
+    });
+
+    equal(Object.keys(data).length, 2);
+    equal(data["fresh"], 2);
+    equal(data["fried"], 2);
+    equal(data["fish"], undefined);
+
   });
 
   it('Should correctly call sentences', () => {
