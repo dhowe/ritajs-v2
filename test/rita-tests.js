@@ -390,10 +390,10 @@ describe('RiTa.Core', () => {
 
     let data = RiTa.concordance("The dog ate the cat");
 
-    equal(Object.keys(data).length, 5);
-    equal(data["the"], 1);
-    equal(data["The"], 1);
-    equal(data["THE"], undefined);
+    eq(Object.keys(data).length, 5);
+    eq(data["the"], 1);
+    eq(data["The"], 1);
+    eq(data["THE"], undefined);
 
     data = RiTa.concordance("The dog ate the cat", {
       ignoreCase: false,
@@ -401,51 +401,51 @@ describe('RiTa.Core', () => {
       ignorePunctuation: false,
     });
 
-    equal(Object.keys(data).length, 5); // same results
-    equal(data["the"], 1);
-    equal(data["The"], 1);
-    equal(data["THE"], undefined);
+    eq(Object.keys(data).length, 5); // same results
+    eq(data["the"], 1);
+    eq(data["The"], 1);
+    eq(data["THE"], undefined);
 
     data = RiTa.concordance("The dog ate the cat", {
       ignoreCase: true
     });
 
-    equal(Object.keys(data).length, 4);
-    equal(data["the"], 2);
-    equal(data["The"], undefined);
-    equal(data["THE"], undefined);
+    eq(data["the"], 2);
+    eq(data["The"], undefined);
+    eq(data["THE"], undefined);
 
     data = RiTa.concordance("The dog ate the cat", {
       ignoreStopWords: true
     });
 
-    equal(Object.keys(data).length, 3);
-    equal(data["the"], undefined);
+    eq(Object.keys(data).length, 4);
+    eq(data["The"], undefined);
 
     data = RiTa.concordance("It was a dream of you.", {
       ignoreStopWords: true
     });
+    
 
-    equal(Object.keys(data).length, 1);
-    equal(data["It"], undefined);
-    equal(data["dream"], 1);
+    eq(Object.keys(data).length, 1);
+    eq(data["It"], undefined);
+    eq(data["dream"], 1);
 
     data = RiTa.concordance("'What a wonderful world;!:,?.'\"", {
       ignorePunctuation: true
     });
 
-    equal(Object.keys(data).length, 4);
-    equal(data["!"], undefined);
+    eq(Object.keys(data).length, 4);
+    eq(data["!"], undefined);
 
     data = RiTa.concordance("Fresh fried fish, Fish fresh fried.", {
       wordsToIgnore: ["fish"],
       ignoreCase: true
     });
 
-    equal(Object.keys(data).length, 2);
-    equal(data["fresh"], 2);
-    equal(data["fried"], 2);
-    equal(data["fish"], undefined);
+    eq(Object.keys(data).length, 2);
+    eq(data["fresh"], 2);
+    eq(data["fried"], 2);
+    eq(data["fish"], undefined);
 
   });
 
