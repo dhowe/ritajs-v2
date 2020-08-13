@@ -1,17 +1,21 @@
 const LEFT = "LEFT", CENTER = "CENTER",
   RIGHT = "RIGHT", WIDTH = 800, HEIGHT = 500;
 
-var buttons = [
+const buttons = [
   "Gregor", "Samsa", "family", "being",
   "clerk", "room", "violin", "window"
-],
-  word = buttons[7],  fillColor, kafkaString, textAlignment = LEFT,
-  $container, kwic, opts, $btns;
+];
+const opts = {
+  ignorePunctuation: true,
+  ignoreStopWords: true
+};
+let word = buttons[7],  fillColor, kafkaString, textAlignment = LEFT,
+  $container, kwic, $btns;
 
 $(document).ready(function () {
 
   $btns = $(".cssBtns");
-  
+
   assignButtons();
   $($btns[7]).css("color", "red");
 
@@ -20,31 +24,27 @@ $(document).ready(function () {
     .css("background-color", "rgb(250, 250, 250)");
   $("#textInput").attr("placeholder", word);
 
-  RiTa.loadString('../../data/kafka.txt', function (data) {
-
+    $.get('../../data/kafka.txt', function(data) {
     kafkaString = data;
-    kwic = RiTa.kwic(kafkaString, word, {
-      ignorePunctuation: true,
-      ignoreStopWords: true,
-      wordCount: 6
-    });
-
+    RiTa.concordance(kafkaString, opts)
+    kwic = RiTa.kwic(word, 6);
     drawText();
-  });
+  }, 'text');
 });
 
 function assignButtons() {
 
-  for (var i = 0; i < $btns.length; i++)
+  for (let i = 0; i < $btns.length; i++)
     $($btns[i]).html(buttons[i]);
-  
+
   $btns.click(function() {
-    
+
     word = $(this).text();
-    
-    kwic = RiTa.kwic(kafkaString, word, opts);
+
+    RiTa.concordance(kafkaString, opts)
+    kwic = RiTa.kwic(word, 6);
     drawText();
-    
+
     $btns.css("color", "black");
     $(this).css("color", "red");
   });
@@ -62,12 +62,12 @@ function drawText() {
 
   } else {
 
-    var tw = textWidth(word) / 2;
+    const tw = textWidth(word) / 2;
 
-    for (var i = 0; i < kwic.length; i++) {
+    for (let i = 0; i < kwic.length; i++) {
 
-      var parts = kwic[i].split(word);
-      var x = WIDTH / 2,
+      const parts = kwic[i].split(word);
+      const x = WIDTH / 2,
         y = i * 20 + 65;
 
       if (y > HEIGHT - 30) return;
@@ -89,7 +89,7 @@ function drawText() {
 
 function textWidth(s) {
 
-  var $span = $('<span>', {
+  const $span = $('<span>', {
     html: s + '&nbsp;',
     css: {
       position: "absolute",
@@ -98,7 +98,7 @@ function textWidth(s) {
     }
   }).appendTo($('body'));
 
-  var width = $span.width();
+  const width = $span.width();
   $span.remove();
 
   return width;
@@ -110,7 +110,7 @@ function fill(a, b, c) {
     "rgb(" + a + "," + b + "," + c + ")";
 
   function toHex(color) {
-    var intValue = Math.floor(color);
+    const intValue = Math.floor(color);
     return "rgb(" + intValue + "," + intValue + "," + intValue + ")";
   }
 }
@@ -127,8 +127,8 @@ function text(s, x, y) {
     // position the strings according to alignment
     if (textAlignment == LEFT) {
 
-      var ONLY_PUNCT = /^[^0-9A-Za-z\s]/;
-      var regex = new RegExp(ONLY_PUNCT);
+      const ONLY_PUNCT = /^[^0-9A-Za-z\s]/;
+      const regex = new RegExp(ONLY_PUNCT);
       if (regex.test(s))
         x = innerX - textWidth("");
 
@@ -142,7 +142,7 @@ function text(s, x, y) {
 
   convertPosition(x);
 
-  var $span = $('<span/>', {
+  const $span = $('<span/>', {
     html: s,
     css: {
       position: 'absolute',
