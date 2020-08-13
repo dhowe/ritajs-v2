@@ -83,7 +83,7 @@ class Concorder {
       return true;
     }
     if (this.ignoreStopWords && RiTa.isStopWords(key)) {
-      console.log("Ignore Stopwords:", key);
+      // console.log("Ignore Stopwords:", key);
       return true;
     }
     for (let i = 0; i < this.wordsToIgnore.length; i++) {
