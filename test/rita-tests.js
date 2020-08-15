@@ -386,8 +386,7 @@ describe('RiTa.Core', () => {
     }
   });
 
-  // TODO: commented so build succeeds
-  0 && it('Should correctly call concordance', () => {
+  it('Should correctly call concordance', () => {
 
     let data = RiTa.concordance("The dog ate the cat"); //default
     expect(Object.keys(data).length).eq(5);
@@ -425,7 +424,8 @@ describe('RiTa.Core', () => {
     expect(data["the"]).eq(undefined);
     expect(data["THE"]).eq(undefined);
 
-    data = RiTa.concordance("The dog ate the cat"); //opts should be back to default
+    // opts should be back to default
+    data = RiTa.concordance("The dog ate the cat"); 
     expect(Object.keys(data).length).eq(5);
     expect(data["the"]).eq(1);
     expect(data["The"]).eq(1);

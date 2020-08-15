@@ -5,15 +5,11 @@ class Concorder {
   constructor(parent) {
     RiTa = parent;
     this.model = undefined;
-    this.wordsToIgnore = [];
-    this.ignoreCase = false;
-    this.ignoreStopWords = false;
-    this.ignorePunctuation = false;
   }
-
+  
   concordance(text, options) {
-    this._parseOptions(options);
     this.words = Array.isArray(text) ? text : RiTa.tokenize(text);
+    this._parseOptions(options);
     this._build();
     let result = {};
     for (let name in this.model) {
@@ -47,17 +43,11 @@ class Concorder {
 
   ///////////////////////////////////////////////////////////////////////////
 
-  _parseOptions(options) {
-    // First step: reset to default on every parse
-    this.ignoreCase = false;
-    this.ignoreStopWords = false;
-    this.ignorePunctuation = false;
-    if (options) {
-      options.ignoreCase && (this.ignoreCase = true);
-      options.ignoreStopWords && (this.ignoreStopWords = true);
-      options.ignorePunctuation && (this.ignorePunctuation = true);
-      options.wordsToIgnore && (this.wordsToIgnore = options.wordsToIgnore);
-    }
+  _parseOptions(options) { // provides default
+    this.ignoreCase = options && options.ignoreCase || false;
+    this.ignoreStopWords = options && options.ignoreStopWords || false;
+    this.ignorePunctuation = options && options.ignorePunctuation || false;
+    this.wordsToIgnore = options && options.wordsToIgnore || [];
   }
 
   _build() {
