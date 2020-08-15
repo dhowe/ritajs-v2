@@ -1,6 +1,6 @@
 const deepMerge = require('deepmerge');
 
-// TODO: 
+// TODO:
 //    add fromJSON toJSON
 //    expandFrom? expandWith?
 
@@ -56,7 +56,7 @@ class Grammar {
 
   toString(lb = '\n') { // TODO
     let s = '';
-    Object.keys(rules).forEach(r => s += r + ':' + rules[r] + lb);
+    Object.keys(this.rules).forEach(r => s += r + ':' + rules[r] + lb);
     return s;
   }
 

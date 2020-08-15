@@ -1,5 +1,5 @@
 
-var rhymes, word;
+let rhymes, word;
 
 function setup()
 {
@@ -7,7 +7,7 @@ function setup()
   fill(255);
   textFont("Georgia");
 
-  lexicon = new RiLexicon();
+  lexicon = RiTa.lexicon();
   findRhymes();
 
   setInterval(findRhymes, 2000);
@@ -29,12 +29,12 @@ function draw()
 
 function findRhymes() { // called by timer
 
-  var tmp = '';
+  let tmp = '';
   do {
     word = lexicon.randomWord();
     tmp = lexicon.rhymes(word);
-  } while ( word && tmp.length < 3) 
+  } while ( word && tmp.length < 3)
 
-  var arr = subset(tmp, 0, min(tmp.length, 13)); // max of 13 words
+  const arr = subset(tmp, 0, min(tmp.length, 13)); // max of 13 words
   rhymes = arr.join("\n");
 }

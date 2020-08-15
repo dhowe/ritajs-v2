@@ -1,8 +1,8 @@
-var buttons = [
+const buttons = [
   "Gregor", "Samsa", "family", "being",
   "clerk", "room", "violin", "window"
-],
-  word = buttons[7], buttonX = 150, over, data, kwic, input;
+];
+let word = buttons[7], buttonX = 150, over, data, kwic, input;
 
 function preload() {
 
@@ -20,12 +20,11 @@ function setup() {
 }
 
 function updateKWIC() {
-
-  kwic = RiTa.kwic(data.join('\n'), word, {
+  RiTa.concordance(data.join('\n'), {
     ignorePunctuation: true,
-    ignoreStopWords: true,
-    wordCount: 6
+    ignoreStopWords: true
   });
+  kwic = RiTa.kwic(word, 6);
 
   background(250);
 
@@ -38,13 +37,13 @@ function updateKWIC() {
 
   } else {
 
-    var tw = textWidth(word) / 2;
+    const tw = textWidth(word) / 2;
 
-    for (var i = 0; i < kwic.length; i++) {
+    for (let i = 0; i < kwic.length; i++) {
 
       //console.log(display[i]);
-      var parts = kwic[i].split(word);
-      var x = width / 2,
+      const parts = kwic[i].split(word);
+      const x = width / 2,
         y = i * 20 + 75;
 
       if (y > height - 20) return;
@@ -66,13 +65,13 @@ function updateKWIC() {
 
 function drawButtons() {
 
-  var posX = buttonX, posY = 40;
+  let posX = buttonX, posY = 40;
 
-  for (var i = 0; i < buttons.length; i++) {
+  for (let i = 0; i < buttons.length; i++) {
 
     stroke(200);
-    var on = word == (buttons[i]) ? true : false;
-    var tw = textWidth(buttons[i]);
+    const on = word == (buttons[i]) ? true : false;
+    const tw = textWidth(buttons[i]);
     fill(!on && buttons[i] == over ? 235 : 255);
     rect(posX - 5, 24, tw + 10, 20, 7);
     fill((on ? 255 : 0), 0, 0);
@@ -89,9 +88,9 @@ function inside(mx, my, posX, tw) {
 function mouseMoved() {
 
   over = null;
-  var posX = buttonX, tw;
+  let posX = buttonX, tw;
 
-  for (var i = 0; i < buttons.length; i++) {
+  for (let i = 0; i < buttons.length; i++) {
 
     tw = textWidth(buttons[i]);
 
@@ -106,9 +105,9 @@ function mouseMoved() {
 
 function mouseClicked() {
 
-  var posX = buttonX, tw;
+  let posX = buttonX, tw;
 
-  for (var i = 0; i < buttons.length; i++) {
+  for (let i = 0; i < buttons.length; i++) {
 
     tw = textWidth(buttons[i]);
 
