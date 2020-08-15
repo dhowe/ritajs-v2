@@ -1,43 +1,26 @@
-const dbug = false, ALL_PHONES = ['aa','ae','ah','ao','aw','ay','b','ch','d','dh','eh','er','ey','f','g','hh','ih','iy','jh', 'k','l', 'm','n','ng','ow','oy','p','r','s','sh','t','th','uh', 'uw','v','w','y','z','zh'];
+let dbug = 0;
 
 $(document).ready(function () {
 
-  const lexicon = RiTa.lexicon();
-  let sy, ph, ss, hues = colorGradient();
+  let features, hues;
 
-  clearBubble();
+  colorGradient();
   selectWord();
-  setInterval(selectWord, 4000); // every 4 sec
 
   function selectWord() {
 
-    // random word with <= 12 letters
-    do {
-      word = lexicon.randomWord();
-    } while (word && word.length > 12);
-
-    // get various features
-    sy = RiTa.syllables(word);
-    ph = RiTa.phones(word);
-    ss = RiTa.stresses(word);
-
-    dbug && console.log(sy);
-
-    const tags = RiTa.pos(word, true);
-    const pos = tagName(tags[0]);
-    const ipaPhones = arpaToIPA(lexicon._rawPhones(word));
+    word = RiTa.randomWord({ maxLength: 12 });
+    features = RiTa.analyze(word, { simple: true });
 
     $('#word').text(word);
-    $('#pos').text(pos);
-    $('#ipa').text("/" + ipaPhones + "/");
+    $('#pos').text(tags[features.pos]);
+    $('#ipa').text("/" + arpaToIPA(RiTa.lexicon().rawPhones(word)) + "/");
 
-    refreshBubble(ph.split('-'));
-
-    setTimeout(drop, 2000);
-    setTimeout(clearBubble, 3500);
+    refreshBubbles(features.phones.split('-'));
+    setTimeout(dropBubbles, 2000);
   }
 
-  function clearBubble() {
+  function clearBubbles() {
     dbug && console.log("clear");
 
     $('.bubbles').children().each(function (i, val) {
@@ -53,31 +36,26 @@ $(document).ready(function () {
       // clear the content
       $(this).text("");
       $(this).css("background-color", "transparent");
-
     });
+
+    setTimeout(selectWord, 1000);
   }
 
-  function refreshBubble(phs) {
+  function refreshBubbles(phs) {
 
     dbug && console.log("refresh");
-
-    $('.bubbles').children().each(function (i, val) {
-
+    $('.bubbles').children().each(function (i) {
       // change the phones and color
       if (i < phs.length) {
-
         $(this).text(phs[i]);
         $(this).css("background-color", "hsla(" + phonemeColor(phs[i]) + ", 90%, 45%, 0.6)");
-        addStress(ss, sy);
-        addSyllables(sy);
-
+        addStress(features.stresses, features.syllables);
+        addSyllables(features.syllables);
       }
-
     });
   }
 
-  function drop() {
-
+  function dropBubbles() {
     $('.bubbles').children().each(function (index) {
       (function (that, i) {
         const t = setTimeout(function () {
@@ -87,12 +65,12 @@ $(document).ready(function () {
         }, 40 * i);
       })(this, index);
     });
+    setTimeout(clearBubbles, 1500);
   }
 
   function addSyllables(syllables) {
 
     dbug && console.log("addSyllables");
-
     const syllable = syllables.split("/");
     for (let i = 0, past = 0; i < syllable.length; i++) {
       const phs = syllable[i].split("-");
@@ -116,11 +94,8 @@ $(document).ready(function () {
     dbug && console.log("addStress");
     // Split stresses and syllables
     const stress = stresses.split('/'), syllable = syllables.split('/');
-
     for (let i = 0, past = 0; i < stress.length; i++) {
-
       const phs = syllable[i].split('-');
-
       // if the syllable is stressed, grow its bubbles
       if (parseInt(stress[i]) == 1) {
         for (let j = 0; j < phs.length; j++) {
@@ -133,32 +108,29 @@ $(document).ready(function () {
     }
   }
 
-  function tagName(tag) {
-      const tagsDict = {
-        'n': 'Noun',
-        'v': 'Verb',
-        'r': 'Adverb',
-        'a': 'Adjective'
-      };
-    return tag != null ? tagsDict[tag] : null;
-  }
-
   function phonemeColor(phoneme) {
-    const idx = ALL_PHONES.indexOf(phoneme);
+    const idx = RiTa.PHONES.indexOf(phoneme);
     return idx > -1 ? hues[idx] : 0;
   }
 
   function colorGradient() {
-    let tmp = [];
-    for (let i = 0; i < ALL_PHONES.length; i++) {
-      const h = Math.floor(map(i, 0, ALL_PHONES.length, .2 * 360, .8 * 360));
-      tmp[i] = h;
+    hues = [];
+    for (let i = 0; i < RiTa.PHONES.length; i++) {
+      const h = Math.floor(map(i, 0, RiTa.PHONES.length, .2 * 360, .8 * 360));
+      hues[i] = h;
     }
-    return tmp;
+    return hues;
   }
 
   function map(value, low1, high1, low2, high2) {
     return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
   }
 
-}); //jquery wrapper
+});
+
+const tags = {
+  'n': 'Noun',
+  'v': 'Verb',
+  'r': 'Adverb',
+  'a': 'Adjective'
+};

@@ -108,7 +108,7 @@ class RiTa {
       (RiTa.tokenize(sentence)[0].toLowerCase());
   }
 
-  static isStopWords(w) { 
+  static isStopWords(w) {
     return RiTa.STOP_WORDS.includes
       (w.toLowerCase());
   }
@@ -277,6 +277,7 @@ RiTa.SILENCE_LTS = false;
 RiTa.DOWNLOAD_URL = 'https://rednoise.org/rita/downloads';
 
 // CONSTANTS
+RiTa.PHONES = ['aa', 'ae', 'ah', 'ao', 'aw', 'ay', 'b', 'ch', 'd', 'dh', 'eh', 'er', 'ey', 'f', 'g', 'hh', 'ih', 'iy', 'jh', 'k', 'l', 'm', 'n', 'ng', 'ow', 'oy', 'p', 'r', 's', 'sh', 't', 'th', 'uh', 'uw', 'v', 'w', 'y', 'z', 'zh'];
 RiTa.VERSION = typeof __VERSION__ !== 'undefined' ? __VERSION__ : 'DEV';
 RiTa.NODE = 'node';
 RiTa.BROWSER = 'browser';
@@ -298,7 +299,7 @@ RiTa.SENTENCE_BOUNDARY = "|";
 RiTa.VOWELS = "aeiou";
 RiTa.ABBREVIATIONS = ["Adm.", "Capt.", "Cmdr.", "Col.", "Dr.", "Gen.", "Gov.", "Lt.", "Maj.", "Messrs.", "Mr.", "Mrs.", "Ms.", "Prof.", "Rep.", "Reps.", "Rev.", "Sen.", "Sens.", "Sgt.", "Sr.", "St.", "A.k.a.", "C.f.", "I.e.", "E.g.", "Vs.", "V.", "Jan.", "Feb.", "Mar.", "Apr.", "Mar.", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
 RiTa.QUESTIONS = ["was", "what", "when", "where", "which", "why", "who", "will", "would", "who", "how", "if", "is", "could", "might", "does", "are", "have"];
-RiTa.STOP_WORDS = [ ".", ",", "the",
+RiTa.STOP_WORDS = [".", ",", "the",
   "and", "a", "of", "\"", "in", "i", ":", "you", "is", "to",
   "that", ")", "(", "it", "for", "on", "!", "have", "with", "?",
   "this", "be", "...", "not", "are", "as", "was", "but", "or", "from",
@@ -312,7 +313,7 @@ RiTa.STOP_WORDS = [ ".", ",", "the",
   "too", "did", "should", "over", "want", "these", "may", "where", "most",
   "many", "those", "does", "why", "please", "off", "going", "its", "i've",
   "down", "that's", "can't", "you're", "didn't", "another", "around",
-  "must",  "few", "doesn't", "every", "yes", "each", "maybe",
+  "must", "few", "doesn't", "every", "yes", "each", "maybe",
   "i'll", "away", "doing", "oh", "else", "isn't", "he's", "there's", "hi",
   "won't", "ok", "they're", "yeah", "mine", "we're", "what's", "shall",
   "she's", "hello", "okay", "here's", "-", "less"

@@ -41,11 +41,11 @@ function draw() {
 
    //IPA
   textSize(18);
-  ipaPhones = arpaToIPA(lexicon._rawPhones(word));
+  ipaPhones = arpaToIPA(lexicon.rawPhones(word));
   text("/" + ipaPhones + "/", 80, 75);
+  
   // pos-tag
   textSize(14);
-  textStyle(ITALIC);
   text(pos.toLowerCase(), 80, 105);
 
   for (let i = 0; i < bubbles.length; i++)
@@ -76,7 +76,7 @@ function selectWord() { // called every 4 sec by timer
   // update the bubbles for the new word
   const phs = ph.split('-');
   for (let i = 0; i < phs.length; i++) {
-    bubbles[i].update(phs[i], i * 50 + 100, phonemeColor(phs[i]));
+    bubbles[i].update(phs[i], i * 50 + 100, phoneColor(phs[i]));
   }
 
   addStress(ss, sy, bubbles);
@@ -192,7 +192,7 @@ function tagName(tag) {
   return tag != null ? tagsDict[tag] : null;
 }
 
-function phonemeColor(phoneme) {
+function phoneColor(phoneme) {
 
   const idx = ALL_PHONES.indexOf(phoneme);
   return idx > -1 ? colors[idx] : 0;

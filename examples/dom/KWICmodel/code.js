@@ -1,32 +1,32 @@
-const LEFT = "LEFT", CENTER = "CENTER",
-  RIGHT = "RIGHT", WIDTH = 800, HEIGHT = 500;
+const WIDTH = 800, HEIGHT = 500;
 
-const buttons = [
+const labels = [
   "Gregor", "Samsa", "family", "being",
   "clerk", "room", "violin", "window"
 ];
-const opts = {
-  ignorePunctuation: true,
-  ignoreStopWords: true
-};
-let word = buttons[7],  fillColor, kafkaString, textAlignment = LEFT,
-  $container, kwic, $btns;
 
-$(document).ready(function () {
+let $container, $btns;
+let kwic, fillColor, kafkaString;
+let textAlignment = "LEFT", word = labels[7];
+
+$(function () {
 
   $btns = $(".cssBtns");
-
   assignButtons();
-  $($btns[7]).css("color", "red");
 
+  $($btns[7]).css("color", "red");
   $container = $("#container");
   $container.width(WIDTH).height(HEIGHT)
     .css("background-color", "rgb(250, 250, 250)");
+
   $("#textInput").attr("placeholder", word);
 
-    $.get('../../data/kafka.txt', function(data) {
-    kafkaString = data;
-    RiTa.concordance(kafkaString, opts)
+  $.get('../../data/kafka.txt', function (data) {
+
+    RiTa.concordance(data, {
+      ignorePunctuation: true,
+      ignoreStopWords: true
+    });
     kwic = RiTa.kwic(word, 6);
     drawText();
   }, 'text');
@@ -35,13 +35,11 @@ $(document).ready(function () {
 function assignButtons() {
 
   for (let i = 0; i < $btns.length; i++)
-    $($btns[i]).html(buttons[i]);
+    $($btns[i]).html(labels[i]);
 
-  $btns.click(function() {
+  $btns.click(function () {
 
     word = $(this).text();
-
-    RiTa.concordance(kafkaString, opts)
     kwic = RiTa.kwic(word, 6);
     drawText();
 
@@ -55,9 +53,9 @@ function drawText() {
   $("#container").empty();
   $("#container").css('background-color', 'rgb(250, 250, 250)');
 
-  if (kwic.length == 0) {
+  if (kwic.length === 0) {
 
-    textAlign(CENTER);
+    textAlign("CENTER");
     text("Word not found", WIDTH / 2, HEIGHT / 2);
 
   } else {
@@ -73,15 +71,15 @@ function drawText() {
       if (y > HEIGHT - 30) return;
 
       fill(0);
-      textAlign(RIGHT);
+      textAlign("RIGHT");
       text(parts[0], x - tw + 5, y);
 
       fill(200, 0, 0);
-      textAlign(CENTER);
+      textAlign("CENTER");
       text(word, x, y);
 
       fill(0);
-      textAlign(LEFT);
+      textAlign("LEFT");
       text(parts[1], x + tw, y);
     }
   }
@@ -106,7 +104,7 @@ function textWidth(s) {
 
 function fill(a, b, c) {
 
-  fillColor = (arguments.length == 1) ? toHex(a) :
+  fillColor = (arguments.length === 1) ? toHex(a) :
     "rgb(" + a + "," + b + "," + c + ")";
 
   function toHex(color) {
@@ -121,26 +119,19 @@ function textAlign(direction) {
 }
 
 function text(s, x, y) {
+  let innerX = x;
 
-  function convertPosition(innerX) {
+  // position the strings according to alignment
+  if (textAlignment === "LEFT") {
+    const regex = new RegExp(/^[^0-9A-Za-z\s]/);
+    if (regex.test(s)) x = innerX - textWidth("");
 
-    // position the strings according to alignment
-    if (textAlignment == LEFT) {
+  } else if (textAlignment === "CENTER") {
+    x = innerX - textWidth(s) / 2;
 
-      const ONLY_PUNCT = /^[^0-9A-Za-z\s]/;
-      const regex = new RegExp(ONLY_PUNCT);
-      if (regex.test(s))
-        x = innerX - textWidth("");
-
-    } else if (textAlignment == CENTER) {
-      x = innerX - textWidth(s) / 2;
-
-    } else if (textAlignment == RIGHT) {
-      x = innerX - textWidth(s);
-    }
+  } else if (textAlignment === "RIGHT") {
+    x = innerX - textWidth(s);
   }
-
-  convertPosition(x);
 
   const $span = $('<span/>', {
     html: s,

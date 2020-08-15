@@ -190,7 +190,7 @@ class Lexicon {
       return false;
     }
     this._dict(true); // throw if no lexicon
-    if (this._rawPhones(word1) === this._rawPhones(word2)) {
+    if (this.rawPhones(word1) === this.rawPhones(word2)) {
       return false;
     }
     let p1 = this._lastStressedVowelPhonemeToEnd(word1),
@@ -214,7 +214,7 @@ class Lexicon {
     const words = Object.keys(dict);
     const input = theWord.toLowerCase();
     const variations = [input, input + 's', input + 'es'];
-    const phonesA = sound ? this._toPhoneArray(this._rawPhones(input)) : input;
+    const phonesA = sound ? this._toPhoneArray(this.rawPhones(input)) : input;
 
     if (!phonesA) return result;
 
@@ -296,9 +296,9 @@ class Lexicon {
 
     opts.minDistance = opts.minDistance || 1;
     opts.numSyllables = opts.numSyllables || 0;
-    opts.minLength = opts.minLength || 3;
-    opts.maxLength = opts.maxLength || Number.MAX_SAFE_INTEGER;
     opts.limit = opts.limit || Number.MAX_SAFE_INTEGER;
+    opts.maxLength = opts.maxLength || Number.MAX_SAFE_INTEGER;
+    opts.minLength = opts.minLength || 3;
 
     // handle part-of-speech
     let tpos = opts.pos || false;
@@ -310,8 +310,8 @@ class Lexicon {
       else if (tpos === "r") tpos = "rb";
       else if (tpos === "a") tpos = "jj";
     }
+    
     opts.targetPos = tpos;
-    //return opts;
   }
 
   reconjugate(word, pos) {
@@ -393,7 +393,7 @@ class Lexicon {
 
   _lastStressedPhoneToEnd(word) {
     if (word && word.length) {
-      let raw = this._rawPhones(word);
+      let raw = this.rawPhones(word);
       if (raw) {
         let idx = raw.lastIndexOf(RiTa.STRESSED);
         if (idx >= 0) {
@@ -428,7 +428,7 @@ class Lexicon {
   }
 
   _firstStressedSyl(word) {
-    let raw = this._rawPhones(word);
+    let raw = this.rawPhones(word);
     if (raw) {
       let idx = raw.indexOf(RiTa.STRESSED);
       if (idx >= 0) {
@@ -467,7 +467,7 @@ class Lexicon {
     return this._dict(fatal)[word];
   }
 
-  _rawPhones(word, opts) {
+  rawPhones(word, opts) {
 
     let noLts = opts && opts.noLts;
     let fatal = opts && opts.fatal;

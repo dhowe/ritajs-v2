@@ -4,9 +4,8 @@ class Concorder {
 
   constructor(parent) {
     RiTa = parent;
-    this.model = undefined;
   }
-  
+
   concordance(text, options) {
     this.words = Array.isArray(text) ? text : RiTa.tokenize(text);
     this._parseOptions(options);
@@ -15,12 +14,15 @@ class Concorder {
     for (let name in this.model) {
       result[name] = this.model[name].indexes.length;
     }
-    // TODO: need to sort by value here
+    // TODO: sort by value here
     return result;
   }
 
-  kwic(word, numWords) {
+  kwic(word, numWords=6) {
     if (!this.model) throw Error('Call concordance() first');
+    if (typeof numWords === 'object') {
+      numWords = numWords['numWords'] || 6; // opts
+    }
     let result = [];
     let value = this._lookup(word);
     if (value) {
@@ -69,20 +71,14 @@ class Concorder {
   }
 
   _isIgnorable(key) {
-    if (this.ignorePunctuation && RiTa.isPunctuation(key)) {
-      return true;
-    }
-    if (this.ignoreStopWords && RiTa.isStopWords(key)) {
-      // console.log("Ignore Stopwords:", key);
-      return true;
-    }
+    if ((this.ignorePunctuation && RiTa.isPunctuation(key)) || 
+      (this.ignoreStopWords && RiTa.isStopWords(key))) return true;
     for (let i = 0; i < this.wordsToIgnore.length; i++) {
       let word = this.wordsToIgnore[i];
-      if ((this.ignoreCase && key.toUpperCase() === word.toUpperCase()) || key === word) {
+      if (key === word || (this.ignoreCase && key.toUpperCase() === word.toUpperCase())) {
         return true;
       }
     }
-    return false;
   }
 
   _compareKey(word) {

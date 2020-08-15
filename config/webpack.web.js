@@ -15,6 +15,7 @@ module.exports =
   watchOptions: {
     ignored: /node_modules/
   },
+//  watch: true,
   node: {
     fs: "empty"
   },
