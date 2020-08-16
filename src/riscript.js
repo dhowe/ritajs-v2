@@ -1,8 +1,8 @@
 const antlr4 = require('antlr4');
 const { decode } = require('he');
 const Visitor = require('./visitor');
-const Lexer = require('../grammar/.antlr/RiScriptLexer');
-const Parser = require('../grammar/.antlr/RiScriptParser');
+const Lexer = require('../grammar/antlr/RiScriptLexer');
+const Parser = require('../grammar/antlr/RiScriptParser');
 const { LexerErrors, ParserErrors } = require('./errors');
 
 class RiScript {

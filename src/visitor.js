@@ -1,7 +1,7 @@
 const antlr4 = require('antlr4');
 const Operator = require('./operator');
-const { RiScriptVisitor } = require('../grammar/.antlr/RiScriptVisitor');
-const { RiScriptParser } = require('../grammar/.antlr/RiScriptParser');
+const { RiScriptVisitor } = require('../grammar/antlr/RiScriptVisitor');
+const { RiScriptParser } = require('../grammar/antlr/RiScriptParser');
 const Util = require('./util');
 const EmptyExpr = new RiScriptParser.ExprContext();
 

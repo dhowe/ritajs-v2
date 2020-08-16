@@ -1,5 +1,4 @@
 ticocd
-grammar/.antlr
 web/workbench/texts/*
 node_modules
 hs_err_pid*
