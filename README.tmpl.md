@@ -288,7 +288,7 @@ To build the library and run tests (with node/yarn/mocha):
 ```
 
 $ git clone https://github.com/dhowe/rita2js.git
-$ cd rita2js && yarn install && yarn compile
+$ cd rita2js && yarn install
 $ yarn test
 
 ```
