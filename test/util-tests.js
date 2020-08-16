@@ -15,7 +15,7 @@ describe('RiTa.Util', () => {
     let ro = rand.randomOrdering(4);
     expect(ro.length).eq(4);
     expect(ro).to.have.members([0,1,2,3]);
-    let arr = [0, 3, 5, 7]; 
+    let arr = [0, 3, 5, 7];
     ro = rand.randomOrdering(arr);
     expect(ro.length).eq(4);
     expect(ro).to.have.members(arr);
@@ -45,6 +45,7 @@ describe('RiTa.Util', () => {
 
   function revSort(arr) {
     arr.sort();
+    arr.reverse();
     return arr;
   }
 });
