@@ -35,4 +35,16 @@ describe('RiTa.Util', () => {
     expect(map).eql({ "a": "1", "b": "2" });
   });
 
+
+  it('Should correctly sort array in reverse order', () => {
+    let input = [5, 3, 8, 3, 7, -1];
+    let expected = [8, 7, 5, 3, 3, -1];
+    let answer = revSort(input);
+    expect(answer).eql(expected);
+  });
+
+  function revSort(arr) {
+    arr.sort();
+    return arr;
+  }
 });
