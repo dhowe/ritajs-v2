@@ -294,4 +294,5 @@ $ yarn build
 $ yarn test.prod
 
 ```
+If all works smoothly, you should see a list of successful tests
 &nbsp;
