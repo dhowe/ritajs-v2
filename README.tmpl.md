@@ -284,13 +284,14 @@ $Opening=(
 &nbsp;
 
 ## Developing
-To build the library and run tests (with node/yarn/mocha):
+To install/build the library and run tests (with node/yarn/mocha):
 ```
 
 $ git clone https://github.com/dhowe/rita2js.git
 $ cd rita2js 
-$ yarn install  (run again if you get an error)  
-$ yarn test
+$ yarn install  (run again if you get an error) 
+$ yarn build 
+$ yarn test.prod
 
 ```
 &nbsp;
