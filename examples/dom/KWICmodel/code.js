@@ -1,27 +1,41 @@
-const WIDTH = 800, HEIGHT = 500;
+const WIDTH = 800,
+  HEIGHT = 500;
 
 const labels = [
   "Gregor", "Samsa", "family", "being",
   "clerk", "room", "violin", "window"
 ];
 
-let $container, $btns;
+let $container, $btns, $cssButtons;
+//added $cssButtons for editing the position of buttonContainer
 let kwic, fillColor, kafkaString;
-let textAlignment = "LEFT", word = labels[7];
+let textAlignment = "LEFT",
+  word = labels[7];
 
-$(function () {
+$(function() {
 
   $btns = $(".cssBtns");
   assignButtons();
 
-  $($btns[7]).css("color", "red");
+  $($btns[7]).css("color", "rgb(200,0,0)");
+  //change word color to match the color of the text under buttons
+
+  let buttonsWidth = $(".buttonContainer").width();
+  $(".buttonContainer").width(buttonsWidth+1);
+  console.log(buttonsWidth);
+  let cssLeftString = String(400-buttonsWidth/2);
+  $cssButtons = $(".buttonContainer");
+  $cssButtons.css("left",cssLeftString);
+  //center the buttonContainer element automatically 
+
   $container = $("#container");
+  console.log($container);
   $container.width(WIDTH).height(HEIGHT)
     .css("background-color", "rgb(250, 250, 250)");
 
   $("#textInput").attr("placeholder", word);
 
-  $.get('../../data/kafka.txt', function (data) {
+  $.get('../../data/kafka.txt', function(data) {
 
     RiTa.concordance(data, {
       ignorePunctuation: true,
@@ -37,14 +51,14 @@ function assignButtons() {
   for (let i = 0; i < $btns.length; i++)
     $($btns[i]).html(labels[i]);
 
-  $btns.click(function () {
+  $btns.click(function() {
 
     word = $(this).text();
     kwic = RiTa.kwic(word, 6);
     drawText();
 
     $btns.css("color", "black");
-    $(this).css("color", "red");
+    $(this).css("color", "rgb(200,0,0)");
   });
 }
 
@@ -137,7 +151,8 @@ function text(s, x, y) {
     html: s,
     css: {
       position: 'absolute',
-      left: x, top: y,
+      left: x,
+      top: y,
       color: fillColor
     }
   }).appendTo($container);

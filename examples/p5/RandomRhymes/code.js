@@ -7,7 +7,6 @@ function setup()
   fill(255);
   textFont("Georgia");
 
-  lexicon = RiTa.lexicon();
   findRhymes();
 
   setInterval(findRhymes, 2000);
@@ -31,10 +30,9 @@ function findRhymes() { // called by timer
 
   let tmp = '';
   do {
-    word = lexicon.randomWord();
-    tmp = lexicon.rhymes(word);
+    word = RiTa.randomWord();
+    tmp = RiTa.rhymes(word,{limit: 13});
   } while ( word && tmp.length < 3)
-
-  const arr = subset(tmp, 0, min(tmp.length, 13)); // max of 13 words
-  rhymes = arr.join("\n");
+  // use argument instead of subsetting afterward
+  rhymes = tmp.join("\n");
 }

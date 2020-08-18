@@ -13,9 +13,6 @@ function setup() {
   createCanvas(600, 300);
   noStroke();
 
-  // load Lexicon
-  lexicon = RiTa.lexicon();
-
   // initialize color palette
   colors = colorGradient();
 
@@ -41,9 +38,10 @@ function draw() {
 
    //IPA
   textSize(18);
-  ipaPhones = arpaToIPA(lexicon.rawPhones(word));
-  text("/" + ipaPhones + "/", 80, 75);
-  
+  ipaPhones = arpaToIPA(RiTa.lexicon().rawPhones(word));
+  text("/" + ipaPhones + "/", 80, 80);
+  //adjust the position of the IPA so it doesn't overlap the word anymore
+
   // pos-tag
   textSize(14);
   text(pos.toLowerCase(), 80, 105);
@@ -55,22 +53,27 @@ function draw() {
 function selectWord() { // called every 4 sec by timer
 
   // random word with <= 12 letters
-  do {
-    word = RiTa.randomWord();
-  } while (word && word.length > maxWordLength);
+  word = RiTa.randomWord({maxLength:12});
+  // using argument instead of while loop
 
   // get various features
-  sy = RiTa.syllables(word);
-  ph = RiTa.phones(word);
-  ss = RiTa.stresses(word);
-
-  // get (WordNet-style) pos-tags
-  const tags = RiTa.pos(word, { simple: true });
-  pos = tagName(tags[0]);
+  let features = RiTa.analyze(word,{simple:true});
+  sy = features.syllables;
+  ph = features.phones;
+  ss = features.stresses;
+  let tags = {
+    'n': 'Noun',
+    'v': 'Verb',
+    'r': 'Adverb',
+    'a': 'Adjective'
+  };
+  pos = tags[features.pos];
+  //using analyze() for a set of features
+  //! analyze() seems not to be in the api document yet
 
   // reset the bubbles
   for (let i = 0; i < bubbles.length; i++) {
-    bubbles[i].reset();
+    bubbles[i].reset()
   }
 
   // update the bubbles for the new word

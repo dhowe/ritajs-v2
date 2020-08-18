@@ -63,10 +63,23 @@ function updateKWIC() {
   }
 }
 
+function getButtonX(){
+  let gapWidth = 10;
+  let gapNo = buttons.length-1;
+  let buttonPadding = 10;
+  let twInTotal = 0;
+  for (let i=0; i < buttons.length; i++){
+    twInTotal += textWidth(buttons[i]);
+  }
+
+  return width/2 - (gapNo*gapWidth+buttonPadding*buttons.length+twInTotal)/2
+
+}
+//function for center the buttons
+
 function drawButtons() {
 
-  let posX = buttonX, posY = 40;
-
+  let posX = getButtonX();
   for (let i = 0; i < buttons.length; i++) {
 
     stroke(200);
@@ -74,7 +87,8 @@ function drawButtons() {
     const tw = textWidth(buttons[i]);
     fill(!on && buttons[i] == over ? 235 : 255);
     rect(posX - 5, 24, tw + 10, 20, 7);
-    fill((on ? 255 : 0), 0, 0);
+    fill((on ? 200 : 0), 0, 0);
+    //change color to match with the text
     text(buttons[i], posX, 40);
     posX += tw + 20;
   }
