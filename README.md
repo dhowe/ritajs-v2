@@ -29,6 +29,7 @@ console.log(grammar.expand());
 <td>
     <a href="https://rednoise.org/rita2/RiTa/addTransform/index.html">RiTa.addTransform()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/alliterations/index.html">RiTa.alliterations()</a><br/>
+    <a href="https://rednoise.org/rita2/RiTa/analyze/index.html">RiTa.analyze()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/concordance/index.html">RiTa.concordance()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/conjugate/index.html">RiTa.conjugate()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/evaluate/index.html">RiTa.evaluate()</a><br/>
