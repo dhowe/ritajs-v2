@@ -9,8 +9,21 @@ class Grammar {
   constructor(rules, context) {
     this.rules = {};
     this.context = context || {};
-    this.compiler = new (RiTa()).RiScript();
-    rules && this.setRules(rules);
+    this.compiler = new Grammar.parent.RiScript();
+    if (rules) this.setRules(rules);
+  }
+
+  static fromJSON(json, context) {
+    // parse the json and merge with new object
+    let rm = Object.assign(new Markov(), parse(json));
+
+    // handle json converting undefined [] to empty []
+    if (!json.input) rm.input = undefined;
+
+    // then recreate the n-gram tree with Node objects
+    let jsonRoot = rm.root;
+    populate(rm.root = new Node(null, 'ROOT'), jsonRoot);
+    return rm;
   }
 
   setRules(rules) { // or rules or ... ?
@@ -73,8 +86,6 @@ class Grammar {
   removeTransform() { RiScript.removeTransform(...arguments); return this }
   getTransforms() { return RiScript.getTransforms(); }
 }
-
-function RiTa() { return Grammar.parent; }
 
 function joinChoice(arr) {
   let opts = '(';

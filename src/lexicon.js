@@ -267,7 +267,7 @@ class Lexicon {
 
     // verify we haven't changed syllable count
     if (result !== word && opts.numSyllables) {
-      let syls = analyzer.analyzeWord(result).syllables;
+      let syls = analyzer.analyzeWord(result, SILENT).syllables;
       let num = syls.split(RiTa.SYLLABLE_BOUNDARY).length;
       // reject if syllable count has changed
       if (num !== opts.numSyllables) return;
@@ -537,5 +537,8 @@ class Lexicon {
     return matrix[source.length][target.length];
   }
 }
+
+const SILENT = { silent: true };
+
 
 module && (module.exports = Lexicon);

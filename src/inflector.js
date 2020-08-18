@@ -2,11 +2,11 @@ const Util = require("./util");
 
 const RE = Util.RE;
 const MASS_NOUNS = Util.MASS_NOUNS;
-const DEFAULT_IS_PLURAL = /(ae|ia|s)$/;
-const DEFAULT_SINGULAR_RULE = RE("^.*s$", 1);
-const DEFAULT_PLURAL_RULE = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s");
+const DEFAULT_IS_PLUR = /(ae|ia|s)$/;
+const DEFAULT_SING = RE("^.*s$", 1);
+const DEFAULT_PLUR = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s");
 
-const SINGULAR_RULES = [
+const SING_RULES = [
   RE("^(apices|cortices)$", 4, "ex"),
   RE("^(meninges|phalanges)$", 3, "x"), // x -> ges
   RE("^(octopus|pinch)es$", 2),
@@ -39,10 +39,10 @@ const SINGULAR_RULES = [
   RE("(treatises|chemises)$", 1),
   RE("(ses)$", 2, "is"), // catharses, prognoses
   //  RE("([a-z]+osis|[a-z]+itis|[a-z]+ness)$", 0),
-  DEFAULT_SINGULAR_RULE
+  DEFAULT_SING
 ];
 
-const PLURAL_RULES = [
+const PLUR_RULES = [
   RE("(human|german|roman)$", 0, "s"),
   RE("^(monarch|loch|stomach|epoch|ranch)$", 0, "s"),
   RE("^(piano|photo|solo|ego|tobacco|cargo|taxi)$", 0, "s"),
@@ -84,14 +84,13 @@ const PLURAL_RULES = [
   RE("([zsx]|ch|sh)$", 0, "es"), // note: words ending in 's' otfen hit here, add 'es'
   RE("^(medi|millenni|consorti|sept|memorabili)um$", 2, "a"),
   RE("^(memorandum|bacterium|curriculum|minimum|maximum|referendum|spectrum|phenomenon|criterion)$", 2, "a"), // Latin stems
-  DEFAULT_PLURAL_RULE
+  DEFAULT_PLUR
 ];
 
 
 let RiTa;
 
-const PLURALIZE = 1;
-const SINGULARIZE = 2;
+const PLUR = 1, SING = 2;
 
 class Inflector {
 
@@ -109,7 +108,7 @@ class Inflector {
       return word;
     }
 
-    let rules = type === SINGULARIZE ? SINGULAR_RULES : PLURAL_RULES;
+    let rules = type === SING ? SING_RULES : PLUR_RULES;
     for (let i = 0; i < rules.length; i++) {
       let rule = rules[i];
       //console.log(i+") "+rule.raw, rule.suffix);
@@ -122,11 +121,11 @@ class Inflector {
   }
 
   singularize(word, opts) {
-    return this.adjustNumber(word, SINGULARIZE, (opts && opts.dbug));
+    return this.adjustNumber(word, SING, (opts && opts.dbug));
   }
 
   pluralize(word, opts) {
-    return this.adjustNumber(word, PLURALIZE, (opts && opts.dbug));
+    return this.adjustNumber(word, PLUR, (opts && opts.dbug));
   }
 
   isPlural(word, opts) { // add to API?
@@ -165,9 +164,9 @@ class Inflector {
       }
     }
 
-    if (DEFAULT_IS_PLURAL.test(word)) return true;
+    if (DEFAULT_IS_PLUR.test(word)) return true;
 
-    let rules = SINGULAR_RULES;
+    let rules = SING_RULES;
     for (let i = 0; i < rules.length; i++) {
       let rule = rules[i];
       if (rule.applies(word)) {
