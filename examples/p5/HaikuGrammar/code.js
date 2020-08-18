@@ -3,7 +3,9 @@ let font, grammar, lines, json;
 function preload() {
 
   font = loadFont('../../data/Resagokr.otf');
-  json = loadStrings('../../data/haiku.json');
+  json = loadJSON('../../data/haiku.json');
+  /*load the grammar file as a json object
+  so no need to process the strings*/
 }
 
 function setup() {
@@ -12,7 +14,7 @@ function setup() {
   textFont(font, 30);
   textAlign(CENTER);
 
-  grammar = new RiTa.Grammar(json.join('\n'));
+  grammar = new RiTa.Grammar(json);
   lines = ["click to", "generate", "a haiku"];
 }
 
