@@ -1,8 +1,9 @@
-const buttons = [
+let buttons = [
   "Gregor", "Samsa", "family", "being",
   "clerk", "room", "violin", "window"
 ];
-let word = buttons[7], buttonX = 150, over, data, kwic, input;
+let word = buttons[7], buttonX = 150;
+let over, data, kwic, input;
 
 function preload() {
 
@@ -15,15 +16,17 @@ function setup() {
   textFont('Times');
   textSize(18);
   fill(0);
+  
+  RiTa.concordance(data.join('\n'), {
+    ignorePunctuation: true,
+    ignoreStopWords: true
+  });
 
   updateKWIC();
 }
 
 function updateKWIC() {
-  RiTa.concordance(data.join('\n'), {
-    ignorePunctuation: true,
-    ignoreStopWords: true
-  });
+
   kwic = RiTa.kwic(word, 6);
 
   background(250);
@@ -37,14 +40,13 @@ function updateKWIC() {
 
   } else {
 
-    const tw = textWidth(word) / 2;
+    let tw = textWidth(word) / 2;
 
     for (let i = 0; i < kwic.length; i++) {
 
       //console.log(display[i]);
-      const parts = kwic[i].split(word);
-      const x = width / 2,
-        y = i * 20 + 75;
+      let parts = kwic[i].split(word);
+      let x = width / 2, y = i * 20 + 75;
 
       if (y > height - 20) return;
 
@@ -63,31 +65,28 @@ function updateKWIC() {
   }
 }
 
-function getButtonX(){
-  let gapWidth = 10;
-  let gapNo = buttons.length-1;
-  let buttonPadding = 10;
-  let twInTotal = 0;
-  for (let i=0; i < buttons.length; i++){
+function getButtonX() {
+  let gapWidth = 10, buttonPadding = 10;
+  let gapNo = buttons.length - 1, twInTotal = 0;
+  for (let i = 0; i < buttons.length; i++) {
     twInTotal += textWidth(buttons[i]);
   }
-
-  return width/2 - (gapNo*gapWidth+buttonPadding*buttons.length+twInTotal)/2
-
+  return width / 2 - (gapNo * gapWidth + buttonPadding * buttons.length + twInTotal) / 2
 }
-//function for center the buttons
 
+//function for center the buttons
 function drawButtons() {
 
   let posX = getButtonX();
   for (let i = 0; i < buttons.length; i++) {
 
     stroke(200);
-    const on = word == (buttons[i]) ? true : false;
-    const tw = textWidth(buttons[i]);
+    let on = word == (buttons[i]) ? true : false;
+    let tw = textWidth(buttons[i]);
     fill(!on && buttons[i] == over ? 235 : 255);
     rect(posX - 5, 24, tw + 10, 20, 7);
     fill((on ? 200 : 0), 0, 0);
+
     //change color to match with the text
     text(buttons[i], posX, 40);
     posX += tw + 20;
@@ -95,38 +94,16 @@ function drawButtons() {
 }
 
 function inside(mx, my, posX, tw) {
-
-  return (mx >= posX - 5 && mx <= posX + tw + 5 && my >= 25 && my <= 44);
-}
-
-function mouseMoved() {
-
-  over = null;
-  let posX = buttonX, tw;
-
-  for (let i = 0; i < buttons.length; i++) {
-
-    tw = textWidth(buttons[i]);
-
-    if (inside(mouseX, mouseY, posX, tw)) {
-
-      over = buttons[i];
-      break;
-    }
-    posX += tw + 20;
-  }
+  return (mx >= posX - 5 && mx <= posX + tw + 5
+    && my >= 25 && my <= 44);
 }
 
 function mouseClicked() {
 
   let posX = buttonX, tw;
-
   for (let i = 0; i < buttons.length; i++) {
-
     tw = textWidth(buttons[i]);
-
     if (inside(mouseX, mouseY, posX, tw)) {
-
       word = buttons[i];
       kwic = null;
       updateKWIC();

@@ -14,16 +14,12 @@ class Grammar {
   }
 
   static fromJSON(json, context) {
-    // parse the json and merge with new object
-    let rm = Object.assign(new Markov(), parse(json));
-
-    // handle json converting undefined [] to empty []
-    if (!json.input) rm.input = undefined;
-
-    // then recreate the n-gram tree with Node objects
-    let jsonRoot = rm.root;
-    populate(rm.root = new Node(null, 'ROOT'), jsonRoot);
-    return rm;
+    return new Grammar().setRules(json);
+  }
+  
+  toJSON() {
+    return stringify(Object.keys(this).reduce(
+      (acc, k) => Object.assign(acc, { [k]: this[k] }), {}));
   }
 
   setRules(rules) { // or rules or ... ?

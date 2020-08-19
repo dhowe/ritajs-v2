@@ -1,20 +1,16 @@
 
 let rhymes, word;
 
-function setup()
-{
+function setup() {
   createCanvas(300, 300);
   fill(255);
   textFont("Georgia");
 
   findRhymes();
-
-  setInterval(findRhymes, 2000);
 }
 
-function draw()
-{
-  background(100,0,100);
+function draw() {
+  background(100, 0, 100);
 
   textAlign(RIGHT);
   textSize(36);
@@ -26,13 +22,16 @@ function draw()
   text(rhymes, 30, 73);
 }
 
-function findRhymes() { // called by timer
+function findRhymes() {
 
   let tmp = '';
   do {
     word = RiTa.randomWord();
-    tmp = RiTa.rhymes(word,{limit: 13});
-  } while ( word && tmp.length < 3)
-  // use argument instead of subsetting afterward
+    tmp = RiTa.rhymes(word, { limit: 13 });
+  }
+  while (word && tmp.length < 3)
+
   rhymes = tmp.join("\n");
+
+  setTimeout(findRhymes, 2000);
 }

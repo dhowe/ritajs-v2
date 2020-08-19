@@ -108,9 +108,8 @@ class RiTa {
       (RiTa.tokenize(sentence)[0].toLowerCase());
   }
 
-  static isStopWords(w) {
-    return RiTa.STOP_WORDS.includes
-      (w.toLowerCase());
+  static isStopWord(w) {
+    return RiTa.STOP_WORDS.includes(w.toLowerCase());
   }
 
   static isRhyme() {
@@ -154,7 +153,7 @@ class RiTa {
     return RiTa.randomizer.random(...arguments);
   }
 
-  static randInt() {
+  static randInt() { // niapi?
     return Math.floor(RiTa.random(...arguments));
   }
 
@@ -299,24 +298,24 @@ RiTa.SENTENCE_BOUNDARY = "|";
 RiTa.VOWELS = "aeiou";
 RiTa.ABBREVIATIONS = ["Adm.", "Capt.", "Cmdr.", "Col.", "Dr.", "Gen.", "Gov.", "Lt.", "Maj.", "Messrs.", "Mr.", "Mrs.", "Ms.", "Prof.", "Rep.", "Reps.", "Rev.", "Sen.", "Sens.", "Sgt.", "Sr.", "St.", "A.k.a.", "C.f.", "I.e.", "E.g.", "Vs.", "V.", "Jan.", "Feb.", "Mar.", "Apr.", "Mar.", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
 RiTa.QUESTIONS = ["was", "what", "when", "where", "which", "why", "who", "will", "would", "who", "how", "if", "is", "could", "might", "does", "are", "have"];
-RiTa.STOP_WORDS = [".", ",", "the",
-  "and", "a", "of", "\"", "in", "i", ":", "you", "is", "to",
-  "that", ")", "(", "it", "for", "on", "!", "have", "with", "?",
-  "this", "be", "...", "not", "are", "as", "was", "but", "or", "from",
+RiTa.STOP_WORDS = [
+  "and", "a", "of", "in", "i", "you", "is", "to",
+  "that", "it", "for", "on", "have", "with",
+  "this", "be", "not", "are", "as", "was", "but", "or", "from",
   "my", "at", "if", "they", "your", "all", "he", "by", "one",
   "me", "what", "so", "can", "will", "do", "an", "about", "we", "just",
   "would", "there", "no", "like", "out", "his", "has", "up", "more", "who",
   "when", "don't", "some", "had", "them", "any", "their", "it's", "only",
-  ";", "which", "i'm", "been", "other", "were", "how", "then", "now",
+  "which", "i'm", "been", "other", "were", "how", "then", "now",
   "her", "than", "she", "well", "also", "us", "very", "because",
   "am", "here", "could", "even", "him", "into", "our", "much",
   "too", "did", "should", "over", "want", "these", "may", "where", "most",
   "many", "those", "does", "why", "please", "off", "going", "its", "i've",
   "down", "that's", "can't", "you're", "didn't", "another", "around",
-  "must", "few", "doesn't", "every", "yes", "each", "maybe",
+  "must", "few", "doesn't", "the", "every", "yes", "each", "maybe",
   "i'll", "away", "doing", "oh", "else", "isn't", "he's", "there's", "hi",
   "won't", "ok", "they're", "yeah", "mine", "we're", "what's", "shall",
-  "she's", "hello", "okay", "here's", "-", "less"
+  "she's", "hello", "okay", "here's", "less"
 ];
 RiTa.INFINITIVE = 1;
 RiTa.GERUND = 2;

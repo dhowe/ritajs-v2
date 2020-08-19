@@ -12,8 +12,8 @@ class Markov {
     this.logDuplicates = opts.logDuplicates; 
     this.maxAttempts = opts.maxAttempts || 99;
     this.disableInputChecks = opts.disableInputChecks;
-    this.tokenize = opts.tokenize || RiTa().tokenize;
-    this.untokenize = opts.untokenize || RiTa().untokenize;
+    this.tokenize = opts.tokenize || _RiTa().tokenize;
+    this.untokenize = opts.untokenize || _RiTa().untokenize;
 
     if (this.mlm && this.mlm <= this.n) throw Error('maxLengthMatch(mlm) must be > N')
 
@@ -41,7 +41,7 @@ class Markov {
 
   addText(text, multiplier = 1) {
 
-    let sents = Array.isArray(text) ? text : RiTa().sentences(text);
+    let sents = Array.isArray(text) ? text : _RiTa().sentences(text);
 
     // add new tokens for each sentence start/end
     let tokens = [];
@@ -126,7 +126,7 @@ class Markov {
       if (pre.length + post.length > this.n) throw Error
         ('Sum of pre.length && post.length must be <= N, was ' + (pre.length + post.length));
       if (!(tn = this._pathTo(pre))) {
-        if (!RiTa().SILENT) console.warn('Unable to find nodes in pre: ' + pre);
+        if (!_RiTa().SILENT) console.warn('Unable to find nodes in pre: ' + pre);
         return;
       }
       const nexts = tn.childNodes();
@@ -391,7 +391,7 @@ function populate(objNode, jsonNode) {
   }
 }
 
-function RiTa() { return Markov.parent; }
+function _RiTa() { return Markov.parent; }
 
 function lerp(start, stop, amt) {
   return amt * (stop - start) + start;

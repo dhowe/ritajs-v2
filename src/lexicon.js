@@ -269,6 +269,7 @@ class Lexicon {
     if (result !== word && opts.numSyllables) {
       let syls = analyzer.analyzeWord(result, SILENT).syllables;
       let num = syls.split(RiTa.SYLLABLE_BOUNDARY).length;
+      
       // reject if syllable count has changed
       if (num !== opts.numSyllables) return;
     }
