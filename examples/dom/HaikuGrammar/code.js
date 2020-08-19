@@ -1,26 +1,25 @@
-let grammar, divs;
+let grammar, lines;
 
 $(document).ready(function () {
 
-  divs = [ $('#line1'), $('#line2'), $('#line3') ];
-
-  $.getJSON('../../data/haiku.json', function( data ) {
+  $.getJSON('../../data/haiku.json', json => {
     
-    grammar = new RiTa.Grammar(data);
-    divs[0].text("click to");
-    divs[1].text("generate");
-    divs[2].text("a haiku");
+    grammar = new RiTa.Grammar(json);
+    
+    lines = $('.lines');
+    $(lines[0]).text("click to");
+    $(lines[1]).text("generate");
+    $(lines[2]).text("a haiku");
 
-    $('#hdiv').click(createHaiku);
+    $('#content').click(haiku);
   });
-
 });
 
-function createHaiku() {
+function haiku() {
 
-  const haiku = grammar.expand();
-  const lines = haiku.split("%");
-  for (let i = 0; i < lines.length; i++) {
-    divs[i].text(lines[i]);
+  let expanded = grammar.expand();
+  let haiku = expanded.split("%");
+  for (let i = 0; i < haiku.length; i++) {
+    $(lines[i]).text(haiku[i]);
   }
 }

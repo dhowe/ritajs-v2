@@ -1,13 +1,11 @@
-let buttons = [
+let txt, word, keywords = [
   "Gregor", "Samsa", "family", "being",
   "clerk", "room", "violin", "window"
 ];
-let word = buttons[7], buttonX = 150;
-let over, data, kwic, input;
 
 function preload() {
 
-  data = loadStrings('../../data/kafka.txt');
+  txt = loadStrings('../../data/kafka.txt');
 }
 
 function setup() {
@@ -15,80 +13,67 @@ function setup() {
   createCanvas(800, 500);
   textFont('Times');
   textSize(18);
-  fill(0);
-  
-  RiTa.concordance(data.join('\n'), {
-    ignorePunctuation: true,
-    ignoreStopWords: true
-  });
 
-  updateKWIC();
+  RiTa.concordance(txt.join('\n'));
+  word = RiTa.random(keywords);
 }
 
-function updateKWIC() {
+function draw() {
 
-  kwic = RiTa.kwic(word, 6);
+  let kwic = RiTa.kwic(word, 6);
 
   background(250);
-
   drawButtons();
 
-  if (kwic.length == 0) {
+  let tw = textWidth(word) / 2;
 
+  for (let i = 0; i < kwic.length; i++) {
+
+    let parts = kwic[i].split(word);
+    let x = width / 2, y = i * 20 + 75;
+
+    if (y > height - 20) return;
+
+    fill(0);
+    textAlign(RIGHT);
+    text(parts[0], x - tw, y);
+
+    fill(200, 0, 0);
     textAlign(CENTER);
-    text("Word not found", width / 2, height / 2);
+    text(word, x, y);
 
-  } else {
-
-    let tw = textWidth(word) / 2;
-
-    for (let i = 0; i < kwic.length; i++) {
-
-      //console.log(display[i]);
-      let parts = kwic[i].split(word);
-      let x = width / 2, y = i * 20 + 75;
-
-      if (y > height - 20) return;
-
-      fill(0);
-      textAlign(RIGHT);
-      text(parts[0], x - tw, y);
-
-      fill(200, 0, 0);
-      textAlign(CENTER);
-      text(word, x, y);
-
-      fill(0);
-      textAlign(LEFT);
-      text(parts[1], x + tw, y);
-    }
+    fill(0);
+    textAlign(LEFT);
+    text(parts[1], x + tw, y);
   }
+  noLoop();
 }
+
+// TODO: remove below and replace with p5js createButton() 
 
 function getButtonX() {
   let gapWidth = 10, buttonPadding = 10;
-  let gapNo = buttons.length - 1, twInTotal = 0;
-  for (let i = 0; i < buttons.length; i++) {
-    twInTotal += textWidth(buttons[i]);
+  let gapNo = keywords.length - 1, twInTotal = 0;
+  for (let i = 0; i < keywords.length; i++) {
+    twInTotal += textWidth(keywords[i]);
   }
-  return width / 2 - (gapNo * gapWidth + buttonPadding * buttons.length + twInTotal) / 2
+  return width / 2 - (gapNo * gapWidth + 
+    buttonPadding * keywords.length + twInTotal) / 2
 }
 
-//function for center the buttons
 function drawButtons() {
-
   let posX = getButtonX();
-  for (let i = 0; i < buttons.length; i++) {
-
+  for (let i = 0; i < keywords.length; i++) {
+    let on = word == keywords[i] ? true : false;
+    let tw = textWidth(keywords[i]);
     stroke(200);
-    let on = word == (buttons[i]) ? true : false;
-    let tw = textWidth(buttons[i]);
-    fill(!on && buttons[i] == over ? 235 : 255);
+    fill(255);
     rect(posX - 5, 24, tw + 10, 20, 7);
-    fill((on ? 200 : 0), 0, 0);
 
-    //change color to match with the text
-    text(buttons[i], posX, 40);
+    // change color for enabled button
+    fill((on ? 200 : 0), 0, 0);
+    text(keywords[i], posX, 40);
+
     posX += tw + 20;
   }
 }
@@ -100,13 +85,12 @@ function inside(mx, my, posX, tw) {
 
 function mouseClicked() {
 
-  let posX = buttonX, tw;
-  for (let i = 0; i < buttons.length; i++) {
-    tw = textWidth(buttons[i]);
+  let posX = getButtonX(), tw;
+  for (let i = 0; i < keywords.length; i++) {
+    tw = textWidth(keywords[i]);
     if (inside(mouseX, mouseY, posX, tw)) {
-      word = buttons[i];
-      kwic = null;
-      updateKWIC();
+      word = keywords[i];
+      loop(); // re-render
       break;
     }
     posX += tw + 20;

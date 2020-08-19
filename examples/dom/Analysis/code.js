@@ -1,5 +1,3 @@
-let dbug = 0;
-
 $(document).ready(function () {
 
   let features, hues;
@@ -16,12 +14,11 @@ $(document).ready(function () {
     $('#pos').text(tags[features.pos]);
     $('#ipa').text("/" + arpaToIPA(RiTa.lexicon().rawPhones(word)) + "/");
 
-    refreshBubbles(features.phones.split('-'));
+    updateBubbles(features.phones.split('-'));
     setTimeout(dropBubbles, 2000);
   }
 
   function clearBubbles() {
-    dbug && console.log("clear");
 
     $('.bubbles').children().each(function (i, val) {
        // reset stress
@@ -41,16 +38,15 @@ $(document).ready(function () {
     setTimeout(selectWord, 1000);
   }
 
-  function refreshBubbles(phs) {
+  function updateBubbles(phs) {
 
-    dbug && console.log("refresh");
+    addStress(features.stresses, features.syllables);
+    addSyllables(features.syllables);
     $('.bubbles').children().each(function (i) {
       // change the phones and color
       if (i < phs.length) {
         $(this).text(phs[i]);
         $(this).css("background-color", "hsla(" + phonemeColor(phs[i]) + ", 90%, 45%, 0.6)");
-        addStress(features.stresses, features.syllables);
-        addSyllables(features.syllables);
       }
     });
   }
@@ -70,7 +66,6 @@ $(document).ready(function () {
 
   function addSyllables(syllables) {
 
-    dbug && console.log("addSyllables");
     const syllable = syllables.split("/");
     for (let i = 0, past = 0; i < syllable.length; i++) {
       const phs = syllable[i].split("-");
@@ -90,8 +85,7 @@ $(document).ready(function () {
     }
   }
 
-  function addStress(stresses, syllables, bubbles) {
-    dbug && console.log("addStress");
+  function addStress(stresses, syllables) {
     // Split stresses and syllables
     const stress = stresses.split('/'), syllable = syllables.split('/');
     for (let i = 0, past = 0; i < stress.length; i++) {

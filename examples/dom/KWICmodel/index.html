@@ -12,7 +12,7 @@
   <style>
     body {
       font-family: "Times New Roman", Times, serif;
-      font-size: 18px;
+      font-size: 16px;
     }
 
     span {
@@ -24,19 +24,21 @@
       position: absolute;
       overflow: hidden;
     }
-
-    #textInput {
-      position: absolute;
-      left: 345px;
-      width: 50px;
-      z-index: 1;
-    }
-
+    
     #button {
       position: absolute;
       left: 395px;
       top: 21px;
       z-index: 1;
+            -moz-border-radius: 7px;
+      -webkit-border-radius: 7px;
+      border-radius: 7px;
+      border: 1px solid #dcdcdc;
+      padding: 1px 6px;
+      text-decoration: none;
+      color: black;
+      display: inline-block;
+      cursor: default;
     }
 
     #label {
@@ -44,17 +46,16 @@
       left: 300px;
       top: 24px;
       z-index: 1;
-      font-size: 14px;
     }
 
-    .buttonContainer {
+    #buttons {
       position: absolute;
       left: 400px;
       top: 40px;
       z-index: 1;
     }
 
-    .cssBtns {
+    .button {
       -moz-border-radius: 7px;
       -webkit-border-radius: 7px;
       border-radius: 7px;
@@ -71,17 +72,17 @@
 <body>
   <a href="#source" id="view-source">source</a><br>
   <div id="content"></div>
-  <div class="buttonContainer">
-    <a href="#" class="cssBtns"></a>
-    <a href="#" class="cssBtns"></a>
-    <a href="#" class="cssBtns"></a>
-    <a href="#" class="cssBtns"></a>
-    <a href="#" class="cssBtns"></a>
-    <a href="#" class="cssBtns"></a>
-    <a href="#" class="cssBtns"></a>
-    <a href="#" class="cssBtns"></a>
+  <div id="buttons">
+    <a href="#" class="button"></a>
+    <a href="#" class="button"></a>
+    <a href="#" class="button"></a>
+    <a href="#" class="button"></a>
+    <a href="#" class="button"></a>
+    <a href="#" class="button"></a>
+    <a href="#" class="button"></a>
+    <a href="#" class="button"></a>
   </div>
-  <div class="code" id="source">
+  <div id="source" class="code">
     <pre>
     <code id="source-code" class="language-java"></code>
     </pre>

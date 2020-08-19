@@ -1,20 +1,14 @@
-const ALL_PHONES = ['aa','ae','ah','ao','aw','ay','b','ch','d','dh','eh','er','ey','f','g','hh','ih','iy','jh', 'k','l', 'm','n','ng','ow','oy','p','r','s','sh','t','th','uh', 'uw','v','w','y','z','zh'];
+let ALL_PHONES = ['aa', 'ae', 'ah', 'ao', 'aw', 'ay', 'b', 'ch', 'd', 'dh', 'eh', 'er', 'ey', 'f', 'g', 'hh', 'ih', 'iy', 'jh', 'k', 'l', 'm', 'n', 'ng', 'ow', 'oy', 'p', 'r', 's', 'sh', 't', 'th', 'uh', 'uw', 'v', 'w', 'y', 'z', 'zh'];
 
-let tagsDict, word, sy, ph, ss;
-let bubbles = [], colors = [];
-let pos = '';
-
-let lexicon;
-
-const maxWordLength = 12;
+let tagsDict, word, sy, ph, ss, pos, features, hues;
+let bubbles = [];
+let maxWordLength = 12;
 
 function setup() {
 
   createCanvas(600, 300);
+  colorPalette();
   noStroke();
-
-  // initialize color palette
-  colors = colorGradient();
 
   // initialize bubbles
   for (let i = 0; i < maxWordLength; i++) {
@@ -22,7 +16,6 @@ function setup() {
   }
 
   selectWord();
-  setInterval(selectWord, 4000);
 }
 
 function draw() {
@@ -35,29 +28,27 @@ function draw() {
   textSize(36);
   text(word, 80, 50);
 
-
-   //IPA
+  // phones
   textSize(18);
   ipaPhones = arpaToIPA(RiTa.lexicon().rawPhones(word));
   text("/" + ipaPhones + "/", 80, 80);
-  //adjust the position of the IPA so it doesn't overlap the word anymore
 
   // pos-tag
   textSize(14);
   text(pos.toLowerCase(), 80, 105);
 
-  for (let i = 0; i < bubbles.length; i++)
+  for (let i = 0; i < bubbles.length; i++) {
     bubbles[i].draw(i);
+  }
 }
 
 function selectWord() { // called every 4 sec by timer
 
   // random word with <= 12 letters
-  word = RiTa.randomWord({maxLength:12});
-  // using argument instead of while loop
+  word = RiTa.randomWord({ maxLength: maxWordLength });
 
   // get various features
-  let features = RiTa.analyze(word,{simple:true});
+  features = RiTa.analyze(word, { simple: true });
   sy = features.syllables;
   ph = features.phones;
   ss = features.stresses;
@@ -68,8 +59,6 @@ function selectWord() { // called every 4 sec by timer
     'a': 'Adjective'
   };
   pos = tags[features.pos];
-  //using analyze() for a set of features
-  //! analyze() seems not to be in the api document yet
 
   // reset the bubbles
   for (let i = 0; i < bubbles.length; i++) {
@@ -77,14 +66,32 @@ function selectWord() { // called every 4 sec by timer
   }
 
   // update the bubbles for the new word
-  const phs = ph.split('-');
-  for (let i = 0; i < phs.length; i++) {
-    bubbles[i].update(phs[i], i * 50 + 100, phoneColor(phs[i]));
-  }
+  let phs = ph.split('-');
+  updateBubbles(phs);
+  /*   for (let i = 0; i < phs.length; i++) {
+      bubbles[i].update(phs[i], i * 50 + 100, phoneColor(phs[i]));
+    }
+   */
 
-  addStress(ss, sy, bubbles);
-  addSyllables(sy, bubbles);
+  setTimeout(selectWord, 4000);
 }
+
+function updateBubbles(phs) {
+  addSyllables(sy);
+  addStress(ss, sy);
+  for (let i = 0; i < bubbles.length; i++) {
+    if (i < phs.length) {
+      bubbles[i].update(phs[i], i * 50 + 100, phoneColor(phs[i]));
+
+/*       $(this).text(phs[i]);
+      $(this).css("background-color", "hsla(" + phonemeColor(phs[i]) + ", 90%, 45%, 0.6)");
+      addStress(features.stresses, features.syllables);
+      addSyllables(features.syllables); */
+    }
+  }
+}
+
+// TODO: redo with new class style
 
 function Bubble(phoneme, x) {
 
@@ -144,72 +151,54 @@ function Bubble(phoneme, x) {
   }
 }
 
-function addSyllables(syllables, bubbles) {
+function addSyllables(syllables) {
 
-  // Split each syllable
-  const syllable = syllables.split('/');
+  // split each syllable
+  let syllable = syllables.split('/');
 
-  // Record the past phonemes number
+  // record the past phonemes number
   for (let i = 0, past = 0; i < syllable.length; i++) {
-    const phs = syllable[i].split('-');
-
-    for (let j = 1; j < phs.length; j++)
+    let phs = syllable[i].split('-');
+    for (let j = 1; j < phs.length; j++) {
       bubbles[past + j].adjustDistance(-20 * j);
-
+    }
     past += phs.length;
   }
 }
 
-function addStress(stresses, syllables, bubbles) {
+function addStress(stresses, syllables) {
 
   // Split stresses & syllables
-  const stress = stresses.split('/'),
-    syllable = syllables.split('/');
+  let stress = stresses.split('/'), sylls = syllables.split('/');
 
   // Record the previous phoneme count
   for (let i = 0, past = 0; i < stress.length; i++) {
 
-    const phs = syllable[i].split('-');
-
+    let phs = sylls[i].split('-');
     // if the syllable is stressed, grow its bubbles
-    if (parseInt(stress[i]) == 1) {
-      for (let j = 0; j < phs.length; j++)
+    if (stress[i] === '1') {
+      for (let j = 0; j < phs.length; j++) {
         bubbles[past + j].grow();
+      }
     }
-
     past += phs.length;
   }
 }
 
-function tagName(tag) {
-
-  if (!tagsDict) {
-    tagsDict = {
-      'n': 'Noun',
-      'v': 'Verb',
-      'r': 'Adverb',
-      'a': 'Adjective'
-    };
-  }
-
-  return tag != null ? tagsDict[tag] : null;
-}
-
 function phoneColor(phoneme) {
 
-  const idx = ALL_PHONES.indexOf(phoneme);
-  return idx > -1 ? colors[idx] : 0;
+  let idx = ALL_PHONES.indexOf(phoneme);
+  return idx > -1 ? hues[idx] : 0;
 }
 
-function colorGradient() {
+function colorPalette() {
 
   colorMode(HSB, 1, 1, 1, 1);
-  let tmp = [];
-  const apl = ALL_PHONES.length;
+  hues = [];
+  let apl = ALL_PHONES.length;
   for (let i = 0; i < apl; i++) {
-    const h = map(i, 0, apl, .2, .8);
-    tmp[i] = color(h, .9, .9, .6);
+    let h = map(i, 0, apl, .2, .8);
+    hues[i] = color(h, .9, .9, .6);
   }
   colorMode(RGB, 255, 255, 255, 255);
-  return tmp;
 }
