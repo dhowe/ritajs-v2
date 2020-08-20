@@ -120,7 +120,7 @@ function Bubble(phoneme, x) {
   }
 
   this.adjustDistance = function (dis) {
-    this.xpos += (this.r == 40) ? dis : 0.7 * dis;
+    this.xpos += (this.r === 40) ? dis : 0.7 * dis;
   }
 
   this.grow = function () {

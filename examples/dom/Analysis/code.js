@@ -91,7 +91,7 @@ $(document).ready(function () {
     for (let i = 0, past = 0; i < stress.length; i++) {
       const phs = syllable[i].split('-');
       // if the syllable is stressed, grow its bubbles
-      if (parseInt(stress[i]) == 1) {
+      if (parseInt(stress[i]) === 1) {
         for (let j = 0; j < phs.length; j++) {
           (function (j) {
             $('.bubbles').children().eq(j + past).addClass("stressed");

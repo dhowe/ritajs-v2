@@ -49,7 +49,7 @@ function draw() {
   noLoop();
 }
 
-// TODO: remove below and replace with p5js createButton() 
+// TODO: remove below and replace with p5js createButton()
 
 function getButtonX() {
   let gapWidth = 10, buttonPadding = 10;
@@ -57,14 +57,14 @@ function getButtonX() {
   for (let i = 0; i < keywords.length; i++) {
     twInTotal += textWidth(keywords[i]);
   }
-  return width / 2 - (gapNo * gapWidth + 
+  return width / 2 - (gapNo * gapWidth +
     buttonPadding * keywords.length + twInTotal) / 2
 }
 
 function drawButtons() {
   let posX = getButtonX();
   for (let i = 0; i < keywords.length; i++) {
-    let on = word == keywords[i] ? true : false;
+    let on = word === keywords[i] ? true : false;
     let tw = textWidth(keywords[i]);
     stroke(200);
     fill(255);
