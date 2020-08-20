@@ -27,7 +27,7 @@ $(document).ready(function () {
 
       //reset position
       $(this).css({
-        'margin-top': ' 5px'
+        'margin-top': '5px'
       });
 
       // clear the content
@@ -100,6 +100,9 @@ $(document).ready(function () {
       }
       past += phs.length;
     }
+
+    $('.bubble.stressed').css({'margin-top': '0px'});
+    $('.bubble.stressed').css({'texr-align': 'center'});
   }
 
   function phonemeColor(phoneme) {
