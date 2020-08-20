@@ -76,9 +76,9 @@ $(document).ready(function () {
         (function (j) {
           const bubble = $('.bubbles').children().eq(j + past);
           if(bubble.hasClass('stressed'))
-             bubble.css("margin-left", "-20px");
+             bubble.css("margin-left", "-14px");
            else
-            bubble.css("margin-left", "-15px");
+            bubble.css("margin-left", "-10px");
         })(j);
       }
       past += phs.length;
