@@ -1,4 +1,3 @@
-
 let rhymes, word;
 
 function setup() {
@@ -24,12 +23,12 @@ function draw() {
 
 function findRhymes() {
 
-  let tmp = '';
+  let tmp;
   do {
     word = RiTa.randomWord();
     tmp = RiTa.rhymes(word, { limit: 13 });
   }
-  while (word && tmp.length < 3)
+  while (tmp.length < 3)
 
   rhymes = tmp.join("\n");
 

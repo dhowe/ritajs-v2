@@ -12,7 +12,7 @@ function setup() {
   textFont('times', 16);
   textAlign(LEFT);
 
-  lines = ["click to (re)generate!"];
+  lines = ["click to (re)generate"];
 
   // create a markov model w' n=4
   markov = new RiTa.Markov(4);
@@ -31,8 +31,8 @@ function drawText() {
 }
 
 function mouseClicked() {
-
-  x = y = 50;
+  
   lines = markov.generate(10);
+  x = y = 50;
   drawText();
 }

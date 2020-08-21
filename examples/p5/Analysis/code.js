@@ -1,8 +1,5 @@
-let ALL_PHONES = ['aa', 'ae', 'ah', 'ao', 'aw', 'ay', 'b', 'ch', 'd', 'dh', 'eh', 'er', 'ey', 'f', 'g', 'hh', 'ih', 'iy', 'jh', 'k', 'l', 'm', 'n', 'ng', 'ow', 'oy', 'p', 'r', 's', 'sh', 't', 'th', 'uh', 'uw', 'v', 'w', 'y', 'z', 'zh'];
-
-let tagsDict, word, sy, ph, ss, pos, features, hues;
-let bubbles = [];
-let maxWordLength = 12;
+let word, features, hues;
+let bubbles = [], maxWordLen = 12;
 
 function setup() {
 
@@ -11,8 +8,8 @@ function setup() {
   noStroke();
 
   // initialize bubbles
-  for (let i = 0; i < maxWordLength; i++) {
-    bubbles[i] = new Bubble('', 0);
+  for (let i = 0; i < maxWordLen; i++) {
+    bubbles[i] = new Bubble();
   }
 
   selectWord();
@@ -24,54 +21,42 @@ function draw() {
 
   // word
   fill(56, 66, 90);
-  textAlign(LEFT);
+
   textSize(36);
+  textAlign(LEFT);
+  textStyle(NORMAL);
   text(word, 80, 50);
 
   // phones
   textSize(18);
-  ipaPhones = arpaToIPA(RiTa.lexicon().rawPhones(word));
-  text("/" + ipaPhones + "/", 80, 80);
+  text(ipaPhones(word), 80, 80);
 
-  // pos-tag
+  // part-of-speech
   textSize(14);
-  text(pos.toLowerCase(), 80, 105);
+  textStyle(ITALIC);
+  text(tags[features.pos], 80, 105);
 
-  for (let i = 0; i < bubbles.length; i++) {
-    bubbles[i].draw(i);
-  }
+  bubbles.forEach((b, i) => b.draw(i));
 }
 
-function selectWord() { // called every 4 sec by timer
+function selectWord() {
 
-  // random word with <= 12 letters
-  word = RiTa.randomWord({ maxLength: maxWordLength });
-
-  // get various features
+  word = RiTa.randomWord({ maxLength: maxWordLen });
   features = RiTa.analyze(word, { simple: true });
-  sy = features.syllables;
-  ph = features.phones;
-  ss = features.stresses;
-  let tags = {
-    'n': 'Noun',
-    'v': 'Verb',
-    'r': 'Adverb',
-    'a': 'Adjective'
-  };
-  pos = tags[features.pos];
+  updateBubbles();
+}
 
-  // reset the bubbles
-  for (let i = 0; i < bubbles.length; i++) {
-    bubbles[i].reset()
-  }
+function updateBubbles() {
 
-  // update the bubbles for the new word
-  let phs = ph.split('-');
-  updateBubbles(phs);
-  /*   for (let i = 0; i < phs.length; i++) {
-      bubbles[i].update(phs[i], i * 50 + 100, phoneColor(phs[i]));
-    }
-   */
+  bubbles.forEach(b => b.reset());
+
+  let phones = features.phones.split('-');
+  bubbles.forEach((b, i) => {
+    if (i < phones.length) b.update(phones, i);
+  });
+
+  addStresses();
+  addSyllables();
 
   setTimeout(selectWord, 4000);
 }
@@ -110,7 +95,7 @@ class Bubble{
   reset() {
     this.ph = '';
     this.t = 0;
-    this.sz = 0;
+    this.gspd = 0;
     this.speed = 0;
   }
 
@@ -118,8 +103,8 @@ class Bubble{
     this.ph = phoneme;
     this.xpos = x;
     this.ypos = 150;
-    this.r = 40;
-    this.c = col;
+    this.xpos = i * 40 + 100;
+    this.rad = 40;
   }
 
   adjustDistance(dis) {
@@ -135,17 +120,15 @@ class Bubble{
 
     if (this.ph.length < 1) return;
 
-    // draw background circle
     fill(this.c);
-    ellipse(this.xpos, this.ypos, this.r + this.sz, this.r + this.sz);
+    ellipse(this.xpos, this.ypos, this.rad + this.gspd, this.rad + this.gspd);
 
-    // display the phoneme
     fill(255);
     textSize(18);
     textAlign(CENTER, CENTER);
     text(this.ph, this.xpos, this.ypos - 1);
 
-    if (this.sz < 10) this.sz *= 1.1;
+    if (this.gspd < 10) this.gspd *= 1.1;
 
     if (++this.t > 100 + 2 * i) {
       this.speed += this.gravity;
@@ -224,7 +207,7 @@ function addSyllablesAndStress(stresses, syllables){
 
 function phoneColor(phoneme) {
 
-  let idx = ALL_PHONES.indexOf(phoneme);
+  let idx = RiTa.PHONES.indexOf(phoneme);
   return idx > -1 ? hues[idx] : 0;
 }
 
@@ -232,10 +215,17 @@ function colorPalette() {
 
   colorMode(HSB, 1, 1, 1, 1);
   hues = [];
-  let apl = ALL_PHONES.length;
+  let apl = RiTa.PHONES.length;
   for (let i = 0; i < apl; i++) {
     let h = map(i, 0, apl, .2, .8);
     hues[i] = color(h, .9, .9, .6);
   }
   colorMode(RGB, 255, 255, 255, 255);
 }
+
+const tags = {
+  'n': 'noun',
+  'v': 'verb',
+  'r': 'adverb',
+  'a': 'adjective'
+};

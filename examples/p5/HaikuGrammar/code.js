@@ -4,8 +4,6 @@ function preload() {
 
   font = loadFont('../../data/Resagokr.otf');
   json = loadJSON('../../data/haiku.json');
-  /*load the grammar file as a json object
-  so no need to process the strings*/
 }
 
 function setup() {
@@ -28,8 +26,9 @@ function draw() {
 
 function mouseReleased() {
 
-  const result = grammar.expand();
-  const haiku = result.split("%");
-  for (let i = 0; i < lines.length; i++)
+  let result = grammar.expand();
+  let haiku = result.split("%");
+  for (let i = 0; i < lines.length; i++) {
     lines[i] = haiku[i];
+  }
 }

@@ -4,7 +4,7 @@ $(document).ready(function () {
 
   function findRhymes() {
 
-    let word, tmp = '';
+    let word, tmp;
     do {
       word = RiTa.randomWord();
       tmp = RiTa.rhymes(word, { limit: 13 });
