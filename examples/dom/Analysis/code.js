@@ -49,13 +49,7 @@ $(document).ready(function () {
         $(this).removeClass("stressed");
 
       //reset position
-<<<<<<< HEAD
-      $(this).css({
-        'margin-top': '5px'
-      });
-=======
       $(this).css({ 'margin-top': ' 5px' });
->>>>>>> a3d931b809035aef9c45f42eb1e4372462cf969f
 
       // clear the content
       $(this).text("");
@@ -71,13 +65,9 @@ $(document).ready(function () {
       $('.bubbles').children().eq(past).css("margin-left", "10px");
       let phs = syllable[i].split("-");
       for (let j = 1; j < phs.length; j++) {
-        (function (j) {
-          const bubble = $('.bubbles').children().eq(j + past);
-          if(bubble.hasClass('stressed'))
-             bubble.css("margin-left", "-14px");
-           else
-            bubble.css("margin-left", "-10px");
-        })(j);
+        let bubble = $('.bubbles').children().eq(j + past);
+        bubble.css("margin-left", bubble.hasClass('stressed') ? "-14px" : "-10px");
+        //to make the text in the bubble more readable match with the syle in p5 example
       }
       past += phs.length;
     }

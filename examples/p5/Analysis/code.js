@@ -55,68 +55,54 @@ function updateBubbles() {
     if (i < phones.length) b.update(phones, i);
   });
 
-  addStresses();
-  addSyllables();
+  // addStresses();
+  // addSyllables();
+  addStressesAndSyllables();
 
   setTimeout(selectWord, 4000);
 }
 
-function updateBubbles(phs) {
-  for (let i = 0; i < bubbles.length; i++) {
-    if (i < phs.length) {
-      bubbles[i].update(phs[i], i * 50 + 100, phoneColor(phs[i]));
-
-/*       $(this).text(phs[i]);
-      $(this).css("background-color", "hsla(" + phonemeColor(phs[i]) + ", 90%, 45%, 0.6)");
-      addStress(features.stresses, features.syllables);
-      addSyllables(features.syllables); */
-    }
-  }
-  // addStress(ss, sy);
-  // addSyllables(sy);
-  addSyllablesAndStress(ss, sy);
+function ipaPhones(aWord) {
+  let raw = RiTa.lexicon().rawPhones(aWord);
+  return "/" + arpaToIPA(raw) + "/";
 }
 
-// TODO: redo with new class style
+class Bubble {
 
-class Bubble{
-
-  constructor(phoneme, x){
-    this.r = 40; // radius of the circle
-    this.ph = phoneme; //phoneme
+  constructor(){
+    this.gspd = 0; // grow speed
+    this.rad = 40; // radius
     this.t = 0; // timer
-    this.xpos = x;
-    this.ypos = 150;
     this.gravity = 0.5;
+    this.ypos = 150;
     this.speed = 0;
-    this.sz = 0; // grow speed
   }
 
-  reset() {
+  reset () {
     this.ph = '';
     this.t = 0;
     this.gspd = 0;
     this.speed = 0;
   }
 
-  update(phoneme, x, col) {
-    this.ph = phoneme;
-    this.xpos = x;
+  update (phones, i) {
+    this.c = phoneColor(phones[i]);
+    this.ph = phones[i];
     this.ypos = 150;
     this.xpos = i * 40 + 100;
     this.rad = 40;
   }
 
-  adjustDistance(dis) {
-    this.xpos += (this.r === 40) ? dis : 0.7 * dis;
+  adjustDistance (dis) {
+    this.xpos += dis;
   }
 
-  grow() {
-    this.r = 41;
-    this.sz = 0.5;
+  grow () {
+    this.rad = 41;
+    this.gspd = 0.5;
   }
 
-  draw(i) {
+  draw (i) {
 
     if (this.ph.length < 1) return;
 
@@ -137,49 +123,13 @@ class Bubble{
   }
 }
 
-//TODO : combine below for better distance adjustment
-// function addSyllables(syllables) {
-//
-//   // split each syllable
-//   let syllable = syllables.split('/');
-//   let totalMergeWidth = 0, gapWidth = 10;
-//
-//   // record the past phonemes number
-//   for (let i = 0, past = 0; i < syllable.length; i++) {
-//     let phs = syllable[i].split('-');
-//     for (let j = 0; j < phs.length; j++) {
-//       bubbles[past + j].adjustDistance(-(20 * j+totalMergeWidth));
-//     }
-//     past += phs.length;
-//     totalMergeWidth += 20 * (phs.length-1) - gapWidth;
-//   }
-// }
-//
-// function addStress(stresses, syllables) {
-//
-//   // Split stresses & syllables
-//   let stress = stresses.split('/'), sylls = syllables.split('/');
-//
-//   // Record the previous phoneme count
-//   for (let i = 0, past = 0; i < stress.length; i++) {
-//
-//     let phs = sylls[i].split('-');
-//     // if the syllable is stressed, grow its bubbles
-//     if (stress[i] === '1') {
-//       for (let j = 0; j < phs.length; j++) {
-//         bubbles[past + j].grow();
-//       }
-//     }
-//     past += phs.length;
-//   }
-// }
-//end TODO area
+//combine addStress and addSyllables for better distance adjustment
+function addStressesAndSyllables(){
 
-//combine addSyllables and addStress for better distance adjustment
-function addSyllablesAndStress(stresses, syllables){
-  //Split stresses and syllables
-  let stressArray = stresses.split('/'), syllableArray = syllables.split('/');
-  //The two array should have the same length
+  // Split stresses & syllables
+  let stressArray = features.stresses.split('/'),
+    syllableArray = features.syllables.split('/');
+    //The two array should have the same length
 
   //initialize vars for distance adjustment
   let totalMergeWidth = 0;
@@ -187,20 +137,94 @@ function addSyllablesAndStress(stresses, syllables){
   //Record the previous phoneme count
   for (let i = 0,past = 0; i < syllableArray.length; i++){
     let phs = syllableArray[i].split('-');
-    let adjustUnit = 20, gapWidth = 8;
+    let adjustUnit = 10, gapWidth = 8;
     //add stress(es) first
     if (stressArray[i] === '1'){
       for (let j = 0; j < phs.length; j++) {
         bubbles[past + j].grow();
       }
-      adjustUnit = 20 * 0.7;
-      gapWidth += 10;
+      adjustUnit *= 0.7;
+      gapWidth += 5;
+    }
+    if (i+1 < syllableArray.length && stressArray[i+1] === '1'){
+      gapWidth += 5;
     }
     //now adjust the distance
     for (let j = 0; j < phs.length; j++) {
       bubbles[past + j].adjustDistance(-(adjustUnit * j+totalMergeWidth));
     }
     totalMergeWidth += adjustUnit * (phs.length-1) - gapWidth;
+    past += phs.length;
+  }
+}
+
+function addSyllables() {
+
+  // Split each syllable
+  const syllable = features.syllables.split('/');
+
+  // Record the past phonemes number
+  for (let i = 0, past = 0; i < syllable.length; i++) {
+    const phs = syllable[i].split('-');
+
+    for (let j = 1; j < phs.length; j++)
+      bubbles[past + j].adjustDistance(-10 * j);
+
+    past += phs.length;
+  }
+}
+
+function addSyllablesX() {
+
+  // split each syllable
+  let sylls = features.syllables.split('/');
+
+  // record the past phonemes number
+  for (let i = 0, past = 0; i < sylls.length; i++) {
+    let phs = sylls[i].split('-');
+    for (let j = 1; j < phs.length; j++) {
+      bubbles[past + j].adjustDistance(-20 * j);
+    }
+    past += phs.length;
+  }
+}
+
+function addStresses() {
+
+  // Split stresses & syllables
+  const stress = features.stresses.split('/'),
+    syllable = features.syllables.split('/');
+
+  // Record the previous phoneme count
+  for (let i = 0, past = 0; i < stress.length; i++) {
+
+    const phs = syllable[i].split('-');
+
+    // if the syllable is stressed, grow its bubbles
+    if (parseInt(stress[i]) == 1) {
+      for (let j = 0; j < phs.length; j++)
+        bubbles[past + j].grow();
+    }
+
+    past += phs.length;
+  }
+}
+
+function addStressesX() {
+
+  // Split stresses & syllables
+  let stress = features.stresses.split('/'), sylls = features.syllables.split('/');
+
+  // Record the previous phoneme count
+  for (let i = 0, past = 0; i < stress.length; i++) {
+
+    let phs = sylls[i].split('-');
+    // if the syllable is stressed, grow its bubbles
+    if (stress[i] === '1') {
+      for (let j = 0; j < phs.length; j++) {
+        bubbles[past + j].grow();
+      }
+    }
     past += phs.length;
   }
 }
