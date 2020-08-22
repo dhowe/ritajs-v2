@@ -25,7 +25,6 @@
     "watch": "webpack --watch --mode production",
     "test": "mocha",
     "test.g": "mocha ./test/*.js -g ",
-    "test.grammar": "mocha ./test/riscript-tests.js",
     "test.issues": "mocha ./issues/known-issues.js",
     "test.quick": "mocha './test/**/!(lexicon-tests).js'",
     "test.prod": "NODE_ENV=dist mocha ./test/*.js",
@@ -33,8 +32,7 @@
     "test.watch": "mocha --watch 'src/*.js' './test/**/!(lexicon-tests).js'",
     "watch.grammar": "npm-watch",
     "compile": "yarn antlr4.js",
-    "antlr4.js": "java -Xmx500M -cp 'jlib/antlr-4.8-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -lib grammar -o grammar/.antlr -visitor -Xexact-output-dir grammar/RiScript.g4",
-    "antlr4.java": "java -Xmx500M -cp '/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH' org.antlr.v4.Tool -Dlanguage=Java -lib grammar -o grammar/.antlr -visitor -Xexact-output-dir grammar/RiScript.g4"
+    "antlr4.js": "java -Xmx500M -cp 'jlib/antlr-4.8-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -lib grammar -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript.g4"
   },
   "watch": {
     "compile": {
