@@ -5,6 +5,8 @@ const Lexer = require('../grammar/antlr/RiScriptLexer');
 const Parser = require('../grammar/antlr/RiScriptParser');
 const { LexerErrors, ParserErrors } = require('./errors');
 
+const Parseable = /([()]|\$[A-Za-z_0-9][A-Za-z_0-9-]*)/;
+
 class RiScript {
 
   constructor() {
@@ -39,8 +41,8 @@ class RiScript {
         expr = rs.lexParseVisit(expr, ctx, opts);
         trace && console.log('\nPass#' + (i + 2) + ': ' + expr
           + '\n-------------------------------------------------------\n');
-        if (i >= RiScript.MAX_TRIES - 1) throw Error('Unable to resolve: "'
-          + input + '" after ' + RiScript.MAX_TRIES + ' tries. An infinite loop?');
+        if (i >= RiScript.MAX_TRIES - 1) throw Error('Unable to resolve:\n"'
+          + input + '"\nafter ' + RiScript.MAX_TRIES + ' tries. An infinite loop?');
       }
     }
     if (!opts.silent && !RiScript.parent.SILENT && /\$[A-Za-z_]/.test(expr)) {
@@ -182,7 +184,7 @@ class RiScript {
   }
 
   isParseable(s) {
-    return /([()]|\$[A-Za-z_][A-Za-z_0-9-]*)/.test(s);
+    return Parseable.test(s);
   }
 
   static addTransform(name, func) {
@@ -263,7 +265,8 @@ function pluralize(s) {
   return RiTa().pluralize(s.trim());
 }
 
-RiScript.MAX_TRIES = 100;
+RiScript.MAX_TRIES = 99;
+
 RiScript.transforms = {
   capitalize, quotify, pluralize, 
   qq: quotify, uc: toUpper, ucf: capitalize, 

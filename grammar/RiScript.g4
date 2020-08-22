@@ -41,7 +41,7 @@ HAT: '^';
 DOL: '$';
 COM: ',';
 NL: '\r'? '\n';
-SYM: ('$' NIDENT) | ('<' NIDENT '>');
+SYM: ('$' NIDENT);// | ('<' NIDENT '>');
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
 TF: ('.' IDENT ( '(' ')')?)+;

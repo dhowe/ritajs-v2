@@ -445,12 +445,13 @@ describe('RiTa.Core', () => {
     expect(Object.keys(data).length).eq(3);
     expect(data["The"]).eq(undefined);
 
-    data = RiTa.concordance("It was a dream of you.", {
+    data = RiTa.concordance("It was a dream of you.", { // 'dream', '.'
       ignoreStopWords: true
     });
-    expect(Object.keys(data).length).eq(1);
+    expect(Object.keys(data).length).eq(2);
     expect(data["It"]).eq(undefined);
     expect(data["dream"]).eq(1);
+    expect(data["."]).eq(1);
 
     data = RiTa.concordance("Fresh fried fish, Fish fresh fried.", {
       wordsToIgnore: ["fish"],
