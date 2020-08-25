@@ -41,7 +41,7 @@ HAT: '^';
 DOL: '$';
 COM: ',';
 NL: '\r'? '\n';
-SYM: ('$' IDENT);
+SYM: ('$' NIDENT);// | ('<' NIDENT '>');
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
 TF: ('.' IDENT ( '(' ')')?)+;
@@ -71,3 +71,4 @@ CHR:
 		| '\n'
 	)+;
 fragment IDENT: [A-Za-z_] [A-Za-z_0-9-]*;
+fragment NIDENT: [A-Za-z_0-9] [A-Za-z_0-9-]*;

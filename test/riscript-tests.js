@@ -152,9 +152,9 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('a');
       expect(ctx.bar).eq('a');
 
-      /*     expect(RiTa.evaluate('$foo=a\n$bar=$foo.', ctx, {trace:0})).eq(''); // empty string
-          expect(ctx.foo).eq('a');
-          expect(ctx.bar).eq('a.'); */
+      expect(RiTa.evaluate('$foo=a\n$bar=$foo.', ctx, { trace: 0 })).eq(''); // empty string
+      expect(ctx.foo).eq('a');
+      expect(ctx.bar).eq('a.');
 
       expect(RiTa.evaluate('$foo=(a | a)', ctx = {})).eq('');
       expect(ctx.foo).eq('a');
@@ -183,7 +183,6 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$foo=a', ctx)).eq('');
       expect(ctx.foo).eq('a');
 
-      // NEXT: working on strange problem with DOT in expr
       ctx = {};
       expect(RiTa.evaluate('$foo=.', ctx)).eq('');
       expect(ctx.foo).eq('.');
@@ -413,11 +412,10 @@ describe('RiTa.RiScript', () => {
     /*     it('Should throw on bad symbols', () => {
           expect(() => RiTa.evaluate('$', 0, {silent:1})).to.throw();
         });
-     */
-    0 && it('Should throw for riscript in context symbol', () => { // TODO: is there a use-case here?
+    it('Should throw for riscript in context symbol', () => { // TODO: is there a use-case here?
       expect(() => RiTa.evaluate('[$stored=$name] is called $stored',
         ctx = { name: '(Dave | Dave)' }, { trace: 1 })).to.throw();
-    });
+    });     */
 
     it('Should eval linebreak-defined variables', () => {
       let res;
@@ -520,6 +518,14 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('($foo)bc', ctx)).eq('hbc');
       expect(ctx.foo).eq('h');
     });
+
+    it('Should eval symbols starting with number', () => {
+      let res;
+      res = RiTa.evaluate('$1foo=hello\n$1start=I said $1foo to her\n$1start', {});
+      expect(res).eq('I said hello to her');
+      res = RiTa.evaluate('$1foo=(hello)\n$1start=I said $1foo to her\n$1start', {});
+      expect(res).eq('I said hello to her');
+    });
   });
 
   describe('Choice', () => {
@@ -590,11 +596,11 @@ describe('RiTa.RiScript', () => {
 
     it('Should handle add transforms', () => {
 
-      let orig = RiTa.addTransform('capA', () => 'A').length;
+      let txs1 = RiTa.addTransform('capA', () => 'A');
       expect(RiTa.evaluate('.capA()', 0)).eq('A');
       expect(RiTa.evaluate('(b).capA()', 0)).eq('A');
-      let post = RiTa.addTransform('capA').length;
-      expect(post).eq(orig);
+      let txs2 = RiTa.addTransform('capA', null); // remove
+      expect(txs1.length).eq(txs2.length);
     });
 
     it('Should use transforms in context', () => {
@@ -717,7 +723,6 @@ describe('RiTa.RiScript', () => {
       let ctx = {};
       expect(RiTa.evaluate('$foo=.toUpperCase()', ctx)).eq('');
       expect(ctx.foo).eq('');
-
       expect(RiTa.evaluate('(a).toUpperCase()')).eq('A');
       expect(RiTa.evaluate('((a)).toUpperCase()', 0)).eq('A');
       expect(RiTa.evaluate('(a | b).toUpperCase()')).to.be.oneOf(['A', 'B']);
@@ -729,6 +734,7 @@ describe('RiTa.RiScript', () => {
     it('Should handle symbol transforms', () => {
       expect(RiTa.evaluate('$dog.toUpperCase()', { dog: 'spot' })).eq('SPOT');
       expect(RiTa.evaluate('$dog.capitalize()', { dog: 'spot' })).eq('Spot');
+      expect(RiTa.evaluate('$1dog.capitalize()', { '1dog': 'spot' })).eq('Spot');
       expect(RiTa.evaluate('($dog).capitalize()', { dog: 'spot' })).eq('Spot');
       expect(RiTa.evaluate('$dog.toUpperCase()', {}, ST)).eq('$dog.toUpperCase()');
       expect(RiTa.evaluate('The $dog.toUpperCase()', { dog: 'spot' })).eq('The SPOT');
@@ -793,11 +799,11 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle custom transforms', () => {
-/*       let Blah = () => 'Blah';
-      expect(RiTa.evaluate('That is (ant).Blah().', { Blah })).eq('That is Blah.');
-      let ctx = { Blah2: () => 'Blah2' };
-      expect(RiTa.evaluate('That is (ant).Blah2().', ctx)).eq('That is Blah2.');
- */
+      /*       let Blah = () => 'Blah';
+            expect(RiTa.evaluate('That is (ant).Blah().', { Blah })).eq('That is Blah.');
+            let ctx = { Blah2: () => 'Blah2' };
+            expect(RiTa.evaluate('That is (ant).Blah2().', ctx)).eq('That is Blah2.');
+       */
       let Blah3 = () => 'Blah3';
       RiTa.addTransform("Blah3", Blah3);
       expect(RiTa.evaluate('That is (ant).Blah3().')).eq('That is Blah3.');
