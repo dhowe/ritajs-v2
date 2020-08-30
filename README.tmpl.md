@@ -45,7 +45,7 @@ console.log(grammar.expand());
     <a href="https://rednoise.org/rita2/RiTa/isVerb/index.html">RiTa.isVerb()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/kwic/index.html">RiTa.kwic()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/pastParticiple/index.html">RiTa.pastParticiple()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/phones/index.html">RiTa.phonemes()</a><br/>
+    <a href="https://rednoise.org/rita2/RiTa/phones/index.html">RiTa.phones()</a><br/>
    </td>
    <td>
     <a href="https://rednoise.org/rita2/RiTa/pos/index.html">RiTa.pos()</a><br/>
