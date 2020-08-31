@@ -55,8 +55,9 @@ function updateBubbles() {
     if (i < phones.length) b.update(phones, i);
   });
 
-  addStresses();
-  addSyllables();
+  // addStresses();
+  // addSyllables();
+  addStressesAndSyllables();
 
   setTimeout(selectWord, 4000);
 }
@@ -66,25 +67,25 @@ function ipaPhones(aWord) {
   return "/" + arpaToIPA(raw) + "/";
 }
 
-// TODO: redo with new class style
+class Bubble {
 
-function Bubble() {
+  constructor(){
+    this.gspd = 0; // grow speed
+    this.rad = 40; // radius
+    this.t = 0; // timer
+    this.gravity = 0.5;
+    this.ypos = 150;
+    this.speed = 0;
+  }
 
-  this.gspd = 0; // grow speed
-  this.rad = 40; // radius
-  this.t = 0; // timer
-  this.gravity = 0.5;
-  this.ypos = 150;
-  this.speed = 0;
-
-  this.reset = function () {
+  reset () {
     this.ph = '';
     this.t = 0;
     this.gspd = 0;
     this.speed = 0;
   }
 
-  this.update = function (phones, i) {
+  update (phones, i) {
     this.c = phoneColor(phones[i]);
     this.ph = phones[i];
     this.ypos = 150;
@@ -92,16 +93,16 @@ function Bubble() {
     this.rad = 40;
   }
 
-  this.adjustDistance = function (dis) {
-    this.xpos += (this.rad === 40) ? dis : 0.7 * dis;
+  adjustDistance (dis) {
+    this.xpos += dis;
   }
 
-  this.grow = function () {
+  grow () {
     this.rad = 41;
     this.gspd = 0.5;
   }
 
-  this.draw = function (i) {
+  draw (i) {
 
     if (this.ph.length < 1) return;
 
@@ -119,6 +120,41 @@ function Bubble() {
       this.speed += this.gravity;
       this.ypos += this.speed;
     }
+  }
+}
+
+//combine addStress and addSyllables for better distance adjustment
+function addStressesAndSyllables(){
+
+  // Split stresses & syllables
+  let stressArray = features.stresses.split('/'),
+    syllableArray = features.syllables.split('/');
+    //The two array should have the same length
+
+  //initialize vars for distance adjustment
+  let totalMergeWidth = 0;
+
+  //Record the previous phoneme count
+  for (let i = 0,past = 0; i < syllableArray.length; i++){
+    let phs = syllableArray[i].split('-');
+    let adjustUnit = 10, gapWidth = 8;
+    //add stress(es) first
+    if (stressArray[i] === '1'){
+      for (let j = 0; j < phs.length; j++) {
+        bubbles[past + j].grow();
+      }
+      adjustUnit *= 0.7;
+      gapWidth += 5;
+    }
+    if (i+1 < syllableArray.length && stressArray[i+1] === '1'){
+      gapWidth += 5;
+    }
+    //now adjust the distance
+    for (let j = 0; j < phs.length; j++) {
+      bubbles[past + j].adjustDistance(-(adjustUnit * j+totalMergeWidth));
+    }
+    totalMergeWidth += adjustUnit * (phs.length-1) - gapWidth;
+    past += phs.length;
   }
 }
 

@@ -66,34 +66,38 @@ $(document).ready(function () {
       let phs = syllable[i].split("-");
       for (let j = 1; j < phs.length; j++) {
         let bubble = $('.bubbles').children().eq(j + past);
-        bubble.css("margin-left", bubble.hasClass('stressed') ? "-20px" : "-15px");
+        bubble.css("margin-left", bubble.hasClass('stressed') ? "-14px" : "-10px");
+        //to make the text in the bubble more readable match with the syle in p5 example
       }
       past += phs.length;
     }
   }
 
   function addStresses(stresses, syllables) {
-    
+
     // Split stresses and syllables
     let stress = stresses.split('/');
     let sylls = syllables.split('/');
     for (let i = 0, past = 0; i < stress.length; i++) {
       let phs = sylls[i].split('-');
       // if the syllable is stressed, grow its bubbles
-      if (stress[i] === '1') {
+      if (parseInt(stress[i]) === 1) {
         for (let j = 0; j < phs.length; j++) {
           $('.bubbles').children().eq(j + past).addClass("stressed");
         }
       }
       past += phs.length;
     }
+
+    $('.bubble.stressed').css({'margin-top': '0px'});
+    $('.bubble.stressed').css({'texr-align': 'center'});
   }
 
   function ipaPhones(aWord) {
     let raw = RiTa.lexicon().rawPhones(aWord);
     return "/" + arpaToIPA(raw) + "/";
   }
-  
+
   function phonemeColor(phoneme) {
     let idx = RiTa.PHONES.indexOf(phoneme);
     return idx > -1 ? hues[idx] : 0;
