@@ -16,6 +16,7 @@ function setup() {
 
   RiTa.concordance(txt.join('\n'));
   word = RiTa.random(keywords);
+  drawButtons();
 }
 
 function draw() {
@@ -23,7 +24,6 @@ function draw() {
   let kwic = RiTa.kwic(word, 6);
 
   background(250);
-  drawButtons();
 
   let tw = textWidth(word) / 2;
 
@@ -49,50 +49,32 @@ function draw() {
   noLoop();
 }
 
-// TODO: remove below and replace with p5js createButton() 
-
-function getButtonX() {
-  let gapWidth = 10, buttonPadding = 10;
-  let gapNo = keywords.length - 1, twInTotal = 0;
-  for (let i = 0; i < keywords.length; i++) {
-    twInTotal += textWidth(keywords[i]);
-  }
-  return width / 2 - (gapNo * gapWidth + 
-    buttonPadding * keywords.length + twInTotal) / 2
-}
+// TODO: remove below and replace with p5js createButton()
 
 function drawButtons() {
-  let posX = getButtonX();
+  let posX = 150;
   for (let i = 0; i < keywords.length; i++) {
     let on = word == keywords[i] ? true : false;
     let tw = textWidth(keywords[i]);
-    stroke(200);
-    fill(255);
-    rect(posX - 5, 24, tw + 10, 20, 7);
 
     // change color for enabled button
     fill((on ? 200 : 0), 0, 0);
-    text(keywords[i], posX, 40);
-
-    posX += tw + 20;
-  }
-}
-
-function inside(mx, my, posX, tw) {
-  return (mx >= posX - 5 && mx <= posX + tw + 5
-    && my >= 25 && my <= 44);
-}
-
-function mouseClicked() {
-
-  let posX = getButtonX(), tw;
-  for (let i = 0; i < keywords.length; i++) {
-    tw = textWidth(keywords[i]);
-    if (inside(mouseX, mouseY, posX, tw)) {
-      word = keywords[i];
+    let button = createButton(keywords[i]);
+    button.position(posX - 5, 64);
+    button.size(tw + 10, 20);
+    button.style('border-radius', '7px');
+    button.style('border', '1px solid #dcdcdc');
+    button.mousePressed(function(){
+      let buttons = selectAll('button');
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].style('color','black');
+      }
+      button.style('color','red');
+      button.addClass('selected');
+      word = this.elt.innerText;
       loop(); // re-render
-      break;
-    }
+    });
+
     posX += tw + 20;
   }
 }
