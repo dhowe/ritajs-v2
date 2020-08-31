@@ -19,6 +19,7 @@ function setup() {
   word = RiTa.random(keywords);
 
   makeButtons()
+
 }
 
 function draw() {
@@ -26,7 +27,6 @@ function draw() {
   let kwic = RiTa.kwic(word, 6);
 
   background(250);
-  //drawButtons();
 
   let tw = textWidth(word) / 2;
 
