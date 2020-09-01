@@ -16,7 +16,7 @@ class Grammar {
   static fromJSON(json, context) {
     return new Grammar().setRules(json);
   }
-  
+
   toJSON() {
     return stringify(Object.keys(this).reduce(
       (acc, k) => Object.assign(acc, { [k]: this[k] }), {}));
@@ -41,8 +41,11 @@ class Grammar {
     if (name.startsWith('$')) name = name.substring(1);
     if (Array.isArray(rule)) rule = joinChoice(rule);
 
-    // TODO: better regex here: if '|' happens before '('
-    if (/\|/.test(rule) && !(/^\(.*\)$/.test(rule))) {
+    const regexOne = /\|/;
+    // check if there is '|'
+    const regexTwo = /^\(.*\)$/;
+    // check if there is "()"
+    if (regexOne.test(rule) && !(regexTwo.test(rule))) {
       rule = '(' + rule + ')';
     }
     this.rules[name] = rule;

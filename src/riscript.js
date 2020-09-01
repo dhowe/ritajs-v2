@@ -135,7 +135,8 @@ class RiScript {
   preParse(input, opts = {}) {
     let parse = input, pre = '', post = '';
     //console.log('preParse', parse);
-    if (!opts.skipPreParse && !/^[${]/.test(parse)) {
+    const regexCompiled = /^[${]/;
+    if (!opts.skipPreParse && !regexCompiled.test(parse)) {
       const re = /[()$|{}]/;
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
@@ -171,7 +172,7 @@ class RiScript {
         .replace(/\\n/, '')
         .replace(/\n/, ' ') : '';
   }
-/* 
+/*
   createVisitor(context, opts) {
     if (!this.visitor) this.visitor = new Visitor(this);
     ;
@@ -179,8 +180,9 @@ class RiScript {
   } */
 
   resolveEntities(result) { // &#10; for line break DOC:
+    const re = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
     return decode(result.replace(/ +/g, ' '))
-      .replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
+      .replace(re, ' ');
   }
 
   isParseable(s) {
@@ -194,8 +196,9 @@ class RiScript {
 
   static articlize(s) {
     let phones = RiTa().phones(s, { silent: true });
+    const re = /[aeiou]/;
     return (phones && phones.length
-      && /[aeiou]/.test(phones[0]) ? 'an ' : 'a ') + s;
+      && re.test(phones[0]) ? 'an ' : 'a ') + s;
   }
 
   // a no-op transform for sequences
@@ -203,7 +206,7 @@ class RiScript {
     return s;
   }
 
-  /* 
+  /*
     static addTransform(name, func) { // DOC: object case
       if (typeof name === 'string') {
         return RiScript.transforms[name] = func;
@@ -268,8 +271,8 @@ function pluralize(s) {
 RiScript.MAX_TRIES = 99;
 
 RiScript.transforms = {
-  capitalize, quotify, pluralize, 
-  qq: quotify, uc: toUpper, ucf: capitalize, 
+  capitalize, quotify, pluralize,
+  qq: quotify, uc: toUpper, ucf: capitalize,
   articlize: RiScript.articlize,
   seq: RiScript.identity,
   rseq: RiScript.identity,

@@ -9,7 +9,7 @@ class Markov {
     // options (TODO: clarify/document options)
     this.trace = opts.trace;
     this.mlm = opts.maxLengthMatch;
-    this.logDuplicates = opts.logDuplicates; 
+    this.logDuplicates = opts.logDuplicates;
     this.maxAttempts = opts.maxAttempts || 99;
     this.disableInputChecks = opts.disableInputChecks;
     this.tokenize = opts.tokenize || _RiTa().tokenize;
@@ -106,8 +106,9 @@ class Markov {
 
             let sent = this._flatten(tokens);
             if (!allowDuplicates && result.includes(sent) && fail('is dup')) break;
-            this.trace && console.log('-- GOOD', sent.replace(/ +/g, ' '));
-            result.push(sent.replace(/ +/g, ' '));
+            const regexCompiled = / +/g;
+            this.trace && console.log('-- GOOD', sent.replace(regexCompiled, ' '));
+            result.push(sent.replace(regexCompiled, ' '));
             break;
           }
           if (fail('too short')) break;

@@ -12,7 +12,8 @@ class Tokenizer {
   sentences(text, regex) {
     if (!text || !text.length) return [text];
 
-    let clean = text.replace(/(\r?\n)+/g, ' ')
+    const regexCompiled = /(\r?\n)+/g;
+    let clean = text.replace(regexCompiled, ' ')
 
     let delim = '___';
     let re = new RegExp(delim, 'g');
@@ -49,7 +50,7 @@ class Tokenizer {
     if (regex) return words.split(regex);
 
     words = words.trim(); // ???
-    words = words.replace(/([Ee])[.]([Gg])[.]/g, "_$1$2_"); // E.©G.
+    words = words.replace(/([Ee])[.]([Gg])[.]/g, "_$1$2_"); // E.G.
     words = words.replace(/([Ii])[.]([Ee])[.]/g, "_$1$2_"); // I.E.
 
     words = words.replace(/([\\?!\"\u201C\\.,;:@#$%&])/g, " $1 ");
@@ -92,12 +93,13 @@ class Tokenizer {
 
     delim = delim || ' ';
 
-    let thisPunct, lastPunct, thisQuote, lastQuote, thisComma, isLast,
-      lastComma, lastEndWithS, punct = /^[,\.\;\:\?\!\)""“”\u2019‘`']+$/,
-      dbug = 0,
+    const punct = /^[,\.\;\:\?\!\)""“”\u2019‘`']+$/,
       quotes = /^[\(""“”\u2019‘`']+$/,
       squotes = /^[\u2019‘`']+$/,
-      apostrophes = /^[\u2019']+$/,
+      apostrophes = /^[\u2019']+$/;
+
+    let thisPunct, lastPunct, thisQuote, lastQuote, thisComma, isLast,
+      lastComma, lastEndWithS, dbug = 0,
       afterQuote = false,
       withinQuote = arr.length && quotes.test(arr[0]),
       result = arr[0] || '',
