@@ -11,8 +11,7 @@ function preload() {
 function setup() {
 
   createCanvas(800, 500);
-  textFont('Times New Roman');
-  textSize(16);
+  textFont('Times New Roman', 16);
 
   RiTa.concordance(txt.join('\n'));
   word = RiTa.random(keywords);
