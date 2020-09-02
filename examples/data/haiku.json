@@ -1,10 +1,18 @@
 {
-    "$start": "$line5 % $line7 % $line5",
-    "$line5": "$syl1 $syl4 |$syl1 $syl3 $syl1 |$syl1 $syl1 $syl3 | $syl1 $syl2 $syl2 | $syl1 $syl2 $syl1 $syl1 | $syl1 $syl1 $syl2 $syl1 | $syl1 $syl1 $syl1 $syl2 | $syl1 $syl1 $syl1 $syl1 $syl1 | $syl2 $syl3 | $syl2 $syl2 $syl1 | $syl2 $syl1 $syl2 | $syl2 $syl1 $syl1 $syl1 | $syl3 $syl2 | $syl3 $syl1 $syl1 | $syl4 $syl1 | $syl5",
-    "$line7": "$syl1 $syl1 $line5 | $syl2 $line5 | $line5 $syl1 $syl1 | $line5 $syl2",
-    "$syl1": "red | white | black | sky | dawns | breaks | falls | leaf | rain | pool | my | your | sun | clouds | blue | green | night | day | dawn | dusk | birds | fly | grass | tree | branch | through | hell | zen | smile | gray | wave | sea | through | sound | mind | smoke | cranes | fish",
-    "$syl2": "drifting | purple | mountains | skyline | city | faces | toward | empty | buddhist | temple | japan | under | ocean | thinking | zooming | rushing | over | rice field | rising | falling | sparkling | snowflake",
-    "$syl3": "sunrises | pheasant farms | people farms | samurai | juniper | fishing boats | far away | kimonos | evenings | peasant rain | sad snow fall",
-    "$syl4": "aluminum | yakitori | the east village | west of the sun |  chrysanthemums | cherry blossoms",
-    "$syl5": "resolutional | non-elemental | rolling foothills rise | toward mountains higher | out over this country | in the springtime again"
+  "start": "$line5 % $line7 % $line5",
+  "line5": "$line5in2parts",
+  "line7": "$line7in2parts",
+  "line7in2parts": "$fourSyllableNounOrNounPhrase $threeSyllableVi | $fourSyllableNounOrNounPhrase $threeSyllableVerbPharse | $threeSyllableAdj $fourSyllableNounOrNounPhrase",
+  "line7in3parts": "$threeSyllableNounOrNounPhrase $oneSyllableVi to $twoSyllableVi | $threeSyllableNounOrNounPhrase $twoSyllableVi to $oneSyllableVi",
+  "line5in2parts": "$fourSyllableNounOrNounPhrase.articlize() | $fourSyllableNounOrNounPhrase $oneSyllableVi | $threeSyllableNounOrNounPhrase $twoSyllableVi",
+  "line5in3parts": "$twoSyllableNounOrNounPhrase $oneSyllableVi to $oneSyllableVi | $oneSyllableNoun $twoSyllableVi to $oneSyllableVi | $oneSyllableNoun $oneSyllableVi to $twoSyllableVi",
+  "fourSyllableNounOrNounPhrase": "(autumn | summer) moonlight | (mountain | silent) village | (evening | morning) sun | (winter|summer) flower",
+  "oneSyllableVi": "sing | cry | bow | rise | bloom | dance | drink",
+  "threeSyllableNounOrNounPhrase": "black rose.articlize() | white daisy | sakura | night city | rosemary | the yellow cat | oranges",
+  "twoSyllableVi": "whisper | blossom | recite | swing | speak | twist | appear | forgive | forget",
+  "threeSyllableVi": "fantasize | remerber",
+  "threeSyllableAdj": "isolated | suffocated | exciting | beautiful",
+  "threeSyllableVerbPharse": "singing song | stand sliently",
+  "twoSyllableNounOrNounPhrase": "people | man.articlize() | women | boys.articlize() | girls.articlize() | children | rabbit | dog.articlize() | raccon | river | mountain",
+  "oneSyllableNoun":"kids | cloud | tree"
 }
