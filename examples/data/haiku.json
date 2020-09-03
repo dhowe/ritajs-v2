@@ -5,7 +5,11 @@
   "line7in2parts": "$fourSyllableNounOrNounPhrase $threeSyllableVi | $fourSyllableNounOrNounPhrase $threeSyllableVerbPharse | $threeSyllableAdj $fourSyllableNounOrNounPhrase",
   "line7in3parts": "$threeSyllableNounOrNounPhrase $oneSyllableVi to $twoSyllableVi | $threeSyllableNounOrNounPhrase $twoSyllableVi to $oneSyllableVi | $twoSyllableNounOrNounPhrase $threeSyllableAdv $twoSyllableVi | $threeSyllableNounOrNounPhrase $threeSyllableAdv $oneSyllableVi | $oneSyllableNoun $threeSyllableAdv ($threeSyllableVerbPharse | $threeSyllableVi)",
   "line7in4parts": "$oneSyllableNoun $twoSyllableAdv $twoSyllableVt $twoSyllableNounOrNounPhrase",
+<<<<<<< HEAD
   "line5in2parts": "the $fourSyllableNounOrNounPhrase | $fourSyllableNounOrNounPhrase $oneSyllableVi | $threeSyllableNounOrNounPhrase $twoSyllableVi",
+=======
+  "line5in2parts": "$fourSyllableNounOrNounPhrase.articlize() | $fourSyllableNounOrNounPhrase $oneSyllableVi | $threeSyllableNounOrNounPhrase $twoSyllableVi",
+>>>>>>> 1576bc2f7ced767e2ddd835e119f6f404609f573
   "line5in3parts": "$twoSyllableNounOrNounPhrase $oneSyllableVi to $oneSyllableVi | $oneSyllableNoun $twoSyllableVi to $oneSyllableVi | $oneSyllableNoun $oneSyllableVi to $twoSyllableVi | $oneSyllableNoun $twoSyllableVt $twoSyllableNounOrNounPhrase | $oneSyllableNoun $threeSyllableAdv $oneSyllableVi",
   "line5in4parts": "$oneSyllableNoun $oneSyllableVi to $twoSyllableVi",
 
