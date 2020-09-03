@@ -1,4 +1,5 @@
 const Util = require("./util");
+const regexCompiledFor_isConsonant = /^[a-z\u00C0-\u00ff]+$/;
 
 let RiTa;
 
@@ -377,9 +378,8 @@ class Lexicon {
   }
 
   _isConsonant(p) {
-    const regexCompiled = /^[a-z\u00C0-\u00ff]+$/;
     return (typeof p === S && p.length === 1 && // precompile
-      RiTa.VOWELS.indexOf(p) < 0 && regexCompiled.test(p));
+      RiTa.VOWELS.indexOf(p) < 0 && regexCompiledFor_isConsonant.test(p));
   }
 
   _firstPhone(rawPhones) {

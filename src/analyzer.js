@@ -1,4 +1,5 @@
 const Util = require("./util");
+const regexOneOrMoreEngLetters = /[a-zA-Z]+/;
 
 let RiTa;
 
@@ -55,7 +56,6 @@ class Analyzer {
       }
 
       // if no phones yet, try the lts-engine
-      const regexOneOrMoreEngLetters = /[a-zA-Z]+/
       if (!rawPhones) {
         let ltsPhones = RiTa.lts && RiTa.lts.computePhones(word);
         if (ltsPhones && ltsPhones.length > 0) {

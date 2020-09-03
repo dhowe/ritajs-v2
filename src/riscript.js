@@ -4,6 +4,10 @@ const Visitor = require('./visitor');
 const Lexer = require('../grammar/antlr/RiScriptLexer');
 const Parser = require('../grammar/antlr/RiScriptParser');
 const { LexerErrors, ParserErrors } = require('./errors');
+const regexCompiledForpreParse0 = /^[${]/;
+const regexCompiledForpreParse1 = /[()$|{}]/;
+const regexCompiledForresolveEntities = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
+const regexCompiledForisParseable = /[aeiou]/;
 
 const Parseable = /([()]|\$[A-Za-z_0-9][A-Za-z_0-9-]*)/;
 
@@ -135,18 +139,16 @@ class RiScript {
   preParse(input, opts = {}) {
     let parse = input, pre = '', post = '';
     //console.log('preParse', parse);
-    const regexCompiled = /^[${]/;
-    if (!opts.skipPreParse && !regexCompiled.test(parse)) {
-      const re = /[()$|{}]/;
+    if (!opts.skipPreParse && !regexCompiledForpreParse0.test(parse)) {
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
       while (preIdx < words.length) {
-        if (re.test(words[preIdx])) break;
+        if (regexCompiledForpreParse1.test(words[preIdx])) break;
         preIdx++;
       }
       if (preIdx < words.length) {
         while (postIdx >= 0) {
-          if (re.test(words[postIdx])) break;
+          if (regexCompiledForpreParse1.test(words[postIdx])) break;
           postIdx--;
         }
       }
@@ -180,9 +182,8 @@ class RiScript {
   } */
 
   resolveEntities(result) { // &#10; for line break DOC:
-    const re = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
     return decode(result.replace(/ +/g, ' '))
-      .replace(re, ' ');
+      .replace(regexCompiledForresolveEntities, ' ');
   }
 
   isParseable(s) {
@@ -196,9 +197,8 @@ class RiScript {
 
   static articlize(s) {
     let phones = RiTa().phones(s, { silent: true });
-    const re = /[aeiou]/;
     return (phones && phones.length
-      && re.test(phones[0]) ? 'an ' : 'a ') + s;
+      && regexCompiledForisParseable.test(phones[0]) ? 'an ' : 'a ') + s;
   }
 
   // a no-op transform for sequences

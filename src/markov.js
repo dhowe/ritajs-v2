@@ -1,4 +1,5 @@
 const { parse, stringify } = require('flatted/cjs');
+const regexCompiled = / +/g;
 
 class Markov {
 
@@ -106,7 +107,6 @@ class Markov {
 
             let sent = this._flatten(tokens);
             if (!allowDuplicates && result.includes(sent) && fail('is dup')) break;
-            const regexCompiled = / +/g;
             this.trace && console.log('-- GOOD', sent.replace(regexCompiled, ' '));
             result.push(sent.replace(regexCompiled, ' '));
             break;

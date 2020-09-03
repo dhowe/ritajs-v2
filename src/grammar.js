@@ -1,4 +1,8 @@
 const deepMerge = require('deepmerge');
+const regexOneForaddRule = /\|/;
+// check if there is '|'
+const regexTwoForaddRule = /^\(.*\)$/;
+// check if there is "()"
 
 // TODO:
 //    add fromJSON toJSON
@@ -40,12 +44,7 @@ class Grammar {
     if (!name || !name.length) throw Error('expected [string] name');
     if (name.startsWith('$')) name = name.substring(1);
     if (Array.isArray(rule)) rule = joinChoice(rule);
-
-    const regexOne = /\|/;
-    // check if there is '|'
-    const regexTwo = /^\(.*\)$/;
-    // check if there is "()"
-    if (regexOne.test(rule) && !(regexTwo.test(rule))) {
+    if (regexOneForaddRule.test(rule) && !(regexTwoForaddRule.test(rule))) {
       rule = '(' + rule + ')';
     }
     this.rules[name] = rule;

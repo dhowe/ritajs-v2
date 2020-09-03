@@ -1,4 +1,10 @@
 const Util = require("./util");
+const regexCompiledForsentences = /(\r?\n)+/g;
+//below is regexes for untokenize()
+const punct = /^[,\.\;\:\?\!\)""“”\u2019‘`']+$/,
+  quotes = /^[\(""“”\u2019‘`']+$/,
+  squotes = /^[\u2019‘`']+$/,
+  apostrophes = /^[\u2019']+$/;
 
 let RiTa;
 
@@ -12,8 +18,7 @@ class Tokenizer {
   sentences(text, regex) {
     if (!text || !text.length) return [text];
 
-    const regexCompiled = /(\r?\n)+/g;
-    let clean = text.replace(regexCompiled, ' ')
+    let clean = text.replace(regexCompiledForsentences, ' ')
 
     let delim = '___';
     let re = new RegExp(delim, 'g');
@@ -92,11 +97,6 @@ class Tokenizer {
   untokenize(arr, delim) { // TODO: should be state machine
 
     delim = delim || ' ';
-
-    const punct = /^[,\.\;\:\?\!\)""“”\u2019‘`']+$/,
-      quotes = /^[\(""“”\u2019‘`']+$/,
-      squotes = /^[\u2019‘`']+$/,
-      apostrophes = /^[\u2019']+$/;
 
     let thisPunct, lastPunct, thisQuote, lastQuote, thisComma, isLast,
       lastComma, lastEndWithS, dbug = 0,
