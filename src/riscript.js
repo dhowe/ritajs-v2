@@ -8,6 +8,7 @@ const regexCompiledForpreParse0 = /^[${]/;
 const regexCompiledForpreParse1 = /[()$|{}]/;
 const regexCompiledForresolveEntities = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 const regexCompiledForisParseable = /[aeiou]/;
+const regexCompiledForevaluate = /\$[A-Za-z_]/;
 
 const Parseable = /([()]|\$[A-Za-z_0-9][A-Za-z_0-9-]*)/;
 
@@ -49,7 +50,7 @@ class RiScript {
           + input + '"\nafter ' + RiScript.MAX_TRIES + ' tries. An infinite loop?');
       }
     }
-    if (!opts.silent && !RiScript.parent.SILENT && /\$[A-Za-z_]/.test(expr)) {
+    if (!opts.silent && !RiScript.parent.SILENT && regexCompiledForevaluate.test(expr)) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
     }
     return rs.popTransforms(ctx).resolveEntities(expr);
