@@ -1,4 +1,5 @@
 const Util = require("./util");
+const regexCompiledFor_isConsonant = /^[a-z\u00C0-\u00ff]+$/;
 
 let RiTa;
 
@@ -44,7 +45,7 @@ class Lexicon {
     opts.silent = true;
     for (let i = 0; i < words.length; i++) {
       let word = words[i];
-      // check word length and syllables 
+      // check word length and syllables
       if (word === theWord || !this.checkCriteria(word, dict[word], opts)) {
         continue;
       }
@@ -74,7 +75,7 @@ class Lexicon {
     let result = [];
     for (let i = 0; i < words.length; i++) {
       let word = words[i];
-      // check word length and syllables 
+      // check word length and syllables
       if (word === theWord || !this.checkCriteria(word, dict[word], opts)) {
         continue;
       }
@@ -146,7 +147,7 @@ class Lexicon {
     }
 
     this.parseArgs(opts);
-    
+
     opts._analyzer = RiTa._analyzer();
     let _silent = opts.silent;
     opts.silent = true;
@@ -210,7 +211,7 @@ class Lexicon {
     this.parseArgs(opts);
 
     const dict = this._dict(true);
-    const sound = opts.type === 'sound'; // default: letter 
+    const sound = opts.type === 'sound'; // default: letter
     const words = Object.keys(dict);
     const input = theWord.toLowerCase();
     const variations = [input, input + 's', input + 'es'];
@@ -269,7 +270,7 @@ class Lexicon {
     if (result !== word && opts.numSyllables) {
       let syls = analyzer.analyzeWord(result, SILENT).syllables;
       let num = syls.split(RiTa.SYLLABLE_BOUNDARY).length;
-      
+
       // reject if syllable count has changed
       if (num !== opts.numSyllables) return;
     }
@@ -311,7 +312,7 @@ class Lexicon {
       else if (tpos === "r") tpos = "rb";
       else if (tpos === "a") tpos = "jj";
     }
-    
+
     opts.targetPos = tpos;
   }
 
@@ -378,7 +379,7 @@ class Lexicon {
 
   _isConsonant(p) {
     return (typeof p === S && p.length === 1 && // precompile
-      RiTa.VOWELS.indexOf(p) < 0 && /^[a-z\u00C0-\u00ff]+$/.test(p));
+      RiTa.VOWELS.indexOf(p) < 0 && regexCompiledFor_isConsonant.test(p));
   }
 
   _firstPhone(rawPhones) {
@@ -408,7 +409,7 @@ class Lexicon {
       }
     }
   }
-  
+
   _lastStressedVowelPhonemeToEnd(word) {
     if (word && word.length) {
       let raw = this._lastStressedPhoneToEnd(word);

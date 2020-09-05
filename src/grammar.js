@@ -1,4 +1,8 @@
 const deepMerge = require('deepmerge');
+const regexOneForaddRule = /\|/;
+// check if there is '|'
+const regexTwoForaddRule = /^\(.*\)$/;
+// check if there is "()"
 
 // TODO:
 //    add fromJSON toJSON
@@ -16,7 +20,7 @@ class Grammar {
   static fromJSON(json, context) {
     return new Grammar().setRules(json);
   }
-  
+
   toJSON() {
     return stringify(Object.keys(this).reduce(
       (acc, k) => Object.assign(acc, { [k]: this[k] }), {}));
@@ -40,9 +44,7 @@ class Grammar {
     if (!name || !name.length) throw Error('expected [string] name');
     if (name.startsWith('$')) name = name.substring(1);
     if (Array.isArray(rule)) rule = joinChoice(rule);
-
-    // TODO: better regex here: if '|' happens before '('
-    if (/\|/.test(rule) && !(/^\(.*\)$/.test(rule))) {
+    if (regexOneForaddRule.test(rule) && !(regexTwoForaddRule.test(rule))) {
       rule = '(' + rule + ')';
     }
     this.rules[name] = rule;

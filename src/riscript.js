@@ -4,6 +4,11 @@ const Visitor = require('./visitor');
 const Lexer = require('../grammar/antlr/RiScriptLexer');
 const Parser = require('../grammar/antlr/RiScriptParser');
 const { LexerErrors, ParserErrors } = require('./errors');
+const regexCompiledForpreParse0 = /^[${]/;
+const regexCompiledForpreParse1 = /[()$|{}]/;
+const regexCompiledForresolveEntities = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
+const regexCompiledForisParseable = /[aeiou]/;
+const regexCompiledForevaluate = /\$[A-Za-z_]/;
 
 const Parseable = /([()]|\$[A-Za-z_0-9][A-Za-z_0-9-]*)/;
 
@@ -45,7 +50,7 @@ class RiScript {
           + input + '"\nafter ' + RiScript.MAX_TRIES + ' tries. An infinite loop?');
       }
     }
-    if (!opts.silent && !RiScript.parent.SILENT && /\$[A-Za-z_]/.test(expr)) {
+    if (!opts.silent && !RiScript.parent.SILENT && regexCompiledForevaluate.test(expr)) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
     }
     return rs.popTransforms(ctx).resolveEntities(expr);
@@ -135,17 +140,16 @@ class RiScript {
   preParse(input, opts = {}) {
     let parse = input, pre = '', post = '';
     //console.log('preParse', parse);
-    if (!opts.skipPreParse && !/^[${]/.test(parse)) {
-      const re = /[()$|{}]/;
+    if (!opts.skipPreParse && !regexCompiledForpreParse0.test(parse)) {
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
       while (preIdx < words.length) {
-        if (re.test(words[preIdx])) break;
+        if (regexCompiledForpreParse1.test(words[preIdx])) break;
         preIdx++;
       }
       if (preIdx < words.length) {
         while (postIdx >= 0) {
-          if (re.test(words[postIdx])) break;
+          if (regexCompiledForpreParse1.test(words[postIdx])) break;
           postIdx--;
         }
       }
@@ -171,7 +175,7 @@ class RiScript {
         .replace(/\\n/, '')
         .replace(/\n/, ' ') : '';
   }
-/* 
+/*
   createVisitor(context, opts) {
     if (!this.visitor) this.visitor = new Visitor(this);
     ;
@@ -180,7 +184,7 @@ class RiScript {
 
   resolveEntities(result) { // &#10; for line break DOC:
     return decode(result.replace(/ +/g, ' '))
-      .replace(/[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g, ' ');
+      .replace(regexCompiledForresolveEntities, ' ');
   }
 
   isParseable(s) {
@@ -195,7 +199,7 @@ class RiScript {
   static articlize(s) {
     let phones = RiTa().phones(s, { silent: true });
     return (phones && phones.length
-      && /[aeiou]/.test(phones[0]) ? 'an ' : 'a ') + s;
+      && regexCompiledForisParseable.test(phones[0]) ? 'an ' : 'a ') + s;
   }
 
   // a no-op transform for sequences
@@ -203,7 +207,7 @@ class RiScript {
     return s;
   }
 
-  /* 
+  /*
     static addTransform(name, func) { // DOC: object case
       if (typeof name === 'string') {
         return RiScript.transforms[name] = func;
@@ -268,8 +272,8 @@ function pluralize(s) {
 RiScript.MAX_TRIES = 99;
 
 RiScript.transforms = {
-  capitalize, quotify, pluralize, 
-  qq: quotify, uc: toUpper, ucf: capitalize, 
+  capitalize, quotify, pluralize,
+  qq: quotify, uc: toUpper, ucf: capitalize,
   articlize: RiScript.articlize,
   seq: RiScript.identity,
   rseq: RiScript.identity,

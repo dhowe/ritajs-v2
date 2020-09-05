@@ -1,4 +1,5 @@
 const Util = require("./util");
+const regexOneOrMoreEngLetters = /[a-zA-Z]+/;
 
 let RiTa;
 
@@ -40,7 +41,7 @@ class Analyzer {
     let silentLts = opts && opts.silent;
 
     // check the cache first
-    let result = RiTa.CACHING && this.cache[word]; 
+    let result = RiTa.CACHING && this.cache[word];
     if (typeof result === 'undefined') {
 
       let useRaw = false, slash = '/', delim = '-';
@@ -59,7 +60,7 @@ class Analyzer {
         let ltsPhones = RiTa.lts && RiTa.lts.computePhones(word);
         if (ltsPhones && ltsPhones.length > 0) {
           if (!RiTa.SILENT && !RiTa.SILENCE_LTS && !silentLts
-            && RiTa.hasLexicon() && word.match(/[a-zA-Z]+/)) {
+            && RiTa.hasLexicon() && word.match(regexOneOrMoreEngLetters)) {
             console.log("[RiTa] Used LTS-rules for '" + word + "'");
           }
           rawPhones = Util.syllablesFromPhones(ltsPhones);
