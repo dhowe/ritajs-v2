@@ -15,11 +15,11 @@
   "threeSyllableAdj": "isolated | suffocated | exciting | beautiful | adorable",
   "threeSyllableVerbPharse": "singing song | stand sliently | rise up hand | walk alone | run along",
   "threeSyllableAdv": "sliently | secretly | painfully | happliy | voilently | curely | together",
-  "twoSyllableNounOrNounPhrase": "people | (the | a) man | women | (the | a) boy | (the | a) girls| children | rabbit | (the | a) dog| raccon | river | mountain",
+  "twoSyllableNounOrNounPhrase": "people | (the | a) man | women | (the | a) boy | (the | a) girls| children | rabbit | (the | a) dog| raccon | river | mountain | buddha | city ｜ ocean",
   "twoSyllableVi": "whisper | blossom | recite | swing | speak | twist | appear | forgive | forget",
   "twoSyllableVt": "believe | betray | adore | follow | question",
-  "oneSyllableNoun": "kids | cloud | tree",
-  "oneSyllableAdj": "sad | tall | hot | drunk | plain",
   "twoSyllableAdv": "sadly | calmly | coldly",
-  "oneSyllableVi": "sing | cry | bow | rise | bloom | dance | drink"
+  "oneSyllableNoun": "kids | cloud | tree | leaf | rain | brids | snow | grass | smoke",
+  "oneSyllableAdj": "sad | tall | hot | drunk | plain | grey",
+  "oneSyllableVi": "sing | cry | bow | rise | bloom | dance | drink | fall"
 }
