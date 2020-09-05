@@ -238,6 +238,18 @@ describe('RiTa.Grammar', () => {
         rg.addRule("$animal", "$pet");
         rg.addRule("$pet", "(dog).toUpperCase()");
         eq(rg.expand(), "DOG");
+
+        rg = new Grammar();
+        rg.addRule("$start", "($pet | $animal)");
+        rg.addRule("$animal", "$pet");
+        rg.addRule("$pet", "(ant).articlize()");
+        eq(rg.expand(), "an ant");
+
+        rg = new Grammar();
+        rg.addRule("$start", "($pet | $animal).articlize().ucf()");
+        rg.addRule("$animal", "$pet");
+        rg.addRule("$pet", "ant");
+        eq(rg.expand(), "An ant");
     });
 
     it("should pluralize phrases in a transform", () => {
