@@ -193,6 +193,13 @@ describe('RiTa.KnownIssues', () => {
     expect(RiTa.evaluate('[$a=a].toUpperCase()', ctx, 0)).eq('');
     expect(ctx.a).eq('A')
   });
+
+  it('Should run articlize() correctly inside grammar',() =>{
+    let json = {"start":"toy.articlize() man.articlize() apple.articlize()"};
+    let rg = new Grammar(json);
+    let result = rg.expand();
+    expect(result).eq('a toy a man an apple');
+  });
 });
 
 function eql(output, expected, msg) { expect(output).eql(expected, msg); }
