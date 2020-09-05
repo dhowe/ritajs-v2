@@ -13,8 +13,6 @@ const Inflector = require('./inflector');
 const SeededRandom = require('./random');
 const Operator = require('./operator');
 
-const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
-
 /**
  * TODO:
  *   implement pos opt for rhymes/alliterations/soundsLike/spellsLike
@@ -100,7 +98,7 @@ class RiTa {
   }
 
   static isPunctuation(text) {
-    return text && text.length && ONLY_PUNCT.test(text);
+    return text && text.length && ONLY_PUNCT_RE.test(text);
   }
 
   static isQuestion(sentence) { // remove?
@@ -331,6 +329,6 @@ RiTa.SPLIT_CONTRACTIONS = false;
 // Set to false to reduce memory (likely slower)
 RiTa.CACHING = true;
 
-//RiScript.RiTa = RiTa;
+const ONLY_PUNCT_RE = /^[^0-9A-Za-z\s]*$/;
 
 module && (module.exports = RiTa);

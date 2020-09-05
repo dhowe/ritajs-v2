@@ -1,18 +1,11 @@
 const { MASS_NOUNS } = require("./util");
 
-const ADJS = ['jj', 'jjr', 'jjs'];
-const ADVS = ['rb', 'rbr', 'rbs', 'rp'];
-const NOUNS = ['nn', 'nns', 'nnp', 'nnps'];
-const VERBS = ['vb', 'vbd', 'vbg', 'vbn', 'vbp', 'vbz'];
-
-let RiTa;
-
 class PosTagger {
 
   constructor(parent) {
-    RiTa = parent;
-    this.stemmer = RiTa.stemmer;
-    this.lex = RiTa.lexicon();
+    this.RiTa = parent;
+    this.stemmer = parent.stemmer;
+    this.lex = parent.lexicon();
   }
 
   isVerb(word) {
@@ -53,7 +46,7 @@ class PosTagger {
     let sb = '';
     for (let i = 0; i < words.length; i++) {
       sb += words[i];
-      if (!RiTa.isPunctuation(words[i])) {
+      if (!this.RiTa.isPunctuation(words[i])) {
         sb += delimiter + tags[i];
       }
       sb += ' ';
@@ -75,7 +68,7 @@ class PosTagger {
     let dbug = 0, result = [], choices2d = [];
 
     if (!words || !words.length) return inline ? '' : [];
-    if (!Array.isArray(words)) words = RiTa.tokenizer.tokenize(words);
+    if (!Array.isArray(words)) words = this.RiTa.tokenizer.tokenize(words);
     for (let i = 0, l = words.length; i < l; i++) {
 
       let word = words[i];
@@ -149,7 +142,7 @@ class PosTagger {
         this._checkPluralNounOrVerb(word.substring(0, word.length - 2), result);
 
         // singularize and test (eg 'thieves')
-        this._checkPluralNounOrVerb(RiTa.singularize(word), result);
+        this._checkPluralNounOrVerb(this.RiTa.singularize(word), result);
       }
 
       if (result.length) return result;
@@ -188,7 +181,8 @@ class PosTagger {
 
   _isLikelyPlural(word) {
     // Check for plural noun with singularizer and stemmer
-    return RiTa.stemmer.isRawPlural(word) || this._lexHas("n", RiTa.singularize(word));
+    return this.RiTa.stemmer.isRawPlural(word)
+      || this._lexHas("n", this.RiTa.singularize(word));
   }
 
   _handleSingleLetter(c) {
@@ -210,7 +204,7 @@ class PosTagger {
       let word = words[i], tag = result[i];
       if (typeof tag === 'undefined') {
         tag = '';
-        if (!RiTa.SILENT) console.warn
+        if (!this.RiTa.SILENT) console.warn
           ('\n[WARN] Unexpected state in _applyContext for idx=' + i, words, '\n');
       }
 
@@ -304,7 +298,7 @@ class PosTagger {
 
         //if it is not at the start of a sentence or it is the only word
         // or when it is at the start of a sentence but can't be found in the dictionary
-        let sing = RiTa.singularize(word.toLowerCase());
+        let sing = this.RiTa.singularize(word.toLowerCase());
         if (words.length === 1 || i > 0 || (i == 0 && !this._lexHas('nn', sing))) {
           tag = tag.endsWith("s") ? "nnps" : "nnp";
           dbug && this._log(10, word, tag);
@@ -324,7 +318,7 @@ class PosTagger {
         // is preceded by one of the following
         if (i > 0 && ["nn", "prp", "cc", "nnp"].indexOf(result[i - 1]) > -1) {
           // if word is ends with s or es and is 'nns' and has a vb
-          if (this._lexHas('vb', RiTa.singularize(word))) {
+          if (this._lexHas('vb', this.RiTa.singularize(word))) {
             tag = "vbz";
             dbug && this._log(12, word, tag);
           }
@@ -332,7 +326,7 @@ class PosTagger {
         else if (words.length === 1 && !choices[i].length) {
           // if the stem of a single word could be both nn and vb, return nns
           // only return vbz when the stem is vb but not nn
-          if (!this._lexHas('nn', RiTa.singularize(word)) && this._lexHas('vb', RiTa.singularize(word))) {
+          if (!this._lexHas('nn', sing) && this._lexHas('vb', sing)) {
             tag = "vbz";
             dbug && this._log(12, word, tag);
           }
@@ -369,5 +363,10 @@ class PosTagger {
     }
   }
 }
+
+const ADJS = ['jj', 'jjr', 'jjs'];
+const ADVS = ['rb', 'rbr', 'rbs', 'rp'];
+const NOUNS = ['nn', 'nns', 'nnp', 'nnps'];
+const VERBS = ['vb', 'vbd', 'vbg', 'vbn', 'vbp', 'vbz'];
 
 module && (module.exports = PosTagger);

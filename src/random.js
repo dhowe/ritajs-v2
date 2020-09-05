@@ -123,5 +123,4 @@ class SeededRandom {
   }
 }
 
-
 module && (module.exports = SeededRandom);

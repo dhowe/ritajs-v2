@@ -1,13 +1,11 @@
-let RiTa;
-
 class Concorder {
 
   constructor(parent) {
-    RiTa = parent;
+    this.RiTa = parent;
   }
 
   concordance(text, options) {
-    this.words = Array.isArray(text) ? text : RiTa.tokenize(text);
+    this.words = Array.isArray(text) ? text : this.RiTa.tokenize(text);
     this._parseOptions(options);
     this._build();
     let result = {};
@@ -31,7 +29,7 @@ class Concorder {
         let sub = this.words.slice(Math.max(0, idxs[i] - numWords),
           Math.min(this.words.length, idxs[i] + numWords + 1));
         if (i < 1 || (idxs[i] - idxs[i - 1]) > numWords) {
-          result.push(RiTa.untokenize(sub));
+          result.push(this.RiTa.untokenize(sub));
         }
       }
     }
@@ -71,8 +69,8 @@ class Concorder {
   }
 
   _isIgnorable(key) {
-    if ((this.ignorePunctuation && RiTa.isPunctuation(key)) || 
-      (this.ignoreStopWords && RiTa.isStopWord(key))) return true;
+    if ((this.ignorePunctuation && this.RiTa.isPunctuation(key)) || 
+      (this.ignoreStopWords && this.RiTa.isStopWord(key))) return true;
     for (let i = 0; i < this.wordsToIgnore.length; i++) {
       let word = this.wordsToIgnore[i];
       if (key === word || (this.ignoreCase && key.toUpperCase() === word.toUpperCase())) {

@@ -1,11 +1,209 @@
-const { RE }  = require("./util");
-
-const CONS = "[bcdfghjklmnpqrstvwxyz]";
-const ANY_STEM = "^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$";
-const MODALS = ["shall", "would", "may", "might", "ought", "should"];
-const VERBAL_PREFIX = "((be|with|pre|un|over|re|mis|under|out|up|fore|for|counter|co|sub)(-?))";
+const { RE } = require("./util");
 
 // TODO: add tests for all verbs/forms here with 4 parameters **
+
+class Conjugator {
+
+  constructor(parent) {
+    this.RiTa = parent;
+    this.reset();
+  }
+
+  reset() {
+    this.perfect = this.progressive = this.passive = this.interrogative = false;
+    this.tense = this.RiTa.PRESENT_TENSE;
+    this.person = this.RiTa.FIRST_PERSON;
+    this.number = this.RiTa.SINGULAR;
+    this.form = this.RiTa.NORMAL;
+  }
+
+  // !@# TODO: add handling of past tense modals.
+  conjugate(theVerb, args) {
+
+    if (!theVerb || !theVerb.length) throw Error('No verb');
+
+    if (!args) return theVerb;
+
+    // --------------------- handle args ---------------------
+
+    this.reset();
+    const RiTa = this.RiTa;
+
+    args.number && (this.number = args.number);
+    args.person && (this.person = args.person);
+    args.tense && (this.tense = args.tense);
+    args.form && (this.form = args.form);
+    args.passive && (this.passive = args.passive);
+    args.progressive && (this.progressive = args.progressive);
+    args.interrogative && (this.interrogative = args.interrogative);
+    args.perfect && (this.perfect = args.perfect);
+
+    // ----------------------- start ---------------------------
+
+    let v = theVerb.toLowerCase(); // handle to-be forms
+    if (["am", "are", "is", "was", "were"].includes(v)) v = "be";
+
+    let actualModal, conjs = [], verbForm, frontVG = v;
+
+    if (this.form === RiTa.INFINITIVE) {
+      actualModal = "to";
+    }
+
+    if (this.tense === RiTa.FUTURE_TENSE) {
+      actualModal = "will";
+    }
+
+    if (this.passive) {
+      conjs.push(this.pastParticiple(frontVG));
+      frontVG = "be";
+    }
+
+    if (this.progressive) {
+      conjs.push(this.presentParticiple(frontVG));
+      frontVG = "be";
+    }
+
+    if (this.perfect) {
+      conjs.push(this.pastParticiple(frontVG));
+      frontVG = "have";
+    }
+
+    if (actualModal) {
+      conjs.push(frontVG);
+      frontVG = null;
+    }
+
+    // Now inflect frontVG (if it exists) and push it on restVG
+    if (frontVG) {
+      if (this.form === RiTa.GERUND) { // gerund - use ING form
+        let pp = this.presentParticiple(frontVG);
+        // !@# not yet implemented! ??? WHAT?
+        conjs.push(pp);
+      } else if (this.interrogative && frontVG != "be" && conjs.length < 1) {
+        conjs.push(frontVG);
+      } else {
+        verbForm = this.verbForm(frontVG, this.tense, this.person, this.number);
+        conjs.push(verbForm);
+      }
+    }
+
+    // add modal, and we're done
+    actualModal && conjs.push(actualModal);
+
+    // !@# test this
+    let s = conjs.reduce((acc, cur) => cur + ' ' + acc);
+    //if (s.endsWith("peted")) throw Error("Unexpected output: ", this);
+
+    return s.trim();
+  }
+
+  checkRules(ruleSet, theVerb) {
+
+    if (!theVerb || !theVerb.length) return '';
+
+    theVerb = theVerb.trim();
+
+    let dbug = 0, res, name = ruleSet.name;
+    let rules = ruleSet.rules, defRule = ruleSet.defaultRule;
+
+    if (!rules) console.error("no rule: " + ruleSet.name + ' of ' + theVerb);
+    if (MODALS.includes(theVerb)) return theVerb;
+
+    for (let i = 0; i < rules.length; i++) {
+      dbug && console.log("checkRules(" + name + ").fire(" + i + ")=" + rules[i].regex);
+      if (rules[i].applies(theVerb)) {
+        let got = rules[i].fire(theVerb);
+        dbug && console.log("HIT(" + name + ").fire(" + i + ")=" + rules[i].regex + "_returns: " + got);
+        return got;
+      }
+    }
+    dbug && console.log("NO HIT!");
+    if (ruleSet.doubling && VERB_CONS_DOUBLING.includes(theVerb)) {
+      dbug && console.log("doDoubling!");
+      theVerb = this.doubleFinalConsonant(theVerb);
+    }
+
+    res = defRule.fire(theVerb);
+    dbug && console.log("checkRules(" + name + ").returns: " + res);
+
+    return res;
+  }
+
+  doubleFinalConsonant(word) {
+    return word + word.charAt(word.length - 1);
+  }
+
+  pastTense(theVerb, pers, numb) {
+    const RiTa = this.RiTa;
+    if (theVerb.toLowerCase() === "be") {
+      switch (numb) {
+        case RiTa.SINGULAR:
+          switch (pers) {
+            case RiTa.FIRST_PERSON: break;
+            case RiTa.THIRD_PERSON: return "was";
+            case RiTa.SECOND_PERSON: return "were";
+          }
+          break;
+        case RiTa.PLURAL:
+          return "were";
+      }
+    }
+    return this.checkRules(PAST_TENSE_RULESET, theVerb);
+  }
+
+  presentTense(theVerb, person, number) {
+    const RiTa = this.RiTa;
+    person = person || this.person;
+    number = number || this.number;
+    if (person === RiTa.THIRD_PERSON && number === RiTa.SINGULAR) {
+      return this.checkRules(PRESENT_TENSE_RULESET, theVerb);
+    }
+    else if (theVerb === "be") {
+      if (number === RiTa.SINGULAR) {
+        switch (person) {
+          case RiTa.FIRST_PERSON: return "am";
+          case RiTa.SECOND_PERSON: return "are";
+          case RiTa.THIRD_PERSON: return "is";
+        }
+      } else {
+        return "are";
+      }
+    }
+    return theVerb;
+  }
+
+  presentParticiple(theVerb) {
+    return theVerb === 'be' ? 'being' :
+      this.checkRules(PRESENT_PARTICIPLE_RULESET, theVerb);
+  }
+
+  pastParticiple(theVerb) {
+    return this.checkRules(PAST_PARTICIPLE_RULESET, theVerb);
+  }
+
+  verbForm(theVerb, tense, person, number) {
+    switch (tense) {
+      case this.RiTa.PRESENT_TENSE:
+        return this.presentTense(theVerb, person, number);
+      case this.RiTa.PAST_TENSE:
+        return this.pastTense(theVerb, person, number);
+    }
+    return theVerb;
+  }
+
+  toString() {
+    return "  ---------------------" + + "  Passive = " + this.passive +
+      '\n' + "  Perfect = " + this.perfect + '\n' + "  Progressive = " +
+      this.progressive + '\n' + "  ---------------------" + '\n' + "  Number = " +
+      this.number + '\n' + "  Person = " + this.person + '\n' + "  Tense = " +
+      this.tense + '\n' + "  ---------------------" + '\n';
+  }
+}
+
+const CONS = "[bcdfghjklmnpqrstvwxyz]";
+const MODALS = ["shall", "would", "may", "might", "ought", "should"];
+const VERBAL_PREFIX = "((be|with|pre|un|over|re|mis|under|out|up|fore|for|counter|co|sub)(-?))";
+const ANY_STEM_RE = "^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$";
 
 const ING_FORM_RULES = [
   RE(CONS + "ie$", 2, "ying", 1),
@@ -490,7 +688,7 @@ const PRESENT_TENSE_RULES = [
 const VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", "adlib",
   "admit", "aerobat", "aerosol", "allot", "alot", "anagram",
   "annul", "appal", "apparel", "armbar", "aver", "babysit", "airdrop", "appal",
-  "blackleg", "bobsled", "bur", "chum", "confab", "counterplot",  "dib",
+  "blackleg", "bobsled", "bur", "chum", "confab", "counterplot", "dib",
   "backdrop", "backfil", "backflip", "backlog", "backpedal", "backslap",
   "backstab", "bag", "balfun", "ballot", "ban", "bar", "barbel", "bareleg",
   "barrel", "bat", "bayonet", "becom", "bed", "bedevil", "bedwet",
@@ -519,7 +717,7 @@ const VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", 
   "don", "doorstep", "dot", "dowel", "drag", "drat", "driftnet", "distil",
   "egotrip", "enrol", "enthral", "extol", "fulfil", "gaffe", "idyl",
   "inspan", "drip", "drivel", "drop", "drub", "drug", "drum", "dub", "duel",
-  "dun",  "earwig", "eavesdrop", "ecolabel", 
+  "dun", "earwig", "eavesdrop", "ecolabel",
   "embed", "emit", "enamel", "endlabel", "endtrim",
   "enrol", "enthral", "entrap", "enwrap", "equal", "equip",
   "exaggerat", "excel", "expel", "extol", "fag", "fan", "farewel", "fat",
@@ -537,7 +735,7 @@ const VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", 
   "headbut", "hedgehop", "hem", "hen", "hiccup", "highwal", "hip", "hit",
   "hobnob", "hog", "hop", "horsewhip", "hostel", "hot", "hotdog", "hovel", "hug",
   "hum", "humbug", "hup", "hut", "illfit", "imbed",
-   "impel", "imperil", "incur", "infer", "infil",
+  "impel", "imperil", "incur", "infer", "infil",
   "inflam", "initial", "input", "inset", "instil", "inter", "interbed",
   "intercrop", "intercut", "interfer", "instal", "instil", "intermit",
   "jug", "mousse", "mud", "jab", "jag",
@@ -608,10 +806,10 @@ const VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", 
   "trod", "trot", "trowel", "tub", "tug",
   "tunnel", "tup", "tut", "twat", "twig", "twin", "twit", "typeset", "tyset",
   "un-man", "unban", "unbar", "unbob", "uncap", "unclip", "uncompel", "undam",
-  "underbid","undercut", "underlet", "underman", "underpin", "unfit", "unfulfil", "unknot",
+  "underbid", "undercut", "underlet", "underman", "underpin", "unfit", "unfulfil", "unknot",
   "unlip", "unlywil", "unman", "unpad", "unpeg", "unpin", "unplug", "unravel",
   "unrol", "unscrol", "unsnap", "unstal", "unstep", "unstir", "untap", "unwrap",
-  "unzip", "up", "upset", "upskil", "upwel", "ven", "verbal", "vet", 
+  "unzip", "up", "upset", "upskil", "upwel", "ven", "verbal", "vet",
   "vignet", "wad", "wag", "wainscot", "wan", "war", "waterfal",
   "waterfil", "waterlog", "weasel", "web", "wed", "wet", "wham", "whet", "whip",
   "whir", "whiz", "whup", "wildcat", "win", "windmil", "wit",
@@ -622,237 +820,32 @@ const VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", 
 
 const PAST_PARTICIPLE_RULESET = {
   name: "PAST_PARTICIPLE",
-  defaultRule: RE(ANY_STEM, 0, "ed", 2),
+  defaultRule: RE(ANY_STEM_RE, 0, "ed", 2),
   rules: PAST_PARTICIPLE_RULES,
   doubling: true
 };
 
 const PRESENT_PARTICIPLE_RULESET = {
   name: "ING_FORM",
-  defaultRule: RE(ANY_STEM, 0, "ing", 2),
+  defaultRule: RE(ANY_STEM_RE, 0, "ing", 2),
   rules: ING_FORM_RULES,
   doubling: true
 };
 
 const PAST_TENSE_RULESET = {
   name: "PAST_TENSE",
-  defaultRule: RE(ANY_STEM, 0, "ed", 2),
+  defaultRule: RE(ANY_STEM_RE, 0, "ed", 2),
   rules: PAST_TENSE_RULES,
   doubling: true
 };
 
 const PRESENT_TENSE_RULESET = {
   name: "PRESENT_TENSE",
-  defaultRule: RE(ANY_STEM, 0, "s", 2),
+  defaultRule: RE(ANY_STEM_RE, 0, "s", 2),
   rules: PRESENT_TENSE_RULES,
   doubling: false
 };
 
-let RiTa;
-
-class Conjugator {
-
-  constructor(parent) {
-    RiTa = parent;
-    this.reset();
-  }
-
-  reset() {
-    this.perfect = this.progressive = this.passive = this.interrogative = false;
-    this.tense = RiTa.PRESENT_TENSE;
-    this.person = RiTa.FIRST_PERSON;
-    this.number = RiTa.SINGULAR;
-    this.form = RiTa.NORMAL;
-  }
-
-  // !@# TODO: add handling of past tense modals.
-  conjugate(theVerb, args) {
-
-    if (!theVerb || !theVerb.length) throw Error('No verb');
-
-    if (!args) return theVerb;
-
-    // --------------------- handle args ---------------------
-
-    this.reset();
-
-    args.number && (this.number = args.number);
-    args.person && (this.person = args.person);
-    args.tense && (this.tense = args.tense);
-    args.form && (this.form = args.form);
-    args.passive && (this.passive = args.passive);
-    args.progressive && (this.progressive = args.progressive);
-    args.interrogative && (this.interrogative = args.interrogative);
-    args.perfect && (this.perfect = args.perfect);
-
-    // ----------------------- start ---------------------------
-
-    let v = theVerb.toLowerCase(); // handle to-be forms
-    if (["am", "are", "is", "was", "were"].includes(v)) v = "be";
-
-    let actualModal, conjs = [], verbForm, frontVG = v;
-
-    if (this.form === RiTa.INFINITIVE) {
-      actualModal = "to";
-    }
-
-    if (this.tense === RiTa.FUTURE_TENSE) {
-      actualModal = "will";
-    }
-
-    if (this.passive) {
-      conjs.push(this.pastParticiple(frontVG));
-      frontVG = "be";
-    }
-
-    if (this.progressive) {
-      conjs.push(this.presentParticiple(frontVG));
-      frontVG = "be";
-    }
-
-    if (this.perfect) {
-      conjs.push(this.pastParticiple(frontVG));
-      frontVG = "have";
-    }
-
-    if (actualModal) {
-      conjs.push(frontVG);
-      frontVG = null;
-    }
-
-    // Now inflect frontVG (if it exists) and push it on restVG
-    if (frontVG) {
-      if (this.form === RiTa.GERUND) { // gerund - use ING form
-        let pp = this.presentParticiple(frontVG);
-        // !@# not yet implemented! ??? WHAT?
-        conjs.push(pp);
-      } else if (this.interrogative && frontVG != "be" && conjs.length < 1) {
-        conjs.push(frontVG);
-      } else {
-        verbForm = this.verbForm(frontVG, this.tense, this.person, this.number);
-        conjs.push(verbForm);
-      }
-    }
-
-    // add modal, and we're done
-    actualModal && conjs.push(actualModal);
-
-    // !@# test this
-    let s = conjs.reduce((acc, cur) => cur +  ' ' + acc);
-    //if (s.endsWith("peted")) throw Error("Unexpected output: ", this);
-
-    return s.trim();
-  }
-
-  checkRules(ruleSet, theVerb) {
-
-    if (!theVerb || !theVerb.length) return '';
-
-    theVerb = theVerb.trim();
-
-    let dbug = 0, res, name = ruleSet.name;
-    let rules = ruleSet.rules, defRule = ruleSet.defaultRule;
-
-    if (!rules) console.error("no rule: " + ruleSet.name + ' of ' + theVerb);
-    if (MODALS.includes(theVerb)) return theVerb;
-
-    for (let i = 0; i < rules.length; i++) {
-      dbug && console.log("checkRules(" + name + ").fire(" + i + ")=" + rules[i].regex);
-      if (rules[i].applies(theVerb)) {
-        let got = rules[i].fire(theVerb);
-        dbug && console.log("HIT(" + name + ").fire(" + i + ")=" + rules[i].regex + "_returns: " + got);
-        return got;
-      }
-    }
-    dbug && console.log("NO HIT!");
-    if (ruleSet.doubling && VERB_CONS_DOUBLING.includes(theVerb)) {
-      dbug && console.log("doDoubling!");
-      theVerb = this.doubleFinalConsonant(theVerb);
-    }
-
-    res = defRule.fire(theVerb);
-    dbug && console.log("checkRules(" + name + ").returns: " + res);
-
-    return res;
-  }
-
-  doubleFinalConsonant(word) {
-    return word + word.charAt(word.length - 1);
-  }
-
-  pastTense(theVerb, pers, numb) {
-
-    if (theVerb.toLowerCase() === "be") {
-      switch (numb) {
-        case RiTa.SINGULAR:
-          switch (pers) {
-            case RiTa.FIRST_PERSON:
-              break;
-            case RiTa.THIRD_PERSON:
-              return "was";
-            case RiTa.SECOND_PERSON:
-              return "were";
-          }
-          break;
-        case RiTa.PLURAL:
-          return "were";
-      }
-    }
-    return this.checkRules(PAST_TENSE_RULESET, theVerb);
-  }
-
-  presentTense(theVerb, person, number) {
-
-    person = person || this.person;
-    number = number || this.number;
-    if ((person === RiTa.THIRD_PERSON) && (number === RiTa.SINGULAR)) {
-      return this.checkRules(PRESENT_TENSE_RULESET, theVerb);
-    }
-    else if (theVerb === "be") {
-      if (number === RiTa.SINGULAR) {
-        switch (person) {
-          case RiTa.FIRST_PERSON:
-            return "am";
-          case RiTa.SECOND_PERSON:
-            return "are";
-          case RiTa.THIRD_PERSON:
-            return "is";
-        }
-      } else {
-        return "are";
-      }
-    }
-    return theVerb;
-  }
-
-  presentParticiple(theVerb) {
-    return theVerb === 'be' ? 'being' :
-      this.checkRules(PRESENT_PARTICIPLE_RULESET, theVerb);
-  }
-
-  pastParticiple(theVerb) {
-    return this.checkRules(PAST_PARTICIPLE_RULESET, theVerb);
-  }
-
-  verbForm(theVerb, tense, person, number) {
-    switch (tense) {
-      case RiTa.PRESENT_TENSE:
-        return this.presentTense(theVerb, person, number);
-      case RiTa.PAST_TENSE:
-        return this.pastTense(theVerb, person, number);
-    }
-    return theVerb;
-  }
-
-  toString() {
-    return "  ---------------------" + + "  Passive = " + this.passive +
-      '\n' + "  Perfect = " + this.perfect + '\n' + "  Progressive = " +
-      this.progressive + '\n' + "  ---------------------" + '\n' + "  Number = " +
-      this.number + '\n' + "  Person = " + this.person + '\n' + "  Tense = " +
-      this.tense + '\n' + "  ---------------------" + '\n';
-  }
-}
-
-Conjugator.VERB_CONS_DOUBLING = VERB_CONS_DOUBLING;
+Conjugator.VERB_CONS_DOUBLING = VERB_CONS_DOUBLING; // for scripts
 
 module && (module.exports = Conjugator);

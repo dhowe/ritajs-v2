@@ -2,11 +2,6 @@ const antlr4 = require('antlr4');
 const Operator = require('./operator');
 const { RiScriptVisitor } = require('../grammar/antlr/RiScriptVisitor');
 const { RiScriptParser } = require('../grammar/antlr/RiScriptParser');
-const Util = require('./util');
-const EmptyExpr = new RiScriptParser.ExprContext();
-
-const RSEQUENCE = 'rseq', SEQUENCE = 'seq', NOREPEAT = 'norep';
-const TYPES = [RSEQUENCE, SEQUENCE, NOREPEAT];
 
 class ChoiceState {
 
@@ -16,7 +11,7 @@ class ChoiceState {
     this.index = 0;
     this.options = []
     this.id = parent.indexer;
-    
+
     ctx.wexpr().map((w, k) => {
       let wctx = w.weight();
       let weight = wctx ? parseInt(wctx.INT()) : 1;
@@ -27,13 +22,13 @@ class ChoiceState {
     let txs = ctx.transform();
     if (txs.length) {
       let tf = txs[0].getText();
-      TYPES.forEach(s => tf.includes('.'+s) && (this.type = s));
+      TYPES.forEach(s => tf.includes('.' + s) && (this.type = s));
     }
 
     if (this.type === RSEQUENCE) this.options =
-       RiTa.randomizer.randomOrdering(this.options);
+      RiTa.randomizer.randomOrdering(this.options);
 
-    if (parent.trace) console.log('  new ChoiceState#'+this.id+'('
+    if (parent.trace) console.log('  new ChoiceState#' + this.id + '('
       + this.options.map(o => o.getText()) + "," + this.type + ")");
   }
 
@@ -60,7 +55,7 @@ class ChoiceState {
     //console.log('selectSequence');
     let idx = this.index++ % this.options.length;
     //console.log('IDX', idx);
-    return (this.last = this.options[idx]);d
+    return (this.last = this.options[idx]); d
   }
 
 
@@ -83,7 +78,7 @@ class ChoiceState {
 class Visitor extends RiScriptVisitor {
 
   constructor(parent) {
-    
+
     super();
     this.sequences = {};
     this.parent = parent;
@@ -125,7 +120,7 @@ class Visitor extends RiScriptVisitor {
       choice = new ChoiceState(this, ctx);
       if (choice.type) this.sequences[choice.id] = choice;
       //console.log('numSeqs:',Object.keys(this.sequences).length);
-    } 
+    }
     let token = choice.select();
 
     // merge transforms on entire choice and selected option
@@ -266,8 +261,8 @@ class Visitor extends RiScriptVisitor {
     if (!ctx.children) return '';
 
     this.trace && console.log('visitChildren(' + ctx.constructor.name + '): "'
-      + ctx.getText().replace(/\r?\n/g,"\\n") + '"', ctx.transforms || '[]', '[' 
-      + ctx.children.reduce((acc, c) => acc += c.constructor.name + ',', '')
+      + ctx.getText().replace(/\r?\n/g, "\\n") + '"', ctx.transforms || '[]', '['
+    + ctx.children.reduce((acc, c) => acc += c.constructor.name + ',', '')
       .replace(/,$/, ']'));
 
     // if we have only one child, transforms apply to it
@@ -460,5 +455,9 @@ Visitor.SYM = '$';
 Visitor.EOF = '<EOF>';
 Visitor.ASSIGN = '[]';
 Visitor.FUNCTION = '()';
+
+const EmptyExpr = new RiScriptParser.ExprContext();
+const RSEQUENCE = 'rseq', SEQUENCE = 'seq', NOREPEAT = 'norep';
+const TYPES = [RSEQUENCE, SEQUENCE, NOREPEAT];
 
 module.exports = Visitor;

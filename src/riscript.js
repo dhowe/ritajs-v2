@@ -5,8 +5,6 @@ const Lexer = require('../grammar/antlr/RiScriptLexer');
 const Parser = require('../grammar/antlr/RiScriptParser');
 const { LexerErrors, ParserErrors } = require('./errors');
 
-const Parseable = /([()]|\$[A-Za-z_0-9][A-Za-z_0-9-]*)/;
-
 class RiScript {
 
   constructor() {
@@ -45,7 +43,7 @@ class RiScript {
           + input + '"\nafter ' + RiScript.MAX_TRIES + ' tries. An infinite loop?');
       }
     }
-    if (!opts.silent && !RiScript.parent.SILENT && /\$[A-Za-z_]/.test(expr)) {
+    if (!opts.silent && !RiScript.parent.SILENT && SYMBOL_RE.test(expr)) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
     }
     return rs.popTransforms(ctx).resolveEntities(expr);
@@ -135,18 +133,16 @@ class RiScript {
   preParse(input, opts = {}) {
     let parse = input, pre = '', post = '';
     //console.log('preParse', parse);
-    const regexCompiled = /^[${]/;
-    if (!opts.skipPreParse && !regexCompiled.test(parse)) {
-      const re = /[()$|{}]/;
+    if (!opts.skipPreParse && !PREPARSE0_RE.test(parse)) {
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
       while (preIdx < words.length) {
-        if (re.test(words[preIdx])) break;
+        if (PREPARSE1_RE.test(words[preIdx])) break;
         preIdx++;
       }
       if (preIdx < words.length) {
         while (postIdx >= 0) {
-          if (re.test(words[postIdx])) break;
+          if (PREPARSE1_RE.test(words[postIdx])) break;
           postIdx--;
         }
       }
@@ -180,13 +176,12 @@ class RiScript {
   } */
 
   resolveEntities(result) { // &#10; for line break DOC:
-    const re = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
     return decode(result.replace(/ +/g, ' '))
-      .replace(re, ' ');
+      .replace(ENTITY_RE, ' ');
   }
 
   isParseable(s) {
-    return Parseable.test(s);
+    return PARSEABLE_RE.test(s);
   }
 
   static addTransform(name, func) {
@@ -196,9 +191,8 @@ class RiScript {
 
   static articlize(s) {
     let phones = RiTa().phones(s, { silent: true });
-    const re = /[aeiou]/;
     return (phones && phones.length
-      && re.test(phones[0]) ? 'an ' : 'a ') + s;
+      && VOWEL_RE.test(phones[0]) ? 'an ' : 'a ') + s;
   }
 
   // a no-op transform for sequences
@@ -278,5 +272,12 @@ RiScript.transforms = {
   rseq: RiScript.identity,
   norep: RiScript.identity
 };
+
+const VOWEL_RE = /[aeiou]/;
+const SYMBOL_RE = /\$[A-Za-z_]/;
+const PREPARSE0_RE = /^[${]/;
+const PREPARSE1_RE = /[()$|{}]/;
+const PARSEABLE_RE = /([()]|\$[A-Za-z_0-9][A-Za-z_0-9-]*)/;
+const ENTITY_RE = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 
 module && (module.exports = RiScript);

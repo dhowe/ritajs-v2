@@ -106,9 +106,8 @@ class Markov {
 
             let sent = this._flatten(tokens);
             if (!allowDuplicates && result.includes(sent) && fail('is dup')) break;
-            const regexCompiled = / +/g;
-            this.trace && console.log('-- GOOD', sent.replace(regexCompiled, ' '));
-            result.push(sent.replace(regexCompiled, ' '));
+            this.trace && console.log('-- GOOD', sent.replace(MULTI_SP_RE, ' '));
+            result.push(sent.replace(MULTI_SP_RE, ' '));
             break;
           }
           if (fail('too short')) break;
@@ -414,5 +413,7 @@ function isSubArray(find, arr) {
   }
   return false;
 }
+
+const MULTI_SP_RE = / +/g;
 
 module && (module.exports = Markov);
