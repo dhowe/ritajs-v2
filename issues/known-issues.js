@@ -195,7 +195,7 @@ describe('RiTa.KnownIssues', () => {
   });
 
   it('Should run articlize() correctly inside grammar',() =>{
-    let json = {"start":"toy.articlize() man.articlize() apple.articlize()"};
+    let json = {"$start":"toy.articlize() man.articlize() apple.articlize()"};
     let rg = new Grammar(json);
     let result = rg.expand();
     expect(result).eq('a toy a man an apple');
