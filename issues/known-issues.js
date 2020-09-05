@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
 const RiTa = require('../src/rita');
 const RiScript = require('../src/riscript');
+const Grammar = require('../src/grammar')
 
 describe('RiTa.KnownIssues', () => {
 
@@ -115,7 +116,7 @@ describe('RiTa.KnownIssues', () => {
       "chaises", "chaise",
       "metroes", "metro",
       "briefcases", "briefcase"
-    ]
+
     ];
 
     let res1, res2, res3, dbug = 0;
