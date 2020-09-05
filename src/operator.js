@@ -1,13 +1,7 @@
-const OpType = {
-  EQUALITY: 'EQUALITY',
-  COMPARISON: 'COMPARISON',
-  MATCHING: 'MATCHING',
-  ASSIGNMENT: 'ASSIGNMENT'
-};
 
-/// <summary>
-/// An atomic operation on a metadata key-value pair that, when invoked, returns a boolean
-/// </summary>
+/**
+ *  An atomic operation on a metadata key-value pair that, when invoked, returns a boolean
+ */
 class Operator {
 
   constructor(val, type) {
@@ -67,11 +61,18 @@ class Operator {
       }
       catch (e) {
         throw Error("Expected numeric operands, found ["
-           + s1 + "," + s2 + "]\n" + e);
+          + s1 + "," + s2 + "]\n" + e);
       }
     }
   }
 }
+
+const OpType = {
+  EQUALITY: 'EQUALITY',
+  COMPARISON: 'COMPARISON',
+  MATCHING: 'MATCHING',
+  ASSIGNMENT: 'ASSIGNMENT'
+};
 
 const EQ = new Operator("=", OpType.EQUALITY);
 const NE = new Operator("!=", OpType.EQUALITY);
@@ -85,7 +86,8 @@ const LT = new Operator("<", OpType.COMPARISON);
 const LE = new Operator("<=", OpType.COMPARISON);
 const GE = new Operator(">=", OpType.COMPARISON);
 
-const ALL = {GT, LT, NE, LE, GE, SW, EQ, EW, RE};
+const ALL = { GT, LT, NE, LE, GE, SW, EQ, EW, RE };
+
 Object.keys(ALL).forEach(t => Operator[t] = ALL[t]);
 
 module && (module.exports = Operator);

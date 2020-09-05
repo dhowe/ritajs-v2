@@ -1,10 +1,100 @@
 const Util = require("./util");
 
+class Inflector {
+
+  constructor(parent) {
+    this.RiTa = parent;
+  }
+
+  adjustNumber(word, type, dbug) {
+
+    if (!word || !word.length) return '';
+
+    let check = word.toLowerCase();
+    if (MASS_NOUNS.includes(check)) {
+      dbug && console.log(word + ' hit MASS_NOUNS');
+      return word;
+    }
+
+    let rules = type === SING ? SING_RULES : PLUR_RULES;
+    for (let i = 0; i < rules.length; i++) {
+      let rule = rules[i];
+      //console.log(i+") "+rule.raw, rule.suffix);
+      if (rule.applies(check)) {
+        dbug && console.log(word + ' hit rule #'+i, rule);
+        return rules[i].fire(word);
+      }
+    }
+    return word;
+  }
+
+  singularize(word, opts) {
+    return this.adjustNumber(word, SING, (opts && opts.dbug));
+  }
+
+  pluralize(word, opts) {
+    return this.adjustNumber(word, PLUR, (opts && opts.dbug));
+  }
+
+  isPlural(word, opts) { // add to API?
+
+    if (!word || !word.length) return false;
+
+    let dbug = opts && opts.debug;
+    let fatal = opts && opts.fatal;
+
+    word = word.toLowerCase();
+
+    if (MASS_NOUNS.includes(word)) return true;
+
+    let dict = this.RiTa.lexicon()._dict(fatal);
+    let sing = this.RiTa.singularize(word);
+
+    // Is singularized form is in lexicon as 'nn'?
+    if (dict[sing] && dict[sing].length === 2) {
+      let pos = dict[sing][1].split(' ');
+      if (pos.includes('nn'))return true;
+    }
+
+    // A general modal form? (for example, ends in 'ness')
+    if (word.endsWith("ness") && sing === this.RiTa.pluralize(word)) {
+      return true;
+    }
+
+    // Is word without final 's in lexicon as 'nn'?
+    if (dict && word.endsWith("s")) {
+      let data = dict[word.substring(0, word.length - 1)];
+      if (data && data.length === 2) {
+        let pos = data[1].split(' ');
+        for (let i = 0; i < pos.length; i++) {
+          if (pos[i] === 'nn') return true;
+        }
+      }
+    }
+
+    if (DEFAULT_IS_PLUR_RE.test(word)) return true;
+
+    let rules = SING_RULES;
+    for (let i = 0; i < rules.length; i++) {
+      let rule = rules[i];
+      if (rule.applies(word)) {
+        dbug && console.log(word + ' hit', rule);
+        return true;
+      }
+    }
+
+    dbug && console.log('isPlural: no rules hit for ' + word);
+
+    return false;
+  }
+}
+
 const RE = Util.RE;
+const PLUR = 1, SING = 2;
 const MASS_NOUNS = Util.MASS_NOUNS;
-const DEFAULT_IS_PLUR = /(ae|ia|s)$/;
 const DEFAULT_SING = RE("^.*s$", 1);
 const DEFAULT_PLUR = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s");
+const DEFAULT_IS_PLUR_RE = /(ae|ia|s)$/;
 
 const SING_RULES = [
   RE("^(apices|cortices)$", 4, "ex"),
@@ -86,99 +176,5 @@ const PLUR_RULES = [
   RE("^(memorandum|bacterium|curriculum|minimum|maximum|referendum|spectrum|phenomenon|criterion)$", 2, "a"), // Latin stems
   DEFAULT_PLUR
 ];
-
-
-let RiTa;
-
-const PLUR = 1, SING = 2;
-
-class Inflector {
-
-  constructor(parent) {
-    RiTa = parent;
-  }
-
-  adjustNumber(word, type, dbug) {
-
-    if (!word || !word.length) return '';
-
-    let check = word.toLowerCase();
-    if (MASS_NOUNS.includes(check)) {
-      dbug && console.log(word + ' hit MASS_NOUNS');
-      return word;
-    }
-
-    let rules = type === SING ? SING_RULES : PLUR_RULES;
-    for (let i = 0; i < rules.length; i++) {
-      let rule = rules[i];
-      //console.log(i+") "+rule.raw, rule.suffix);
-      if (rule.applies(check)) {
-        dbug && console.log(word + ' hit rule #'+i, rule);
-        return rules[i].fire(word);
-      }
-    }
-    return word;
-  }
-
-  singularize(word, opts) {
-    return this.adjustNumber(word, SING, (opts && opts.dbug));
-  }
-
-  pluralize(word, opts) {
-    return this.adjustNumber(word, PLUR, (opts && opts.dbug));
-  }
-
-  isPlural(word, opts) { // add to API?
-
-    if (!word || !word.length) return false;
-
-    let dbug = opts && opts.debug;
-    let fatal = opts && opts.fatal;
-
-    word = word.toLowerCase();
-
-    if (MASS_NOUNS.includes(word)) return true;
-
-    let dict = RiTa.lexicon()._dict(fatal);
-    let sing = RiTa.singularize(word);
-
-    // Is singularized form is in lexicon as 'nn'?
-    if (dict[sing] && dict[sing].length === 2) {
-      let pos = dict[sing][1].split(' ');
-      if (pos.includes('nn'))return true;
-    }
-
-    // A general modal form? (for example, ends in 'ness')
-    if (word.endsWith("ness") && sing === RiTa.pluralize(word)) {
-      return true;
-    }
-
-    // Is word without final 's in lexicon as 'nn'?
-    if (dict && word.endsWith("s")) {
-      let data = dict[word.substring(0, word.length - 1)];
-      if (data && data.length === 2) {
-        let pos = data[1].split(' ');
-        for (let i = 0; i < pos.length; i++) {
-          if (pos[i] === 'nn') return true;
-        }
-      }
-    }
-
-    if (DEFAULT_IS_PLUR.test(word)) return true;
-
-    let rules = SING_RULES;
-    for (let i = 0; i < rules.length; i++) {
-      let rule = rules[i];
-      if (rule.applies(word)) {
-        dbug && console.log(word + ' hit', rule);
-        return true;
-      }
-    }
-
-    dbug && console.log('isPlural: no rules hit for ' + word);
-
-    return false;
-  }
-}
 
 module && (module.exports = Inflector);

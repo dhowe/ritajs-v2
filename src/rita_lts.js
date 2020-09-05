@@ -1,6 +1,5 @@
 const Util = require("./util");
 
-let RiTa;
 
 /**
  * Provides the phone list for words using the CMU6 letter-to-sound (LTS) rules,
@@ -11,7 +10,7 @@ let RiTa;
 class LetterToSound {
 
   constructor(parent) {
-    RiTa = parent;
+    this.RiTa = parent;
     this.cache = {}; // TODO: lts cache
     this.letterIndex = {};
     this.fval_buff = [];
@@ -58,6 +57,8 @@ class LetterToSound {
 
   computePhones(word) {
 
+    const RiTa = this.RiTa;
+
     let dig, phoneList = [], windowSize = 4,
       full_buff, tmp, currentState, startIndex, stateIndex, c;
 
@@ -67,7 +68,7 @@ class LetterToSound {
       if (!this.warnedForNoLTS) {
         this.warnedForNoLTS = true;
         console.warn("[WARN] No LTS-rules found: for word features "
-          + "outside the lexicon, use a larger version of RiTa.");
+          + "outside the lexicon, use a larger version of RiTa");
       }
       return null;
     }

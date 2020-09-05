@@ -1,24 +1,16 @@
 const Util = require("./util");
-const regexCompiledForsentences = /(\r?\n)+/g;
-//below is regexes for untokenize()
-const punct = /^[,\.\;\:\?\!\)""“”\u2019‘`']+$/,
-  quotes = /^[\(""“”\u2019‘`']+$/,
-  squotes = /^[\u2019‘`']+$/,
-  apostrophes = /^[\u2019']+$/;
-
-let RiTa;
 
 class Tokenizer {
 
   constructor(parent) {
-    RiTa = parent;
+    this.RiTa = parent;
     this.splitter = /(\S.+?[.!?]["”\u201D]?)(?=\s+|$)/g;
   }
 
   sentences(text, regex) {
     if (!text || !text.length) return [text];
 
-    let clean = text.replace(regexCompiledForsentences, ' ')
+    let clean = text.replace(LB_RE, ' ')
 
     let delim = '___';
     let re = new RegExp(delim, 'g');
@@ -32,7 +24,7 @@ class Tokenizer {
     }
 
     let escapeAbbrevs = (text) => {
-      let abbrevs = RiTa.ABBREVIATIONS;
+      let abbrevs = this.RiTa.ABBREVIATIONS;
       for (let i = 0; i < abbrevs.length; i++) {
         let abv = abbrevs[i];
         let idx = text.indexOf(abv);
@@ -71,7 +63,7 @@ class Tokenizer {
     words = words.replace(/ \u2018/g, " \u2018 ");
     words = words.replace(/'([SMD]) /g, " '$1 ");
 
-    if (RiTa.SPLIT_CONTRACTIONS) {
+    if (this.RiTa.SPLIT_CONTRACTIONS) {
 
       words = words.replace(/([Cc])an['’]t/g, "$1an not");
       words = words.replace(/([Dd])idn['’]t/g, "$1id not");
@@ -101,7 +93,7 @@ class Tokenizer {
     let thisPunct, lastPunct, thisQuote, lastQuote, thisComma, isLast,
       lastComma, lastEndWithS, dbug = 0,
       afterQuote = false,
-      withinQuote = arr.length && quotes.test(arr[0]),
+      withinQuote = arr.length && QUOTE_RE.test(arr[0]),
       result = arr[0] || '',
       midSentence = false;
 
@@ -110,11 +102,11 @@ class Tokenizer {
       if (!arr[i]) continue;
 
       thisComma = arr[i] === ',';
-      thisPunct = punct.test(arr[i]);
-      thisQuote = quotes.test(arr[i]);
+      thisPunct = PUNCT_RE.test(arr[i]);
+      thisQuote = QUOTE_RE.test(arr[i]);
       lastComma = arr[i - 1] === ',';
-      lastPunct = punct.test(arr[i - 1]);
-      lastQuote = quotes.test(arr[i - 1]);
+      lastPunct = PUNCT_RE.test(arr[i - 1]);
+      lastQuote = QUOTE_RE.test(arr[i - 1]);
       lastEndWithS = arr[i - 1].charAt(arr[i - 1].length - 1) === 's';
       isLast = (i == arr.length - 1);
 
@@ -125,7 +117,7 @@ class Tokenizer {
           // no-delim, mark quotation done
           afterQuote = true;
           withinQuote = false;
-        } else if (!(apostrophes.test(arr[i]) && lastEndWithS)) {
+        } else if (!(APOS_RE.test(arr[i]) && lastEndWithS)) {
           withinQuote = true;
           afterQuote = false;
           result += delim;
@@ -152,7 +144,7 @@ class Tokenizer {
 
       result += arr[i]; // add to result
 
-      if (thisPunct && !lastPunct && !withinQuote && squotes.test(arr[i])) {
+      if (thisPunct && !lastPunct && !withinQuote && SQUOTE_RE.test(arr[i])) {
 
         result += delim; // fix to #477
       }
@@ -161,5 +153,11 @@ class Tokenizer {
     return result.trim();
   }
 }
+
+const PUNCT_RE = /^[,\.\;\:\?\!\)""“”\u2019‘`']+$/;
+const QUOTE_RE = /^[\(""“”\u2019‘`']+$/;
+const SQUOTE_RE = /^[\u2019‘`']+$/;
+const APOS_RE = /^[\u2019']+$/;
+const LB_RE = /(\r?\n)+/g;
 
 module && (module.exports = Tokenizer);

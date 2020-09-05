@@ -1,19 +1,16 @@
 const Util = require("./util");
-const regexOneOrMoreEngLetters = /[a-zA-Z]+/;
-
-let RiTa;
 
 class Analyzer {
 
   constructor(parent) {
-    RiTa = parent;
     this.cache = {};
-    this.lexicon = RiTa.lexicon();
+    this.RiTa = parent;
+    this.lexicon = parent.lexicon();
   }
 
   analyze(text, opts) {
-    let words = RiTa.tokenizer.tokenize(text);
-    let tags = RiTa.tagger.tag(text, opts); // don't fail if no lexicon
+    let words = this.RiTa.tokenizer.tokenize(text);
+    let tags = this.RiTa.tagger.tag(text, opts); // don't fail if no lexicon
     let features = {
       phones: '',
       stresses: '',
@@ -38,6 +35,7 @@ class Analyzer {
 
   analyzeWord(word, opts = {}) {
 
+    let RiTa = this.RiTa;
     let silentLts = opts && opts.silent;
 
     // check the cache first
@@ -60,7 +58,7 @@ class Analyzer {
         let ltsPhones = RiTa.lts && RiTa.lts.computePhones(word);
         if (ltsPhones && ltsPhones.length > 0) {
           if (!RiTa.SILENT && !RiTa.SILENCE_LTS && !silentLts
-            && RiTa.hasLexicon() && word.match(regexOneOrMoreEngLetters)) {
+            && RiTa.hasLexicon() && word.match(HAS_LETTER_RE)) {
             console.log("[RiTa] Used LTS-rules for '" + word + "'");
           }
           rawPhones = Util.syllablesFromPhones(ltsPhones);
@@ -100,5 +98,7 @@ class Analyzer {
     return result;
   }
 }
+
+const HAS_LETTER_RE = /[a-zA-Z]+/;
 
 module && (module.exports = Analyzer);

@@ -1,12 +1,9 @@
 const Util = require("./util");
-const regexCompiledFor_isConsonant = /^[a-z\u00C0-\u00ff]+$/;
-
-let RiTa;
 
 class Lexicon {
 
   constructor(parent, dict) {
-    RiTa = parent;
+    this.RiTa = parent;
     this.data = dict;
     this.lexWarned = false;
   }
@@ -21,8 +18,8 @@ class Lexicon {
     this.parseArgs(opts);
 
     // only allow consonant inputs
-    if (RiTa.VOWELS.includes(theWord.charAt(0))) {
-      if (!opts.silent && !RiTa.SILENT) console.warn
+    if (this.RiTa.VOWELS.includes(theWord.charAt(0))) {
+      if (!opts.silent && !this.RiTa.SILENT) console.warn
         ('Expects a word starting with a consonant, got: ' + theWord);
       return [];
     }
@@ -35,12 +32,12 @@ class Lexicon {
 
     // make sure we parsed first phoneme
     if (!phone) {
-      if (!opts.silent && !RiTa.SILENT) console.warn
+      if (!opts.silent && !this.RiTa.SILENT) console.warn
         ('Failed parsing first phone in "' + theWord + '"');
       return result;
     }
 
-    opts._analyzer = RiTa._analyzer();
+    opts._analyzer = this.RiTa._analyzer();
     let _silent = opts.silent;
     opts.silent = true;
     for (let i = 0; i < words.length; i++) {
@@ -69,7 +66,7 @@ class Lexicon {
     const phone = this._lastStressedPhoneToEnd(theWord);
     if (!phone) return [];
 
-    opts._analyzer = RiTa._analyzer();
+    opts._analyzer = this.RiTa._analyzer();
     let _silent = opts.silent;
     opts.silent = true;
     let result = [];
@@ -98,8 +95,8 @@ class Lexicon {
 
     const dict = this._dict(true);
     let words = Object.keys(dict);
-    const ran = Math.floor(RiTa.randInt(words.length));
-    opts._analyzer = RiTa._analyzer();
+    const ran = Math.floor(this.RiTa.randInt(words.length));
+    opts._analyzer = this.RiTa._analyzer();
     let _silent = opts.silent;
     opts.silent = true;
     for (let k = 0; k < words.length; k++) {
@@ -148,7 +145,7 @@ class Lexicon {
 
     this.parseArgs(opts);
 
-    opts._analyzer = RiTa._analyzer();
+    opts._analyzer = this.RiTa._analyzer();
     let _silent = opts.silent;
     opts.silent = true;
 
@@ -260,7 +257,7 @@ class Lexicon {
     let result = word;
     if (opts.pluralize) {
       if (this.isMassNoun(word, rdata[1])) return;
-      result = RiTa.pluralize(word);
+      result = this.RiTa.pluralize(word);
     }
     else if (opts.conjugate) { // inflect
       result = this.reconjugate(word, opts.pos);
@@ -269,7 +266,7 @@ class Lexicon {
     // verify we haven't changed syllable count
     if (result !== word && opts.numSyllables) {
       let syls = analyzer.analyzeWord(result, SILENT).syllables;
-      let num = syls.split(RiTa.SYLLABLE_BOUNDARY).length;
+      let num = syls.split(this.RiTa.SYLLABLE_BOUNDARY).length;
 
       // reject if syllable count has changed
       if (num !== opts.numSyllables) return;
@@ -317,6 +314,7 @@ class Lexicon {
   }
 
   reconjugate(word, pos) {
+    const RiTa = this.RiTa;
     switch (pos) {
       /*  VBD 	Verb, past tense
           VBG 	Verb, gerund or present participle
@@ -374,17 +372,17 @@ class Lexicon {
   }
 
   _isVowel(c) {
-    return c && c.length && RiTa.VOWELS.includes(c);
+    return c && c.length && this.RiTa.VOWELS.includes(c);
   }
 
   _isConsonant(p) {
     return (typeof p === S && p.length === 1 && // precompile
-      RiTa.VOWELS.indexOf(p) < 0 && regexCompiledFor_isConsonant.test(p));
+      this.RiTa.VOWELS.indexOf(p) < 0 && IS_CONS_RE.test(p));
   }
 
   _firstPhone(rawPhones) {
     if (rawPhones && rawPhones.length) {
-      let phones = rawPhones.split(RiTa.PHONEME_BOUNDARY);
+      let phones = rawPhones.split(this.RiTa.PHONEME_BOUNDARY);
       if (phones) return phones[0];
     }
   }
@@ -397,7 +395,7 @@ class Lexicon {
     if (word && word.length) {
       let raw = this.rawPhones(word);
       if (raw) {
-        let idx = raw.lastIndexOf(RiTa.STRESSED);
+        let idx = raw.lastIndexOf(this.RiTa.STRESSED);
         if (idx >= 0) {
           let c = raw.charAt(--idx);
           while (c != '-' && c != ' ') {
@@ -419,7 +417,7 @@ class Lexicon {
         lastSyllable = lastSyllable.replace('[^a-z-1 ]', '');
         for (let i = 0; i < lastSyllable.length; i++) {
           let c = lastSyllable.charAt(i);
-          if (RiTa.VOWELS.includes(c)) {
+          if (this.RiTa.VOWELS.includes(c)) {
             idx = i;
             break;
           }
@@ -432,7 +430,7 @@ class Lexicon {
   _firstStressedSyl(word) {
     let raw = this.rawPhones(word);
     if (raw) {
-      let idx = raw.indexOf(RiTa.STRESSED);
+      let idx = raw.indexOf(this.RiTa.STRESSED);
       if (idx >= 0) {
         let c = raw.charAt(--idx);
         while (c != ' ') {
@@ -477,14 +475,14 @@ class Lexicon {
     if (rdata && rdata.length) return rdata[0];
 
     if (!noLts) {
-      let phones = RiTa.lts && RiTa.lts.computePhones(word);
+      let phones = this.RiTa.lts && this.RiTa.lts.computePhones(word);
       return Util.syllablesFromPhones(phones);
     }
   }
 
   _dict(fatal) {
     if (!this.data) {
-      if (fatal) throw Error('This function requires a lexicon, make sure you are using the full version of rita.js,\navailable at ' + RiTa.DOWNLOAD_URL + '\n');
+      if (fatal) throw Error('This function requires a lexicon, make sure you are using the full version of rita.js,\navailable at ' + this.RiTa.DOWNLOAD_URL + '\n');
       if (!this.lexWarned) {
         console.warn('[WARN] no lexicon appears to be loaded; feature-analysis and pos-tagging may be incorrect.');
         this.lexWarned = true;
@@ -541,6 +539,6 @@ class Lexicon {
 }
 
 const SILENT = { silent: true };
-
+const IS_CONS_RE = /^[a-z\u00C0-\u00ff]+$/;
 
 module && (module.exports = Lexicon);
