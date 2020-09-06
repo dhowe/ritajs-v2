@@ -63,7 +63,7 @@ class Grammar {
 
   toString(lb = '\n') { // TODO
     let s = '';
-    Object.keys(this.rules).forEach(r => s += r + ':' + rules[r] + lb);
+    Object.keys(this.rules).forEach(r => s += '"$'+ r + '"' + ':' + '"' + this.rules[r] + '"' + lb);
     return s;
   }
 
