@@ -1,0 +1,25 @@
+{
+  "start": "$line5 % $line7 % $line5",
+  "line5": "$line5in2parts | $line5in3parts | $line5in4parts",
+  "line7": "$line7in2parts | $line7in3parts | $line7in4parts",
+  "line7in2parts": "$fourSyllableNounOrNounPhrase $threeSyllableVi | $fourSyllableNounOrNounPhrase $threeSyllableVerbPharse | $threeSyllableAdj $fourSyllableNounOrNounPhrase",
+  "line7in3parts": "$threeSyllableNounOrNounPhrase $oneSyllableVi to $twoSyllableVi | $threeSyllableNounOrNounPhrase $twoSyllableVi to $oneSyllableVi | $twoSyllableNounOrNounPhrase $threeSyllableAdv $twoSyllableVi | $threeSyllableNounOrNounPhrase $threeSyllableAdv $oneSyllableVi | $oneSyllableNoun $threeSyllableAdv ($threeSyllableVerbPharse | $threeSyllableVi)",
+  "line7in4parts": "$oneSyllableNoun $twoSyllableAdv $twoSyllableVt $twoSyllableNounOrNounPhrase",
+  "line5in2parts": "the $fourSyllableNounOrNounPhrase | $fourSyllableNounOrNounPhrase $oneSyllableVi | $threeSyllableNounOrNounPhrase $twoSyllableVi",
+  "line5in3parts": "$twoSyllableNounOrNounPhrase $oneSyllableVi to $oneSyllableVi | $oneSyllableNoun $twoSyllableVi to $oneSyllableVi | $oneSyllableNoun $oneSyllableVi to $twoSyllableVi | $oneSyllableNoun $twoSyllableVt $twoSyllableNounOrNounPhrase | $oneSyllableNoun $threeSyllableAdv $oneSyllableVi",
+  "line5in4parts": "$oneSyllableNoun $oneSyllableVi to $twoSyllableVi",
+
+  "fourSyllableNounOrNounPhrase": "(autumn | summer) moonlight | (mountain | silent) village | (evening | morning) sun | (winter|summer) flower",
+  "threeSyllableNounOrNounPhrase": "a black rose | white daisy | sakura | night city | rosemary | the yellow cat | oranges | cold moonlight | warm campfire | dark forest | huge mountain",
+  "threeSyllableVi": "fantasize | remerber",
+  "threeSyllableAdj": "isolated | suffocated | exciting | beautiful | adorable",
+  "threeSyllableVerbPharse": "singing song | stand sliently | rise up hand | walk alone | run along",
+  "threeSyllableAdv": "sliently | secretly | painfully | happliy | voilently | curely | together",
+  "twoSyllableNounOrNounPhrase": "people | (the | a) man | women | (the | a) boy | (the | a) girls| children | rabbit | (the | a) dog| raccon | river | mountain | buddha | city | ocean",
+  "twoSyllableVi": "whisper | blossom | recite | swing | speak | twist | appear | forgive | forget",
+  "twoSyllableVt": "believe | betray | adore | follow | question",
+  "twoSyllableAdv": "sadly | calmly | coldly",
+  "oneSyllableNoun": "kids | cloud | tree | leaf | rain | brids | snow | grass | smoke",
+  "oneSyllableAdj": "sad | tall | hot | drunk | plain | grey",
+  "oneSyllableVi": "sing | cry | bow | rise | bloom | dance | drink | fall"
+}
