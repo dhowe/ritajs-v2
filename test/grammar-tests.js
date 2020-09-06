@@ -52,7 +52,7 @@ describe('RiTa.Grammar', () => {
         rs = new Grammar({ start: rule });
         for (let i = 0; i < opts.length; i++) {
             let res = rs.expand();
-           // console.log(i, ':', res);
+            // console.log(i, ':', res);
             expect(res).eq(opts[i].toUpperCase());
         }
     });
@@ -77,6 +77,23 @@ describe('RiTa.Grammar', () => {
             result.push(res);
         }
         expect(result).to.have.members(opts.map(o => o.toUpperCase()));
+    });
+
+    it('Should allow rules starting with numbers', () => {
+        let rg, rs;
+
+        rg = new Grammar({
+            "start": "$1line talks too much.",
+            "1line": "Dave | Jill | Pete"
+        });
+        rs = rg.expand({ trace: 0 });
+        expect(rs).to.be.oneOf(["Dave talks too much.", "Jill talks too much.", "Pete talks too much."]);
+
+        rg = new Grammar({
+            "1line": "Dave | Jill | Pete"
+        });
+        rs = rg.expand("1line", { trace: 0 });
+        expect(rs).to.be.oneOf(["Dave", "Jill", "Pete"]);
     });
 
     it('should correctly resolve inlines', () => {
