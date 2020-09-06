@@ -1,8 +1,8 @@
 ## Installation
 
 * For node: `npm install rita@beta`
-* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.32/rita-web.js) (1.3mb)
-* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.32/rita-web-nolex.js) (.5mb)
+* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.33/rita-web.js) (1.3mb)
+* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.33/rita-web-nolex.js) (.5mb)
 * For [developers](#developing)
 
 ### Example (node)
@@ -45,7 +45,7 @@ console.log(grammar.expand());
     <a href="https://rednoise.org/rita2/RiTa/isVerb/index.html">RiTa.isVerb()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/kwic/index.html">RiTa.kwic()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/pastParticiple/index.html">RiTa.pastParticiple()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/phonemes/index.html">RiTa.phones()</a><br/>
+    <a href="https://rednoise.org/rita2/RiTa/phones/index.html">RiTa.phones()</a><br/>
    </td>
    <td>
     <a href="https://rednoise.org/rita2/RiTa/pos/index.html">RiTa.pos()</a><br/>
