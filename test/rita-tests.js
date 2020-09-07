@@ -369,11 +369,21 @@ describe('RiTa.Core', () => {
     output = RiTa.untokenize(input);
     expect(output).eq(expected);
 
-    // TODO: more tests
+    // refere to english punctuation marks list on Wiki
 
     let outputs = ["A simple sentence.",
       "that's why this is our place).",
-      "this line is for 'single quotation mark'",
+      "this is for semicolon; that is for else",
+      //below doesnt pass
+      "this is for 2^3 2*3",
+      "this is for $30 and #30",
+      "this is for 30°C or 30\u2103",
+      "this is for a/b a⁄b",
+      "this is for «guillemets»",
+      "this... is… for ellipsis",
+      "this line is for 'single' ‘quotation’ mark",
+      "Katherine’s cat and John's cat",
+      "this line is for (all) [kind] {of} ⟨brackets⟩",
       "this line is for the-dash",
       "30% of the student love day-dreaming.",
       '"that test line"',
@@ -383,7 +393,17 @@ describe('RiTa.Core', () => {
     let inputs = [
       ["A", "simple", "sentence", "."],
       ["that's", "why", "this", "is", "our", "place", ")", "."],
-      ["this", "line", "is", "for", "'", "single", "quotation", "mark", "'"],
+      ["this", "is", "for", "semicolon", ";", "that", "is", "for", "else"],
+      //below doesnt pass
+      ["this", "is", "for", "2", "^", "3", "2", "*", "3"],
+      ["this", "is", "for", "$", "30", "and", "#", "30"],
+      ["this", "is", "for", "30", "°", "C", "or", "30", "\u2103"],
+      ["this", "is", "for", "a", "/", "b", "a", "⁄", "b"],
+      ["this", "is", "for", "«", "guillemets", "»"],
+      ["this", "...", "is", "…", "for", "ellipsis"],
+      ["this", "line", "is", "for", "'", "single", "'", "‘", "quotation", "’", "mark"],
+      ["Katherine", "’", "s", "cat", "and", "John", "'", "s", "cat"],
+      ["this", "line", "is", "for", "(", "all", ")", "[", "kind", "]", "{", "of", "}", "⟨", "brackets", "⟩"],
       ["this", "line", "is", "for", "the", "-", "dash"],
       ["30", "%", "of", "the", "student", "love", "day", "-", "dreaming", "."],
       ['"', "that", "test", "line", '"'],
