@@ -373,11 +373,21 @@ describe('RiTa.Core', () => {
 
     let outputs = ["A simple sentence.",
       "that's why this is our place).",
+      "this line is for 'single quotation mark'",
+      "this line is for the-dash",
+      "30% of the student love day-dreaming.",
+      '"that test line"',
+      "my email address is name@domin.com"
     ];
 
     let inputs = [
       ["A", "simple", "sentence", "."],
       ["that's", "why", "this", "is", "our", "place", ")", "."],
+      ["this", "line", "is", "for", "'", "single", "quotation", "mark", "'"],
+      ["this", "line", "is", "for", "the", "-", "dash"],
+      ["30", "%", "of", "the", "student", "love", "day", "-", "dreaming", "."],
+      ['"', "that", "test", "line", '"'],
+      ["my", "email", "address", "is", "name", "@", "domin", ".", "com"]
     ];
 
     expect(inputs.length).eq(outputs.length);
@@ -425,7 +435,7 @@ describe('RiTa.Core', () => {
     expect(data["THE"]).eq(undefined);
 
     // opts should be back to default
-    data = RiTa.concordance("The dog ate the cat"); 
+    data = RiTa.concordance("The dog ate the cat");
     expect(Object.keys(data).length).eq(5);
     expect(data["the"]).eq(1);
     expect(data["The"]).eq(1);
