@@ -41,7 +41,16 @@ class Tokenizer {
   }
 
   tokenize(words, regex) {
-
+/* TODO:
+    const TOKENIZE_REGEXS = [
+      new RegExp('([Ee])[.]([Gg])[.]','g'), '_$1$2_', // E.G.
+      new RegExp('([Ii])[.]([Ee])[.]', 'g'), '_$1$2_', // I.E.
+      // ...
+    ];
+    for (let i = 0; i < TOKENIZE_REGEXS.length; i+=2) {
+      words = words.replace(TOKENIZE_REGEXS[i], TOKENIZE_REGEXS[i+1]);
+    }
+*/
     if (typeof words !== 'string') return [];
 
     if (regex) return words.split(regex);
