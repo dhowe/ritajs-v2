@@ -239,6 +239,28 @@ describe('RiTa.Core', () => {
     output = RiTa.tokenize(input);
     expect(output).eql(expected);
 
+    input = "it cost $30";
+    expected = ["it", "cost", "$", "30"];
+    output = RiTa.tokenize(input);
+    expect(output).eql(expected);
+
+    input = "calculate 2^3";
+    expected = ["calculate", "2", "^", "3"];
+    output = RiTa.tokenize(input);
+    expect(output).eql(expected);
+
+    input = "30% of the students";
+    expected = ["30", "%", "of", "the", "students"];
+    output = RiTa.tokenize(input);
+    expect(output).eql(expected);
+
+    input = "it's 30°C outside";
+    expected = ["it", "is", "30", "°", "C", "outside"];
+    RiTa.SPLIT_CONTRACTIONS = true;
+    output = RiTa.tokenize(input);
+    RiTa.SPLIT_CONTRACTIONS = false;
+    expect(output).eql(expected);
+
     // TODO: check Penn-Treebank tokenizer rules & add some more edge cases
     let inputs = ["A simple sentence.", "that's why this is our place).",];
     let outputs = [

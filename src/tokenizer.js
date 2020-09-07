@@ -41,56 +41,52 @@ class Tokenizer {
   }
 
   tokenize(words, regex) {
-/* TODO:
-    const TOKENIZE_REGEXS = [
-      new RegExp('([Ee])[.]([Gg])[.]','g'), '_$1$2_', // E.G.
-      new RegExp('([Ii])[.]([Ee])[.]', 'g'), '_$1$2_', // I.E.
-      // ...
-    ];
-    for (let i = 0; i < TOKENIZE_REGEXS.length; i+=2) {
-      words = words.replace(TOKENIZE_REGEXS[i], TOKENIZE_REGEXS[i+1]);
-    }
-*/
     if (typeof words !== 'string') return [];
 
     if (regex) return words.split(regex);
 
     words = words.trim(); // ???
-    words = words.replace(/([Ee])[.]([Gg])[.]/g, "_$1$2_"); // E.G.
-    words = words.replace(/([Ii])[.]([Ee])[.]/g, "_$1$2_"); // I.E.
-
-    words = words.replace(/([\\?!\"\u201C\\.,;:@#$%&])/g, " $1 ");
-    words = words.replace(/\\.\\.\\./g, " ... ");
-    words = words.replace(/\\s+/g, ' ');
-    words = words.replace(/,([^0-9])/g, " , $1");
-    words = words.replace(/([^.])([.])([\])}>\"'’]*)\\s*$/g, "$1 $2$3 ");
-    words = words.replace(/([\[\](){}<>])/g, " $1 ");
-    words = words.replace(/--/g, " -- ");
-    words = words.replace(/$/g, ' ');
-    words = words.replace(/^/g, ' ');
-    words = words.replace(/([^'])' | '/g, "$1 ' ");
-    words = words.replace(/ \u2018/g, " \u2018 ");
-    words = words.replace(/'([SMD]) /g, " '$1 ");
+    for (let i = 0; i < TOKENIZE_REGEXS_A.length; i += 2){
+      words = words.replace(TOKENIZE_REGEXS_A[i], TOKENIZE_REGEXS_A[i+1]);
+    }
+    // words = words.replace(/([Ee])[.]([Gg])[.]/g, "_$1$2_"); // E.G.
+    // words = words.replace(/([Ii])[.]([Ee])[.]/g, "_$1$2_"); // I.E.
+    //
+    // words = words.replace(/([\\?!\"\u201C\\.,;:@#$%&])/g, " $1 ");
+    // words = words.replace(/\\.\\.\\./g, " ... ");
+    // words = words.replace(/\\s+/g, ' ');
+    // words = words.replace(/,([^0-9])/g, " , $1");
+    // words = words.replace(/([^.])([.])([\])}>\"'’]*)\\s*$/g, "$1 $2$3 ");
+    // words = words.replace(/([\[\](){}<>])/g, " $1 ");
+    // words = words.replace(/--/g, " -- ");
+    // words = words.replace(/$/g, ' ');
+    // words = words.replace(/^/g, ' ');
+    // words = words.replace(/([^'])' | '/g, "$1 ' ");
+    // words = words.replace(/ \u2018/g, " \u2018 ");
+    // words = words.replace(/'([SMD]) /g, " '$1 ");
 
     if (this.RiTa.SPLIT_CONTRACTIONS) {
+      for (let i = 0; i < TOKENIZE_REGEXS_B.length; i += 2){
+        words = words.replace(TOKENIZE_REGEXS_B[i], TOKENIZE_REGEXS_B[i+1]);
+      }
 
-      words = words.replace(/([Cc])an['’]t/g, "$1an not");
-      words = words.replace(/([Dd])idn['’]t/g, "$1id not");
-      words = words.replace(/([CcWw])ouldn['’]t/g, "$1ould not");
-      words = words.replace(/([Ss])houldn['’]t/g, "$1hould not");
-      words = words.replace(/ ([Ii])t['’]s/g, " $1t is");
-      words = words.replace(/n['’]t /g, " not ");
-      words = words.replace(/['’]ve /g, " have ");
-      words = words.replace(/['’]re /g, " are ");
+      // words = words.replace(/([Cc])an['’]t/g, "$1an not");
+      // words = words.replace(/([Dd])idn['’]t/g, "$1id not");
+      // words = words.replace(/([CcWw])ouldn['’]t/g, "$1ould not");
+      // words = words.replace(/([Ss])houldn['’]t/g, "$1hould not");
+      // words = words.replace(/ ([Ii])t['’]s/g, " $1t is");
+      // words = words.replace(/n['’]t /g, " not ");
+      // words = words.replace(/['’]ve /g, " have ");
+      // words = words.replace(/['’]re /g, " are ");
     }
 
     // "Nicole I. Kidman" gets tokenized as "Nicole I . Kidman"
-    words = words.replace(/ ([A-Z]) \\./g, " $1. ");
-    words = words.replace(/\\s+/g, ' ');
-    words = words.replace(/^\\s+/g, '');
-
-    words = words.replace(/_([Ee])([Gg])_/g, "$1.$2."); // E.G.
-    words = words.replace(/_([Ii])([Ee])_/g, "$1.$2."); // I.E.
+    // words = words.replace(/ ([A-Z]) \\./g, " $1. ");
+    // words = words.replace(/\\s+/g, ' ');
+    // words = words.replace(/^\\s+/g, '');
+    //
+    // words = words.replace(/_([Ee])([Gg])_/g, "$1.$2."); // E.G.
+    // words = words.replace(/_([Ii])([Ee])_/g, "$1.$2."); // I.E.
 
     return words.trim().split(/\s+/);
   }
@@ -168,5 +164,38 @@ const QUOTE_RE = /^[\(""“”\u2019‘`']+$/;
 const SQUOTE_RE = /^[\u2019‘`']+$/;
 const APOS_RE = /^[\u2019']+$/;
 const LB_RE = /(\r?\n)+/g;
+const TOKENIZE_REGEXS_A = [
+  /([Ee])[.]([Gg])[.]/g, "_$1$2_",//E.g
+  /([Ii])[.]([Ee])[.]/g, "_$1$2_",//i.e
+  /([\\?!\"\u201C\\.,;:@#$%&])/g, " $1 ",
+  /\\.\\.\\./g, " ... ",
+  /\\s+/g, ' ',
+  /,([^0-9])/g, " , $1",
+  /([^.])([.])([\])}>\"'’]*)\\s*$/g, "$1 $2$3 ",
+  /([\[\](){}<>])/g, " $1 ",
+  /--/g, " -- ",
+  /$/g, ' ',
+  /^/g, ' ',
+  /([^'])' | '/g, "$1 ' ",
+  / \u2018/g, " \u2018 ",
+  /'([SMD]) /g, " '$1 ",
+  / ([A-Z]) \\./g, " $1. ",
+  /\\s+/g, ' ',
+  /^\\s+/g, '',
+  /_([Ee])([Gg])_/g, "$1.$2.",//Eg
+  /_([Ii])([Ee])_/g, "$1.$2.",//ie
+  /\^/g, " ^ ",
+  /°/g," ° "
+];
+const TOKENIZE_REGEXS_B = [
+  /([Cc])an['’]t/g, "$1an not",
+  /([Dd])idn['’]t/g, "$1id not",
+  /([CcWw])ouldn['’]t/g, "$1ould not",
+  /([Ss])houldn['’]t/g, "$1hould not",
+  / ([Ii])t['’]s/g, " $1t is",
+  /n['’]t /g, " not ",
+  /['’]ve /g, " have ",
+  /['’]re /g, " are ",
+];
 
 module && (module.exports = Tokenizer);
