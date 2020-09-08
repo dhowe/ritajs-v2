@@ -143,7 +143,7 @@ describe('RiTa.Grammar', () => {
             ok(typeof rg.rules['noun_phrase'] !== 'undefined');
             ok(rg.expand().length > 0);
         });
- 
+
         grammars.forEach(g => { // as JS objects
             rg.setRules(g);
             ok(typeof rg.rules !== 'undefined');
@@ -395,6 +395,18 @@ describe('RiTa.Grammar', () => {
             res = rg.expand();
             ok(res === "hello" || res === "name");
         }
+    });
+
+    it("should correctly call toJSON and fromJSON",() => {
+      let json = {"$start":"$pet $iphone","$pet":"(dog | cat)","$iphone":"(iphoneSE | iphone12)"};
+      let rg = new Grammar(json);
+      let generatedJSON = rg.toJSON();
+      let rg2 = Grammar.fromJSON(generatedJSON);
+      ok(rg2 !== 'undefined');
+      expect(rg.toString()).eq(rg2.toString());
+      expect(rg.context === rg2.context);
+      expect(rg.rules === rg2.rules);
+      expect(rg === rg2);
     });
 
     function eql(a, b, c) { expect(a).eql(b, c); }
