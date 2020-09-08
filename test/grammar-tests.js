@@ -194,7 +194,14 @@ describe('RiTa.Grammar', () => {
     });
 
     it("should correctly call toString", () => {
-        // TODO
+        let rg = new Grammar({"$start":"pet"});
+        eq(rg.toString(),'{\n  "start": "pet"\n}\n');
+        rg = new Grammar({"$start":"$pet","$pet":"dog"});
+        eq(rg.toString(),'{\n  "start": "$pet",\n  "pet": "dog"\n}\n');
+        rg = new Grammar({"$start":"$pet | $iphone","$pet":"dog | cat","$iphone":"iphoneSE | iphone12"});
+        eq(rg.toString(),'{\n  "start": "($pet | $iphone)",\n  "pet": "(dog | cat)",\n  "iphone": "(iphoneSE | iphone12)"\n}\n');
+        rg = new Grammar({"start":"$pet.articlize()","$pet":"dog | cat"});
+        eq(rg.toString(),'{\n  "start": "$pet.articlize()",\n  "pet": "(dog | cat)"\n}\n');
     });
 
     it("should correctly call expand", () => {

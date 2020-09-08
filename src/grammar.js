@@ -62,9 +62,7 @@ class Grammar {
   }
 
   toString(lb = '\n') { // TODO
-    let s = '';
-    Object.keys(this.rules).forEach(r => s += r + ':' + rules[r] + lb);
-    return s;
+    return (JSON.stringify(this.rules, null, 2)+ lb)
   }
 
   removeRule(name) {
