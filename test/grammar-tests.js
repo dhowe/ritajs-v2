@@ -126,22 +126,30 @@ describe('RiTa.Grammar', () => {
             "Pete": "Dave | Jill | Pete",
         });
         rs = rg.expand({ trace: 0 });
-        //console.log(rs);
         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
     });
 
-    it("should correctly call setRules", () => {
+    it("should correctly call setRules with", () => {
 
         let rg = new Grammar();
         ok(typeof rg.rules !== 'undefined');
         ok(typeof rg.rules['start'] === 'undefined');
         ok(typeof rg.rules['noun_phrase'] === 'undefined');
 
-        grammars.forEach(g => {
+        grammars.forEach(g => { // as JSON strings
             rg.setRules(JSON.stringify(g));
             ok(typeof rg.rules !== 'undefined');
             ok(typeof rg.rules['start'] !== 'undefined');
             ok(typeof rg.rules['noun_phrase'] !== 'undefined');
+            ok(rg.expand().length > 0);
+        });
+ 
+        grammars.forEach(g => { // as JS objects
+            rg.setRules(g);
+            ok(typeof rg.rules !== 'undefined');
+            ok(typeof rg.rules['start'] !== 'undefined');
+            ok(typeof rg.rules['noun_phrase'] !== 'undefined');
+            ok(rg.expand().length > 0);
         });
     });
 
@@ -195,13 +203,25 @@ describe('RiTa.Grammar', () => {
 
     it("should correctly call toString", () => {
         let rg = new Grammar({"$start":"pet"});
-        eq(rg.toString(),'{\n  "start": "pet"\n}\n');
+        eq(rg.toString(),'{\n  "start": "pet"\n}');
         rg = new Grammar({"$start":"$pet","$pet":"dog"});
-        eq(rg.toString(),'{\n  "start": "$pet",\n  "pet": "dog"\n}\n');
+        eq(rg.toString(),'{\n  "start": "$pet",\n  "pet": "dog"\n}');
         rg = new Grammar({"$start":"$pet | $iphone","$pet":"dog | cat","$iphone":"iphoneSE | iphone12"});
-        eq(rg.toString(),'{\n  "start": "($pet | $iphone)",\n  "pet": "(dog | cat)",\n  "iphone": "(iphoneSE | iphone12)"\n}\n');
+        eq(rg.toString(),'{\n  "start": "($pet | $iphone)",\n  "pet": "(dog | cat)",\n  "iphone": "(iphoneSE | iphone12)"\n}');
         rg = new Grammar({"start":"$pet.articlize()","$pet":"dog | cat"});
-        eq(rg.toString(),'{\n  "start": "$pet.articlize()",\n  "pet": "(dog | cat)"\n}\n');
+        eq(rg.toString(),'{\n  "start": "$pet.articlize()",\n  "pet": "(dog | cat)"\n}');
+    });
+
+    it("should correctly call toString with arg", () => {
+        let lb = '<br/>';
+        let rg = new Grammar({ "$start": "pet" });
+        eq(rg.toString(lb), '{<br/>  "start": "pet"<br/>}');
+        rg = new Grammar({ "$start": "$pet", "$pet": "dog" });
+        eq(rg.toString(lb), '{<br/>  "start": "$pet",<br/>  "pet": "dog"<br/>}');
+        rg = new Grammar({ "$start": "$pet | $iphone", "$pet": "dog | cat", "$iphone": "iphoneSE | iphone12" });
+        eq(rg.toString(lb), '{<br/>  "start": "($pet | $iphone)",<br/>  "pet": "(dog | cat)",<br/>  "iphone": "(iphoneSE | iphone12)"<br/>}');
+        rg = new Grammar({ "start": "$pet.articlize()", "$pet": "dog | cat" });
+        eq(rg.toString(lb), '{<br/>  "start": "$pet.articlize()",<br/>  "pet": "(dog | cat)"<br/>}');
     });
 
     it("should correctly call expand", () => {

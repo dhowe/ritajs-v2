@@ -14,12 +14,13 @@ class Grammar {
   }
 
   static fromJSON(json, context) {
-    return new Grammar().setRules(json);
+    return new Grammar(json, context);//.setRules(json);
   }
 
   toJSON() {
-    return stringify(Object.keys(this).reduce(
-      (acc, k) => Object.assign(acc, { [k]: this[k] }), {}));
+    return this.toString();
+    /*return JSON.stringify(Object.keys(this).reduce(
+      (acc, k) => Object.assign(acc, { [k]: this[k] }), {}));*/
   }
 
   setRules(rules) { // or rules or ... ?
@@ -61,8 +62,9 @@ class Grammar {
     return this.compiler.evaluate(ctx[rule], ctx, opts);
   }
 
-  toString(lb = '\n') { // TODO
-    return (JSON.stringify(this.rules, null, 2)+ lb)
+  toString(lb) {
+    let str = JSON.stringify(this.rules, null, 2);
+    return lb ? str.replace(/\n/g, lb) : str;
   }
 
   removeRule(name) {
@@ -73,7 +75,7 @@ class Grammar {
     return this;
   }
 
-  // TODO: should be instance methods?
+  // TODO: should be static methods?
   addTransform() { RiScript.addTransform(...arguments); return this }
   removeTransform() { RiScript.removeTransform(...arguments); return this }
   getTransforms() { return RiScript.getTransforms(); }
