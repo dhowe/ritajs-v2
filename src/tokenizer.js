@@ -95,8 +95,9 @@ class Tokenizer {
 
     delim = delim || ' ';
 
-    let thisPunct, lastPunct, thisQuote, lastQuote, thisComma, isLast,
-      lastComma, lastEndWithS, dbug = 0,
+    let thisNBPunct, thisNAPunct, lastNBPunct, lastNAPunct, thisQuote, lastQuote, thisComma, isLast,
+      lastComma, lastEndWithS, nextIsS, thisLBracket, thisRBracket, lastLBracket, lastRBracket, lastIsWWW, thisDomin, dbug = 0,
+      nextNoSpace = false,
       afterQuote = false,
       withinQuote = arr.length && QUOTE_RE.test(arr[0]),
       result = arr[0] || '',
@@ -107,28 +108,50 @@ class Tokenizer {
       if (!arr[i]) continue;
 
       thisComma = arr[i] === ',';
-      thisPunct = PUNCT_RE.test(arr[i]);
+      thisNBPunct = NO_SPACE_BEFORE_PUNCT_RE.test(arr[i]);//NB -> no space before the punctuation
+      thisNAPunct = NO_SPACE_AFTER_PUNCT_RE.test(arr[i]);//NA -> no space after the punctuation
       thisQuote = QUOTE_RE.test(arr[i]);
+      thisLBracket = LEFT_BRACKETS_RE.test(arr[i]);//LBracket -> left bracket
+      thisRBracket = RIGHT_BRACKETS_RE.test(arr[i]);//RBracket -> right bracket
       lastComma = arr[i - 1] === ',';
-      lastPunct = PUNCT_RE.test(arr[i - 1]);
+      lastNBPunct = NO_SPACE_BEFORE_PUNCT_RE.test(arr[i - 1]);//NB -> no space before
+      lastNAPunct = NO_SPACE_AFTER_PUNCT_RE.test(arr[i - 1]);//NA -> no space after
       lastQuote = QUOTE_RE.test(arr[i - 1]);
-      lastEndWithS = arr[i - 1].charAt(arr[i - 1].length - 1) === 's';
+      lastLBracket = LEFT_BRACKETS_RE.test(arr[i - 1]);
+      lastRBracket = RIGHT_BRACKETS_RE.test(arr[i - 1]);
+      lastEndWithS = (arr[i - 1].charAt(arr[i - 1].length - 1) === 's' && arr[i - 1]!= "is" && arr[i - 1] != "Is" && arr[i - 1] != "IS");
+      lastIsWWW = WWW_RE.test(arr[i - 1]);
+      thisDomin = DOMIN_RE.test(arr[i]);
+      nextIsS = i == arr.length - 1 ? false : (arr[i + 1] === "s" || arr[i + 1] === "S");
       isLast = (i == arr.length - 1);
 
-      if (thisQuote) {
+      if ((arr[i - 1] === "." && thisDomin) || nextNoSpace){
+        nextNoSpace = false;
+        result += arr[i];
+        continue;
+      } else if (arr[i] === "." && lastIsWWW){
+        console.log('yes');
+        nextNoSpace = true;
+      } else if (thisLBracket) {
+        result += delim;
+      } else if (lastRBracket){
+        if (!thisNBPunct && !thisLBracket){
+          result += delim;
+        }
+      } else if (thisQuote) {
 
         if (withinQuote) {
 
           // no-delim, mark quotation done
           afterQuote = true;
           withinQuote = false;
-        } else if (!(APOS_RE.test(arr[i]) && lastEndWithS)) {
+        } else if (!((APOS_RE.test(arr[i]) && lastEndWithS) || (APOS_RE.test(arr[i]) && nextIsS))) {
           withinQuote = true;
           afterQuote = false;
           result += delim;
         }
 
-      } else if (afterQuote && !thisPunct) {
+      } else if (afterQuote && !thisNBPunct) {
 
         result += delim;
         afterQuote = false;
@@ -142,16 +165,16 @@ class Tokenizer {
         result += delim;
         midSentence = false;
 
-      } else if ((!thisPunct && !lastQuote) || (!isLast && thisPunct && lastPunct)) {
+      } else if ((!thisNBPunct && !lastQuote && !lastNAPunct && !lastLBracket && !thisRBracket) || (!isLast && thisNBPunct && lastNBPunct && !lastNAPunct && !lastQuote && !lastLBracket && thisRBracket)) {
 
         result += delim;
       }
 
       result += arr[i]; // add to result
 
-      if (thisPunct && !lastPunct && !withinQuote && SQUOTE_RE.test(arr[i])) {
+      if (thisNBPunct && !lastNBPunct && !withinQuote && SQUOTE_RE.test(arr[i]) && lastEndWithS) {
 
-        result += delim; // fix to #477
+        result += delim; // ??
       }
     }
 
@@ -159,11 +182,16 @@ class Tokenizer {
   }
 }
 
-const PUNCT_RE = /^[,\.\;\:\?\!\)""“”\u2019‘`']+$/;
-const QUOTE_RE = /^[\(""“”\u2019‘`']+$/;
+const NO_SPACE_BEFORE_PUNCT_RE = /^[,\.\;\:\?\!\)""“”\u2019‘`'%…\u2103\^\*°\/⁄\-@]+$/;
+const QUOTE_RE = /^[""“”\u2019‘`''«»‘’]+$/;
+const LEFT_BRACKETS_RE = /^[\[\(\{⟨]+$/;
+const RIGHT_BRACKETS_RE = /^[\)\]\}⟩]+$/;
+const NO_SPACE_AFTER_PUNCT_RE = /^[\^\*\$\/⁄#\-@°]+$/;
 const SQUOTE_RE = /^[\u2019‘`']+$/;
-const APOS_RE = /^[\u2019']+$/;
+const APOS_RE = /^[\u2019'’]+$/;
 const LB_RE = /(\r?\n)+/g;
+const WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
+const DOMIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|zh|fr)$/;
 const TOKENIZE_REGEXS_A = [
   /([Ee])[.]([Gg])[.]/g, "_$1$2_",//E.g
   /([Ii])[.]([Ee])[.]/g, "_$1$2_",//i.e
