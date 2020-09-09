@@ -404,9 +404,9 @@ describe('RiTa.Grammar', () => {
       let rg2 = Grammar.fromJSON(generatedJSON);
       ok(rg2 !== 'undefined');
       expect(rg.toString()).eq(rg2.toString());
-      expect(rg.context === rg2.context);
-      expect(rg.rules === rg2.rules);
-      expect(rg === rg2);
+      expect(rg.context).eql(rg2.context);
+      expect(rg.rules).eql(rg2.rules);
+      expect(rg).eql(rg2);
     });
 
     function eql(a, b, c) { expect(a).eql(b, c); }
