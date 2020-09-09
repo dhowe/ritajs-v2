@@ -266,7 +266,7 @@ describe('RiTa.Core', () => {
       ["\"","What","?","!","\"",",","John","yelled","."],
       //test below this line don't pass
       ["John","'s","katherine","'s","Jack","'s","Linda","'s","students","'","people","'s"],
-      ["more","abbreviations",":","","a.m.","p.m.","Cap.","c.","et al.","etc.","P.S.","Ph.D","R.I.P","vs.","v.","Mr.","Ms.","Dr.","Pf.","Mx.","Ind.","Inc.","Corp.","Co.,Ltd","Co., Ltd","Co. Ltd.""Ltd."],
+      ["more","abbreviations",":","","a.m.","p.m.","Cap.","c.","et al.","etc.","P.S.","Ph.D","R.I.P","vs.","v.","Mr.","Ms.","Dr.","Pf.","Mx.","Ind.","Inc.","Corp.","Co.,Ltd","Co., Ltd","Co. Ltd.","Ltd."],
       ["(","testing",")","[","brackets","]","{","all","}","⟨","kinds","⟩"],//this might not need to be fix coz ⟨⟩ is rarely seen
       ["elipsis","dots","...","another","elipsis","dots","…"],
       ["double","quotes","``","not","OK","''"],
