@@ -1,8 +1,6 @@
 const deepMerge = require('deepmerge');
 
-// TODO:
-//    add fromJSON, toJSON
-//    expandFrom? expandWith?
+// TODO: expandFrom? expandWith?
 
 class Grammar {
 
@@ -10,11 +8,20 @@ class Grammar {
     this.rules = {};
     this.context = context || {};
     this.compiler = new Grammar.parent.RiScript();
-    if (rules) this.setRules(rules);
+    if (rules) this.addRules(rules);
   }
 
   static fromJSON(json, context) {
-    return new Grammar(json, context);//.setRules(json);
+    let rg = new Grammar(null, context);
+    try {
+      let rules = JSON.parse(json);
+      Object.keys(rules).forEach(r => rg.addRule(r, rules[r]))
+    } catch (e) {
+      throw Error('Grammar appears to be invalid JSON,'
+        + ' please check it at http://jsonlint.com/'
+        + '\n' + JSON.stringify(json, null, 2));
+    }
+    return rg;
   }
 
   toJSON() {
@@ -23,17 +30,13 @@ class Grammar {
       (acc, k) => Object.assign(acc, { [k]: this[k] }), {}));*/
   }
 
-  setRules(rules) { // or rules or ... ?
-    if (typeof rules === 'string') {
-      try {
-        rules = JSON.parse(rules);
-      } catch (e) {
-        console.warn('Grammar appears to be invalid JSON, please check'
-          + ' it at http://jsonlint.com/', rules);
-        return this;
+  addRules(rules) { // or rules or ... ?
+    if (rules) {
+      if (typeof rules === 'string') { // ??
+        throw Error("Expecting an object");
       }
+      Object.keys(rules).forEach(r => this.addRule(r, rules[r]))
     }
-    Object.keys(rules).forEach(r => this.addRule(r, rules[r]))
     return this;
   }
 
@@ -75,7 +78,7 @@ class Grammar {
     return this;
   }
 
-  // TODO: should be static methods?
+  // TODO: should be static or instance methods?
   addTransform() { RiScript.addTransform(...arguments); return this }
   removeTransform() { RiScript.removeTransform(...arguments); return this }
   getTransforms() { return RiScript.getTransforms(); }
