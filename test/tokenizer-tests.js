@@ -234,11 +234,43 @@ describe('RiTa.Tokenizer', () => {
 
     let outputs = ["A simple sentence.",
       "that's why this is our place).",
+      "this is for semicolon; that is for else",
+      "this is for 2^3 2*3",
+      "this is for $30 and #30",
+      "this is for 30°C or 30\u2103",
+      "this is for a/b a⁄b",
+      "this is for «guillemets»",
+      "this... is… for ellipsis",
+      "this line is 'for' single ‘quotation’ mark",
+      "Katherine’s cat and John's cat",
+      "this line is for (all) [kind] {of} ⟨brackets⟩ done",
+      "this line is for the-dash",
+      "30% of the student love day-dreaming.",
+      '"that test line"',
+      "my email address is name@domin.com",
+      "it is www.google.com",
+      "that is www6.cityu.edu.hk"
     ];
 
     let inputs = [
       ["A", "simple", "sentence", "."],
       ["that's", "why", "this", "is", "our", "place", ")", "."],
+      ["this", "is", "for", "semicolon", ";", "that", "is", "for", "else"],
+      ["this", "is", "for", "2", "^", "3", "2", "*", "3"],
+      ["this", "is", "for", "$", "30", "and", "#", "30"],
+      ["this", "is", "for", "30", "°", "C", "or", "30", "\u2103"],
+      ["this", "is", "for", "a", "/", "b", "a", "⁄", "b"],
+      ["this", "is", "for", "«", "guillemets", "»"],
+      ["this", "...", "is", "…", "for", "ellipsis"],
+      ["this", "line", "is", "'", "for", "'", "single", "‘", "quotation", "’", "mark"],
+      ["Katherine", "’", "s", "cat", "and", "John", "'", "s", "cat"],
+      ["this", "line", "is", "for", "(", "all", ")", "[", "kind", "]", "{", "of", "}", "⟨", "brackets", "⟩", "done"],
+      ["this", "line", "is", "for", "the", "-", "dash"],
+      ["30", "%", "of", "the", "student", "love", "day", "-", "dreaming", "."],
+      ['"', "that", "test", "line", '"'],
+      ["my", "email", "address", "is", "name", "@", "domin", ".", "com"],
+      ["it", "is", "www", ".", "google", ".", "com"],
+      ["that", "is", "www6", ".", "cityu", ".", "edu", ".", "hk"]
     ];
 
     expect(inputs.length).eq(outputs.length);
