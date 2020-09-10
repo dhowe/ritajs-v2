@@ -191,7 +191,7 @@ const SQUOTE_RE = /^[\u2019‘`']+$/;
 const APOS_RE = /^[\u2019'’]+$/;
 const LB_RE = /(\r?\n)+/g;
 const WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
-const DOMIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|zh|fr)$/;
+const DOMIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|ch|fr)$/;
 const TOKENIZE_REGEXS_A = [
   /([Ee])[.]([Gg])[.]/g, "_$1$2_",//E.g
   /([Ii])[.]([Ee])[.]/g, "_$1$2_",//i.e
