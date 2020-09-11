@@ -1,9 +1,170 @@
-// const expect = require('chai').expect;
-// const RiTa = require('../src/rita_api');
 
-describe('RiTa.Tokenizer', () => {
+describe('RiTa.Core', () => {
 
   if (typeof module !== 'undefined') require('./before');
+
+  it('Should correctly call stem', () => {
+    let data = [
+      "boy", "boy",
+      "boys", "boy",
+      "biophysics", "biophysics",
+      "automata", "automaton",
+      "genus", "genus",
+      "emus", "emu",
+      "cakes", "cake",
+      "run", "run",
+      "runs", "run",
+      "running", "running",
+      "take", "take",
+      "takes", "take",
+      "taking", "taking",
+      "hide", "hide",
+      "hides", "hide",
+      "hiding", "hiding",
+      "become", "become",
+      "becomes", "become",
+      "becoming", "becoming",
+      "gases", "gas",
+      "buses", "bus",
+      "happiness", "happiness",
+      "terrible", "terrible",
+    ];
+    for (var i = 0; i < data.length; i += 2) {
+      eq(RiTa.stem(data[i]), data[i + 1], 'got ' + RiTa.stem(data[i]));
+    }
+  });
+
+  it('Should call randomOrdering', () => {
+    expect(RiTa.randomOrdering(1)).eql([0]);
+    expect(RiTa.randomOrdering(2)).to.have.members([0, 1])
+    expect(RiTa.randomOrdering(['a'])).eql(['a']);
+    expect(RiTa.randomOrdering(['a', 'b'])).to.have.members(['a', 'b']);
+  });
+
+  it('Should correctly call isQuestion', () => {
+    ok(RiTa.isQuestion("what"));
+    ok(RiTa.isQuestion("what"));
+    ok(RiTa.isQuestion("what is this"));
+    ok(RiTa.isQuestion("what is this?"));
+    ok(RiTa.isQuestion("Does it?"));
+    ok(RiTa.isQuestion("Would you believe it?"));
+    ok(RiTa.isQuestion("Have you been?"));
+    ok(RiTa.isQuestion("Is this yours?"));
+    ok(RiTa.isQuestion("Are you done?"));
+    ok(RiTa.isQuestion("what is this? , where is that?"));
+    ok(!RiTa.isQuestion("That is not a toy This is an apple"));
+    ok(!RiTa.isQuestion("string"));
+    ok(!RiTa.isQuestion("?"));
+    ok(!RiTa.isQuestion(""));
+  });
+
+  it('Should correctly call isAbbreviation', () => {
+
+    ok(RiTa.isAbbreviation("Dr."));
+    ok(RiTa.isAbbreviation("dr."));
+    ok(RiTa.isAbbreviation("DR."));
+    ok(RiTa.isAbbreviation("Dr. "));
+    ok(RiTa.isAbbreviation(" Dr."));
+    ok(RiTa.isAbbreviation("Prof."));
+    ok(RiTa.isAbbreviation("prof."));
+
+    ok(!RiTa.isAbbreviation("Dr"));
+    ok(!RiTa.isAbbreviation("Doctor"));
+    ok(!RiTa.isAbbreviation("Doctor."));
+    ok(!RiTa.isAbbreviation("PRFO."));
+    ok(!RiTa.isAbbreviation("PrFo."));
+    ok(!RiTa.isAbbreviation("Professor"));
+    ok(!RiTa.isAbbreviation("professor"));
+    ok(!RiTa.isAbbreviation("PROFESSOR"));
+    ok(!RiTa.isAbbreviation("Professor."));
+    ok(!RiTa.isAbbreviation("@#$%^&*()"));
+    ok(!RiTa.isAbbreviation(""));
+    ok(!RiTa.isAbbreviation(null));
+    ok(!RiTa.isAbbreviation(undefined));
+    ok(!RiTa.isAbbreviation(1));
+
+    ok(RiTa.isAbbreviation("Dr.", { caseSensitive: true }));
+    ok(RiTa.isAbbreviation("Dr. ", { caseSensitive: true }));
+    ok(RiTa.isAbbreviation(" Dr.", { caseSensitive: true }));
+    ok(RiTa.isAbbreviation("Prof.", { caseSensitive: true }));
+
+    ok(!RiTa.isAbbreviation("dr.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("DR.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("Dr", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("Doctor", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("Doctor.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("prof.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("PRFO.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("PrFo.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("Professor", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("professor", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("PROFESSOR", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("Professor.", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("@#$%^&*()", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation("", { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation(null, { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation(undefined, { caseSensitive: true }));
+    ok(!RiTa.isAbbreviation(1, { caseSensitive: true }));
+  });
+
+  it('Should correctly call isPunctuation', () => {
+
+    ok(!RiTa.isPunctuation("What the"));
+    ok(!RiTa.isPunctuation("What ! the"));
+    ok(!RiTa.isPunctuation(".#\"\\!@i$%&}<>"));
+
+    ok(RiTa.isPunctuation("!"));
+    ok(RiTa.isPunctuation("?"));
+    ok(RiTa.isPunctuation("?!"));
+    ok(RiTa.isPunctuation("."));
+    ok(RiTa.isPunctuation(".."));
+    ok(RiTa.isPunctuation("..."));
+    ok(RiTa.isPunctuation("...."));
+    ok(RiTa.isPunctuation("%..."));
+
+    ok(!RiTa.isPunctuation("! "));
+    //space
+    ok(!RiTa.isPunctuation(" !"));
+    //space
+    ok(!RiTa.isPunctuation("!  "));
+    //double space
+    ok(!RiTa.isPunctuation("  !"));
+    //double space
+    ok(!RiTa.isPunctuation("!  "));
+    //tab space
+    ok(!RiTa.isPunctuation("   !"));
+
+    let punct;
+
+    punct = '$%&^,';
+    for (let i = 0; i < punct.length; i++) {
+      ok(RiTa.isPunctuation(punct[i]));
+    }
+
+    punct = ",;:!?)([].#\"\\!@$%&}<>|+=-_\\/*{^";
+    for (let i = 0; i < punct.length; i++) {
+      ok(RiTa.isPunctuation(punct[i]));
+    }
+
+    // TODO: also test multiple characters strings here ****
+    punct = "\"��������`'";
+    for (let i = 0; i < punct.length; i++) {
+      ok(RiTa.isPunctuation(punct[i]));
+    }
+
+    punct = "\"��������`',;:!?)([].#\"\\!@$%&}<>|+=-_\\/*{^";
+    for (let i = 0; i < punct.length; i++) {
+      ok(RiTa.isPunctuation(punct[i]));
+    }
+
+    // TODO: and here...
+    let nopunct = 'Helloasdfnals  FgG   \t kjdhfakjsdhf askjdfh aaf98762348576';
+    for (let i = 0; i < nopunct.length; i++) {
+      ok(!RiTa.isPunctuation(nopunct[i]));
+    }
+
+    ok(!RiTa.isPunctuation(""));
+  });
 
   it('Should correctly call tokenize', () => {
 
@@ -78,6 +239,28 @@ describe('RiTa.Tokenizer', () => {
     output = RiTa.tokenize(input);
     expect(output).eql(expected);
 
+    input = "it cost $30";
+    expected = ["it", "cost", "$", "30"];
+    output = RiTa.tokenize(input);
+    expect(output).eql(expected);
+
+    input = "calculate 2^3";
+    expected = ["calculate", "2", "^", "3"];
+    output = RiTa.tokenize(input);
+    expect(output).eql(expected);
+
+    input = "30% of the students";
+    expected = ["30", "%", "of", "the", "students"];
+    output = RiTa.tokenize(input);
+    expect(output).eql(expected);
+
+    input = "it's 30°C outside";
+    expected = ["it", "is", "30", "°", "C", "outside"];
+    RiTa.SPLIT_CONTRACTIONS = true;
+    output = RiTa.tokenize(input);
+    RiTa.SPLIT_CONTRACTIONS = false;
+    expect(output).eql(expected);
+
     // reference :PENN treebank tokenization document :ftp://ftp.cis.upenn.edu/pub/treebank/public_html/tokenization.html
     //            and aslo English punctuation Wiki page Latin abbreviations Wiki page
     let inputs = ["A simple sentence.",
@@ -88,13 +271,13 @@ describe('RiTa.Tokenizer', () => {
     '"it is strange", said John, "Katherine does not drink alchol."',
     '"What?!", John yelled.',
     //tests below this line don't pass
+    "more abbreviations: a.m. p.m. Cap. c. et al. etc. P.S. Ph.D R.I.P vs. v. Mr. Ms. Dr. Pf. Mx. Ind. Inc. Corp. Co.,Ltd. Co., Ltd. Co. Ltd. Ltd.",
     "John's Katherine's Jack's Linda's students' people's",
-    "more abbreviations: a.m. p.m. Cap. c. et al. etc. P.S. Ph.D R.I.P vs. v. Mr. Ms. Dr. Pf. Mx. Ind. Inc. Corp. Co,.Ltd. Co,. Ltd. Co. Lid. Ltd.",
     "(testing) [brackets] {all} ⟨kinds⟩",
     "elipsis dots... another elipsis dots…",
     "double quotes \"not OK\"",
     "children's parents' won't gonna I'm"
-  ];
+    ];
     let outputs = [
       ["A", "simple", "sentence", "."],
       ["that's", "why", "this", "is", "our", "place", ")", "."],
@@ -104,13 +287,18 @@ describe('RiTa.Tokenizer', () => {
       ["\"","it","is","strange","\"",",","said","John",",","\"","Katherine","does","not","drink","alchol",".","\""],
       ["\"","What","?","!","\"",",","John","yelled","."],
       //test below this line don't pass
+      ["more","abbreviations",":","a.m.","p.m.","Cap.","c.","et al.","etc.","P.S.","Ph.D","R.I.P","vs.","v.","Mr.","Ms.","Dr.","Pf.","Mx.","Ind.","Inc.","Corp.","Co.,Ltd.","Co., Ltd.","Co. Ltd.","Ltd."],
       ["John","'s","katherine","'s","Jack","'s","Linda","'s","students","'","people","'s"],
-      ["more","abbreviations",":","a.m.","p.m.","Cap.","c.","et al.","etc.","P.S.","Ph.D","R.I.P","vs.","v.","Mr.","Ms.","Dr.","Pf.","Mx.","Ind.","Inc.","Corp.","Co.,Ltd","Co., Ltd","Co. Ltd.","Ltd."],
       ["(","testing",")","[","brackets","]","{","all","}","⟨","kinds","⟩"],//this might not need to be fix coz ⟨⟩ is rarely seen
       ["elipsis","dots","...","another","elipsis","dots","…"],
       ["double","quotes","``","not","OK","''"],
       ["children","'s","parents","'","wo","n't","gon","na","I","'m"]
     ];
+
+    expect(inputs.length).eq(outputs.length);
+    for (let i = 0; i < inputs.length; i++) {
+      expect(RiTa.tokenize(inputs[i])).eql(outputs[i]);
+    }
 
     // contractions -------------------------
 
@@ -140,9 +328,9 @@ describe('RiTa.Tokenizer', () => {
 
   it('Should correctly call untokenize', () => {
 
-    expect(RiTa.untokenize([""])).eq("");
-
     let input, output, expected;
+
+    expect(RiTa.untokenize([""])).eq("");
 
     expected = "We should consider the students' learning";
     input = ["We", "should", "consider", "the", "students", "'", "learning"];
@@ -230,7 +418,7 @@ describe('RiTa.Tokenizer', () => {
     output = RiTa.untokenize(input);
     expect(output).eq(expected);
 
-    // more tests
+    // refere to english punctuation marks list on Wiki
 
     let outputs = ["A simple sentence.",
       "that's why this is our place).",
@@ -279,89 +467,164 @@ describe('RiTa.Tokenizer', () => {
     }
   });
 
+  it('Should correctly call concordance', () => {
+
+    let data = RiTa.concordance("The dog ate the cat"); //default
+    expect(Object.keys(data).length).eq(5);
+    expect(data["the"]).eq(1);
+    expect(data["The"]).eq(1);
+    expect(data["THE"]).eq(undefined);
+
+    data = RiTa.concordance("The dog ate the cat", {
+      ignoreCase: false,
+      ignoreStopWords: false,
+      ignorePunctuation: false,
+    });
+
+    expect(Object.keys(data).length).eq(5);
+    expect(data["the"]).eq(1);
+    expect(data["The"]).eq(1);
+    expect(data["THE"]).eq(undefined); // same result
+
+    data = RiTa.concordance("The dog ate the cat", {
+      ignoreCase: true
+    });
+    expect(Object.keys(data).length).eq(4);
+    expect(data["the"]).eq(2);
+    expect(data["The"]).eq(undefined);
+    expect(data["THE"]).eq(undefined);
+
+    data = RiTa.concordance("The Dog ate the cat.", {
+      ignoreCase: true,
+      ignoreStopWords: true,
+      ignorePunctuation: true,
+    });
+
+    expect(Object.keys(data).length).eq(3);
+    expect(data["dog"]).eq(1);
+    expect(data["the"]).eq(undefined);
+    expect(data["THE"]).eq(undefined);
+
+    // opts should be back to default
+    data = RiTa.concordance("The dog ate the cat");
+    expect(Object.keys(data).length).eq(5);
+    expect(data["the"]).eq(1);
+    expect(data["The"]).eq(1);
+    expect(data["THE"]).eq(undefined);
+
+    data = RiTa.concordance("'What a wonderful world;!:,?.'\"", {
+      ignorePunctuation: true
+    });
+    expect(Object.keys(data).length).eq(4);
+    expect(data["!"]).eq(undefined);
+
+
+    data = RiTa.concordance("The dog ate the cat", {
+      ignoreStopWords: true
+    });
+
+    expect(Object.keys(data).length).eq(3);
+    expect(data["The"]).eq(undefined);
+
+    data = RiTa.concordance("It was a dream of you.", { // 'dream', '.'
+      ignoreStopWords: true
+    });
+    expect(Object.keys(data).length).eq(2);
+    expect(data["It"]).eq(undefined);
+    expect(data["dream"]).eq(1);
+    expect(data["."]).eq(1);
+
+    data = RiTa.concordance("Fresh fried fish, Fish fresh fried.", {
+      wordsToIgnore: ["fish"],
+      ignoreCase: true,
+      ignorePunctuation: true
+    });
+    expect(Object.keys(data).length).eq(2);
+    expect(data["fish"]).eq(undefined);
+    expect(data["fresh"]).eq(2);
+    expect(data["fried"]).eq(2);
+  });
+
   it('Should correctly call sentences', () => {
 
-    var input = "Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications. The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels. If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs.";
-    var expected = ["Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications.", "The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels.", "If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs."];
-    var output = RiTa.sentences(input);
+    let input, expected, output;
+
+    eql(RiTa.sentences(''), ['']);
+
+    input = "Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications. The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels. If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs.";
+    expected = ["Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications.", "The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels.", "If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs."];
+    output = RiTa.sentences(input);
     eql(output, expected);
 
-    var input = "Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications.\n\nThe slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels.\r\n If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs.";
-    var expected = ["Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications.", "The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels.", "If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs."];
-    var output = RiTa.sentences(input);
+    input = "\"The boy went fishing.\", he said. Then he went away.";
+    expected = ["\"The boy went fishing.\", he said.", "Then he went away."];
+    output = RiTa.sentences(input);
     eql(output, expected);
 
-    var input = "\"The boy went fishing.\", he said. Then he went away.";
-    var expected = ["\"The boy went fishing.\", he said.", "Then he went away."];
-    var output = RiTa.sentences(input);
-    eql(output, expected);
-
-    var input = "The dog";
-    var output = RiTa.sentences(input);
+    input = "The dog";
+    output = RiTa.sentences(input);
     eql(output, [input]);
 
-    var input = "I guess the dog ate the baby.";
-    var output = RiTa.sentences(input);
+    input = "I guess the dog ate the baby.";
+    output = RiTa.sentences(input);
     eql(output, [input]);
 
-    var input = "Oh my god, the dog ate the baby!";
-    var output = RiTa.sentences(input);
-    var expected = ["Oh my god, the dog ate the baby!"];
+    input = "Oh my god, the dog ate the baby!";
+    output = RiTa.sentences(input);
+    expected = ["Oh my god, the dog ate the baby!"];
     eql(output, expected);
 
-    var input = "Which dog ate the baby?"
-    var output = RiTa.sentences(input);
-    var expected = ["Which dog ate the baby?"];
+    input = "Which dog ate the baby?"
+    output = RiTa.sentences(input);
+    expected = ["Which dog ate the baby?"];
     eql(output, expected);
 
-    var input = "'Yes, it was a dog that ate the baby', he said."
-    var output = RiTa.sentences(input);
-    var expected = ["\'Yes, it was a dog that ate the baby\', he said."];
+    input = "'Yes, it was a dog that ate the baby', he said."
+    output = RiTa.sentences(input);
+    expected = ["\'Yes, it was a dog that ate the baby\', he said."];
     eql(output, expected);
 
-    var input = "The baby belonged to Mr. and Mrs. Stevens. They will be very sad.";
-    var output = RiTa.sentences(input);
-    var expected = ["The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad."];
+    input = "The baby belonged to Mr. and Mrs. Stevens. They will be very sad.";
+    output = RiTa.sentences(input);
+    expected = ["The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad."];
     eql(output, expected);
 
     // More quotation marks
-    var input = "\"The baby belonged to Mr. and Mrs. Stevens. They will be very sad.\"";
-    var output = RiTa.sentences(input);
-    var expected = ["\"The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\""];
+    input = "\"The baby belonged to Mr. and Mrs. Stevens. They will be very sad.\"";
+    output = RiTa.sentences(input);
+    expected = ["\"The baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\""];
     eql(output, expected);
 
-    var input = "\u201CThe baby belonged to Mr. and Mrs. Stevens. They will be very sad.\u201D";
-    var output = RiTa.sentences(input);
-    var expected = ["\u201CThe baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\u201D"];
+    input = "\u201CThe baby belonged to Mr. and Mrs. Stevens. They will be very sad.\u201D";
+    output = RiTa.sentences(input);
+    expected = ["\u201CThe baby belonged to Mr. and Mrs. Stevens.", "They will be very sad.\u201D"];
     eql(output, expected);
 
     //https://github.com/dhowe/RiTa/issues/498
-    var input = "\"My dear Mr. Bennet. Netherfield Park is let at last.\"";
-    var output = RiTa.sentences(input);
-    var expected = ["\"My dear Mr. Bennet.", "Netherfield Park is let at last.\""];
+    input = "\"My dear Mr. Bennet. Netherfield Park is let at last.\"";
+    output = RiTa.sentences(input);
+    expected = ["\"My dear Mr. Bennet.", "Netherfield Park is let at last.\""];
     eql(output, expected);
 
-    var input = "\u201CMy dear Mr. Bennet. Netherfield Park is let at last.\u201D";
-    var output = RiTa.sentences(input);
-    var expected = ["\u201CMy dear Mr. Bennet.", "Netherfield Park is let at last.\u201D"];
+    input = "\u201CMy dear Mr. Bennet. Netherfield Park is let at last.\u201D";
+    output = RiTa.sentences(input);
+    expected = ["\u201CMy dear Mr. Bennet.", "Netherfield Park is let at last.\u201D"];
     eql(output, expected);
     /*******************************************/
 
-    var input = "She wrote: \"I don't paint anymore. For a while I thought it was just a phase that I'd get over.\"";
-    var output = RiTa.sentences(input);
-    var expected = ["She wrote: \"I don't paint anymore.", "For a while I thought it was just a phase that I'd get over.\""];
+    input = "She wrote: \"I don't paint anymore. For a while I thought it was just a phase that I'd get over.\"";
+    output = RiTa.sentences(input);
+    expected = ["She wrote: \"I don't paint anymore.", "For a while I thought it was just a phase that I'd get over.\""];
     eql(output, expected);
 
-    var input = " I had a visit from my \"friend\" the tax man.";
-    var output = RiTa.sentences(input);
-    var expected = ["I had a visit from my \"friend\" the tax man."];
+    input = " I had a visit from my \"friend\" the tax man.";
+    output = RiTa.sentences(input);
+    expected = ["I had a visit from my \"friend\" the tax man."];
     eql(output, expected);
-
-    eql(RiTa.sentences(""), [""]);
   });
 
-  function eql(a, b, m) { expect(a).eql(b, m); }
-  function eq(a, b, m) { expect(a).eq(b, m); }
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }
+  function eql(a, b, m) { expect(a).eql(b, m); }
+  function eq(a, b, m) { expect(a).eq(b, m); }
 });

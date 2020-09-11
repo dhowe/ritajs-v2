@@ -88,7 +88,14 @@ class Tokenizer {
     // words = words.replace(/_([Ee])([Gg])_/g, "$1.$2."); // E.G.
     // words = words.replace(/_([Ii])([Ee])_/g, "$1.$2."); // I.E.
 
-    return words.trim().split(/\s+/);
+    let result = words.trim().split(/\s+/);
+    result.forEach((token, i) => {
+      if (token.includes('_')){
+        result[i] = token.replace(/([a-zA-z]|[\.\,])_([a-zA-Z])/g, "$1 $2");
+      }
+    });
+
+    return result;
   }
 
   untokenize(arr, delim) { // TODO: should be state machine
@@ -193,8 +200,30 @@ const LB_RE = /(\r?\n)+/g;
 const WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
 const DOMIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|ch|fr)$/;
 const TOKENIZE_REGEXS_A = [
+  //save abbreviations-------
   /([Ee])[.]([Gg])[.]/g, "_$1$2_",//E.g
   /([Ii])[.]([Ee])[.]/g, "_$1$2_",//i.e
+  /([Aa])[.]([Mm])[.]/g, "_$1$2_",//a.m.
+  /([Pp])[.]([Mm])[.]/g, "_$1$2_",//p.m.
+  /(Cap)[\.]/g, "_Cap_",//Cap.
+  /([Cc])[\.]/g, "_$1_",//c.
+  /([Ee][Tt])[\s]([Aa][Ll])[\.]/,"_$1zzz$2_",// et al.
+  /(ect|ECT)[\.]/g, "_$1_",//ect.
+  /([Pp])[\.]([Ss])[\.]/g, "_$1$2dot_", // p.s.
+  /([Pp])[\.]([Ss])/g, "_$1$2_", // p.s
+  /([Pp])([Hh])[\.]([Dd])/g, "_$1$2$3_", // Ph.D
+  /([Rr])[\.]([Ii])[\.]([Pp])/g, "_$1$2$3_", // R.I.P
+  /([Vv])([Ss]?)[\.]/g, "_$1$2_", // vs. and v.
+  /([Mm])([Rr]|[Ss]|[Xx])[\.]/g, "_$1$2_", // Mr. Ms. and Mx.
+  /([Dd])([Rr])[\.]/g, "_$1$2_", // Dr.
+  /([Pp])([Ff])[\.]/g, "_$1$2_", // Pf.
+  /([Ii])([Nn])([Dd]|[Cc])[\.]/g,"_$1$2$3_", // Ind. and Inc.
+  /([Cc])([Oo])[\.][\,][\s]([Ll])([Tt])([Dd])[\.]/g, "_$1$2dcs$3$4$5_", // co., ltd.
+  /([Cc])([Oo])[\.][\s]([Ll])([Tt])([Dd])[\.]/g, "_$1$2ds$3$4$5_", // co. ltd.
+  /([Cc])([Oo])[\.][\,]([Ll])([Tt])([Dd])[\.]/g, "_$1$2dc$3$4$5_", // co.,ltd.
+  /([Cc])([Oo])([Rr]?)([Pp]?)[\.]/g, "_$1$2$3$4_",// Corp. and Co.
+  /([Ll])([Tt])([Dd])[\.]/g, "_$1$2$3_", // ltd.
+  //--------------------------
   /([\\?!\"\u201C\\.,;:@#$%&])/g, " $1 ",
   /\\.\\.\\./g, " ... ",
   /\\s+/g, ' ',
@@ -210,10 +239,33 @@ const TOKENIZE_REGEXS_A = [
   / ([A-Z]) \\./g, " $1. ",
   /\\s+/g, ' ',
   /^\\s+/g, '',
+  /\^/g, " ^ ",
+  /°/g," ° ",
+  //pop abbreviations------------------
   /_([Ee])([Gg])_/g, "$1.$2.",//Eg
   /_([Ii])([Ee])_/g, "$1.$2.",//ie
-  /\^/g, " ^ ",
-  /°/g," ° "
+  /_([Aa])([Mm])_/g, "$1.$2.",//a.m.
+  /_([Pp])([Mm])_/g, "$1.$2.",//p.m.
+  /_Cap_/g, "Cap.",//Cap.
+  /_([Cc])_/g, "$1.",//c.
+  /_([Ee][Tt])zzz([Aa][Ll])_/,"$1_$2.",// et al.
+  /_(ect|ECT)_/g, "$1.",//ect.
+  /_(ect|ECT)_/g, "$1.",//ect.
+  /_([Pp])([Ss])dot_/g, "$1.$2.", // p.s.
+  /_([Pp])([Ss])_/g, "$1.$2",
+  /_([Pp])([Hh])([Dd])_/g, "$1$2.$3", // Ph.D
+  /_([Rr])([Ii])([Pp])_/g, "$1.$2.$3", // R.I.P
+  /_([Vv])([Ss]?)_/g, "$1$2.", // vs. and v.
+  /_([Mm])([Rr]|[Ss]|[Xx])_/g, "$1$2.", // Mr. Ms. and Mx.
+  /_([Dd])([Rr])_/g, "$1$2.", // Dr.
+  /_([Pp])([Ff])_/g, "$1$2.", // Pf.
+  /_([Ii])([Nn])([Dd]|[Cc])_/g,"$1$2$3.", // Ind. and Inc.
+  /_([Cc])([Oo])([Rr]?)([Pp]?)_/g, "$1$2$3$4.",// Corp. and Co.
+  /_([Cc])([Oo])dc([Ll])([Tt])([Dd])_/g, "$1$2.,$3$4$5.", // co.,ltd.
+  /_([Ll])([Tt])([Dd])_/g, "$1$2$3.", // ltd.
+  /_([Cc])([Oo])dcs([Ll])([Tt])([Dd])_/g, "$1$2.,_$3$4$5.", // co., ltd.
+  /_([Cc])([Oo])ds([Ll])([Tt])([Dd])_/g, "$1$2._$3$4$5.", // co. ltd.
+
 ];
 const TOKENIZE_REGEXS_B = [
   /([Cc])an['’]t/g, "$1an not",
