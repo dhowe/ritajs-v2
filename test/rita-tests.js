@@ -270,11 +270,11 @@ describe('RiTa.Core', () => {
     "face-to-face class",
     '"it is strange", said John, "Katherine does not drink alchol."',
     '"What?!", John yelled.',
-    //tests below this line don't pass
     "more abbreviations: a.m. p.m. Cap. c. et al. etc. P.S. Ph.D R.I.P vs. v. Mr. Ms. Dr. Pf. Mx. Ind. Inc. Corp. Co.,Ltd. Co., Ltd. Co. Ltd. Ltd.",
-    "John's Katherine's Jack's Linda's students' people's",
-    "(testing) [brackets] {all} ⟨kinds⟩",
     "elipsis dots... another elipsis dots…",
+    "(testing) [brackets] {all} ⟨kinds⟩",
+    //tests below this line don't pass
+    "John's Katherine's Jack's Linda's students' people's",
     "double quotes \"not OK\"",
     "children's parents' won't gonna I'm"
     ];
@@ -286,11 +286,11 @@ describe('RiTa.Core', () => {
       ["face-to-face","class"],
       ["\"","it","is","strange","\"",",","said","John",",","\"","Katherine","does","not","drink","alchol",".","\""],
       ["\"","What","?","!","\"",",","John","yelled","."],
-      //test below this line don't pass
       ["more","abbreviations",":","a.m.","p.m.","Cap.","c.","et al.","etc.","P.S.","Ph.D","R.I.P","vs.","v.","Mr.","Ms.","Dr.","Pf.","Mx.","Ind.","Inc.","Corp.","Co.,Ltd.","Co., Ltd.","Co. Ltd.","Ltd."],
-      ["John","'s","katherine","'s","Jack","'s","Linda","'s","students","'","people","'s"],
-      ["(","testing",")","[","brackets","]","{","all","}","⟨","kinds","⟩"],//this might not need to be fix coz ⟨⟩ is rarely seen
       ["elipsis","dots","...","another","elipsis","dots","…"],
+      ["(","testing",")","[","brackets","]","{","all","}","⟨","kinds","⟩"],//this might not need to be fix coz ⟨⟩ is rarely seen
+      //test below this line don't pass
+      ["John","'s","katherine","'s","Jack","'s","Linda","'s","students","'","people","'s"],
       ["double","quotes","``","not","OK","''"],
       ["children","'s","parents","'","wo","n't","gon","na","I","'m"]
     ];
