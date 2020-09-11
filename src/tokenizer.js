@@ -208,7 +208,7 @@ const TOKENIZE_REGEXS_A = [
   /(Cap)[\.]/g, "_Cap_",//Cap.
   /([Cc])[\.]/g, "_$1_",//c.
   /([Ee][Tt])[\s]([Aa][Ll])[\.]/,"_$1zzz$2_",// et al.
-  /(ect|ECT)[\.]/g, "_$1_",//ect.
+  /(etc|ETC)[\.]/g, "_$1_",//etc.
   /([Pp])[\.]([Ss])[\.]/g, "_$1$2dot_", // p.s.
   /([Pp])[\.]([Ss])/g, "_$1$2_", // p.s
   /([Pp])([Hh])[\.]([Dd])/g, "_$1$2$3_", // Ph.D
@@ -250,8 +250,7 @@ const TOKENIZE_REGEXS_A = [
   /_Cap_/g, "Cap.",//Cap.
   /_([Cc])_/g, "$1.",//c.
   /_([Ee][Tt])zzz([Aa][Ll])_/,"$1_$2.",// et al.
-  /_(ect|ECT)_/g, "$1.",//ect.
-  /_(ect|ECT)_/g, "$1.",//ect.
+  /_(etc|ETC)_/g, "$1.",//etc.
   /_([Pp])([Ss])dot_/g, "$1.$2.", // p.s.
   /_([Pp])([Ss])_/g, "$1.$2",
   /_([Pp])([Hh])([Dd])_/g, "$1$2.$3", // Ph.D
