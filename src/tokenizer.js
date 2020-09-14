@@ -223,6 +223,7 @@ const TOKENIZE_REGEXS_A = [
   /([Cc])([Oo])[\.][\,]([Ll])([Tt])([Dd])[\.]/g, "_$1$2dc$3$4$5_", // co.,ltd.
   /([Cc])([Oo])([Rr]?)([Pp]?)[\.]/g, "_$1$2$3$4_",// Corp. and Co.
   /([Ll])([Tt])([Dd])[\.]/g, "_$1$2$3_", // ltd.
+  /(prof|Prof|PROF)[\.]/g, "_$1_", //Prof.
   //--------------------------
   /\.\.\.\s/g, "_elipsisDDD_ ",
   /([\?!\"\u201C\.,;:@#$%&])/g, " $1 ",
@@ -265,6 +266,7 @@ const TOKENIZE_REGEXS_A = [
   /_([Ll])([Tt])([Dd])_/g, "$1$2$3.", // ltd.
   /_([Cc])([Oo])dcs([Ll])([Tt])([Dd])_/g, "$1$2.,_$3$4$5.", // co., ltd.
   /_([Cc])([Oo])ds([Ll])([Tt])([Dd])_/g, "$1$2._$3$4$5.", // co. ltd.
+  /_(prof|PROF|Prof)_/g, "$1.", //Prof.
 
 ];
 const TOKENIZE_REGEXS_B = [
