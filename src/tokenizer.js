@@ -137,7 +137,7 @@ class Tokenizer {
         result += arr[i];
         continue;
       } else if (arr[i] === "." && lastIsWWW){
-        console.log('yes');
+        //console.log('yes');
         nextNoSpace = true;
       } else if (thisLBracket) {
         result += delim;

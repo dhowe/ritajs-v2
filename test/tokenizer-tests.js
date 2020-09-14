@@ -5,6 +5,24 @@ describe('RiTa.Tokenizer', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
+  it ('Calling tokenize then untokenize', () =>{
+    let sentences = [
+      "this is www.google.com",
+      "it is 'hell'"
+    ];
+    let tokens = [
+      ["this", "is", "www", ".", "google", ".", "com"],
+      ["it", "is", "'", "hell", "'"]
+    ];
+    for (i = 0; i < sentences.length; i++){
+      let usingTokenize = RiTa.tokenize(sentences[i]);
+      expect(usingTokenize).eql(tokens[i]);
+      let usingUntokenize = RiTa.untokenize(usingTokenize);
+      expect(usingUntokenize).eq(sentences[i]);
+    };
+
+  });
+
   it('Should correctly call tokenize', () => {
 
     expect(RiTa.tokenize("")).eql([""]);
