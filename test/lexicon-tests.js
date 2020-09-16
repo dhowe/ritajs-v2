@@ -1,9 +1,10 @@
 describe('RiTa.Lexicon', function () {
 
   this.timeout(5000);
-  const lex = RiTa.lexicon(); // first load
 
   if (typeof module !== 'undefined') require('./before');
+  
+  const lex = RiTa.lexicon(); // first load
 
   it('Should correctly call hasWord', () => {
     expect(RiTa.hasWord("random")).to.be.true;

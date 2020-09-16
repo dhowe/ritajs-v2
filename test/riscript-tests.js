@@ -1,11 +1,13 @@
-const RiScript = RiTa.RiScript
-const Operator = RiTa.Operator;
+
 
 describe('RiTa.RiScript', () => {
 
   const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 };
 
   if (typeof module !== 'undefined') require('./before');
+
+  const RiScript = RiTa.RiScript;
+  const Operator = RiTa.Operator;
 
   describe('Conditionals', () => {
 

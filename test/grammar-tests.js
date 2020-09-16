@@ -1,9 +1,10 @@
-const Grammar = RiTa.Grammar;
 
 describe('RiTa.Grammar', () => {
 
     if (typeof module !== 'undefined') require('./before');
-    
+
+    const Grammar = RiTa.Grammar;
+
     let sentences1 = {
         "$start": "$noun_phrase $verb_phrase.",
         "$noun_phrase": "$determiner $noun",
