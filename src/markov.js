@@ -337,7 +337,7 @@ class Node {
     return node;
   }
 
-  toString() {
+  toString() { // TODO: add opt to skip SE/SS
     return this.parent ? this.token + '(' + this.count +
       '/' + this.nodeProb().toFixed(3) + '%)' : 'Root'
   }
