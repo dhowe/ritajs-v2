@@ -51,7 +51,7 @@ class Markov {
         let words = this.tokenize(sents[i]);
         tokens.push(Markov.SS, ...words, Markov.SE);
       }
-      this._treeify(tokens);
+      this.treeify(tokens);
     }
 
     if (!this.disableInputChecks || this.mlm) this.input.push(...tokens);
@@ -245,13 +245,15 @@ class Markov {
   }
 
   /* add tokens to tree */
-  _treeify(tokens, root) {
-    root = root || this.root;
+  treeify(tokens) {
+    let root = this.root;
     for (let i = 0; i < tokens.length; i++) {
       let node = root,
         words = tokens.slice(i, i + this.n);
       for (let j = 0; j < words.length; j++) {
-        node = node.addChild(words[j]);
+        if (words[j]) {
+          node = node.addChild(words[j]);
+        }
       }
     }
   }
@@ -303,19 +305,24 @@ class Node {
 
   childNodes(sorted) {
     let kids = Object.values(this.children);
-    sorted && kids.sort((a, b) => b.count - a.count);
+    sorted && kids.sort((a, b) => b.count !== a.count 
+      ? b.count - a.count 
+      : b.token.localeCompare(a.token));
     return kids;
   }
 
   childCount(excludeMetaTags) {
-    if (this.numChildren === -1) {
-      let sum = 0;
-      for (let k in this.children) {
-        if (excludeMetaTags && (k === Markov.SS || k === Markov.SE)) continue;
+    if (this.numChildren === -1) { 
+      let sum = 0; // a sort of cache
+      for (let k in this.children) { 
+        if (excludeMetaTags && (k === Markov.SS || k === Markov.SE)) {
+          continue;
+        }
         sum += this.children[k].count;
       }
       this.numChildren = sum;
     }
+    //console.log(this.token+' '+this.numChildren);
     return this.numChildren;
   }
 
@@ -342,8 +349,6 @@ class Node {
       '/' + this.nodeProb().toFixed(3) + '%)' : 'Root'
   }
 
-  
-
   asTree(sort) {
     let s = this.token + ' ';
     if (this.parent) s += '(' + this.count + ')->';
@@ -355,17 +360,17 @@ class Node {
 // --------------------------------------------------------------
 
 function stringulate(mn, str, depth, sort) {
+  
   sort = sort || false;
-  let l = [], indent = '\n';
-  Object.keys(mn.children).map(k => l.push(mn.children[k]));
+  let l = mn.childNodes(true), indent = '\n';
   if (!l.length) return str;
-  if (sort) l.sort();
   for (let j = 0; j < depth; j++) indent += "  ";
   for (let i = 0; i < l.length; i++) {
     let node = l[i];
-    if (node) {
+    if (node && node.token) {
       str += indent + "'" + encode(node.token) + "'";
-      if (!node.isRoot()) str += " [" + node.count + ",p=" + node.nodeProb().toFixed(3) + "]";
+      if (!node.isRoot()) str += " [" + node.count 
+        + ",p=" + node.nodeProb().toFixed(3) + "]";
       if (!node.isLeaf()) str += '  {';
       str = mn.childCount() ? stringulate(node, str, depth + 1, sort) : str + '}';
     }
