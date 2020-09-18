@@ -342,44 +342,46 @@ class Node {
       '/' + this.nodeProb().toFixed(3) + '%)' : 'Root'
   }
 
-  stringify(mn, str, depth, sort) {
-    sort = sort || false;
-    let l = [], indent = '\n';
-    Object.keys(mn.children).map(k => l.push(mn.children[k]));
-    if (!l.length) return str;
-    if (sort) l.sort();
-    for (let j = 0; j < depth; j++) indent += "  ";
-    for (let i = 0; i < l.length; i++) {
-      let node = l[i];
-      if (node) {
-        str += indent + "'" + this._encode(node.token) + "'";
-        if (!node.isRoot()) str += " [" + node.count + ",p=" + node.nodeProb().toFixed(3) + "]";
-        if (!node.isLeaf()) str += '  {';
-        str = this.childCount() ? this.stringify(node, str, depth + 1, sort) : str + '}';
-      }
-    }
-    indent = '\n';
-    for (let j = 0; j < depth - 1; j++) indent += "  ";
-    return str + indent + "}";
-  }
+  
 
   asTree(sort) {
     let s = this.token + ' ';
     if (this.parent) s += '(' + this.count + ')->';
     s += '{';
-    return this.childCount() ? this.stringify(this, s, 1, sort) : s + '}';
-  }
-
-  _encode(tok) {
-    if (tok === '\n') tok = '\\n';
-    if (tok === '\r') tok = '\\r';
-    if (tok === '\t') tok = '\\t';
-    if (tok === '\r\n') tok = '\\r\\n';
-    return tok;
+    return this.childCount() ? stringulate(this, s, 1, sort) : s + '}';
   }
 }
 
 // --------------------------------------------------------------
+
+function stringulate(mn, str, depth, sort) {
+  sort = sort || false;
+  let l = [], indent = '\n';
+  Object.keys(mn.children).map(k => l.push(mn.children[k]));
+  if (!l.length) return str;
+  if (sort) l.sort();
+  for (let j = 0; j < depth; j++) indent += "  ";
+  for (let i = 0; i < l.length; i++) {
+    let node = l[i];
+    if (node) {
+      str += indent + "'" + encode(node.token) + "'";
+      if (!node.isRoot()) str += " [" + node.count + ",p=" + node.nodeProb().toFixed(3) + "]";
+      if (!node.isLeaf()) str += '  {';
+      str = mn.childCount() ? stringulate(node, str, depth + 1, sort) : str + '}';
+    }
+  }
+  indent = '\n';
+  for (let j = 0; j < depth - 1; j++) indent += "  ";
+  return str + indent + "}";
+}
+
+function encode(tok) {
+  if (tok === '\n') tok = '\\n';
+  if (tok === '\r') tok = '\\r';
+  if (tok === '\t') tok = '\\t';
+  if (tok === '\r\n') tok = '\\r\\n';
+  return tok;
+}
 
 function populate(objNode, jsonNode) {
   if (!jsonNode) return;
