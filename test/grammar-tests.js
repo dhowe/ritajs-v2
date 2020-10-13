@@ -34,49 +34,138 @@ describe('RiTa.Grammar', () => {
 
     let grammars = [sentences1, sentences2, sentences3];
 
+    describe('Grammar-transforms', () => {
+
+        if (RiTa.RiScript.NO_TRANSFORMS) return;
+
+        it("should correctly handle transforms", () => {
+            let rg = new Grammar();
+            rg.addRule("$start", "$pet.toUpperCase()");
+            rg.addRule("$pet", "dog");
+            eq(rg.expand(), "DOG");
+
+            rg = new Grammar();
+            rg.addRule("$start", "($pet | $animal)");
+            rg.addRule("$animal", "$pet");
+            rg.addRule("$pet", "(dog).toUpperCase()");
+            eq(rg.expand(), "DOG");
+
+            rg = new Grammar();
+            rg.addRule("$start", "($pet | $animal)");
+            rg.addRule("$animal", "$pet");
+            rg.addRule("$pet", "(ant).articlize()");
+            eq(rg.expand(), "an ant");
+
+            rg = new Grammar();
+            rg.addRule("$start", "($pet | $animal).articlize().ucf()");
+            rg.addRule("$animal", "$pet");
+            rg.addRule("$pet", "ant");
+            eq(rg.expand(), "An ant");
+        });
+
+        it("should pluralize phrases in a transform", () => {
+            let ctx = {
+                pluralise: (s) => {
+                    s = s.trim();
+                    if (s.includes(' ')) {
+                        let words = RiTa.tokenize(s);
+                        let last = words.pop();
+                        words.push(RiTa.pluralize(last));
+                        return RiTa.untokenize(words);
+                    }
+                    return RiTa.pluralize(s);
+                }
+            };
+            let rg = new RiTa.Grammar({
+                start: '($state feeling).pluralise()',
+                state: 'bad | bad',
+            }, ctx);
+            let res = rg.expand();
+            expect(res).eq('bad feelings');
+        });
+
+        it("should allow context in expand", () => {
+            let context, rg;
+            context = { randomPosition: () => 'job type' };
+            rg = new RiTa.Grammar({ start: "My .randomPosition()." });
+            expect(rg.expand({ context })).eq("My job type.");
+
+            context = { randomPosition: () => 'job type' };
+            rg = new RiTa.Grammar({ stat: "My .randomPosition()." });
+            expect(rg.expand('stat', { context })).eq("My job type.");
+        });
+
+        it("should handle custom transforms", () => {
+            let context = { randomPosition: () => 'job type' };
+            let rg = new RiTa.Grammar({ start: "My .randomPosition()." }, context);
+            expect(rg.expand()).eq("My job type.");
+        });
+
+        it("should handle symbol transforms", () => {
+            let rg = new Grammar({
+                start: "$tmpl",
+                tmpl: "$jrSr.capitalize()",
+                jrSr: "(junior|junior)"
+            });
+            eq(rg.expand({ trace: 0 }), "Junior");
+
+            rg = new Grammar({
+                start: "$r.capitalize()",
+                r: "(a|a)"
+            });
+            eq(rg.expand({ trace: 0 }), "A");
+
+            rg = new Grammar({
+                start: "$r.pluralize()",
+                r: "( mouse | mouse )"
+            });
+            eq(rg.expand({ trace: 0 }), "mice");
+        });
+
+        it('Should support seq() transforms', () => {
+            let opts = ['a', 'b', 'c', 'd'];
+            let rule = '(' + opts.join('|') + ').seq()';
+            let rs = new Grammar({ start: rule });
+            for (let i = 0; i < opts.length; i++) {
+                let res = rs.expand();
+                //console.log(i, ':', res);
+                expect(res).eq(opts[i]);
+            }
+
+            rule = '(' + opts.join('|') + ').seq().capitalize()';
+            rs = new Grammar({ start: rule });
+            for (let i = 0; i < opts.length; i++) {
+                let res = rs.expand();
+                // console.log(i, ':', res);
+                expect(res).eq(opts[i].toUpperCase());
+            }
+        });
+
+        it('Should support rseq() transforms', () => {
+            let opts = ['a', 'b', 'c', 'd'], result = [];
+            let rule = '(' + opts.join('|') + ').rseq()';
+            let rs = new Grammar({ start: rule });
+            for (let i = 0; i < opts.length; i++) {
+                let res = rs.expand();
+                //console.log(i, ':', res);
+                result.push(res);
+            }
+            expect(result).to.have.members(opts);
+
+            rule = '(' + opts.join('|') + ').rseq().capitalize()';
+            rs = new Grammar({ start: rule });
+            result = [];
+            for (let i = 0; i < opts.length; i++) {
+                let res = rs.expand();
+                //console.log(i, ':', res);
+                result.push(res);
+            }
+            expect(result).to.have.members(opts.map(o => o.toUpperCase()));
+        });
+    });
+
     it('should correctly call constructor', () => {
         ok(typeof new Grammar() !== 'undefined');
-    });
-
-    it('Should support seq() transforms', () => {
-        let opts = ['a', 'b', 'c', 'd'];
-        let rule = '(' + opts.join('|') + ').seq()';
-        let rs = new Grammar({ start: rule });
-        for (let i = 0; i < opts.length; i++) {
-            let res = rs.expand();
-            //console.log(i, ':', res);
-            expect(res).eq(opts[i]);
-        }
-
-        rule = '(' + opts.join('|') + ').seq().capitalize()';
-        rs = new Grammar({ start: rule });
-        for (let i = 0; i < opts.length; i++) {
-            let res = rs.expand();
-            // console.log(i, ':', res);
-            expect(res).eq(opts[i].toUpperCase());
-        }
-    });
-
-    it('Should support rseq() transforms', () => {
-        let opts = ['a', 'b', 'c', 'd'], result = [];
-        let rule = '(' + opts.join('|') + ').rseq()';
-        let rs = new Grammar({ start: rule });
-        for (let i = 0; i < opts.length; i++) {
-            let res = rs.expand();
-            //console.log(i, ':', res);
-            result.push(res);
-        }
-        expect(result).to.have.members(opts);
-
-        rule = '(' + opts.join('|') + ').rseq().capitalize()';
-        rs = new Grammar({ start: rule });
-        result = [];
-        for (let i = 0; i < opts.length; i++) {
-            let res = rs.expand();
-            //console.log(i, ':', res);
-            result.push(res);
-        }
-        expect(result).to.have.members(opts.map(o => o.toUpperCase()));
     });
 
     it('Should allow rules starting with numbers', () => {
@@ -271,90 +360,6 @@ describe('RiTa.Grammar', () => {
         ok(hawks > dogs * 2), 'got h=' + hawks + ', ' + dogs;
     });
 
-    it("should correctly handle transforms", () => {
-        let rg = new Grammar();
-        rg.addRule("$start", "$pet.toUpperCase()");
-        rg.addRule("$pet", "dog");
-        eq(rg.expand(), "DOG");
-
-        rg = new Grammar();
-        rg.addRule("$start", "($pet | $animal)");
-        rg.addRule("$animal", "$pet");
-        rg.addRule("$pet", "(dog).toUpperCase()");
-        eq(rg.expand(), "DOG");
-
-        rg = new Grammar();
-        rg.addRule("$start", "($pet | $animal)");
-        rg.addRule("$animal", "$pet");
-        rg.addRule("$pet", "(ant).articlize()");
-        eq(rg.expand(), "an ant");
-
-        rg = new Grammar();
-        rg.addRule("$start", "($pet | $animal).articlize().ucf()");
-        rg.addRule("$animal", "$pet");
-        rg.addRule("$pet", "ant");
-        eq(rg.expand(), "An ant");
-    });
-
-    it("should pluralize phrases in a transform", () => {
-        let ctx = {
-            pluralise: (s) => {
-                s = s.trim();
-                if (s.includes(' ')) {
-                    let words = RiTa.tokenize(s);
-                    let last = words.pop();
-                    words.push(RiTa.pluralize(last));
-                    return RiTa.untokenize(words);
-                }
-                return RiTa.pluralize(s);
-            }
-        };
-        let rg = new RiTa.Grammar({
-            start: '($state feeling).pluralise()',
-            state: 'bad | bad',
-        }, ctx);
-        let res = rg.expand();
-        expect(res).eq('bad feelings');
-    });
-
-    it("should allow context in expand", () => {
-        let context, rg;
-        context = { randomPosition: () => 'job type' };
-        rg = new RiTa.Grammar({ start: "My .randomPosition()." });
-        expect(rg.expand({ context })).eq("My job type.");
-
-        context = { randomPosition: () => 'job type' };
-        rg = new RiTa.Grammar({ stat: "My .randomPosition()." });
-        expect(rg.expand('stat', { context })).eq("My job type.");
-    });
-
-    it("should handle custom transforms", () => {
-        let context = { randomPosition: () => 'job type' };
-        let rg = new RiTa.Grammar({ start: "My .randomPosition()." }, context);
-        expect(rg.expand()).eq("My job type.");
-    });
-
-    it("should handle symbol transforms", () => {
-        let rg = new Grammar({
-            start: "$tmpl",
-            tmpl: "$jrSr.capitalize()",
-            jrSr: "(junior|junior)"
-        });
-        eq(rg.expand({ trace: 0 }), "Junior");
-
-        rg = new Grammar({
-            start: "$r.capitalize()",
-            r: "(a|a)"
-        });
-        eq(rg.expand({ trace: 0 }), "A");
-
-        rg = new Grammar({
-            start: "$r.pluralize()",
-            r: "( mouse | mouse )"
-        });
-        eq(rg.expand({ trace: 0 }), "mice");
-    });
-
     it("should correctly handle special characters", () => {
         let rg, res, s;
 
@@ -397,16 +402,16 @@ describe('RiTa.Grammar', () => {
         }
     });
 
-    it("should correctly call toJSON and fromJSON",() => {
-      let json = {"$start":"$pet $iphone","$pet":"(dog | cat)","$iphone":"(iphoneSE | iphone12)"};
-      let rg = new Grammar(json);
-      let generatedJSON = rg.toJSON();
-      let rg2 = Grammar.fromJSON(generatedJSON);
-      ok(rg2 !== 'undefined');
-      expect(rg.toString()).eq(rg2.toString());
-      expect(rg.context).eql(rg2.context);
-      expect(rg.rules).eql(rg2.rules);
-      expect(rg).eql(rg2);
+    it("should correctly call toJSON and fromJSON", () => {
+        let json = { "$start": "$pet $iphone", "$pet": "(dog | cat)", "$iphone": "(iphoneSE | iphone12)" };
+        let rg = new Grammar(json);
+        let generatedJSON = rg.toJSON();
+        let rg2 = Grammar.fromJSON(generatedJSON);
+        ok(rg2 !== 'undefined');
+        expect(rg.toString()).eq(rg2.toString());
+        expect(rg.context).eql(rg2.context);
+        expect(rg.rules).eql(rg2.rules);
+        expect(rg).eql(rg2);
     });
 
     function eql(a, b, c) { expect(a).eql(b, c); }

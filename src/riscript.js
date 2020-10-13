@@ -5,13 +5,17 @@ const Lexer = require('../grammar/antlr/RiScriptLexer');
 const Parser = require('../grammar/antlr/RiScriptParser');
 const { LexerErrors, ParserErrors } = require('./errors');
 
+const NO_TRANSFORMS = true;
+/**
+ * transforms happen on symbols (including ''), inlines, choices
+ */
 class RiScript {
 
   constructor() {
     this.lexer = undefined;
     this.parser = undefined;
     this.appliedTransforms = [];
-    this.visitor = new Visitor(this);
+    this.visitor = new Visitor(this, NO_TRANSFORMS);
   }
 
   static eval() {
@@ -263,6 +267,7 @@ function pluralize(s) {
 }
 
 RiScript.MAX_TRIES = 99;
+RiScript.NO_TRANSFORMS = NO_TRANSFORMS;
 
 RiScript.transforms = {
   capitalize, quotify, pluralize,
