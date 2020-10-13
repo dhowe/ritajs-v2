@@ -1,5 +1,3 @@
-// const expect = require('chai').expect;
-// const RiTa = require('../src/rita_api');
 
 describe('RiTa.Tokenizer', () => {
 

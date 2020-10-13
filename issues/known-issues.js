@@ -115,7 +115,6 @@ describe('RiTa.KnownIssues', () => {
       "chaises", "chaise",
       "metroes", "metro",
       "briefcases", "briefcase"
-    ]
     ];
 
     let res1, res2, res3, dbug = 0;
