@@ -239,11 +239,52 @@ describe('RiTa.Core', () => {
     output = RiTa.tokenize(input);
     expect(output).eql(expected);
 
-    // TODO: check Penn-Treebank tokenizer rules & add some more edge cases
-    let inputs = ["A simple sentence.", "that's why this is our place).",];
+    input = "it cost $30";
+    expected = ["it", "cost", "$", "30"];
+    output = RiTa.tokenize(input);
+    expect(output).eql(expected);
+
+    input = "calculate 2^3";
+    expected = ["calculate", "2", "^", "3"];
+    output = RiTa.tokenize(input);
+    expect(output).eql(expected);
+
+    input = "30% of the students";
+    expected = ["30", "%", "of", "the", "students"];
+    output = RiTa.tokenize(input);
+    expect(output).eql(expected);
+
+    input = "it's 30°C outside";
+    expected = ["it", "is", "30", "°", "C", "outside"];
+    RiTa.SPLIT_CONTRACTIONS = true;
+    output = RiTa.tokenize(input);
+    RiTa.SPLIT_CONTRACTIONS = false;
+    expect(output).eql(expected);
+
+    // reference :PENN treebank tokenization document :ftp://ftp.cis.upenn.edu/pub/treebank/public_html/tokenization.html
+    //            and aslo English punctuation Wiki page Latin abbreviations Wiki page
+    let inputs = ["A simple sentence.",
+    "that's why this is our place).",
+    "most, punctuation; is. split: from! adjoining words?",
+    "double quotes \"OK\"", //Treebank tokenization document says double quotes (") are changed to doubled single forward- and backward- quotes (`` and '') tho
+    "face-to-face class",
+    '"it is strange", said John, "Katherine does not drink alchol."',
+    '"What?!", John yelled.',
+    "more abbreviations: a.m. p.m. Cap. c. et al. etc. P.S. Ph.D R.I.P vs. v. Mr. Ms. Dr. Pf. Mx. Ind. Inc. Corp. Co.,Ltd. Co., Ltd. Co. Ltd. Ltd. Prof.",
+    "elipsis dots... another elipsis dots…",
+    "(testing) [brackets] {all} ⟨kinds⟩",
+    ];
     let outputs = [
       ["A", "simple", "sentence", "."],
       ["that's", "why", "this", "is", "our", "place", ")", "."],
+      ["most",",","punctuation",";","is",'.','split',':',"from","!","adjoining","words","?"],
+      ["double","quotes","\"","OK","\""],
+      ["face-to-face","class"],
+      ["\"","it","is","strange","\"",",","said","John",",","\"","Katherine","does","not","drink","alchol",".","\""],
+      ["\"","What","?","!","\"",",","John","yelled","."],
+      ["more","abbreviations",":","a.m.","p.m.","Cap.","c.","et al.","etc.","P.S.","Ph.D","R.I.P","vs.","v.","Mr.","Ms.","Dr.","Pf.","Mx.","Ind.","Inc.","Corp.","Co.,Ltd.","Co., Ltd.","Co. Ltd.","Ltd.", "Prof."],
+      ["elipsis","dots","...","another","elipsis","dots","…"],
+      ["(","testing",")","[","brackets","]","{","all","}","⟨","kinds","⟩"],//this might not need to be fix coz ⟨⟩ is rarely seen
     ];
 
     expect(inputs.length).eq(outputs.length);
@@ -261,7 +302,7 @@ describe('RiTa.Core', () => {
     let txt6 = "We didn't find the cat.";
 
     RiTa.SPLIT_CONTRACTIONS = true;
-    expect(RiTa.tokenize(txt1)).eql(["Dr", ".", "Chan", "is", "talking", "slowly", "with", "Mr", ".", "Cheng", ",", "and", "they", "are", "friends", "."]);
+    expect(RiTa.tokenize(txt1)).eql(["Dr.", "Chan", "is", "talking", "slowly", "with", "Mr.", "Cheng", ",", "and", "they", "are", "friends", "."]);
     expect(RiTa.tokenize(txt2)).eql(["He", "can", "not", "did", "not", "could", "not", "should", "not", "would", "not", "eat", "."]);
     expect(RiTa.tokenize(txt3)).eql(["Should", "not", "he", "eat", "?"]);
     expect(RiTa.tokenize(txt4)).eql(["It", "is", "not", "that", "I", "can", "not", "."]);
@@ -269,7 +310,7 @@ describe('RiTa.Core', () => {
     expect(RiTa.tokenize(txt6)).eql(["We", "did", "not", "find", "the", "cat", "."]);
 
     RiTa.SPLIT_CONTRACTIONS = false;
-    expect(RiTa.tokenize(txt1)).eql(["Dr", ".", "Chan", "is", "talking", "slowly", "with", "Mr", ".", "Cheng", ",", "and", "they're", "friends", "."]);
+    expect(RiTa.tokenize(txt1)).eql(["Dr.", "Chan", "is", "talking", "slowly", "with", "Mr.", "Cheng", ",", "and", "they're", "friends", "."]);
     expect(RiTa.tokenize(txt2)).eql(["He", "can't", "didn't", "couldn't", "shouldn't", "wouldn't", "eat", "."]);
     expect(RiTa.tokenize(txt3)).eql(["Shouldn't", "he", "eat", "?"]);
     expect(RiTa.tokenize(txt4)).eql(["It's", "not", "that", "I", "can't", "."]);
@@ -369,15 +410,47 @@ describe('RiTa.Core', () => {
     output = RiTa.untokenize(input);
     expect(output).eq(expected);
 
-    // TODO: more tests
+    // refere to english punctuation marks list on Wiki
 
     let outputs = ["A simple sentence.",
       "that's why this is our place).",
+      "this is for semicolon; that is for else",
+      "this is for 2^3 2*3",
+      "this is for $30 and #30",
+      "this is for 30°C or 30\u2103",
+      "this is for a/b a⁄b",
+      "this is for «guillemets»",
+      "this... is… for ellipsis",
+      "this line is 'for' single ‘quotation’ mark",
+      "Katherine’s cat and John's cat",
+      "this line is for (all) [kind] {of} ⟨brackets⟩ done",
+      "this line is for the-dash",
+      "30% of the student love day-dreaming.",
+      '"that test line"',
+      "my email address is name@domin.com",
+      "it is www.google.com",
+      "that is www6.cityu.edu.hk"
     ];
 
     let inputs = [
       ["A", "simple", "sentence", "."],
       ["that's", "why", "this", "is", "our", "place", ")", "."],
+      ["this", "is", "for", "semicolon", ";", "that", "is", "for", "else"],
+      ["this", "is", "for", "2", "^", "3", "2", "*", "3"],
+      ["this", "is", "for", "$", "30", "and", "#", "30"],
+      ["this", "is", "for", "30", "°", "C", "or", "30", "\u2103"],
+      ["this", "is", "for", "a", "/", "b", "a", "⁄", "b"],
+      ["this", "is", "for", "«", "guillemets", "»"],
+      ["this", "...", "is", "…", "for", "ellipsis"],
+      ["this", "line", "is", "'", "for", "'", "single", "‘", "quotation", "’", "mark"],
+      ["Katherine", "’", "s", "cat", "and", "John", "'", "s", "cat"],
+      ["this", "line", "is", "for", "(", "all", ")", "[", "kind", "]", "{", "of", "}", "⟨", "brackets", "⟩", "done"],
+      ["this", "line", "is", "for", "the", "-", "dash"],
+      ["30", "%", "of", "the", "student", "love", "day", "-", "dreaming", "."],
+      ['"', "that", "test", "line", '"'],
+      ["my", "email", "address", "is", "name", "@", "domin", ".", "com"],
+      ["it", "is", "www", ".", "google", ".", "com"],
+      ["that", "is", "www6", ".", "cityu", ".", "edu", ".", "hk"]
     ];
 
     expect(inputs.length).eq(outputs.length);
@@ -425,7 +498,7 @@ describe('RiTa.Core', () => {
     expect(data["THE"]).eq(undefined);
 
     // opts should be back to default
-    data = RiTa.concordance("The dog ate the cat"); 
+    data = RiTa.concordance("The dog ate the cat");
     expect(Object.keys(data).length).eq(5);
     expect(data["the"]).eq(1);
     expect(data["The"]).eq(1);
