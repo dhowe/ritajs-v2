@@ -490,15 +490,29 @@ describe('RiTa.Markov', () => {
     eql(Object.keys(se.children), [Markov.SS]);
   });
 
-  it('should correctly call toString', () => {
-
+  it('should correctly call Node.childCount', () => {
     let rm = new Markov(2);
-    //let exp = "ROOT { 'The' [1,p=0.200] { 'dog' [1,p=1.000] } 'dog' [1,p=0.200] { 'ate' [1,p=1.000] } 'ate' [1,p=0.200] { 'the' [1,p=1.000] } 'the' [1,p=0.200] { 'cat' [1,p=1.000] } 'cat' [1,p=0.200] }";
-    let exp = "ROOT { '<s>' [1,p=0.143] { 'The' [1,p=1.000] } 'The' [1,p=0.143] { 'dog' [1,p=1.000] } 'dog' [1,p=0.143] { 'ate' [1,p=1.000] } 'ate' [1,p=0.143] { 'the' [1,p=1.000] } 'the' [1,p=0.143] { 'cat' [1,p=1.000] } 'cat' [1,p=0.143] { '</s>' [1,p=1.000] } '</s>' [1,p=0.143] }";
+    expect(rm.root.childCount()).eq(0);
+    rm = new Markov(2);
+    rm.addText('The');
+    expect(rm.root.childCount()).eq(3);
+    expect(rm.root.child("The").childCount()).eq(1);
+  });
+
+
+  it('should correctly call toString', () => {
+    let rm, exp;
+    rm = new Markov(2);
+    exp = "ROOT {   'The' [1,p=0.333]  {     '</s>' [1,p=1.000]   }   '<s>' [1,p=0.333]  {     'The' [1,p=1.000]   }   '</s>' [1,p=0.333] }";
+    rm.addText('The');
+    //console.log(rm.toString());
+    expect(exp).eq(rm.toString().replace(/\n/g, ' '));
+
+    rm = new Markov(2);
+    exp = "ROOT {   'The' [1,p=0.143]  {     'dog' [1,p=1.000]   }   'the' [1,p=0.143]  {     'cat' [1,p=1.000]   }   'dog' [1,p=0.143]  {     'ate' [1,p=1.000]   }   'cat' [1,p=0.143]  {     '</s>' [1,p=1.000]   }   'ate' [1,p=0.143]  {     'the' [1,p=1.000]   }   '<s>' [1,p=0.143]  {     'The' [1,p=1.000]   }   '</s>' [1,p=0.143] }";
     rm.addText('The dog ate the cat');
-    expect(exp).eq(rm.toString()
-      .replace(/\n/g, ' ')
-      .replace(/ +/g, ' '));
+    //console.log(rm.toString());
+    expect(exp).eq(rm.toString().replace(/\n/g, ' '));
   });
 
   it('should correctly call size', () => {

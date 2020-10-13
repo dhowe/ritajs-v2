@@ -1,9 +1,9 @@
-//const { expect } = require('chai');
-const Grammar = RiTa.Grammar;
 
 describe('RiTa.Grammar', () => {
 
     if (typeof module !== 'undefined') require('./before');
+
+    const Grammar = RiTa.Grammar;
 
     let sentences1 = {
         "$start": "$noun_phrase $verb_phrase.",
@@ -129,23 +129,23 @@ describe('RiTa.Grammar', () => {
         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
     });
 
-    it("should correctly call setRules with", () => {
+    it("should correctly call addRules", () => {
 
         let rg = new Grammar();
         ok(typeof rg.rules !== 'undefined');
         ok(typeof rg.rules['start'] === 'undefined');
         ok(typeof rg.rules['noun_phrase'] === 'undefined');
 
-        grammars.forEach(g => { // as JSON strings
-            rg.setRules(JSON.stringify(g));
+        grammars.forEach(g => { // as JS objects
+            rg.addRules(g);
             ok(typeof rg.rules !== 'undefined');
             ok(typeof rg.rules['start'] !== 'undefined');
             ok(typeof rg.rules['noun_phrase'] !== 'undefined');
             ok(rg.expand().length > 0);
         });
 
-        grammars.forEach(g => { // as JS objects
-            rg.setRules(g);
+        grammars.forEach(g => { // as JSON strings
+            rg = Grammar.fromJSON(JSON.stringify(g));
             ok(typeof rg.rules !== 'undefined');
             ok(typeof rg.rules['start'] !== 'undefined');
             ok(typeof rg.rules['noun_phrase'] !== 'undefined');
@@ -202,14 +202,14 @@ describe('RiTa.Grammar', () => {
     });
 
     it("should correctly call toString", () => {
-        let rg = new Grammar({"$start":"pet"});
-        eq(rg.toString(),'{\n  "start": "pet"\n}');
-        rg = new Grammar({"$start":"$pet","$pet":"dog"});
-        eq(rg.toString(),'{\n  "start": "$pet",\n  "pet": "dog"\n}');
-        rg = new Grammar({"$start":"$pet | $iphone","$pet":"dog | cat","$iphone":"iphoneSE | iphone12"});
-        eq(rg.toString(),'{\n  "start": "($pet | $iphone)",\n  "pet": "(dog | cat)",\n  "iphone": "(iphoneSE | iphone12)"\n}');
-        rg = new Grammar({"start":"$pet.articlize()","$pet":"dog | cat"});
-        eq(rg.toString(),'{\n  "start": "$pet.articlize()",\n  "pet": "(dog | cat)"\n}');
+        let rg = new Grammar({ "$start": "pet" });
+        eq(rg.toString(), '{\n  "start": "pet"\n}');
+        rg = new Grammar({ "$start": "$pet", "$pet": "dog" });
+        eq(rg.toString(), '{\n  "start": "$pet",\n  "pet": "dog"\n}');
+        rg = new Grammar({ "$start": "$pet | $iphone", "$pet": "dog | cat", "$iphone": "iphoneSE | iphone12" });
+        eq(rg.toString(), '{\n  "start": "($pet | $iphone)",\n  "pet": "(dog | cat)",\n  "iphone": "(iphoneSE | iphone12)"\n}');
+        rg = new Grammar({ "start": "$pet.articlize()", "$pet": "dog | cat" });
+        eq(rg.toString(), '{\n  "start": "$pet.articlize()",\n  "pet": "(dog | cat)"\n}');
     });
 
     it("should correctly call toString with arg", () => {
@@ -319,19 +319,19 @@ describe('RiTa.Grammar', () => {
 
     it("should allow context in expand", () => {
         let context, rg;
-        context = { randomPosition: () => 'jobArea jobType' };
+        context = { randomPosition: () => 'job type' };
         rg = new RiTa.Grammar({ start: "My .randomPosition()." });
-        expect(rg.expand({ context })).eq("My jobArea jobType.");
+        expect(rg.expand({ context })).eq("My job type.");
 
-        context = { randomPosition: () => 'jobArea jobType' };
+        context = { randomPosition: () => 'job type' };
         rg = new RiTa.Grammar({ stat: "My .randomPosition()." });
-        expect(rg.expand('stat', { context })).eq("My jobArea jobType.");
+        expect(rg.expand('stat', { context })).eq("My job type.");
     });
 
     it("should handle custom transforms", () => {
-        let context = { randomPosition: () => 'jobArea jobType' };
+        let context = { randomPosition: () => 'job type' };
         let rg = new RiTa.Grammar({ start: "My .randomPosition()." }, context);
-        expect(rg.expand()).eq("My jobArea jobType.");
+        expect(rg.expand()).eq("My job type.");
     });
 
     it("should handle symbol transforms", () => {
@@ -359,44 +359,45 @@ describe('RiTa.Grammar', () => {
         let rg, res, s;
 
         s = "{ \"$start\": \"hello &#124; name\" }";
-        rg = new Grammar(s);
+        rg = Grammar.fromJSON(s);
         res = rg.expand();
         //console.log(res);
         ok(res === "hello | name");
 
         s = "{ \"$start\": \"hello: name\" }";
-        rg = new Grammar(s);
+        rg = Grammar.fromJSON(s);
         res = rg.expand();
         ok(res === "hello: name");
 
         s = "{ \"$start\": \"&#8220;hello!&#8221;\" }";
-        rg = new Grammar(s);
+        rg = Grammar.fromJSON(s);
 
         s = "{ \"$start\": \"&lt;start&gt;\" }";
-        rg = new Grammar(s);
+        rg = Grammar.fromJSON(s);
         res = rg.expand();
         //console.log(res);
         ok(res === "<start>");
 
         s = "{ \"$start\": \"I don&#96;t want it.\" }";
-        rg = new Grammar(s);
+        rg = Grammar.fromJSON(s);
         res = rg.expand();
         //console.log(res);
         ok(res === "I don`t want it.");
 
         s = "{ \"$start\": \"&#39;I really don&#39;t&#39;\" }";
-        rg = new Grammar(s);
+        rg = Grammar.fromJSON(s);
         res = rg.expand();
         ok(res === "'I really don't'");
 
         s = "{ \"$start\": \"hello | name\" }";
-        rg = new Grammar(s);
+        rg = Grammar.fromJSON(s);
         for (let i = 0; i < 10; i++) {
             res = rg.expand();
             ok(res === "hello" || res === "name");
         }
     });
 
+<<<<<<< HEAD
     it("should correctly call toJSON and fromJSON",() => {
       let json = {"$start":"$pet $iphone","$pet":"(dog | cat)","$iphone":"(iphoneSE | iphone12)"};
       let rg = new Grammar(json);
@@ -407,6 +408,18 @@ describe('RiTa.Grammar', () => {
       expect(rg.context).eql(rg2.context);
       expect(rg.rules).eql(rg2.rules);
       expect(rg).eql(rg2);
+=======
+    it("should correctly call toJSON/fromJSON", () => {
+        let jsObj = { start: "$pet $iphone", pet: "(dog | cat)", iphone: "(iphoneSE | iphone12)" };
+        let rg = new Grammar(jsObj);
+        let generatedJSON = rg.toJSON();
+        let rg2 = Grammar.fromJSON(generatedJSON);
+        //rg2.addRule('x','x');
+        ok(rg2 !== 'undefined');
+        expect(rg.toString()).eq(rg2.toString());
+        expect(rg.rules).eql(rg2.rules);
+        expect(rg).eql(rg2); // what is this checking exactly ? it should NOT check for matching 'context'
+>>>>>>> 7ad5e9254536c830bc2fd51002224f9beefc2165
     });
 
     function eql(a, b, c) { expect(a).eql(b, c); }
