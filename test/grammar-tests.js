@@ -397,7 +397,6 @@ describe('RiTa.Grammar', () => {
         }
     });
 
-<<<<<<< HEAD
     it("should correctly call toJSON and fromJSON",() => {
       let json = {"$start":"$pet $iphone","$pet":"(dog | cat)","$iphone":"(iphoneSE | iphone12)"};
       let rg = new Grammar(json);
@@ -408,18 +407,6 @@ describe('RiTa.Grammar', () => {
       expect(rg.context).eql(rg2.context);
       expect(rg.rules).eql(rg2.rules);
       expect(rg).eql(rg2);
-=======
-    it("should correctly call toJSON/fromJSON", () => {
-        let jsObj = { start: "$pet $iphone", pet: "(dog | cat)", iphone: "(iphoneSE | iphone12)" };
-        let rg = new Grammar(jsObj);
-        let generatedJSON = rg.toJSON();
-        let rg2 = Grammar.fromJSON(generatedJSON);
-        //rg2.addRule('x','x');
-        ok(rg2 !== 'undefined');
-        expect(rg.toString()).eq(rg2.toString());
-        expect(rg.rules).eql(rg2.rules);
-        expect(rg).eql(rg2); // what is this checking exactly ? it should NOT check for matching 'context'
->>>>>>> 7ad5e9254536c830bc2fd51002224f9beefc2165
     });
 
     function eql(a, b, c) { expect(a).eql(b, c); }
