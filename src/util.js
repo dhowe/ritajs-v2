@@ -1,9 +1,5 @@
 class Util {
 
-  static isNode() {
-    return (typeof module != 'undefined' && module.exports);
-  }
-
   // Takes a syllabification and turns it into a string of phonemes,
   // delimited with dashes, with spaces between syllables
   static syllablesToPhones(syllables) {
@@ -107,6 +103,10 @@ class Util {
       }
     }
     return Util.syllablesToPhones(syllables);
+  }
+
+  static isNode() {
+    return (typeof module != 'undefined' && module.exports);
   }
 
   static isNum(n) {

@@ -2,8 +2,9 @@
 
 const Util = require("./util");
 
-// https://github.com/bmurray7/mersenne-twister-examples/blob/master/javascript-mersenne-twister.js
 class SeededRandom {
+
+  // https://github.com/bmurray7/mersenne-twister-examples/blob/master/javascript-mersenne-twister.js
 
   constructor() {
     this.N = 624;

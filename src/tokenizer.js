@@ -107,7 +107,6 @@ class Tokenizer {
 
       } else if (arr[i] === "." && lastIsWWW) {
 
-        //console.log('yes');
         nextNoSpace = true;
 
       } else if (thisLBracket) {
@@ -127,6 +126,7 @@ class Tokenizer {
           // no-delim, mark quotation done
           afterQuote = true;
           withinQuote = false;
+
         } else if (!((APOS_RE.test(arr[i]) && lastEndWithS) || (APOS_RE.test(arr[i]) && nextIsS))) {
           withinQuote = true;
           afterQuote = false;
@@ -150,11 +150,13 @@ class Tokenizer {
       } else if ((!thisNBPunct && !lastQuote && !lastNAPunct && !lastLBracket && !thisRBracket)
         || (!isLast && thisNBPunct && lastNBPunct && !lastNAPunct
           && !lastQuote && !lastLBracket && !thisRBracket)) {
+
         result += delim;
       }
 
       result += arr[i]; // add to result
       if (thisNBPunct && !lastNBPunct && !withinQuote && SQUOTE_RE.test(arr[i]) && lastEndWithS) {
+
         result += delim; // ??
       }
     }

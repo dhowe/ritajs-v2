@@ -1,23 +1,8 @@
 const { MASS_NOUNS } = require("./util");
 
-class PlingStemmer { 
+class PlingStemmer {
   // a modified port of the Pling stemmer as documented here:
-  //  http://resources.mpi-inf.mpg.de/yago-naga/javatools/doc/javatools/parsers/PlingStemmer.html
-
-  // Cuts a suffix from a string (that is the number of chars given by the
-  cut(s, suffix) {
-    return (s.substring(0, s.length - suffix.length));
-  }
-
-  /* Returns true if a word is probably not Latin */
-  noLatin(s) {
-    return (s.indexOf('h') > 0 || s.indexOf('j') > 0 || s.indexOf('k') > 0 || s.indexOf('w') > 0 || s.indexOf('y') > 0 || s.indexOf('z') > 0 || s.indexOf("ou") > 0 || s.indexOf("sh") > 0 || s.indexOf("ch") > 0 || s.endsWith("aus"));
-  }
-
-  /* Returns true if a word is probably Greek */
-  greek(s) {
-    return (s.indexOf("ph") > 0 || s.indexOf('y') > 0 && s.endsWith("nges"));
-  }
+  // http://resources.mpi-inf.mpg.de/yago-naga/javatools/doc/javatools/parsers/PlingStemmer.html
 
   stem(s) {
 
@@ -178,6 +163,21 @@ class PlingStemmer {
     }
     let idx = categoryIRR.indexOf(s); // plurals at even indices
     return (idx % 2 === 0) ? true : false;
+  }
+
+  // Cuts a suffix from a string (that is the number of chars given by the
+  cut(s, suffix) {
+    return (s.substring(0, s.length - suffix.length));
+  }
+
+  /* Returns true if a word is probably not Latin */
+  noLatin(s) {
+    return (s.indexOf('h') > 0 || s.indexOf('j') > 0 || s.indexOf('k') > 0 || s.indexOf('w') > 0 || s.indexOf('y') > 0 || s.indexOf('z') > 0 || s.indexOf("ou") > 0 || s.indexOf("sh") > 0 || s.indexOf("ch") > 0 || s.endsWith("aus"));
+  }
+
+  /* Returns true if a word is probably Greek */
+  greek(s) {
+    return (s.indexOf("ph") > 0 || s.indexOf('y') > 0 && s.endsWith("nges"));
   }
 }
 
