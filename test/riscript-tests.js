@@ -10,6 +10,15 @@ describe('RiTa.RiScript', () => {
   const RiScript = RiTa.RiScript;
   const Operator = RiTa.Operator;
 
+  it('Should correctly call isParseable', () => {
+    let rs = new RiScript();
+    expect(!rs.isParseable('Hello')).ok;
+    expect(rs.isParseable('(')).ok;
+    expect(rs.isParseable('(A | B)')).ok;
+    expect(rs.isParseable('$hello')).ok;
+    expect(rs.isParseable('$b')).ok;
+  });
+
   describe('Conditionals', () => {
 
     it('Should throw on bad conditionals', () => {
