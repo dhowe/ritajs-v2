@@ -419,11 +419,20 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate(inp, ctx)).eq(out);
     });
 
-    it('Should assign a silent variable to code', () => {
+    it('Should handle assign inline', () => {
       /*       expect(RiTa.evaluate('A [$stored=($animal | $animal)] is a mammal', { animal: 'dog' }, {trace:0})).eq('A dog is a mammal');
             expect(RiTa.evaluate('[$b=(a | a).toUpperCase()] dog is a $b.', 0, {trace:0})).eq('A dog is a A.'); */
       expect(RiTa.evaluate('[$b=(a | a)].toUpperCase() dog is a $b.toLowerCase().', 0)).eq('A dog is a a.');
       expect(RiTa.evaluate('[$b=(a | a)].toUpperCase() dog is a ($b).toLowerCase().', 0)).eq('A dog is a a.');
+      let expected = ['a','b'];
+      let ctx = {};
+      let result = RiTa.evaluate('[$stored=(a | b)]', ctx);
+      expect(expected).contains(result);
+      expect(expected).contains(ctx.stored);
+      let result2 = RiTa.evaluate('$a=$stored', ctx);
+      expect(result2).eq('');
+      expect(ctx.a).eq(ctx.stored);
+      expect(ctx.a).eq(result);
     });
 
     it('Should reuse silent assigned variables', () => {
