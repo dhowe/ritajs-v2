@@ -30,10 +30,10 @@ class RiScript {
     let rs = this.pushTransforms(ctx);
     let expr = rs.lexParseVisit(input, ctx, opts);
     trace && console.log('\nInput1: ' + input.replace(/\r?\n/g, "\\n") + '\nResult1: '
-      + expr + '\nContext: [' + Object.keys(ctx) + ']');
+      + expr + '\nContext: [' + JSON.stringify(ctx) + ']');
 
-    if (!onepass && rs.isParseable(expr)) {
-      for (let i = 0; i < RiScript.MAX_TRIES && expr !== last; i++) {
+    if (!onepass) {
+      for (let i = 0; rs.isParseable(expr) && expr !== last && i < RiScript.MAX_TRIES; i++) {
         last = expr;
         if (!expr) break;
         expr = rs.lexParseVisit(expr, ctx, opts);
@@ -164,9 +164,9 @@ class RiScript {
 
   normalize(s) {
     return s && s.length ?
-      s.replace(/\r/, '')
-        .replace(/\\n/, '')
-        .replace(/\n/, ' ') : '';
+      s.replace(/\r/g, '')
+        .replace(/\\n/g, '')
+        .replace(/\n/g, ' ') : '';
   }
 /*
   createVisitor(context, opts) {
@@ -181,7 +181,9 @@ class RiScript {
   }
 
   isParseable(s) {
-    return PARSEABLE_RE.test(s);
+    let found = PARSEABLE_RE.test(s);
+    //console.log("FOUND: " + s + ": " + found);
+    return found;
   }
 
   static addTransform(name, func) {

@@ -25,8 +25,29 @@ class Visitor extends RiScriptVisitor {
   // Entry point for tree visiting
   start(ctx) {
     this.indexer = 0;
-    return this.visitScript(ctx).trim();
+    if (this.trace) console.log("start: '" + ctx.getText()
+      .replace(/\r?\n/g, "\\n") + "'");
+
+
+    // WORKING HERE ****
+
+    //this.pushTransforms(ctx);
+    let result = this.visitScript(ctx).trim();
+    //this.popTransforms(ctx);
+
+    return result;
   }
+  /*pushTransforms( ctx) {
+    for (String tx : RiScript.transforms.keySet()) {
+      if (!ctx.containsKey(tx)) {
+        ctx.put(tx, RiScript.transforms.get(tx));
+        this.appliedTransforms.add(tx);
+      }
+    }
+  popTransforms(ctx) {
+    for (let tx : appliedTransforms)
+    ctx.remove(tx);
+  } */
 
   ////////////////////// transformable //////////////////////////
 
@@ -120,14 +141,21 @@ class Visitor extends RiScriptVisitor {
     let resolved = this.context[ident];
 
     // if it fails, give up / wait for next pass
-    if (!resolved) return result;
+    if (!resolved) {
+      this.trace && console.log("resolveSymbol[1]: '" + ident + "' -> '" + result + "'");
+      return result;
+    }
 
     // now check for transforms
-    if (!txs.length) return resolved;
-    let applied = this.applyTransforms(resolved, txs);
-    result = applied || resolved + this.flatten(txs);
+    if (!txs.length) {
+      this.trace && console.log("resolveSymbol[2]: '" + ident + "' -> '" + resolved + "'");
+      return resolved;
+    }
 
-    this.trace && console.log("resolveSymbol: '" + ident + "' -> " + result);
+    let applied = this.applyTransforms(resolved, txs);
+    result = applied || (resolved + this.flatten(txs));
+
+    this.trace && console.log("resolveSymbol[3]: '" + ident + "' -> '" + result + "'");
 
     return result; // TODO: handle RiTa.* functions?
   }
@@ -138,15 +166,18 @@ class Visitor extends RiScriptVisitor {
     // visit value and create a mapping in the symbol table */
     let token = ctx.expr();
     let id = symbolName(ctx.symbol().getText());
-    this.trace && console.log('visitAssign: '
-      + id + '=' + this.flatten(token) + ']');
-    this.context[id] = this.visit(token);
+    this.trace && console.log('visitAssign: $'
+      + id + '=\'' + this.flatten(token) + "'");
+    let result = this.visit(token);
+    this.context[id] = result;
+    this.trace && console.log("resolveAssign: $"
+      + id + " -> '" + result + "' " + JSON.stringify(this.context));
     return ''; // no output on vanilla assign
   }
 
   visitExpr(ctx) {
     if (this.trace) {
-      console.log("visitExpr: '" + ctx.getText());
+      console.log("visitExpr: '" + ctx.getText() + "'");
       this.printChildren(ctx);
     }
     return this.visitChildren(ctx);
@@ -159,7 +190,7 @@ class Visitor extends RiScriptVisitor {
 
   visitCexpr(ctx) {
     let conds = ctx.cond();
-    this.trace && console.log('visitCexpr(' + ctx.expr().getText() + ')',
+    this.trace && console.log('visitCexpr:' + ctx.expr().getText() + "'",
       'cond={' + conds.map(c => c.getText().replace(',', '')) + '}');
     for (let i = 0; i < conds.length; i++) {
       let id = symbolName(conds[i].SYM().getText());
@@ -243,9 +274,9 @@ class Visitor extends RiScriptVisitor {
 
     // check for function
     if (tx.endsWith(Visitor.FUNCTION)) {
-      
+
       // strip parens
-      tx = tx.substring(0, tx.length - 2); 
+      tx = tx.substring(0, tx.length - 2);
 
       // function in context
       if (typeof this.context[tx] === 'function') {
@@ -332,7 +363,7 @@ class Visitor extends RiScriptVisitor {
       }
       rule = rule.parent;
     }
-    return sb.replaceAll(/ <- $/, "]");
+    return sb.replace(/ <- $/, "]");
   }
 
   visitChildren(node) {
@@ -345,27 +376,6 @@ class Visitor extends RiScriptVisitor {
     return result;
   }
 
-  visitChildrenOld(ctx) {
-
-    if (!ctx.children) return '';
-
-    this.trace && console.log('visitChildren(' + ctx.constructor.name + '): "'
-      + ctx.getText().replace(/\r?\n/g, "\\n") + '"', ctx.transforms || '[]', '['
-    + ctx.children.reduce((acc, c) => acc += c.constructor.name + ',', '').replace(/,$/, ']'));
-
-    // if we have only one child, transforms apply to it
-    if (ctx.children.length === 1) {
-      let tok = ctx.children[0];
-      tok.transforms = this.inheritTransforms(tok, ctx);
-      //console.log('ONECHILDPOLICY', tok.transforms);
-      return this.visit(tok);
-    }
-
-    // visit each child, pass transforms, and merge their output
-    let result = ctx.children.reduce((acc, child) => acc + this.visit(child), '');
-    return this.handleTransforms(result, ctx.transforms);
-  }
-
   // ---------------------- Helpers ---------------------------
 
   getRuleName(ctx) {
@@ -374,13 +384,13 @@ class Visitor extends RiScriptVisitor {
       this.parent.parser.ruleNames[ctx.ruleIndex];
   }
 
-  countChildRules(ctx, ruleName) {
-    let count = 0;
-    for (let i = 0; i < ctx.getChildCount(); i++) {
-      if (this.getRuleName(ctx.getChild(i)) === ruleName) count++;
-    }
-    return count;
-  }
+  /*   countChildRules(ctx, ruleName) {
+      let count = 0;
+      for (let i = 0; i < ctx.getChildCount(); i++) {
+        if (this.getRuleName(ctx.getChild(i)) === ruleName) count++;
+      }
+      return count;
+    } */
 
   printChildren(ctx) {
     for (let i = 0; i < ctx.getChildCount(); i++) {
@@ -393,7 +403,7 @@ class Visitor extends RiScriptVisitor {
   flatten(toks) {
     if (!toks) return "";
     if (!Array.isArray(toks)) toks = [toks.getText()];
-    let s = toks.reduce((acc, t) => acc + "|" + t.getText(), "");
+    let s = toks.reduce((acc, t) => acc + "|" + t, "");
     return s.startsWith("|") ? s.substring(1) : s;
   }
 
@@ -403,15 +413,15 @@ class Visitor extends RiScriptVisitor {
     }
     return this.sequence.next();
   }
-
-  handleEmptyChoices(ctx, options) {
-    let ors = this.countChildRules(ctx, Visitor.OR);
-    let exprs = this.countChildRules(ctx, "expr");
-    let adds = (ors + 1) - exprs;
-    for (let i = 0; i < adds; i++) {
-      options.push(Visitor.EMPTY);
-    }
-  }
+  /* 
+    handleEmptyChoices(ctx, options) {
+      let ors = this.countChildRules(ctx, Visitor.OR);
+      let exprs = this.countChildRules(ctx, "expr");
+      let adds = (ors + 1) - exprs;
+      for (let i = 0; i < adds; i++) {
+        options.push(Visitor.EMPTY);
+      }
+    } */
 }
 
 class ChoiceState {
