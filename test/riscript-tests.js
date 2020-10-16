@@ -292,15 +292,11 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('blue dog');
     });
 
-    it('Should handle various transforms', () => {
-      expect(RiTa.evaluate('(BAZ).toLowerCase().ucf()', ctx = {})).eq('Baz');
-      expect(RiTa.evaluate('(a).toUpperCase()', ctx = {})).eq('A');
-      expect(RiTa.evaluate('.toUpperCase()', ctx = {})).eq('');
-      expect(RiTa.evaluate('$a=b\n$a.toUpperCase()', ctx = {})).eq('B');
-      expect(RiTa.evaluate('[$b=((a | a)|a)].toUpperCase() dog.', ctx = {})).eq('A dog.');
-      expect(RiTa.evaluate('((a)).toUpperCase()', ctx = {})).eq('A');
-      expect(RiTa.evaluate('$a.toUpperCase()\n($a=b)', ctx = {})).eq('B');
-      expect(RiTa.evaluate('$dog.ucf()', ctx = { dog: 'terrier' })).eq('Terrier');
+    it('Should handle nested context', () => {
+      let ctx1 = { color: 'blue' };
+      let ctx = { bar: ctx1 };
+      let res = RiTa.evaluate('$foo=$bar.color\n$foo', ctx);
+      expect(res).eq('blue');
     });
   });
 
@@ -838,6 +834,17 @@ describe('RiTa.RiScript', () => {
       let Blah3 = () => 'Blah3';
       RiTa.addTransform("Blah3", Blah3);
       expect(RiTa.evaluate('That is (ant).Blah3().')).eq('That is Blah3.');
+    });
+
+    it('Should handle various transforms', () => {
+      expect(RiTa.evaluate('(BAZ).toLowerCase().ucf()', ctx = {})).eq('Baz');
+      expect(RiTa.evaluate('(a).toUpperCase()', ctx = {})).eq('A');
+      expect(RiTa.evaluate('.toUpperCase()', ctx = {})).eq('');
+      expect(RiTa.evaluate('$a=b\n$a.toUpperCase()', ctx = {})).eq('B');
+      expect(RiTa.evaluate('[$b=((a | a)|a)].toUpperCase() dog.', ctx = {})).eq('A dog.');
+      expect(RiTa.evaluate('((a)).toUpperCase()', ctx = {})).eq('A');
+      expect(RiTa.evaluate('$a.toUpperCase()\n($a=b)', ctx = {})).eq('B');
+      expect(RiTa.evaluate('$dog.ucf()', ctx = { dog: 'terrier' })).eq('Terrier');
     });
   });
 
