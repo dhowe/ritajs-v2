@@ -535,6 +535,8 @@ describe('RiTa.RiScript', () => {
 
     it('Should eval symbols starting with number', () => {
       let res;
+      res = RiTa.evaluate('$foo=hello\n$start=I said $1foo to her\n$start', {});
+      expect(res).eq('I said hello to her');
       res = RiTa.evaluate('$1foo=hello\n$1start=I said $1foo to her\n$1start', {});
       expect(res).eq('I said hello to her');
       res = RiTa.evaluate('$1foo=(hello)\n$1start=I said $1foo to her\n$1start', {});
