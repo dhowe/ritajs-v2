@@ -435,7 +435,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.a).eq(result);
     });
 
-    it('Should reuse silent assigned variables', () => {
+    it('Should reuse inline assignment', () => {
       let ctx = {};
       let inp = 'Once there was a girl called [$hero=(Jane | Jane)].\n$hero lived in [$home=(Neverland | Neverland)].\n$hero liked living in $home.';
       let out = 'Once there was a girl called Jane. Jane lived in Neverland. Jane liked living in Neverland.';
@@ -595,6 +595,14 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(a | b)')).to.be.oneOf(['a', 'b']);
       expect(RiTa.evaluate('(a | b | c)'), {}).to.be.oneOf(['a', 'b', 'c']);
       expect(RiTa.evaluate('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
+    });
+
+    it('Should parse/select choices with TX', () => {
+      expect(RiTa.evaluate('(a | a).toUpperCase()', {})).eq('A');
+      expect(RiTa.evaluate('(a | a).up()', {})).eq('a.up()');
+      let upf = (x) => {x = x + '.toUpperCase()'};
+      expect(RiTa.evaluate('(a | a).up()', { up: upf})).eq('A');
+      expect(RiTa.evaluate('$a', { a: 1 })).eq('1');
     });
 
     it('Should parse choices from an expression', () => {
