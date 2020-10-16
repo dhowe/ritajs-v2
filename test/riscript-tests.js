@@ -600,7 +600,7 @@ describe('RiTa.RiScript', () => {
     it('Should parse/select choices with TX', () => {
       expect(RiTa.evaluate('(a | a).toUpperCase()', {})).eq('A');
       expect(RiTa.evaluate('(a | a).up()', {})).eq('a.up()');
-      let upf = (x) => {x = x + '.toUpperCase()'};
+      let upf = (x) => x + '.toUpperCase()';
       expect(RiTa.evaluate('(a | a).up()', { up: upf})).eq('A');
       expect(RiTa.evaluate('$a', { a: 1 })).eq('1');
     });
@@ -660,6 +660,11 @@ describe('RiTa.RiScript', () => {
     it('Should handle no-input transforms', () => {
       let ctx = { 'capA': () => 'A' };
       expect(RiTa.evaluate('.capA()', ctx)).eq('A');
+
+      ctx = { 'capA': s => s.length > 0 ? s : 'B' };
+      expect(RiTa.evaluate('.capA()', ctx)).eq('B');
+      expect(RiTa.evaluate('().capA()', ctx)).eq('B');
+      expect(RiTa.evaluate('(A).capA()', ctx)).eq('A');
 
       RiTa.addTransform('capA', () => 'A');
       expect(RiTa.evaluate('.capA()', {})).eq('A');
