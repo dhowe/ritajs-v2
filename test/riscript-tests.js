@@ -808,6 +808,12 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.articlize("ermintrout")).eq('an ermintrout');
     });
 
+    it('Should correctly call articlize on phrases', () => {
+      expect(RiTa.articlize('black dog')).eq('a black dog');
+      expect(RiTa.articlize('black ant')).eq('a black ant');
+      expect(RiTa.articlize('orange ant')).eq('an orangle ant');
+    });
+
     it('Should parse object properties', () => {
       let dog = { name: 'spot', color: 'white', hair: { color: 'white' } };
       expect(RiTa.evaluate("It was a $dog.hair.color dog.", { dog })).eq('It was a white dog.');
