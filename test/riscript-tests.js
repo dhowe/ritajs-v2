@@ -445,6 +445,8 @@ describe('RiTa.RiScript', () => {
 
     it('Should eval linebreak-defined variables', () => {
       let res;
+      res = RiTa.evaluate('a.\nb.', ctx = { b: 'c' });
+      expect(res).eq('a. c.');
       res = RiTa.evaluate('$foo=hello\n$start=I said $foo to her\n$start', {});
       expect(res).eq('I said hello to her');
       res = RiTa.evaluate('$foo=(hello)\n$start=I said $foo to her\n$start', {});
