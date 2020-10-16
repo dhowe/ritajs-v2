@@ -119,6 +119,13 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('a');
 
       ctx = {};
+      expect(RiTa.evaluate('$1foo=a', ctx)).eq('');
+      //expect(ctx.1foo).eq('a');
+      for (let k in ctx) {
+        expect(ctx.k).eq('a');
+      }
+
+      ctx = {};
       //RiTa.evaluate('$foo=(a) b', ctx, {trace:0});
       expect(RiTa.evaluate('$foo=(a) b', ctx)).eq('');
       expect(ctx.foo).eq('a b');
@@ -453,7 +460,7 @@ describe('RiTa.RiScript', () => {
     it('Should resolve symbols in context', () => {
 
       expect(RiTa.evaluate('$a.capitalize()', { a: '(terrier | terrier)' })).eq('Terrier');
-
+      //?
       expect(RiTa.evaluate('the $dog ate', { dog: 'terrier' })).eq('the terrier ate');
       expect(RiTa.evaluate('the $dog $verb', { dog: 'terrier', verb: 'ate' })).eq('the terrier ate');
 
