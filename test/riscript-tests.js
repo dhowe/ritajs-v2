@@ -551,41 +551,6 @@ describe('RiTa.RiScript', () => {
       res = RiTa.evaluate('$1foo=(hello)\n$1start=I said $1foo to her\n$1start', {});
       expect(res).eq('I said hello to her');
     });
-
-    it('Should handle symbols in context', () => {
-      let ctx;
-      ctx = { dog: 'terrier' };
-      expect(RiTa.evaluate('the $dog ate', ctx)).eq('the terrier ate');
-      ctx = { dog: 'terrier', verb: 'ate' };
-      expect(RiTa.evaluate('the $dog $verb', ctx)).eq('the terrier ate');
-      ctx = {};
-      expect(RiTa.evaluate('$foo', ctx)).eq('$foo');
-      ctx = { foo: 'bar' };
-      expect(RiTa.evaluate('$foo', ctx)).eq('bar');
-      ctx = { dog: 'terrier' };
-      expect(RiTa.evaluate('a $dog', ctx)).eq('a terrier');
-      ctx = { dog: 'beagle' };
-      expect(RiTa.evaluate('I ate the $dog', ctx)).eq('I ate the beagle');
-      ctx = { dog: 'lab' };
-      expect(RiTa.evaluate('The $dog today', ctx)).eq('The lab today');
-      expect(RiTa.evaluate('I ate the $dog', ctx)).eq('I ate the lab');
-      ctx = {};
-      expect(RiTa.evaluate('$foo\n', ctx)).eq('$foo');
-      expect(RiTa.evaluate('a $foo\ndog', ctx)).eq('a $foo dog');
-      ctx = { foo: 'bar' };
-      expect(RiTa.evaluate('$foo\n', ctx)).eq('bar');
-      ctx = { dog: 'beagle' };
-      expect(RiTa.evaluate('I ate\nthe $dog', ctx)).eq('I ate the beagle');
-      ctx = { dog: 'lab' };
-      expect(RiTa.evaluate('The $dog\ntoday', ctx)).eq('The lab today');
-      expect(RiTa.evaluate('I ate the\n$dog', ctx)).eq('I ate the lab');
-      ctx = { dog: 'terrier' };
-      expect(RiTa.evaluate('$100 is a lot of $dog.', ctx)).eq('$100 is a lot of terrier.');
-      expect(RiTa.evaluate('the $dog cost $100', ctx)).eq('the terrier cost $100');
-      expect(RiTa.evaluate('the $dog cost $100!', ctx)).eq('the terrier cost $100!');
-      expect(RiTa.evaluate('the $dog costot', ctx)).eq('bthe terrier costot');
-      expect(RiTa.evaluate('the $dog^1 was a footnote.', ctx)).eq('the terrier^1 was a footnote.');
-    });
   });
 
   describe('Choice', () => {
