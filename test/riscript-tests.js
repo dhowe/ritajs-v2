@@ -890,6 +890,11 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$a.toUpperCase()\n($a=b)', ctx = {})).eq('B');
       expect(RiTa.evaluate('$dog.ucf()', ctx = { dog: 'terrier' })).eq('Terrier');
     });
+
+    it('Should handle transformed symbols in context', () => {
+      let ctx = { a: '(terrier | terrier'};
+      expect(RiTa.evaluate('$a.capitalize()', ctx)).eq('Terrier');
+    });
   });
 
   describe('Grammar', () => {
