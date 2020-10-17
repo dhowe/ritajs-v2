@@ -58,7 +58,7 @@ class Visitor extends RiScriptVisitor {
     let id = symbolName(ctx.symbol().getText());
 
     this.trace && console.log('visitInline: ' + id + '=' +
-      this.flatten(token) + ' tfs=[' + (txs || '') + ']');
+      flatten(token) + ' tfs=[' + (txs || '') + ']');
 
     // visit the token and add result to the context
     let visited = this.visit(token);
@@ -67,7 +67,7 @@ class Visitor extends RiScriptVisitor {
     // apply transforms if we have them
     if (!txs.length) return visited;
     let applied = this.applyTransforms(visited, txs);
-    let result = applied || visited + this.flatten(txs);
+    let result = applied || visited + flattenTx(txs);
 
     this.trace && console.log('resolveInline: $' + id + '=' + result);
 
@@ -87,13 +87,12 @@ class Visitor extends RiScriptVisitor {
     let choice = new ChoiceState(this, ctx); // TODO: handle sequencer (see visitChoiceOld)
 
     this.trace && console.log("visitChoice: '" + ctx.getText()
-      + "' options=['" + this.flatten(choice.options).replace(/\|/g, "','")
-      + "'] tfs=" + this.flatten(txs));
+      + "' options=[" + choice.optionStr() + "] tfs=" + flattenTx(txs));
 
     // make the selection
     let tok = choice.select();
     if (this.trace) console.log("  select: '" + tok.getText()
-      + "' [" + this.getRuleName(tok) + "]");
+      + "' [" + this.ruleName(tok) + "]");
 
     // now visit the token 
     let visited = this.visit(tok);
@@ -101,7 +100,7 @@ class Visitor extends RiScriptVisitor {
     // now check for transforms
     if (!txs.length) return visited;
     let applied = this.applyTransforms(visited, txs);
-    let result = applied || (visited + this.flatten(txs));
+    let result = applied || (visited + flattenTx(txs));
 
     if (this.trace) console.log("resolveChoice: '" + result + "'");
     return result;
@@ -134,12 +133,12 @@ class Visitor extends RiScriptVisitor {
     // if the symbol is pending just return it
     if (this.pendingSymbols.includes(ident)) {
       this.trace && console.log("IGNORE PENDING Symbol: \"\" tfs="
-        + this.flatten(txs) + " -> " + result);
+        + flattenTx(txs) + " -> " + result);
       return result;
     }
 
     this.trace && console.log("visitSymbol: $" + ident
-      + " tfs=" + this.flatten(txs));
+      + " tfs=" + flattenTx(txs));
 
     // now try to resolve from context
     let resolved = this.context[ident];
@@ -157,7 +156,7 @@ class Visitor extends RiScriptVisitor {
     }
 
     let applied = this.applyTransforms(resolved, txs);
-    result = applied || (resolved + this.flatten(txs));
+    result = applied || (resolved + flattenTx(txs)); // TODO: PROBLEM
 
     this.trace && console.log("resolveSymbol[3]: '" + ident + "' -> '" + result + "'");
 
@@ -171,7 +170,7 @@ class Visitor extends RiScriptVisitor {
     let token = ctx.expr();
     let id = symbolName(ctx.symbol().getText());
     this.trace && console.log('visitAssign: $'
-      + id + '=\'' + this.flatten(token) + "'");
+      + id + '=\'' + flatten(token) + "'");
     let result = this.visit(token);
     this.context[id] = result;
     this.trace && console.log("resolveAssign: $"
@@ -260,7 +259,7 @@ class Visitor extends RiScriptVisitor {
 
     // NOTE: even multiple transforms show up as a single one here [TODO]
     let tf = tfs[0];
-    if (!tf) throw Error("Null Transform: " + this.flatten(tfs));
+    if (!tf) throw Error("Null Transform: " + flattenTx(tfs));
 
     // split the string and apply each transform
     let transforms = tf.getText().replace(/^\./g, "").split("\.");
@@ -385,40 +384,46 @@ class Visitor extends RiScriptVisitor {
 
   // ---------------------- Helpers ---------------------------
 
-  getRuleName(ctx) {
-    return ctx.hasOwnProperty('symbol') ?
-      this.parent.lexer.symbolicNames[ctx.symbol.type] :
-      this.parent.parser.ruleNames[ctx.ruleIndex];
-  }
-
   /*   countChildRules(ctx, ruleName) {
       let count = 0;
       for (let i = 0; i < ctx.getChildCount(); i++) {
-        if (this.getRuleName(ctx.getChild(i)) === ruleName) count++;
+        if (this.ruleName(ctx.getChild(i)) === ruleName) count++;
       }
       return count;
     } */
 
-  printChildren(ctx) {
-    for (let i = 0; i < ctx.getChildCount(); i++) {
-      let child = ctx.getChild(i);
-      console.log("  child[" + i + "]: '" + child.getText() +
-        "' [" + this.getRuleName(child) + "]");
-    }
-  }
 
-  flatten(toks) {
-    if (!toks) return "";
-    if (!Array.isArray(toks)) toks = [toks.getText()];
-    let s = toks.reduce((acc, t) => acc + "|" + t, "");
-    return s.startsWith("|") ? s.substring(1) : s;
-  }
+  /*   flattenTx(txs) {
+      if (!txs || !txs.length) return "";
+      return txs[0].getText();
+    }
+  
+    flatten(toks) {
+      if (!toks) return "";
+      if (!Array.isArray(toks)) toks = [toks.getText()];
+      let s = toks.reduce((acc, t) => acc + "|" + t, "");
+      return s.startsWith("|") ? s.substring(1) : s;
+    } */
 
   handleSequence(options, shuffle) {
     if (!this.sequence) {
       this.sequence = new Sequence(options, shuffle);
     }
     return this.sequence.next();
+  }
+
+  ruleName(ctx) {
+    return ctx.hasOwnProperty('symbol') ?
+      this.parent.lexer.symbolicNames[ctx.symbol.type] :
+      this.parent.parser.ruleNames[ctx.ruleIndex];
+  }
+
+  printChildren(ctx) {
+    for (let i = 0; i < ctx.getChildCount(); i++) {
+      let child = ctx.getChild(i);
+      console.log("  child[" + i + "]: '" + child.getText() +
+        "' [" + this.ruleName(child) + "]");
+    }
   }
   /* 
     handleEmptyChoices(ctx, options) {
@@ -456,8 +461,12 @@ class ChoiceState {
     if (this.type === RSEQUENCE) this.options =
       RiTa.randomizer.randomOrdering(this.options);
 
-    if (parent.trace) console.log('  new ChoiceState#' + this.id + '('
-      + this.options.map(o => o.getText()) + "," + this.type + ")");
+    //if (parent.trace) console.log('  new ChoiceState#' + this.id + '('
+      //+ this.options.map(o => o.getText()) + ", type=" + this.type + ")");
+  }
+
+  optionStr() {
+    return this.options.map(o => o.getText());
   }
 
   select() {
@@ -539,6 +548,16 @@ class Sequence {
 
 function symbolName(text) {
   return (text.length && text[0] === Visitor.SYM) ? text.substring(1) : text;
+}
+
+function flatten(tok) {
+  if (!tok) return "";
+  return tok.getText();
+}
+
+function flattenTx(txs) {
+  if (!txs || !txs.length) return "";
+  return txs[0].getText();
 }
 
 /*
