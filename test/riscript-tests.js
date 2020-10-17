@@ -822,6 +822,11 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$a.b', { a: { b: 1 } }, { singlePass: true })).eq('1');
     });
 
+    it('Should handle member properly', () => {
+      let dog = { name: 'Spot' };
+      expect(RiTa.evaluate('$dog.name was a good dog.', dog)).eq('Spot was a good dog.');
+    });
+
     it('Should call member function', () => {
       let dog = { name: 'Spot', getColor: () => 'red' };
       expect(RiTa.evaluate("$dog.name was a $dog.getColor() dog.",
