@@ -424,7 +424,7 @@ describe('RiTa.RiScript', () => {
             expect(RiTa.evaluate('[$b=(a | a).toUpperCase()] dog is a $b.', 0, {trace:0})).eq('A dog is a A.'); */
       expect(RiTa.evaluate('[$b=(a | a)].toUpperCase() dog is a $b.toLowerCase().', 0)).eq('A dog is a a.');
       expect(RiTa.evaluate('[$b=(a | a)].toUpperCase() dog is a ($b).toLowerCase().', 0)).eq('A dog is a a.');
-      let expected = ['a','b'];
+      let expected = ['a', 'b'];
       let ctx = {};
       let result = RiTa.evaluate('[$stored=(a | b)]', ctx);
       expect(expected).contains(result);
@@ -601,7 +601,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(a | a).toUpperCase()', {})).eq('A');
       expect(RiTa.evaluate('(a | a).up()', {})).eq('a.up()');
       let upf = (x) => x + '.toUpperCase()';
-      expect(RiTa.evaluate('(a | a).up()', { up: upf})).eq('A');
+      expect(RiTa.evaluate('(a | a).up()', { up: upf })).eq('A');
       expect(RiTa.evaluate('$a', { a: 1 })).eq('1');
     });
 
@@ -869,14 +869,15 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should handle custom transforms', () => {
-      /*       let Blah = () => 'Blah';
-            expect(RiTa.evaluate('That is (ant).Blah().', { Blah })).eq('That is Blah.');
-            let ctx = { Blah2: () => 'Blah2' };
-            expect(RiTa.evaluate('That is (ant).Blah2().', ctx)).eq('That is Blah2.');
-       */
+      let Blah = () => 'Blah';
+      expect(RiTa.evaluate('That is (ant).Blah().', { Blah })).eq('That is Blah.');
+      let ctx = { Blah2: () => 'Blah2' };
+      expect(RiTa.evaluate('That is (ant).Blah2().', ctx)).eq('That is Blah2.');
+
       let Blah3 = () => 'Blah3';
-      RiTa.addTransform("Blah3", Blah3);
+      RiTa.addTransform('Blah3', Blah3);
       expect(RiTa.evaluate('That is (ant).Blah3().')).eq('That is Blah3.');
+      RiTa.addTransform('Blah3', null);
     });
 
     it('Should handle various transforms', () => {
