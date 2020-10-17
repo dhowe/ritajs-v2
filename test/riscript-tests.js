@@ -67,7 +67,6 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("'foo'", {})).eq("'foo'");
       expect(RiTa.evaluate('foo\nbar', {})).eq('foo bar');
       expect(RiTa.evaluate('foo&#10;bar', {})).eq('foo\nbar');
-      expect(RiTa.evaluate('$foo=bar \\nbaz\n$foo', {},TT)).eq('bar baz'); ``
       expect(RiTa.evaluate('$foo=bar\nbaz', {})).eq('baz');
       expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {})).eq('baz bar');
 
@@ -220,8 +219,11 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should parse transformed assignments', () => {
-
       let ctx;
+
+      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx = {}, TT)).eq(''); // empty string
+      expect(ctx.foo).eq('');
+
       expect(RiTa.evaluate('$foo=(a).toUpperCase()', ctx = {})).eq('');
       expect(ctx.foo).eq('A');
 
@@ -245,9 +247,6 @@ describe('RiTa.RiScript', () => {
 
       expect(RiTa.evaluate('$foo=((a | a) | (a | a))', ctx = {})).eq('');
       expect(ctx.foo).eq('a');
-
-      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx = {})).eq(''); // empty string
-      expect(ctx.foo).eq('');
     });
 
     it('Should pluralize phrases', () => {

@@ -192,6 +192,12 @@ describe('RiTa.KnownIssues', () => {
     expect(RiTa.evaluate('[$a=a].toUpperCase()', ctx, 0)).eq('');
     expect(ctx.a).eq('A')
   });
+
+  it('Should eval simple expressions', () => {
+    // NOT SURE WHAT THIS TEST IS ABOUT
+    expect(RiTa.evaluate('$foo=bar \\nbaz\n$foo', {},TT)).eq('bar baz'); ``
+  });
+
 });
 
 function eql(output, expected, msg) { expect(output).eql(expected, msg); }

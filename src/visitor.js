@@ -123,7 +123,11 @@ class Visitor extends RiScriptVisitor {
     let tn = ctx.SYM();
 
     // handle transform on empty string    
-    if (!tn) return this.applyTransforms('', txs) || result;
+    if (!tn) {
+      this.trace && console.log("emptyTransform: " + ctx.getText());
+      let applied = this.applyTransforms('', txs);
+      return applied !== null ? applied : result;
+    }
 
     let ident = symbolName(tn.getText());
 
@@ -238,7 +242,9 @@ class Visitor extends RiScriptVisitor {
 
   //////////////////////////////////////////////////////
   applyTransforms(term, tfs) {
-    if (!term || !tfs || !tfs.length) return null;
+    if (typeof term === 'undefined' || !tfs || !tfs.length) {
+      return null;
+    }
     if (tfs.length > 1) throw Error("Invalid # Transforms: " + tfs.length);
 
     let result = term;
@@ -270,7 +276,8 @@ class Visitor extends RiScriptVisitor {
 
     let result = null;
 
-    if (this.trace) console.log("applyTransform: '" + target + "' tf=" + tx, typeof target[tx]);
+    if (this.trace) console.log("applyTransform: '" + target
+      + "' tf=" + tx);
 
     // check for function
     if (tx.endsWith(Visitor.FUNCTION)) {
