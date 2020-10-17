@@ -833,6 +833,12 @@ describe('RiTa.RiScript', () => {
         { dog })).eq('Spot was a red dog.');
     });
 
+    it('Should handle member transforms', () => {
+      let dog = { name: 'spot', getColor: () => 'red' };
+      expect(RiTa.evaluate("$dog.name.ucf() was a $dog.getColor() dog.",
+        { dog })).eq('Spot was a red dog.');
+    });
+
     it('Should handle transforms ending with punc', () => {
       expect(RiTa.evaluate('(a | b).toUpperCase().')).to.be.oneOf(['A.', 'B.']);
       expect(RiTa.evaluate("The (boy | boy).toUpperCase()!")).eq('The BOY!');
