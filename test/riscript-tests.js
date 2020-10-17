@@ -938,6 +938,17 @@ describe('RiTa.RiScript', () => {
       expect(rs).eq('result');
     });
 
+    it('Should eval transform form methods', () => {
+      class Bar{
+        constructor();
+        getProp(){
+          return 'result';
+        }
+      }
+      let ctx = { bar: new Bar() };
+      let rs = RiTa.evaluate('$foo=$bar.getProp()\n$foo', ctx);
+      expect(rs).eq('result');
+    });
 
     it('Should do preparsing', () => {
       let context = { bar: { ucf: 'result' } };
