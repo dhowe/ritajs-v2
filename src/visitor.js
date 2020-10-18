@@ -209,29 +209,35 @@ class Visitor extends RiScriptVisitor {
   }
 
   visitCond(ctx) {
-    if (this.trace) console.log("visitCond: '" + ctx.getText() + "'\t" + stack(ctx));
+    if (this.trace) console.log("visitCond: '" 
+      + ctx.getText() + "'\t" + stack(ctx));
     return this.visitChildren(ctx);
   }
 
   visitWeight(ctx) {
-    if (this.trace) console.log("visitWeight: '" + ctx.getText() + "'\t" + stack(ctx));
+    if (this.trace) console.log("visitWeight: '" 
+      + ctx.getText() + "'\t" + stack(ctx));
     return this.visitChildren(ctx);
   }
 
   visitWexpr(ctx) {
-    if (this.trace) console.log("visitWexpr: '" + ctx.getText() + "'\t" + stack(ctx));
+    if (this.trace) console.log("visitWexpr: '" 
+      + ctx.getText() + "'\t" + stack(ctx));
     return this.visitChildren(ctx);
   }
 
   visitOp(ctx) {
-    if (this.trace) console.log("visitOp: '" + ctx.getText() + "'\t" + stack(ctx));
+    if (this.trace) console.log("visitOp: '" 
+       + ctx.getText() + "'\t" + stack(ctx));
     return this.visitChildren(ctx);
   }
 
   visitTerminal(tn) {
     let text = tn.getText();
-    if (text === '\n') return " "; // why do we need this?
-    if (text !== Visitor.EOF && this.trace) console.log("visitTerminal: '" + text + "'");
+    if (text === '\n') return ' '; // need
+    if (this.trace && text !== Visitor.EOF) {
+      console.log("visitTerminal: '" + text + "'");
+    }
     return null;
   }
 
@@ -295,7 +301,7 @@ class Visitor extends RiScriptVisitor {
     }
     // check for property
     else {
-      result = term[tx];
+      result = target[tx];
     }
 
     if (this.trace) console.log("resolveTransform: '"

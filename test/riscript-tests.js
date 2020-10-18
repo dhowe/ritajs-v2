@@ -68,13 +68,10 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('foo\nbar', {})).eq('foo bar');
       expect(RiTa.evaluate('foo&#10;bar', {})).eq('foo\nbar');
       expect(RiTa.evaluate('$foo=bar\nbaz', {})).eq('baz');
-      expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {})).eq('baz bar');
+      expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {},TT)).eq('baz bar');
 
-      let ctx, expr;
-      ctx = { a: 'a', b: 'b' };
-      expr = '(a|a)';
-      expect(RiTa.evaluate(expr, ctx)).eq('a');
-
+      let ctx = { a: 'a', b: 'b' };
+      expect(RiTa.evaluate('(a|a)', ctx)).eq('a');
       //expect(RiTa.evaluate('foo.bar', {}, {trace:0})).eq('foo.bar'); // KNOWN ISSUE
     });
 
@@ -410,13 +407,16 @@ describe('RiTa.RiScript', () => {
   });
   describe('Symbol', () => {
 
-    /*     it('Should throw on bad symbols', () => {
-          expect(() => RiTa.evaluate('$', 0, {silent:1})).to.throw();
-        });
+    /*  
+    it('Should throw on bad symbols', () => {
+      expect(() => RiTa.evaluate('$', 0, {silent:1})).to.throw();
+    });
+
     it('Should throw for riscript in context symbol', () => { // TODO: is there a use-case here?
       expect(() => RiTa.evaluate('[$stored=$name] is called $stored',
         ctx = { name: '(Dave | Dave)' }, { trace: 1 })).to.throw();
-    });     */
+    });     
+    */
 
     it('Should eval linebreak-defined variables', () => {
       let res;
@@ -434,7 +434,7 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve symbols in context', () => {
 
-      expect(RiTa.evaluate('$a.capitalize()', { a: '(terrier | terrier)' },TT)).eq('Terrier');
+      expect(RiTa.evaluate('$a.capitalize()', { a: '(terrier | terrier)' }, TT)).eq('Terrier');
       expect(RiTa.evaluate('the $dog ate', { dog: 'terrier' })).eq('the terrier ate');
       expect(RiTa.evaluate('the $dog $verb', { dog: 'terrier', verb: 'ate' })).eq('the terrier ate');
 
@@ -630,11 +630,10 @@ describe('RiTa.RiScript', () => {
       let rule = '(' + opts.join('|') + ').seq()';
       let rs = new RiScript();
       for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule);
+        let res = rs.evaluate(rule,{});
         //console.log('got', i, ':', res);
         expect(res).eq(opts[i]);
       }
-
       let rule2 = '(' + opts.join('|') + ').seq().capitalize()';
       for (let i = 0; i < opts.length; i++) {
         let res = rs.evaluate(rule2);

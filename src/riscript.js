@@ -31,7 +31,7 @@ class RiScript {
     let last, expr = input, trace = opts.trace;
     let rs = this.pushTransforms(ctx);
 
-    for (let i = 0; rs.isParseable(expr) && expr !== last && i < RiScript.MAX_TRIES; i++) {
+    for (let i = 0; /*rs.isParseable(expr) &&*/ expr !== last && i < RiScript.MAX_TRIES; i++) {
       last = expr;
       if (trace) console.log("--------------------- Pass#" + i + " ----------------------");
       expr = rs.lexParseVisit(expr, ctx, opts);
@@ -134,17 +134,16 @@ class RiScript {
 
   preParse(input, opts = {}) {
     let parse = input, pre = '', post = '';
-    //console.log('preParse', parse);
-    if (!opts.skipPreParse && !PREPARSE0_RE.test(parse)) {
+    if (!opts.skipPreParse && !PREPARSE_A_RE.test(parse)) {
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
       while (preIdx < words.length) {
-        if (PREPARSE1_RE.test(words[preIdx])) break;
+        if (PREPARSE_B_RE.test(words[preIdx])) break;
         preIdx++;
       }
       if (preIdx < words.length) {
         while (postIdx >= 0) {
-          if (PREPARSE1_RE.test(words[postIdx])) break;
+          if (PREPARSE_B_RE.test(words[postIdx])) break;
           postIdx--;
         }
       }
@@ -158,7 +157,7 @@ class RiScript {
   lexParseVisit(input, context, opts) {
 
     let { pre, parse, post } = this.preParse(input, opts);
-    //opts.trace && console.log('preParse("' + (pre || '') + '", "' + (post || '') + '"):');
+    opts.trace && console.log('preParse("' + (pre || '') + '", "' + (post || '') + '"):');
     let tree = parse.length && this.lexParse(parse, opts);
     let result = parse.length ? this.visitor.init(context, opts).start(tree) : '';
     return (this.normalize(pre) + ' ' + result + ' ' + this.normalize(post)).trim();
@@ -279,8 +278,8 @@ RiScript.transforms = {
 
 const VOWEL_RE = /[aeiou]/;
 const SYMBOL_RE = /\$[A-Za-z_]/;
-const PREPARSE0_RE = /^[${]/;
-const PREPARSE1_RE = /[()$|{}]/;
+const PREPARSE_A_RE = /^[${]/;
+const PREPARSE_B_RE = /[()$|{}]/;
 const PARSEABLE_RE = /([()]|\$[A-Za-z_0-9][A-Za-z_0-9-]*)/;
 const ENTITY_RE = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 
