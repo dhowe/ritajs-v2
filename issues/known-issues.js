@@ -141,6 +141,8 @@ describe('RiTa.KnownIssues', () => {
       ok(res3, 'FAIL: isPlural(' + testPairs[i] + ') was false\n\n');
     }
   });
+});
+describe('RiScript.KnownIssues', () => {
 
   it('Should use phones for articlize', () => {
     expect(RiTa.articlize("honor")).eq('an honor');
@@ -195,9 +197,19 @@ describe('RiTa.KnownIssues', () => {
 
   it('Should eval simple expressions', () => {
     // NOT SURE WHAT THIS TEST IS ABOUT
-    expect(RiTa.evaluate('$foo=bar \\nbaz\n$foo', {},TT)).eq('bar baz'); ``
+    expect(RiTa.evaluate('$foo=bar \\nbaz\n$foo', {}, TT)).eq('bar baz'); ``
   });
 
+  it('Should pluralize phrases', () => { // failing
+    expect(RiTa.evaluate('These ($state feeling).pluralize().',
+      { state: '(bad | bad)' }, TT)).eq('These bad feelings.');
+  });
+
+  it('Should evaluate inline assigns to vars', () => { // failing
+      let rs = RiTa.evaluate('[$chosen=$person] talks to $chosen.', { person: '(Dave | Jill | Pete)' });
+      expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."])
+  });
+ ;
 });
 
 function eql(output, expected, msg) { expect(output).eql(expected, msg); }

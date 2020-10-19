@@ -68,7 +68,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('foo\nbar', {})).eq('foo bar');
       expect(RiTa.evaluate('foo&#10;bar', {})).eq('foo\nbar');
       expect(RiTa.evaluate('$foo=bar\nbaz', {})).eq('baz');
-      expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {},TT)).eq('baz bar');
+      expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {}, TT)).eq('baz bar');
 
       let ctx = { a: 'a', b: 'b' };
       expect(RiTa.evaluate('(a|a)', ctx)).eq('a');
@@ -249,6 +249,12 @@ describe('RiTa.RiScript', () => {
     it('Should pluralize phrases', () => {
       expect(RiTa.evaluate('These (bad feeling).pluralize().')).eq('These bad feelings.');
       expect(RiTa.evaluate('She (pluralize).pluralize().')).eq('She pluralizes.');
+      expect(RiTa.evaluate('These ($state feeling).pluralize().', { state: 'bad' })).eq('These bad feelings.');
+      expect(RiTa.evaluate('$state=(bad | bad)\nThese ($state feeling).pluralize().', {}, TT)).eq('These bad feelings.');
+
+      //expect(RiTa.evaluate('These ($state feeling).pluralize().',  TODO: SEE KNOWN ISSUES
+      //{ state: '(bad | bad)' }, TT)).eq('These bad feelings.');
+
     })
 
     it('Should correctly handle transforms on literals', () => {
@@ -303,6 +309,13 @@ describe('RiTa.RiScript', () => {
 
       rs = RiTa.evaluate('$name=(Dave | Dave)\n[$stored=$name] is called $stored', {});
       expect(rs).eq("Dave is called Dave");
+
+      rs = RiTa.evaluate('$person=(Dave | Jill | Pete)\n[$chosen=$person] talks to $chosen.', {});
+      expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
+
+      // TODO: see known issues
+      //rs = RiTa.evaluate('[$chosen=$person] talks to $chosen.', { person: '(Dave | Jill | Pete)' });
+      //expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
     });
 
     it('Should evaluate basic inline assigns', () => {
@@ -630,7 +643,7 @@ describe('RiTa.RiScript', () => {
       let rule = '(' + opts.join('|') + ').seq()';
       let rs = new RiScript();
       for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule,{});
+        let res = rs.evaluate(rule, {});
         //console.log('got', i, ':', res);
         expect(res).eq(opts[i]);
       }
@@ -712,17 +725,6 @@ describe('RiTa.RiScript', () => {
       }
     });
 
-    it('Should handle mixed transforms', () => { // TODO: check exists in Java
-      expect(RiTa.evaluate("$a=(a|a)\n$a.toUpperCase()",
-        { a: "$b", b: "hello" }, { "singlePass": false, "trace": true })).eq("hello");
-    });
-
-    0 && it('KnownIssues', () => {
-      let ctx = {};
-      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx)).eq(''); // ??
-      expect(ctx.foo).eq(''); // ??
-    });
-
     it('Should handle Choice transforms', () => {
 
       expect(RiTa.evaluate('(a).toUpperCase()')).eq('A');
@@ -800,12 +802,23 @@ describe('RiTa.RiScript', () => {
       expect(String.quotify).eq(undefined);
     });
 
+    it('Should handle empty transforms', () => {
+      let ctx = {};
+      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx)).eq('');
+      expect(ctx.foo).eq('');
+
+      ctx = { blah3: () => 'Blah3' };
+      expect(RiTa.evaluate('().blah3()', ctx)).eq('Blah3');
+
+      ctx = { blah3: () => 'Blah3' };
+      expect(RiTa.evaluate('.blah3()', ctx)).eq('Blah3');
+    });
+
     it('Should handle custom transforms', () => {
-      /*       let Blah = () => 'Blah';
-            expect(RiTa.evaluate('That is (ant).Blah().', { Blah })).eq('That is Blah.');
-            let ctx = { Blah2: () => 'Blah2' };
-            expect(RiTa.evaluate('That is (ant).Blah2().', ctx)).eq('That is Blah2.');
-       */
+      let Blah = () => 'Blah';
+      expect(RiTa.evaluate('That is (ant).Blah().', { Blah })).eq('That is Blah.');
+      let ctx = { Blah2: () => 'Blah2' };
+      expect(RiTa.evaluate('That is (ant).Blah2().', ctx)).eq('That is Blah2.');
       let Blah3 = () => 'Blah3';
       RiTa.addTransform("Blah3", Blah3);
       expect(RiTa.evaluate('That is (ant).Blah3().')).eq('That is Blah3.');

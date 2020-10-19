@@ -57,7 +57,7 @@ class Visitor extends RiScriptVisitor {
     let txs = ctx.transform();
     let id = symbolName(ctx.symbol().getText());
 
-    this.trace && console.log('visitInline: ' + id + '=' +
+    this.trace && console.log('visitInline: $' + id + '=' +
       flatten(token) + ' tfs=[' + (txs || '') + ']');
 
     // visit the token and add result to the context
@@ -83,9 +83,15 @@ class Visitor extends RiScriptVisitor {
   }
 
   visitChoice(ctx) {
-    let txs = ctx.transform();
-    let choice = new ChoiceState(this, ctx); // TODO: handle sequencer (see visitChoiceOld)
+    
+    let choice = this.sequences[++this.indexer];
+    if (!choice) {
+      choice = new ChoiceState(this, ctx);
+      if (choice.type) this.sequences[choice.id] = choice;
+    }
+    //let choice = new ChoiceState(this, ctx); // TODO: handle sequencer (see visitChoiceOld)
 
+    let txs = ctx.transform();
     this.trace && console.log("visitChoice: '" + ctx.getText()
       + "' options=[" + choice.optionStr() + "] tfs=" + flattenTx(txs));
 
@@ -97,7 +103,7 @@ class Visitor extends RiScriptVisitor {
     // now visit the token 
     let visited = this.visit(tok);
 
-    // now check for transforms
+    // now apply any transforms
     if (!txs.length) return visited;
     let applied = this.applyTransforms(visited, txs);
     let result = applied || (visited + flattenTx(txs));
