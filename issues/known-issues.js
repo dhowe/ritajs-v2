@@ -162,7 +162,7 @@ describe('RiScript.KnownIssues', () => {
       {}, { trace: 1, singlePass: 1 })).eq("Is lying wrong?");
   });
 
-  0 && it('1: pluralize or singularize fails', () => {
+  it('1: pluralize or singularize fails', () => {
     let testPairs = []; // SS FAILING ITEMS HERE
     let res1, res2, res3, i = 0, dbug = true;
     if (!testPairs.length) return;
@@ -199,6 +199,8 @@ describe('RiScript.KnownIssues', () => {
     // NOT SURE WHAT THIS TEST IS ABOUT
     expect(RiTa.evaluate('$foo=bar \\nbaz\n$foo', {}, TT)).eq('bar baz'); ``
   });
+
+  ///////////////////////////////////#///////////////////////////////////////////
 
   it('Should pluralize phrases', () => { // failing
     expect(RiTa.evaluate('These ($state feeling).pluralize().',

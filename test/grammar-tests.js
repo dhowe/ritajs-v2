@@ -120,7 +120,7 @@ describe('RiTa.Grammar', () => {
 
         rg = new Grammar({
             "start": "[$chosen=$person] talks to $chosen.",
-            "person": "$Dave | $Jill | $Pete",
+            "person": "$Dave | $Jill | $Pete", 
             "Dave": "Dave | Jill | Pete",
             "Jill": "Dave | Jill | Pete",
             "Pete": "Dave | Jill | Pete",
