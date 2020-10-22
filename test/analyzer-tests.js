@@ -5,7 +5,7 @@ describe('RiTa.Analyzer', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  it('Should correctly call analyze.lts', () => {
+  it('Test analyze.lts', () => {
     let feats;
     feats = RiTa.analyze("cloze", { silent: 1 });
     expect(feats.pos).eq("nn");
@@ -19,7 +19,7 @@ describe('RiTa.Analyzer', () => {
     expect(result).eq('dh-ah l-ae/g-ih-n', 'got \'' + result + "'");
   });
 
-  it('Should correctly call analyze', () => {
+  it('Test analyze', () => {
 
     expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phones: '', syllables: '' });
 
@@ -39,7 +39,7 @@ describe('RiTa.Analyzer', () => {
     expect(feats.syllables).eq(hasLex ? "sh-eh-v/r-ow/l-ey" : 'ch-eh-v/r-ow/l-ah-t');
   });
 
-  it('Should correctly call stresses', () => {
+  it('Test stresses', () => {
 
     let result, answer, word;
 
@@ -73,7 +73,7 @@ describe('RiTa.Analyzer', () => {
 
   });
 
-  it('Should correctly call phones', () => {
+  it('Test phonemes', () => {
 
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
@@ -115,7 +115,7 @@ describe('RiTa.Analyzer', () => {
     RiTa.SILENCE_LTS = silent;
   });
 
-  it('Should correctly call syllables', () => {
+  it('Test syllables', () => {
 
     let input, expected;
 
@@ -146,7 +146,7 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.syllables(input)).eq(expected);
   });
 
-  it('Should correctly handle number (singular/plural)', () => {
+  it('Test singular plural pairs', () => {
 
     let testPairs = [
       "dazes", "daze",
