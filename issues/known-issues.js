@@ -1,104 +1,12 @@
 const expect = require('chai').expect;
 const RiTa = require('../src/rita');
-const RiScript = require('../src/riscript');
 
-describe('RiTa.KnownIssues', () => {
+describe('RiScript.KnownIssues', () => { // TODO:
 
-  it('Failing to singularize correctly', () => {
-
-    let testPairs = [ // also in java
-      "grooves", "groove",
-      "universes", "universe",
-      "toothbrushes", "toothbrush",
-      "clashes", "clash",
-      "verves", "verve",
-      "addresses", "address",
-      "flashes", "flash",
-      "morasses", "morass",
-      "conclaves", "conclave",
-      "promises", "promise",
-      "spouses", "spouse",
-      "branches", "branch",
-      "lapses", "lapse",
-      "quizes", "quiz",
-      "spyglasses", "spyglass",
-      "overpasses", "overpass",
-      "clones", "clones",
-      "microwaves", "microwave",
-      "hypotheses", "hypothesis",
-      "pretenses", "pretense",
-      "latches", "latch",
-      "fetuses", "fetus",
-      "alumni", "alumnus",
-      "lighthouses", "lighthouse",
-      "onyxes", "onyx",
-      "genuses", "genus",
-      "zombies", "zombie",
-      "hearses", "hearse",
-      "trenches", "trench",
-      "paradoxes", "paradox",
-      "hippies", "hippie",
-      "yuppies", "yuppie",
-      "purses", "purse",
-      "hatches", "hatch",
-      "witches", "witch",
-      "sinuses", "sinus",
-      "phrases", "phrase",
-      "arches", "arch",
-      "duplexes", "duplex",
-      "missives", "missive",
-      "madhouses", "madhouse",
-      "washes", "wash",
-      "pauses", "pause",
-      "heroes", "hero",
-      "sketches", "sketch",
-      "meshes", "mesh",
-      "brasses", "brass",
-      "marshes", "marsh",
-      "masses", "mass",
-      "overpasses", "overpass",
-      "impulses", "impulse",
-      "pelvises", "pelvis",
-      "fetishes", "fetish",
-      "abysses", "abyss",
-      "lighthouses", "lighthouse",
-      "gashes", "gash",
-      "dynamoes", "dynamo",
-      "lurches", "lurch",
-      "directives", "directive",
-      "calories", "calorie",
-      "moves", "move",
-      "expanses", "expanse",
-      "chaises", "chaise",
-      "briefcases", "briefcase",
-    ];
-
-    let res1, res2, res3, dbug = 0;
-
-    for (let i = 0; i < testPairs.length; i += 2) {
-
-      dbug && console.log(testPairs[i] + '/' + testPairs[i + 1]);
-
-      res1 = RiTa.singularize(testPairs[i], { dbug: dbug });
-      res2 = RiTa.pluralize(testPairs[i + 1], { dbug: dbug });
-      res3 = RiTa.inflector.isPlural(testPairs[i], { dbug: dbug, fatal: false });
-
-      // singularize
-      eq(res1, testPairs[i + 1], 'FAIL: singularize(' + testPairs[i]
-        + ') was ' + res1 + ', but expected ' + testPairs[i + 1] + '\n        '
-        + 'pluralize(' + testPairs[i + 1] + ') was ' + res2 + '\n\n');
-
-      // pluralize
-      eq(res2, testPairs[i], 'FAIL: pluralize(' + testPairs[i + 1]
-        + ') was ' + res2 + ', but expected ' + testPairs[i] + '\n        '
-        + 'singularize(' + testPairs[i] + ') was ' + res1 + '\n\n');
-
-      // isPlural
-      ok(res3, 'FAIL: isPlural(' + testPairs[i] + ') was false\n\n');
-    }
+  it('Should resolve transforms on phrases', () => {
+    let res = RiTa.evaluate("($a dog).pluralize()\n$a=the", null, opts("trace", true));
+    assertEquals("the dogs", res); 
   });
-});
-describe('RiScript.KnownIssues', () => {
 
   it('Should use phones for articlize', () => {
     expect(RiTa.articlize("honor")).eq('an honor');
@@ -164,10 +72,100 @@ describe('RiScript.KnownIssues', () => {
   });
 
   it('Should evaluate inline assigns to vars', () => { // failing
-      let rs = RiTa.evaluate('[$chosen=$person] talks to $chosen.', { person: '(Dave | Jill | Pete)' });
-      expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."])
+    let rs = RiTa.evaluate('[$chosen=$person] talks to $chosen.', { person: '(Dave | Jill | Pete)' });
+    expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."])
   });
- ;
+  ;
+});
+
+describe('RiTa.KnownIssues', () => {
+
+  it('Failing to singularize correctly', () => {
+
+    let testPairs = [ // also in java
+      "grooves", "groove",
+      "universes", "universe",
+      "toothbrushes", "toothbrush",
+      "clashes", "clash",
+      "addresses", "address",
+      "flashes", "flash",
+      "conclaves", "conclave",
+      "promises", "promise",
+      "spouses", "spouse",
+      "branches", "branch",
+      "lapses", "lapse",
+      "quizes", "quiz",
+      "spyglasses", "spyglass",
+      "overpasses", "overpass",
+      "clones", "clones",
+      "microwaves", "microwave",
+      "hypotheses", "hypothesis",
+      "pretenses", "pretense",
+      "latches", "latch",
+      "fetuses", "fetus",
+      "alumni", "alumnus",
+      "lighthouses", "lighthouse",
+      "genuses", "genus",
+      "zombies", "zombie",
+      "hearses", "hearse",
+      "trenches", "trench",
+      "paradoxes", "paradox",
+      "hippies", "hippie",
+      "yuppies", "yuppie",
+      "purses", "purse",
+      "hatches", "hatch",
+      "witches", "witch",
+      "sinuses", "sinus",
+      "phrases", "phrase",
+      "arches", "arch",
+      "duplexes", "duplex",
+      "missives", "missive",
+      "madhouses", "madhouse",
+      "pauses", "pause",
+      "heroes", "hero",
+      "sketches", "sketch",
+      "meshes", "mesh",
+      "brasses", "brass",
+      "marshes", "marsh",
+      "masses", "mass",
+      "overpasses", "overpass",
+      "impulses", "impulse",
+      "pelvises", "pelvis",
+      "fetishes", "fetish",
+      "abysses", "abyss",
+      "lighthouses", "lighthouse",
+      "gashes", "gash",
+      "directives", "directive",
+      "calories", "calorie",
+      "moves", "move",
+      "expanses", "expanse",
+      "briefcases", "briefcase",
+    ];
+
+    let res1, res2, res3, dbug = 0;
+
+    for (let i = 0; i < testPairs.length; i += 2) {
+
+      dbug && console.log(testPairs[i] + '/' + testPairs[i + 1]);
+
+      res1 = RiTa.singularize(testPairs[i], { dbug: dbug });
+      res2 = RiTa.pluralize(testPairs[i + 1], { dbug: dbug });
+      res3 = RiTa.inflector.isPlural(testPairs[i], { dbug: dbug, fatal: false });
+
+      // singularize
+      eq(res1, testPairs[i + 1], 'FAIL: singularize(' + testPairs[i]
+        + ') was ' + res1 + ', but expected ' + testPairs[i + 1] + '\n        '
+        + 'pluralize(' + testPairs[i + 1] + ') was ' + res2 + '\n\n');
+
+      // pluralize
+      eq(res2, testPairs[i], 'FAIL: pluralize(' + testPairs[i + 1]
+        + ') was ' + res2 + ', but expected ' + testPairs[i] + '\n        '
+        + 'singularize(' + testPairs[i] + ') was ' + res1 + '\n\n');
+
+      // isPlural
+      ok(res3, 'FAIL: isPlural(' + testPairs[i] + ') was false\n\n');
+    }
+  });
 });
 
 function eql(output, expected, msg) { expect(output).eql(expected, msg); }
