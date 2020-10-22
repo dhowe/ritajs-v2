@@ -28,6 +28,7 @@ class Visitor extends RiScriptVisitor {
     if (this.trace) console.log("start: '" + ctx.getText()
       .replace(/\r?\n/g, "\\n") + "'");
 
+    console.log("RESET INDEX, SEQS: " + Object.keys(this.sequences).length);
 
     // WORKING HERE ****
 
@@ -86,6 +87,8 @@ class Visitor extends RiScriptVisitor {
     
     let choice = this.sequences[++this.indexer];
     if (!choice) {
+      console.log("new Choise(" + this.indexer + ")");
+
       choice = new ChoiceState(this, ctx);
       if (choice.type) this.sequences[choice.id] = choice;
     }
@@ -491,13 +494,12 @@ class ChoiceState {
   }
 
   selectNoRepeat() {
-    let cand = this.last;
+    let cand;
     do {
       cand = RiTa.randomizer.randomItem(this.options);
     } while (cand == this.last);
-    this.last = cand;
     //console.log('selectNoRepeat',cand.getText());
-    return this.last;
+    return (this.last = cand);
   }
 
   selectSequence() {

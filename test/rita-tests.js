@@ -3,7 +3,7 @@ describe('RiTa.Core', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  it('Should correctly call stem', () => {
+  it('Should call stem', () => {
     let data = [
       "boy", "boy",
       "boys", "boy",
@@ -41,7 +41,7 @@ describe('RiTa.Core', () => {
     expect(RiTa.randomOrdering(['a', 'b'])).to.have.members(['a', 'b']);
   });
 
-  it('Should correctly call isQuestion', () => {
+  it('Should call isQuestion', () => {
     ok(RiTa.isQuestion("what"));
     ok(RiTa.isQuestion("what"));
     ok(RiTa.isQuestion("what is this"));
@@ -58,7 +58,15 @@ describe('RiTa.Core', () => {
     ok(!RiTa.isQuestion(""));
   });
 
-  it('Should correctly call isAbbreviation', () => {
+  it('Should call articlize', () => {
+    expect(RiTa.articlize("dog")).eq('a dog');
+    expect(RiTa.articlize("ant")).eq('an ant');
+    expect(RiTa.articlize("honor")).eq('an honor');
+    expect(RiTa.articlize("eagle")).eq('an eagle');
+    expect(RiTa.articlize("ermintrout")).eq('an ermintrout');
+  });
+
+  it('Should call isAbbreviation', () => {
 
     ok(RiTa.isAbbreviation("Dr."));
     ok(RiTa.isAbbreviation("dr."));
@@ -107,7 +115,7 @@ describe('RiTa.Core', () => {
     ok(!RiTa.isAbbreviation(1, { caseSensitive: true }));
   });
 
-  it('Should correctly call isPunctuation', () => {
+  it('Should call isPunctuation', () => {
 
     ok(!RiTa.isPunctuation("What the"));
     ok(!RiTa.isPunctuation("What ! the"));
@@ -166,7 +174,7 @@ describe('RiTa.Core', () => {
     ok(!RiTa.isPunctuation(""));
   });
 
-  it('Should correctly call tokenize', () => {
+  it('Should call tokenize', () => {
 
     expect(RiTa.tokenize("")).eql([""]);
     expect(RiTa.tokenize("The dog")).eql(["The", "dog"]);
@@ -274,6 +282,7 @@ describe('RiTa.Core', () => {
     "elipsis dots... another elipsis dots…",
     "(testing) [brackets] {all} ⟨kinds⟩",
     ];
+    
     let outputs = [
       ["A", "simple", "sentence", "."],
       ["that's", "why", "this", "is", "our", "place", ")", "."],
@@ -318,7 +327,7 @@ describe('RiTa.Core', () => {
     expect(RiTa.tokenize(txt6)).eql(["We", "didn't", "find", "the", "cat", "."]);
   });
 
-  it('Should correctly call untokenize', () => {
+  it('Should call untokenize', () => {
 
     let input, output, expected;
 
@@ -459,7 +468,7 @@ describe('RiTa.Core', () => {
     }
   });
 
-  it('Should correctly call concordance', () => {
+  it('Should call concordance', () => {
 
     let data = RiTa.concordance("The dog ate the cat"); //default
     expect(Object.keys(data).length).eq(5);
@@ -537,7 +546,7 @@ describe('RiTa.Core', () => {
     expect(data["fried"]).eq(2);
   });
 
-  it('Should correctly call sentences', () => {
+  it('Should call sentences', () => {
 
     let input, expected, output;
 
