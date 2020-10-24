@@ -1,5 +1,5 @@
 const deepMerge = require('deepmerge');
-const { expect } = require('chai');
+const { expect, util } = require('chai');
 
 describe('RiTa.Util', () => {
 
@@ -7,11 +7,11 @@ describe('RiTa.Util', () => {
 
   const rand = RiTa.randomizer;
 
-  it('Should correctly call Util.mapOpts', () => {
+  it('Test mapOpts', () => {
     expect("Not needed in JS").is.not.null;
   });
 
-  it('Should correctly call random.randomOrdering', () => {
+  it('Test randomOrdering', () => {
     let ro = rand.randomOrdering(4);
     expect(ro.length).eq(4);
     expect(ro).to.have.members([0,1,2,3]);
@@ -21,7 +21,7 @@ describe('RiTa.Util', () => {
     expect(ro).to.have.members(arr);
   });
 
-  it('Should correctly call deepMerge', () => {
+  it('Test deepMerge', () => {
     let map = deepMerge({}, { "a": "1" });
     expect(map).eql({ "a": "1" });
 
@@ -33,6 +33,14 @@ describe('RiTa.Util', () => {
 
     map = deepMerge({ "a": "2", "b": "2" }, { "a": "1" });
     expect(map).eql({ "a": "1", "b": "2" });
+  });
+
+  it('Test slice array', () => {
+    //function N/A for JavaScript, just use the bulit-in slice function
+  });
+
+  it('Test slice list', () => {
+    //function N/A for JavaScript
   });
 
 });
