@@ -43,9 +43,10 @@ class Visitor extends RiScriptVisitor {
       flatten(token) + ' tfs=' + flattenTx(txs));
 
     // if we've already resolved (likely as an inline) just return
-    if (typeof this.context[id] !== 'undefined' && !this.parent.isParseable(this.context[id])) {
-      this.trace && console.log('resolveInline[0]: $' + id + " -> '" + this.context[id] + "' (already defined)");
-      return this.context[id];
+    let lookup = this.context[id];
+    if (typeof lookup !== 'undefined' && !this.parent.isParseable(lookup)) {
+      this.trace && console.log('resolveInline[0]: $' + id + " -> '" + lookup + "' (already defined)");
+      return lookup;
     }
 
     // visit the token and add result to the context
@@ -91,10 +92,8 @@ class Visitor extends RiScriptVisitor {
     // now apply any transforms
     if (!txs.length) return visited;
     let applied = this.applyTransforms(visited, txs);
-
     let result = typeof applied !== 'undefined' ? applied
       : '(' + visited + ')' + flattenTx(txs);
-    //: (visited.includes(" ") ? '(' + visited + ')' : visited) + flattenTx(txs);
 
     if (this.trace) console.log("resolveChoice: '" + result + "'");
 
@@ -149,7 +148,7 @@ class Visitor extends RiScriptVisitor {
     }
 
     let applied = this.applyTransforms(resolved, txs);
-    result = applied || (resolved + flattenTx(txs)); // TODO: PROBLEM
+    result = applied || (resolved + flattenTx(txs)); // TODO: PROBLEM?
 
     this.trace && console.log("resolveSymbol[3]: $" + ident + " -> '" + result + "'");
 
@@ -337,29 +336,6 @@ class Visitor extends RiScriptVisitor {
     return result;
   }
 
-  // ---------------------- Helpers ---------------------------
-
-  /*   countChildRules(ctx, ruleName) {
-      let count = 0;
-      for (let i = 0; i < ctx.getChildCount(); i++) {
-        if (this.ruleName(ctx.getChild(i)) === ruleName) count++;
-      }
-      return count;
-    } */
-
-
-  /*   flattenTx(txs) {
-      if (!txs || !txs.length) return "";
-      return txs[0].getText();
-    }
-  
-    flatten(toks) {
-      if (!toks) return "";
-      if (!Array.isArray(toks)) toks = [toks.getText()];
-      let s = toks.reduce((acc, t) => acc + "|" + t, "");
-      return s.startsWith("|") ? s.substring(1) : s;
-    } */
-
   handleSequence(options, shuffle) {
     if (!this.sequence) {
       this.sequence = new Sequence(options, shuffle);
@@ -380,15 +356,6 @@ class Visitor extends RiScriptVisitor {
         "' [" + this.ruleName(child) + "]");
     }
   }
-  /* 
-    handleEmptyChoices(ctx, options) {
-      let ors = this.countChildRules(ctx, Visitor.OR);
-      let exprs = this.countChildRules(ctx, "expr");
-      let adds = (ors + 1) - exprs;
-      for (let i = 0; i < adds; i++) {
-        options.push(Visitor.EMPTY);
-      }
-    } */
 }
 
 class ChoiceState {

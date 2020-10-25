@@ -312,13 +312,6 @@ describe('RiTa.RiScript', () => {
 
       rs = RiTa.evaluate('$name=(Dave | Dave)\n[$stored=$name] is called $stored', {});
       expect(rs).eq("Dave is called Dave");
-
-      rs = RiTa.evaluate('$person=(Dave | Jill | Pete)\n[$chosen=$person] talks to $chosen.', {});
-      expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
-
-      // TODO: see known issues
-      //rs = RiTa.evaluate('[$chosen=$person] talks to $chosen.', { person: '(Dave | Jill | Pete)' });
-      //expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
     });
 
     it('Should resolve inline assigns', () => {
@@ -454,6 +447,8 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve symbols in context', () => {
 
+      expect(RiTa.evaluate("$a", { a: 1 })).eq("1");
+
       expect(RiTa.evaluate('$a.capitalize()', { a: '(terrier | terrier)' })).eq('Terrier');
       expect(RiTa.evaluate('the $dog ate', { dog: 'terrier' })).eq('the terrier ate');
       expect(RiTa.evaluate('the $dog $verb', { dog: 'terrier', verb: 'ate' })).eq('the terrier ate');
@@ -574,13 +569,6 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(A B | A B).toLowerCase()', 0)).eq('a b');
       expect(RiTa.evaluate('(A B | A B).articlize()', 0)).eq('an A B');
       RiTa.SILENCE_LTS = silent;
-    });
-
-    it('Should parse and select choices', () => {
-      expect(RiTa.evaluate("(a | a).up()", {})).eq("a.up()");
-      expect(RiTa.evaluate("(a | a).toUpperCase()", {})).eq("A");
-      expect(RiTa.evaluate("(a | a).up()", { up: x => x.toUpperCase() })).eq("A");
-      expect(RiTa.evaluate("$a", { a: 1 })).eq("1");
     });
 
     it('Should resolve choices in expressions', () => {
@@ -748,6 +736,10 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve choice transforms', () => {
 
+      expect(RiTa.evaluate("(a | a).up()", {})).eq("a.up()");
+      expect(RiTa.evaluate("(a | a).toUpperCase()", {})).eq("A");
+      expect(RiTa.evaluate("(a | a).up()", { up: x => x.toUpperCase() })).eq("A");
+      
       expect(RiTa.evaluate('(a).toUpperCase()')).eq('A');
       expect(RiTa.evaluate('((a)).toUpperCase()')).eq('A');
       expect(RiTa.evaluate('(a | b).toUpperCase()')).to.be.oneOf(['A', 'B']);

@@ -203,26 +203,6 @@ class RiScript {
     return s;
   }
 
-  /*
-    static addTransform(name, func) { // DOC: object case
-      if (typeof name === 'string') {
-        return RiScript.transforms[name] = func;
-      }
-      Object.keys(name).forEach(k => {
-        RiScript.transforms[k] = name[k];
-      });
-    }
-    static removeTransform(name) { // DOC:
-      let obj = {};
-      if (typeof name === 'string') {
-        return delete RiScript.transforms[name];
-      }
-      Object.keys(name).forEach(k => delete RiScript.transforms[k]);
-    }
-    static getTransforms() { // DOC:
-      return Object.keys(RiScript.transforms);
-    } */
-
 }
 
 function RiTa() { return RiScript.parent; }
