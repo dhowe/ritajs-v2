@@ -28,8 +28,6 @@ class Visitor extends RiScriptVisitor {
     if (this.trace) console.log("start: '" + ctx.getText()
       .replace(/\r?\n/g, "\\n") + "'");
 
-    console.log("RESET INDEX, SEQS: " + Object.keys(this.sequences).length);
-
     // WORKING HERE ****
 
     //this.pushTransforms(ctx);
@@ -87,8 +85,6 @@ class Visitor extends RiScriptVisitor {
     
     let choice = this.sequences[++this.indexer];
     if (!choice) {
-      console.log("new Choise(" + this.indexer + ")");
-
       choice = new ChoiceState(this, ctx);
       if (choice.type) this.sequences[choice.id] = choice;
     }

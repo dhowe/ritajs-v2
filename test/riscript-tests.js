@@ -69,7 +69,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('foo\nbar', {})).eq('foo bar');
       expect(RiTa.evaluate('foo&#10;bar', {})).eq('foo\nbar');
       expect(RiTa.evaluate('$foo=bar\nbaz', {})).eq('baz');
-      expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {}, TT)).eq('baz bar');
+      expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {})).eq('baz bar');
 
       let ctx = { a: 'a', b: 'b' };
       expect(RiTa.evaluate('(a|a)', ctx)).eq('a');
@@ -219,7 +219,7 @@ describe('RiTa.RiScript', () => {
     it('Should parse transformed assignments', () => {
       let ctx;
 
-      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx = {}, TT)).eq(''); // empty string
+      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx = {})).eq(''); // empty string
       expect(ctx.foo).eq('');
 
       expect(RiTa.evaluate('$foo=(a).toUpperCase()', ctx = {})).eq('');
@@ -251,7 +251,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('These (bad feeling).pluralize().')).eq('These bad feelings.');
       expect(RiTa.evaluate('She (pluralize).pluralize().')).eq('She pluralizes.');
       expect(RiTa.evaluate('These ($state feeling).pluralize().', { state: 'bad' })).eq('These bad feelings.');
-      expect(RiTa.evaluate('$state=(bad | bad)\nThese ($state feeling).pluralize().', {}, TT)).eq('These bad feelings.');
+      expect(RiTa.evaluate('$state=(bad | bad)\nThese ($state feeling).pluralize().', {})).eq('These bad feelings.');
 
       //expect(RiTa.evaluate('These ($state feeling).pluralize().',  TODO: SEE KNOWN ISSUES
       //{ state: '(bad | bad)' }, TT)).eq('These bad feelings.');
@@ -438,7 +438,7 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve symbols in context', () => {
 
-      expect(RiTa.evaluate('$a.capitalize()', { a: '(terrier | terrier)' }, TT)).eq('Terrier');
+      expect(RiTa.evaluate('$a.capitalize()', { a: '(terrier | terrier)' })).eq('Terrier');
       expect(RiTa.evaluate('the $dog ate', { dog: 'terrier' })).eq('the terrier ate');
       expect(RiTa.evaluate('the $dog $verb', { dog: 'terrier', verb: 'ate' })).eq('the terrier ate');
 
