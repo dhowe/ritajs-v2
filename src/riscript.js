@@ -76,7 +76,7 @@ class RiScript {
     this.lexer.addErrorListener(new LexerErrors());
 
     let silent = opts && opts.silent;
-    let trace = opts && opts.trace;
+    let trace = opts && opts.traceLex;
 
     // try the lexing
     let tokenStream;

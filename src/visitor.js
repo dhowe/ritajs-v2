@@ -42,23 +42,27 @@ class Visitor extends RiScriptVisitor {
     this.trace && console.log('visitInline: $' + id + '=' +
       flatten(token) + ' tfs=[' + (txs || '') + ']');
 
+    // if we've already resolved (likely as an inline) just return
+    if (typeof this.context[id] !== 'undefined' && !this.parent.isParseable(this.context[id])) {
+      this.trace && console.log('resolveInline[0]: $' + id + " -> '" + this.context[id] + "' (already defined)");
+      return this.context[id];
+    }
+
     // visit the token and add result to the context
     let visited = this.visit(token);
     this.context[id] = visited;
 
-    // apply transforms if we have them
-    if (!txs.length) return visited;
+    // if no transforms just return;
+    if (!txs.length) {
+      this.trace && console.log('resolveInline[1]: $' + id + " -> '" + visited + "'");
+      return visited;
+    }
+
+    // apply the transforms
     let applied = this.applyTransforms(visited, txs);
     let result = applied || visited + flattenTx(txs);
 
-    this.trace && console.log('resolveInline: $' + id + '=' + result);
-
-    /*  
-    // if the inline is not fully resolved, save it for next time
-    if (this.parent.isParseable(this.context[id])) {
-      this.pendingSymbols.push(id);
-      return orig.replace(tokText, this.context[id]);
-    } */
+    this.trace && console.log('resolveInline[2]: $' + id + " -> '" + result + "'");
 
     // return result or defer for later
     return result || ctx.getText();
@@ -71,7 +75,6 @@ class Visitor extends RiScriptVisitor {
       choice = new ChoiceState(this, ctx);
       if (choice.type) this.sequences[choice.id] = choice;
     }
-    //let choice = new ChoiceState(this, ctx); // TODO: handle sequencer (see visitChoiceOld)
 
     let txs = ctx.transform();
     this.trace && console.log("visitChoice: '" + ctx.getText()
@@ -88,21 +91,14 @@ class Visitor extends RiScriptVisitor {
     // now apply any transforms
     if (!txs.length) return visited;
     let applied = this.applyTransforms(visited, txs);
+
     let result = typeof applied !== 'undefined' ? applied
       : '(' + visited + ')' + flattenTx(txs);
-      
+    //: (visited.includes(" ") ? '(' + visited + ')' : visited) + flattenTx(txs);
+
     if (this.trace) console.log("resolveChoice: '" + result + "'");
 
     return result;
-  }
-
-  visitChoiceOld(ctx) { //save
-    let choice = this.sequences[++this.indexer];
-    if (!choice) {
-      choice = new ChoiceState(this, ctx);
-      if (choice.type) this.sequences[choice.id] = choice;
-      //console.log('numSeqs:',Object.keys(this.sequences).length);
-    }
   }
 
   visitSymbol(ctx) {
@@ -120,15 +116,14 @@ class Visitor extends RiScriptVisitor {
 
     let ident = symbolName(tn.getText());
 
-    // if the symbol is pending just return it
-    if (this.pendingSymbols.includes(ident)) {
-      this.trace && console.log("IGNORE PENDING Symbol: \"\" tfs="
-        + flattenTx(txs) + " -> " + result);
-      return result;
-    }
-
     this.trace && console.log("visitSymbol: $" + ident
       + " tfs=" + flattenTx(txs));
+
+    // if the symbol is pending just return it
+    if (this.pendingSymbols.includes(ident)) {
+      this.trace && console.log("resolveSymbol[0]: (pending) $" + ident);//+ " -> " + result);
+      return result;
+    }
 
     // now try to resolve from context
     let resolved = this.context[ident];
@@ -137,6 +132,14 @@ class Visitor extends RiScriptVisitor {
     if (!resolved) {
       this.trace && console.log("resolveSymbol[1]: $" + ident + " -> '" + result + "'");
       return result;
+    }
+
+    // if the symbol is not fully resolved, save it for next time (as an inline*)
+    if (this.parent.isParseable(resolved)) {
+      this.pendingSymbols.push(ident);
+      let tmp = '[$' + ident + '=' + resolved + ']' + flattenTx(txs);
+      this.trace && console.log("resolveSymbol[P]: $" + ident + " -> " + tmp);
+      return tmp;
     }
 
     // now check for transforms
@@ -244,7 +247,7 @@ class Visitor extends RiScriptVisitor {
 
     let result = term;
 
-    // make sure it is resolved
+    // make sure the terminal is resolved
     if (typeof term === 'string') {
       result = this.parent.normalize(term);
       if (this.parent.isParseable(result)) { // save for later
@@ -253,12 +256,8 @@ class Visitor extends RiScriptVisitor {
       }
     }
 
-    // NOTE: even multiple transforms show up as a single one here [TODO]
-    let tf = tfs[0];
-    if (!tf) throw Error("Null Transform: " + flattenTx(tfs));
-
-    // split the string and apply each transform
-    let transforms = tf.getText().replace(/^\./g, "").split("\.");
+    // split the transform string and apply each transform
+    let transforms = tfs[0].getText().replace(/^\./g, "").split("\.");
     for (let i = 0; i < transforms.length; i++) {
       result = this.applyTransform(result, transforms[i]);
     }
@@ -269,7 +268,7 @@ class Visitor extends RiScriptVisitor {
   // Attempts to apply transform, returns null on failure
   applyTransform(target, tx) {
 
-    let result;
+    let result, raw = target + Visitor.DOT + tx;
 
     if (this.trace) console.log("applyTransform: '" + target
       + "' tf=" + tx);
@@ -288,10 +287,21 @@ class Visitor extends RiScriptVisitor {
       else if (typeof target[tx] === 'function') {
         result = target[tx]();
       }
+      else { // function doesn't exist
+        result = raw;
+        this.trace && console.warn("[WARN] Unresolved transform: " + result);
+      }
     }
     // check for property
     else {
-      result = target[tx];
+
+      if (tx in target) {
+        result = target[tx];
+      }
+      else {
+        result = raw;
+        this.trace && console.warn("[WARN] Unresolved transform: " + result);
+      }
     }
 
     if (this.trace) console.log("resolveTransform: '"
@@ -299,57 +309,6 @@ class Visitor extends RiScriptVisitor {
 
     return result;
   }
-
-
-  /* run the transforms and return the results */
-  /*   handleTransforms(obj, transforms) {
-      let term = obj;
-      if (transforms && transforms.length) {
-        let tfs = this.trace ? '' : null; // debug
-        for (let i = 0; i < transforms.length; i++) {
-          let txf = transforms[i];
-          txf = (typeof txf === 'string') ? txf : txf.getText();
-          this.trace && (tfs += txf); // debug
-          let comps = txf.split('.');
-          for (let j = 1; j < comps.length; j++) {
-            let comp = comps[j];
-            if (comp.length) {
-              if (comp.endsWith(Visitor.FUNCTION)) {
-                // strip parens
-                comp = comp.substring(0, comp.length - 2);
-                // handle transforms in context
-                if (typeof this.context[comp] === 'function') {
-                  term = this.context[comp](term);
-                }
-                // handle built-in string functions
-                else if (typeof term[comp] === 'function') {
-                  term = term[comp]();
-                }
-                else {
-                  let msg = 'Expecting ' + term + '.' + comp + '() to be a function';
-                  if (!this.silent && !RiTa.SILENT) console.warn('[WARN] ' + msg);
-                  //throw Error(msg);
-                  term = term + '.' + comp;  // no-op
-                }
-                // handle object properties
-              } else if (term.hasOwnProperty(comp)) {
-                if (typeof term[comp] === 'function') {
-                  throw Error('Functions with args not yet supported: $object.' + comp + '(...)');
-                }
-                term = term[comp];
-                // no-op
-              } else {
-                term = term + '.' + comp; // no-op
-              }
-            }
-          }
-        }
-        this.trace && console.log('handleTransforms: ' +
-          (obj.length ? obj : "''") + tfs + ' -> ' + term);
-      }
-      return term;
-       */
-  //}
 
   stack(rule) {
     let ruleNames = this.parent.parser.getRuleNames();
@@ -592,6 +551,7 @@ Visitor.LP = '(';
 Visitor.RP = ')';
 Visitor.OR = 'OR';
 Visitor.SYM = '$';
+Visitor.DOT = '.';
 Visitor.EOF = '<EOF>';
 Visitor.ASSIGN = '[]';
 Visitor.FUNCTION = '()';

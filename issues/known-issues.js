@@ -22,7 +22,7 @@ describe('RiScript.KnownIssues', () => { // TODO:
   });
 
   it('Should handle RiTa function transforms with args', () => {
-    expect(RiTa.evaluate('Is $RiTa.presentParticiple("lie") wrong?',
+    expect(RiTa.evaluate('Is $RiTa.presentParticiple(lie) wrong?',
       {}, { trace: 1, singlePass: 1 })).eq("Is lying wrong?");
   });
 
@@ -65,11 +65,6 @@ describe('RiScript.KnownIssues', () => { // TODO:
   });
 
   ///////////////////////////////////#///////////////////////////////////////////
-
-  it('Should pluralize phrases', () => { // failing
-    expect(RiTa.evaluate('These ($state feeling).pluralize().',
-      { state: '(bad | bad)' }, TT)).eq('These bad feelings.');
-  });
 
   it('Should evaluate inline assigns to vars', () => { // failing
     let rs = RiTa.evaluate('[$chosen=$person] talks to $chosen.', { person: '(Dave | Jill | Pete)' });
