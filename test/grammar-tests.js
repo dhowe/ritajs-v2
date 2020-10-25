@@ -34,11 +34,11 @@ describe('RiTa.Grammar', () => {
 
     let grammars = [sentences1, sentences2, sentences3];
 
-    it('Test constructor', () => {
+    it('Should correctly call constructor', () => {
         ok(typeof new Grammar() !== 'undefined');
     });
 
-    it('Test seq() transforms', () => {
+    it('Should support seq() transforms', () => {
         let opts = ['a', 'b', 'c', 'd'];
         let rule = '(' + opts.join('|') + ').seq()';
         let rs = new Grammar({ start: rule });
@@ -57,7 +57,7 @@ describe('RiTa.Grammar', () => {
         }
     });
 
-    it('Test rseq() transforms', () => {
+    it('Should support rseq() transforms', () => {
         let opts = ['a', 'b', 'c', 'd'], result = [];
         let rule = '(' + opts.join('|') + ').rseq()';
         let rs = new Grammar({ start: rule });
@@ -79,7 +79,7 @@ describe('RiTa.Grammar', () => {
         expect(result).to.have.members(opts.map(o => o.toUpperCase()));
     });
 
-    it('Test rules starting with numbers', () => {
+    it('Should allow rules starting with numbers', () => {
         let rg, rs;
 
         rg = new Grammar({
@@ -96,7 +96,7 @@ describe('RiTa.Grammar', () => {
         expect(rs).to.be.oneOf(["Dave", "Jill", "Pete"]);
     });
 
-    0 && it('Test resolve inlines', () => { // KNOWN-ISSUES
+    0 && it('Should correctly resolve inlines', () => { // KNOWN-ISSUES
         let rg, rs;
 
         rg = new Grammar({
@@ -130,7 +130,7 @@ describe('RiTa.Grammar', () => {
         
     });
 
-    it("test set rules", () => {
+    it("Should correctly set rules", () => {
 
         let rg = new Grammar();
         ok(typeof rg.rules !== 'undefined');
@@ -154,7 +154,7 @@ describe('RiTa.Grammar', () => {
         });
     });
 
-    it("Test addRule", () => {
+    it("Should correctly call addRule", () => {
         let rg = new Grammar();
         rg.addRule("$start", "$pet");
         ok(typeof rg.rules["start"] !== 'undefined');
@@ -162,7 +162,7 @@ describe('RiTa.Grammar', () => {
         ok(typeof rg.rules["start"] !== 'undefined');
     });
 
-    it('Test addRules', () => {
+    it('Should correctly call addRules', () => {
         let rg = new Grammar();
         ok(rg.rules !== undefined);
         ok(rg.rules["start"] == null);
@@ -180,7 +180,7 @@ describe('RiTa.Grammar', () => {
         ok(str == "Bule cars exist in this world." || str == "Red roses exist in this world.");
     });
 
-    it("Test removeRule", () => {
+    it("Should correctly call removeRule", () => {
 
         grammars.forEach(g => {
             let rg1 = new Grammar(g);
@@ -200,14 +200,14 @@ describe('RiTa.Grammar', () => {
         });
     });
 
-    it("Test bad grammar names", () => {
+    it("Should throw on bad grammar names", () => {
         let rg = new Grammar();
         expect(() => rg.expandFrom("wrongName")).to.throw();
         expect(() => rg.expand()).to.throw();
     });
 
 
-    it("Test expandFrom", () => {
+    it("Should correctly call expandFrom", () => {
         let rg = new Grammar();
         rg.addRule("$start", "$pet");
         rg.addRule("$pet", "($bird | $mammal)");
@@ -220,7 +220,7 @@ describe('RiTa.Grammar', () => {
         }
     });
 
-    it("Test toString", () => {
+    it("Should correctly call toString", () => {
         let rg = new Grammar({ "$start": "pet" });
         eq(rg.toString(), '{\n  "start": "pet"\n}');
         rg = new Grammar({ "$start": "$pet", "$pet": "dog" });
@@ -231,7 +231,7 @@ describe('RiTa.Grammar', () => {
         eq(rg.toString(), '{\n  "start": "$pet.articlize()",\n  "pet": "(dog | cat)"\n}');
     });
 
-    it("Test toString with arg", () => {
+    it("Should correctly call toString with arg", () => {
         let lb = '<br/>';
         let rg = new Grammar({ "$start": "pet" });
         eq(rg.toString(lb), '{<br/>  "start": "pet"<br/>}');
@@ -243,7 +243,7 @@ describe('RiTa.Grammar', () => {
         eq(rg.toString(lb), '{<br/>  "start": "$pet.articlize()",<br/>  "pet": "(dog | cat)"<br/>}');
     });
 
-    it("Test expand", () => {
+    it("Should correctly call expand", () => {
         let rg = new Grammar();
         rg.addRule("$start", "pet");
         eq(rg.expand(), "pet");
@@ -253,7 +253,7 @@ describe('RiTa.Grammar', () => {
         eq(rg.expand(), "dog");
     });
 
-    it("Test expand choice", () => {
+    it("Should correctly call expand.weights", () => {
         let rg = new Grammar();
         rg.addRule("$start", "$rule1");
         rg.addRule("$rule1", "cat | dog | boy");
@@ -270,7 +270,7 @@ describe('RiTa.Grammar', () => {
         ok(found1 && found2 && found3); // found all
     });
 
-    it("Test expandFrom.weights", () => {
+    it("Should correctly call expandFrom.weights", () => {
 
         let rg = new Grammar();
         rg.addRule("$start", "$pet");
@@ -290,7 +290,7 @@ describe('RiTa.Grammar', () => {
         ok(hawks > dogs * 2), 'got h=' + hawks + ', ' + dogs;
     });
 
-    it("Test transform", () => {
+    it("Should correctly handle transform", () => {
         let rg = new Grammar();
         rg.addRule("$start", "$pet.toUpperCase()");
         rg.addRule("$pet", "dog");
@@ -315,7 +315,7 @@ describe('RiTa.Grammar', () => {
         eq(rg.expand(), "An ant");
     });
 
-    it("Test context in expand", () => {
+    it("Should allow context in expand", () => {
         let context, rg;
         context = { randomPosition: () => 'job type' };
         rg = new RiTa.Grammar({ start: "My .randomPosition()." });
@@ -326,13 +326,13 @@ describe('RiTa.Grammar', () => {
         expect(rg.expand('stat', { context })).eq("My job type.");
     });
 
-    it("Test custom transform", () => {
+    it("Should handle custom transform", () => {
         let context = { randomPosition: () => 'job type' };
         let rg = new RiTa.Grammar({ start: "My .randomPosition()." }, context);
         expect(rg.expand()).eq("My job type.");
     });
 
-    it("Test symbol transform", () => {
+    it("Should handle symbol transform", () => {
         let rg = new Grammar({
             start: "$tmpl",
             tmpl: "$jrSr.capitalize()",
@@ -353,7 +353,7 @@ describe('RiTa.Grammar', () => {
         eq(rg.expand({ trace: 0 }), "mice");
     });
 
-    it("Test special characters", () => {
+    it("Should handle special characters", () => {
         let rg, res, s;
 
         s = "{ \"$start\": \"hello &#124; name\" }";
@@ -395,7 +395,7 @@ describe('RiTa.Grammar', () => {
         }
     });
 
-    it("Test JSON methods",() => {
+    it("Should correctly call JSON methods",() => {
       let json = {"$start":"$pet $iphone","$pet":"(dog | cat)","$iphone":"(iphoneSE | iphone12)"};
       let rg = new Grammar(json);
       let generatedJSON = rg.toJSON();
@@ -407,7 +407,7 @@ describe('RiTa.Grammar', () => {
       expect(rg).eql(rg2);
     });
 
-    it('Test pluralize phrases in transform', () => {
+    it('Should correctly call pluralize phrases in transform', () => {
         let pluraliseFunction = function(s) {
             s = s.trim();
             if (s.includes(" ")) {

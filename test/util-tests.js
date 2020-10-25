@@ -7,11 +7,11 @@ describe('RiTa.Util', () => {
 
   const rand = RiTa.randomizer;
 
-  it('Test mapOpts', () => {
+  it('Should correctly call Util.mapOpts', () => {
     expect("Not needed in JS").is.not.null;
   });
 
-  it('Test randomOrdering', () => {
+  it('Should correctly call random.randomOrdering', () => {
     let ro = rand.randomOrdering(4);
     expect(ro.length).eq(4);
     expect(ro).to.have.members([0,1,2,3]);
@@ -21,7 +21,7 @@ describe('RiTa.Util', () => {
     expect(ro).to.have.members(arr);
   });
 
-  it('Test deepMerge', () => {
+  it('Should correctly call deepMerge', () => {
     let map = deepMerge({}, { "a": "1" });
     expect(map).eql({ "a": "1" });
 
@@ -35,11 +35,11 @@ describe('RiTa.Util', () => {
     expect(map).eql({ "a": "1", "b": "2" });
   });
 
-  it('Test slice array', () => {
+  it('Should handle slice array', () => {
     //function N/A for JavaScript, just use the bulit-in slice function
   });
 
-  it('Test slice list', () => {
+  it('Should handle slice list', () => {
     //function N/A for JavaScript
   });
 

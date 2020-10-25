@@ -7,7 +7,7 @@ describe('RiTa.Analyzer', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  it('Test analyze.lts', () => {
+  it('Should correctly call analyze.lts', () => {
     let feats;
     feats = RiTa.analyze("cloze", { silent: 1 });
     expect(feats.pos).eq("nn");
@@ -16,12 +16,12 @@ describe('RiTa.Analyzer', () => {
     //RiTa.SILENCE_LTS = silent;
   });
 
-  it('Test syllables.lts', () => {
+  it('Should correctly call syllables.lts', () => {
     let result = RiTa.syllables('The Laggin', { silent: 1 });
     expect(result).eq('dh-ah l-ae/g-ih-n', 'got \'' + result + "'");
   });
 
-  it('Test analyze', () => {
+  it('Should correctly call analyze', () => {
 
     expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phones: '', syllables: '' });
 
@@ -41,7 +41,7 @@ describe('RiTa.Analyzer', () => {
     expect(feats.syllables).eq(hasLex ? "sh-eh-v/r-ow/l-ey" : 'ch-eh-v/r-ow/l-ah-t');
   });
 
-  it('Test stresses', () => {
+  it('Should correctly call stresses', () => {
 
     let result, answer, word;
 
@@ -75,7 +75,7 @@ describe('RiTa.Analyzer', () => {
 
   });
 
-  it('Test phonemes', () => {
+  it('Should correctly call phonemes', () => {
 
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
@@ -117,7 +117,7 @@ describe('RiTa.Analyzer', () => {
     RiTa.SILENCE_LTS = silent;
   });
 
-  it('Test syllables', () => {
+  it('Should correctly call syllables', () => {
 
     let input, expected;
 
@@ -148,7 +148,7 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.syllables(input)).eq(expected);
   });
 
-  it('Test singular plural pairs', () => {
+  it('Should correctly handle singular plural pairs', () => {
 
     let testPairs = [
       "dazes", "daze",
@@ -343,7 +343,7 @@ describe('RiTa.Analyzer', () => {
     }
   });
 
-  it('Test singularize', () => {
+  it('Should correctly call singularize', () => {
     let test = [
       "media", "medium",
       "millennia", "millennium",
@@ -453,7 +453,7 @@ describe('RiTa.Analyzer', () => {
     }
   });
 
-  it('Test pluralize', () => {
+  it('Should correctly call pluralize', () => {
     let tests = [
       "media", "medium",
       "millennia", "millennium",

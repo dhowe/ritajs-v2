@@ -3,7 +3,7 @@ describe('RiTa.Tokenizer', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  it ('Test tokenize and back', () =>{
+  it ('Should correctly call tokenize then untokenize', () =>{
     let sentences = [
       "this is www.google.com",
       "it is 'hell'"
@@ -21,7 +21,7 @@ describe('RiTa.Tokenizer', () => {
 
   });
 
-  it('Test tokenize', () => {
+  it('Should correctly call tokenize', () => {
 
     expect(RiTa.tokenize("")).eql([""]);
     expect(RiTa.tokenize("The dog")).eql(["The", "dog"]);
@@ -152,7 +152,7 @@ describe('RiTa.Tokenizer', () => {
     expect(RiTa.tokenize(txt6)).eql(["We", "didn't", "find", "the", "cat", "."]);
   });
 
-  it('Test untokenize', () => {
+  it('Should correctly call untokenize', () => {
 
     expect(RiTa.untokenize([""])).eq("");
 
@@ -293,7 +293,7 @@ describe('RiTa.Tokenizer', () => {
     }
   });
 
-  it('Test sentences', () => {
+  it('Should correctly call sentences', () => {
 
     var input = "Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications. The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels. If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs.";
     var expected = ["Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications.", "The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels.", "If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs."];
