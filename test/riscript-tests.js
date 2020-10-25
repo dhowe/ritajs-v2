@@ -214,6 +214,11 @@ describe('RiTa.RiScript', () => {
       expect(ctx.noun).eq('I');
       expect(ctx.verb).eq('sat');
       expect(res).eq('I sat.');
+    }); 
+    
+    it('KI: Should resolve transforms on phrases', () => {
+      let res = RiTa.evaluate("($a dog).pluralize()\n$a=the", null, {trace: true});
+      expect(res).eq("the dogs");
     });
 
     it('Should parse transformed assignments', () => {
