@@ -40,7 +40,7 @@ class Visitor extends RiScriptVisitor {
     let id = symbolName(ctx.symbol().getText());
 
     this.trace && console.log('visitInline: $' + id + '=' +
-      flatten(token) + ' tfs=[' + (txs || '') + ']');
+      flatten(token) + ' tfs=' + flattenTx(txs));
 
     // if we've already resolved (likely as an inline) just return
     if (typeof this.context[id] !== 'undefined' && !this.parent.isParseable(this.context[id])) {

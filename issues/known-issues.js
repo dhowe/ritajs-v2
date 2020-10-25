@@ -53,24 +53,11 @@ describe('RiScript.KnownIssues', () => { // TODO:
     expect(RiTa.evaluate('foo.bar', {}, 1)).eq('foo.bar');
   });
 
-  it('Should allow transforms on assignments', () => {   // TODO
-    let ctx = {};
-    expect(RiTa.evaluate('[$a=a].toUpperCase()', ctx, 0)).eq('');
-    expect(ctx.a).eq('A')
-  });
-
   it('Should eval simple expressions', () => {
     // NOT SURE WHAT THIS TEST IS ABOUT
     expect(RiTa.evaluate('$foo=bar \\nbaz\n$foo', {}, TT)).eq('bar baz'); ``
   });
 
-  ///////////////////////////////////#///////////////////////////////////////////
-
-  it('Should evaluate inline assigns to vars', () => { // failing
-    let rs = RiTa.evaluate('[$chosen=$person] talks to $chosen.', { person: '(Dave | Jill | Pete)' });
-    expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."])
-  });
-  ;
 });
 
 describe('RiTa.KnownIssues', () => {

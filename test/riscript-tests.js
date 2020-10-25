@@ -350,6 +350,9 @@ describe('RiTa.RiScript', () => {
 
       expect(RiTa.evaluate('[$stored=(a | a)] dog is a mammal', ctx = {})).eq(exp.toLowerCase());
       expect(ctx.stored).eq('a');
+
+      expect(RiTa.evaluate('[$a=a].toUpperCase()', ctx = {})).eq('A');
+      expect(ctx.a).eq('a')
     });
 
     it('Should resolve inline transforms', () => {
