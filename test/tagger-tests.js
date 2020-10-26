@@ -17,7 +17,7 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos("Dave dances".split(/ /)), ["nnp", "vbz"]);
   });
 
-  it('Should correctly call simple pos.array', () => {
+  it('Should correctly call pos.array with .simple', () => {
     eql(RiTa.pos([], { simple: true }), []);
     eql(RiTa.pos(["freed"], { simple: true }), ["a"]);
     eql(RiTa.pos(["the"], { simple: true }), ["-"]);
@@ -31,7 +31,7 @@ describe('RiTa.Tagger', () => {
   });
 
 
-  it('Should correctly call pos.array.inline.simple', () => {
+  it('Should correctly call pos.array with .inline.simple', () => {
     let result, answer, txt;
 
     eql(RiTa.pos([], { inline: true, simple: true }), "");
@@ -59,7 +59,7 @@ describe('RiTa.Tagger', () => {
     eq(result, answer);
   });
 
-  it('Should correctly handle inflected verbs', () => {
+  it('Should correctly call inflected verbs', () => {
     eql(RiTa.pos("disbelieves"), ["vbz"]);
     eql(RiTa.pos("disbelieves", { simple: 1 }), ["v"]);
 
@@ -215,7 +215,7 @@ describe('RiTa.Tagger', () => {
     }
   });
 
-  it('Should correctly call pos.simple', () => {
+  it('Should correctly call pos with .simple', () => {
     //eql(RiTa.pos("", { simple: true }), []);
     eql(RiTa.pos("biped", { simple: true }), ["n"]);
     eql(RiTa.pos("greed", { simple: true }), ["n"]);
@@ -227,7 +227,7 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos("freed", { simple: true }), ["a"]);
   });
 
-  it('Should correctly call pos.inline', () => {
+  it('Should correctly call pos with .inline', () => {
     let result, answer, txt;
 
     eql(RiTa.pos("", { inline: true }), "");
@@ -284,7 +284,7 @@ describe('RiTa.Tagger', () => {
     eq(result, answer);
   });
 
-  it('Should correctly call pos.inline.simple', () => {
+  it('Should correctly call pos with .inline.simple', () => {
     let result, answer, txt;
 
     eql(RiTa.pos("", { inline: true, simple: true }), "");
@@ -312,7 +312,7 @@ describe('RiTa.Tagger', () => {
     eq(result, answer);
   });
 
-  it('Should correctly call posInline.simple', () => {
+  it('Should correctly call posInline with .simple', () => {
     let result, answer, txt;
     eql(RiTa.posInline("asdfaasd", { inline: true, simple: true }), "asdfaasd/n");
 

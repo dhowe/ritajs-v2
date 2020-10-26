@@ -1,3 +1,4 @@
+const { expect } = require('chai');
 
 
 describe('RiTa.RiScript', () => {
