@@ -47,7 +47,7 @@ class Visitor extends RiScriptVisitor {
     // if we've already resolved (likely as an inline) just return
     let lookup = this.context[id];
     if (typeof lookup !== 'undefined' && !this.parent.isParseable(lookup)) {
-      this.trace && console.log('resolveInline[0]: $' + id + " -> '" + lookup + "' (already defined)");
+      this.trace && console.log('symbolDefined[0]: $' + id + " -> '" + lookup + "' (already defined)");
       visited = lookup;
     }
     else {
