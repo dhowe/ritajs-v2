@@ -385,6 +385,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.a).eq(ctx.stored);
       expect(ctx.a).eq(result);
     });
+    
     it('Should resolve complex inlines', () => {
       expect(RiTa.evaluate('A [$stored=($animal | $animal)] is a mammal', { animal: 'dog' })).eq('A dog is a mammal');
       expect(RiTa.evaluate('[$b=(a | a).toUpperCase()] dog is a $b.', {})).eq('A dog is a A.');
@@ -775,7 +776,7 @@ describe('RiTa.RiScript', () => {
     it('Should resolve member functions', () => {
       let dog = { name: 'Spot', getColor: () => 'red' };
       expect(RiTa.evaluate("$dog.name was a $dog.getColor() dog.",
-        { dog })).eq('Spot was a red dog.');
+        { dog }, TT)).eq('Spot was a red dog.');
     });
 
     it('Should resolve transforms ending with punc', () => {
