@@ -776,7 +776,7 @@ describe('RiTa.RiScript', () => {
     it('Should resolve member functions', () => {
       let dog = { name: 'Spot', getColor: () => 'red' };
       expect(RiTa.evaluate("$dog.name was a $dog.getColor() dog.",
-        { dog }, TT)).eq('Spot was a red dog.');
+        { dog })).eq('Spot was a red dog.');
     });
 
     it('Should resolve transforms ending with punc', () => {
