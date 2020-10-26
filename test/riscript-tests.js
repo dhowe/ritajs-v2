@@ -1,4 +1,3 @@
-const { expect } = require('chai');
 
 
 describe('RiTa.RiScript', () => {
@@ -386,6 +385,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.a).eq(ctx.stored);
       expect(ctx.a).eq(result);
     });
+    
     it('Should resolve complex inlines', () => {
       expect(RiTa.evaluate('A [$stored=($animal | $animal)] is a mammal', { animal: 'dog' })).eq('A dog is a mammal');
       expect(RiTa.evaluate('[$b=(a | a).toUpperCase()] dog is a $b.', {})).eq('A dog is a A.');

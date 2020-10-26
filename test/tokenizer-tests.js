@@ -3,7 +3,7 @@ describe('RiTa.Tokenizer', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  it ('Should correctly call tokenize then untokenize', () =>{
+  it ('Calling tokenize then untokenize', () =>{
     let sentences = [
       "this is www.google.com",
       "it is 'hell'"

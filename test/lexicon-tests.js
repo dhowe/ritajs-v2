@@ -1,5 +1,3 @@
-const { expect } = require('chai');
-
 describe('RiTa.Lexicon', function () {
 
   this.timeout(5000);
@@ -43,7 +41,7 @@ describe('RiTa.Lexicon', function () {
 
   });
 
-  it("Should handle an augmented lexicon", () => {
+  it("should handle an augmented lexicon", () => {
     let toAdd = {
       'deg': ['d-eh1-g', 'nn'],
       'wadly': ['w-ae1-d l-iy', 'rb'],
@@ -58,7 +56,7 @@ describe('RiTa.Lexicon', function () {
     Object.keys(toAdd).forEach(w => delete RiTa.lexicon().data[w]);
   });
 
-  it("Should handle a custom lexicon", () => {
+  it("should handle a custom lexicon", () => {
 
     let lex = RiTa.lexicon();
     let orig = lex.data;
@@ -176,7 +174,7 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should correctly call search with pos', () => {
+  it('Should correctly call search with pos, limit', () => {
 
     //console.log(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }));
 
@@ -219,7 +217,7 @@ describe('RiTa.Lexicon', function () {
     ]);
   });*/
 
-  it('Should correctly call search with stresses', () => {
+  it('Should correctly call search with stresses, limit', () => {
     expect(RiTa.search('0/1/0/0/0/0', { type: 'stresses', limit: 5 })).eql([
       'accountability',
       'anticipatory',
@@ -551,7 +549,7 @@ describe('RiTa.Lexicon', function () {
     eql(result, ["bonanza"]);
   });
 
-  it('Should correctly call call isRhyme', () => {
+  it('Should correctly call isRhyme', () => {
     expect(!RiTa.isRhyme("apple", "polo")).to.be.true;
     expect(!RiTa.isRhyme("this", "these")).to.be.true;
 

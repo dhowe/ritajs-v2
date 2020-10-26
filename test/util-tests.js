@@ -1,5 +1,5 @@
 const deepMerge = require('deepmerge');
-const { expect, util } = require('chai');
+const { expect } = require('chai');
 
 describe('RiTa.Util', () => {
 
@@ -33,14 +33,6 @@ describe('RiTa.Util', () => {
 
     map = deepMerge({ "a": "2", "b": "2" }, { "a": "1" });
     expect(map).eql({ "a": "1", "b": "2" });
-  });
-
-  it('Should handle slice array', () => {
-    //function N/A for JavaScript, just use the bulit-in slice function
-  });
-
-  it('Should handle slice list', () => {
-    //function N/A for JavaScript
   });
 
 });

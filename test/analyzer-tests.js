@@ -1,8 +1,6 @@
 // const expect = require('chai').expect;
 // const RiTa = require('../src/rita_api');
 
-const { expect } = require('chai');
-
 describe('RiTa.Analyzer', () => {
 
   if (typeof module !== 'undefined') require('./before');
@@ -17,7 +15,7 @@ describe('RiTa.Analyzer', () => {
   });
 
   it('Should correctly call syllables.lts', () => {
-    let result = RiTa.syllables('The Laggin', { silent: 1 });
+    let result = RiTa.syllables('The Laggin', {silent:1});
     expect(result).eq('dh-ah l-ae/g-ih-n', 'got \'' + result + "'");
   });
 
@@ -75,7 +73,7 @@ describe('RiTa.Analyzer', () => {
 
   });
 
-  it('Should correctly call phonemes', () => {
+  it('Should correctly call phones', () => {
 
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
@@ -148,7 +146,7 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.syllables(input)).eq(expected);
   });
 
-  it('Should correctly handle singular plural pairs', () => {
+  it('Should correctly handle number (singular/plural)', () => {
 
     let testPairs = [
       "dazes", "daze",

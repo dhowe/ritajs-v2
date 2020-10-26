@@ -42,16 +42,19 @@ class Visitor extends RiScriptVisitor {
     this.trace && console.log('visitInline: $' + id + '=' +
       flatten(token) + ' tfs=' + flattenTx(txs));
 
+    let visited;
+
     // if we've already resolved (likely as an inline) just return
     let lookup = this.context[id];
     if (typeof lookup !== 'undefined' && !this.parent.isParseable(lookup)) {
-      this.trace && console.log('resolveInline[0]: $' + id + " -> '" + lookup + "' (already defined)");
-      return lookup;
+      this.trace && console.log('symbolDefined[0]: $' + id + " -> '" + lookup + "' (already defined)");
+      visited = lookup;
     }
-
-    // visit the token and add result to the context
-    let visited = this.visit(token);
-    this.context[id] = visited;
+    else {
+      // visit the token and add result to the context
+      visited = this.visit(token);
+      this.context[id] = visited;
+    }
 
     // if no transforms just return;
     if (!txs.length) {

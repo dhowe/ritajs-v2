@@ -65,7 +65,7 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.presentParticiple(" study"), "studying"); // trim
   });
 
-  it('Should correctly call conjugate vbd', () => {
+  it('Should correctly conjugate a vbd', () => {
     expect(RiTa.conjugate("go", {
       number: RiTa.SINGULAR,
       person: RiTa.FIRST_PERSON,
