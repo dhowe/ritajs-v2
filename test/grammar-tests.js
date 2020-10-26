@@ -422,7 +422,7 @@ describe('RiTa.Grammar', () => {
         };
         let ctx = { pluralise: pluraliseFunction };
         let json = {start: "($state feeling).pluralize()", state: "(bad | bad)"};
-        let rg = Grammar.fromJSON(json,ctx);
+        let rg = new Grammar(json,ctx);
         let res = rg.expand();
         eql(res, "bad feelings");
     });

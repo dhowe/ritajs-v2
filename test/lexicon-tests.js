@@ -632,9 +632,9 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should correctly call to phone array', () => {
-    let result = RiTa._lexicon()._toPhoneArray(RiTa._lexicon().rawPhones("tornado", false));
+    let result = RiTa.lexicon()._toPhoneArray(RiTa.lexicon().rawPhones("tornado", false));
     let ans = ["t", "ao", "r", "n", "ey", "d", "ow"];
-    expect(result).eq(ans);
+    expect(result).eql(ans);
   });
 
   function eql(output, expected, msg) { expect(output).eql(expected, msg); }

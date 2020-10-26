@@ -4,7 +4,7 @@ describe('RiTa.Core', () => {
   if (typeof module !== 'undefined') require('./before');
 
   it('Should have access to static constant and function', () => {
-    eql(RiTa.VERSION, '2');
+    eql(RiTa.VERSION, 'DEV');
     eql(RiTa.hasWord('dog'), true);
   });
 
