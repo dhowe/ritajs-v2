@@ -1,3 +1,5 @@
+const { expect } = require('chai');
+
 describe('RiTa.Lexicon', function () {
 
   this.timeout(5000);
@@ -41,7 +43,7 @@ describe('RiTa.Lexicon', function () {
 
   });
 
-  it("should handle an augmented lexicon", () => {
+  it("Should handle an augmented lexicon", () => {
     let toAdd = {
       'deg': ['d-eh1-g', 'nn'],
       'wadly': ['w-ae1-d l-iy', 'rb'],
@@ -56,7 +58,7 @@ describe('RiTa.Lexicon', function () {
     Object.keys(toAdd).forEach(w => delete RiTa.lexicon().data[w]);
   });
 
-  it("should handle a custom lexicon", () => {
+  it("Should handle a custom lexicon", () => {
 
     let lex = RiTa.lexicon();
     let orig = lex.data;
@@ -174,7 +176,7 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should correctly call search with pos, limit', () => {
+  it('Should correctly call search with pos', () => {
 
     //console.log(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }));
 
@@ -217,7 +219,7 @@ describe('RiTa.Lexicon', function () {
     ]);
   });*/
 
-  it('Should correctly call search with stresses, limit', () => {
+  it('Should correctly call search with stresses', () => {
     expect(RiTa.search('0/1/0/0/0/0', { type: 'stresses', limit: 5 })).eql([
       'accountability',
       'anticipatory',
@@ -549,7 +551,7 @@ describe('RiTa.Lexicon', function () {
     eql(result, ["bonanza"]);
   });
 
-  it('Should correctly call isRhyme', () => {
+  it('Should correctly call call isRhyme', () => {
     expect(!RiTa.isRhyme("apple", "polo")).to.be.true;
     expect(!RiTa.isRhyme("this", "these")).to.be.true;
 
@@ -627,6 +629,12 @@ describe('RiTa.Lexicon', function () {
       expect(RiTa.isAlliteration("consult", "sultan")).to.be.true;
       expect(RiTa.isAlliteration("monsoon", "super")).to.be.true;
     }
+  });
+
+  it('Should correctly call to phone array', () => {
+    let result = RiTa._lexicon()._toPhoneArray(RiTa._lexicon().rawPhones("tornado", false));
+    let ans = ["t", "ao", "r", "n", "ey", "d", "ow"];
+    expect(result).eq(ans);
   });
 
   function eql(output, expected, msg) { expect(output).eql(expected, msg); }

@@ -1,6 +1,8 @@
 // const expect = require('chai').expect;
 // const RiTa = require('../src/rita_api');
 
+const { expect } = require('chai');
+
 describe('RiTa.Analyzer', () => {
 
   if (typeof module !== 'undefined') require('./before');
@@ -15,7 +17,7 @@ describe('RiTa.Analyzer', () => {
   });
 
   it('Should correctly call syllables.lts', () => {
-    let result = RiTa.syllables('The Laggin', {silent:1});
+    let result = RiTa.syllables('The Laggin', { silent: 1 });
     expect(result).eq('dh-ah l-ae/g-ih-n', 'got \'' + result + "'");
   });
 
@@ -73,7 +75,7 @@ describe('RiTa.Analyzer', () => {
 
   });
 
-  it('Should correctly call phones', () => {
+  it('Should correctly call phonemes', () => {
 
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
@@ -146,7 +148,7 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.syllables(input)).eq(expected);
   });
 
-  it('Should correctly handle number (singular/plural)', () => {
+  it('Should correctly handle singular plural pairs', () => {
 
     let testPairs = [
       "dazes", "daze",
@@ -340,6 +342,233 @@ describe('RiTa.Analyzer', () => {
       ok(res3, 'FAIL: isPlural(' + testPairs[i] + ') was false\n\n');
     }
   });
+
+  it('Should correctly call singularize', () => {
+    let test = [
+      "media", "medium",
+      "millennia", "millennium",
+      "consortia", "consortium",
+      "concerti", "concerto",
+      "septa", "septum",
+      "termini", "terminus",
+      "larvae", "larva",
+      "vertebrae", "vertebra",
+      "memorabilia", "memorabilium",
+      "hooves", "hoof",
+      "thieves", "thief",
+      "rabbis", "rabbi",
+      "flu", "flu",
+      "safaris", "safari",
+      "sheaves", "sheaf",
+      "uses", "use",
+      "pinches", "pinch",
+      "catharses", "catharsis",
+      "hankies", "hanky",
+      "pleae", "pleae",
+      "whizzes", "whiz",
+      "selves", "self",
+      "bookshelves", "bookshelf",
+      "wheezes", "wheeze",
+      "diagnoses", "diagnosis",
+      "minutia", "minutia",
+      "blondes", "blonde",
+      "eyes", "eye",
+      "swine", "swine",
+      "cognoscenti", "cognoscenti",
+      "bonsai", "bonsai",
+      "taxis", "taxi",
+      "chiefs", "chief",
+      "monarchs", "monarch",
+      "lochs", "loch",
+      "stomachs", "stomach",
+      "Chinese", "Chinese",
+      "people", "person",
+      "money", "money",
+      "vertebrae", "vertebra",
+      "humans", "human",
+      "germans", "german",
+      "romans", "roman",
+      "memoranda", "memorandum",
+      "data", "datum",
+      "appendices", "appendix",
+      "theses", "thesis",
+      "alumni", "alumnus",
+      "solos", "solo",
+      "music", "music",
+      "oxen", "ox",
+      "beef", "beef",
+      "tobacco", "tobacco",
+      "cargo", "cargo",
+      "golf", "golf",
+      "grief", "grief",
+      "cakes", "cake",
+      "dog", "dog",
+      "feet", "foot",
+      "teeth", "tooth",
+      "kisses", "kiss",
+      "children", "child",
+      "randomwords", "randomword",
+      "deer", "deer",
+      "sheep", "sheep",
+      "shrimp", "shrimp",
+      "tomatoes", "tomato",
+      "photos", "photo",
+      "toes", "toe",
+      "series", "series",
+      "men", "man",
+      "mice", "mouse",
+      "lice", "louse",
+      "gases", "gas",
+      "buses", "bus",
+      "happiness", "happiness",
+      "crises", "crisis",
+      "apotheses", "apothesis",
+      "stimuli", "stimulus",
+      "corpora", "corpus",
+      "women", "woman",
+      "congressmen", "congressman",
+      "aldermen", "alderman",
+      "freshmen", "freshman",
+      "firemen", "fireman",
+      "grandchildren", "grandchild",
+      "menus", "menu",
+      "gurus", "guru",
+      "hardness", "hardness",
+      "shortness", "shortness",
+      "dreariness", "dreariness",
+      "unwillingness", "unwillingness",
+      "fish", "fish",
+      "ooze", "ooze",
+      "enterprises", "enterprise",
+      "treatises", "treatise",
+      "houses", "house",
+      "chemises", "chemise",
+      "aquatics", "aquatics",
+      "mechanics", "mechanics",
+      "quarters", "quarter"
+    ];
+
+    for (let i = 0; i < test.length; i += 2) {
+      expect(RiTa.singularize(test[i])).eq(test[i + 1]);
+    }
+  });
+
+  it('Should correctly call pluralize', () => {
+    let tests = [
+      "media", "medium",
+      "millennia", "millennium",
+      "consortia", "consortium",
+      "concerti", "concerto",
+      "septa", "septum",
+      "termini", "terminus",
+      "larvae", "larva",
+      "vertebrae", "vertebra",
+      "memorabilia", "memorabilium",
+      "sheaves", "sheaf",
+      "spoofs", "spoof",
+      "proofs", "proof",
+      "roofs", "roof",
+      "disbeliefs", "disbelief",
+      "indices", "index",
+      "accomplices", "accomplice",
+      "hooves", "hoof",
+      "thieves", "thief",
+      "rabbis", "rabbi",
+      "flu", "flu",
+      "safaris", "safari",
+      "sheaves", "sheaf",
+      "uses", "use",
+      "pinches", "pinch",
+      "catharses", "catharsis",
+      "hankies", "hanky",
+      "pleae", "pleae",
+      "whizzes", "whiz",
+      "selves", "self",
+      "bookshelves", "bookshelf",
+      "wheezes", "wheeze",
+      "diagnoses", "diagnosis",
+      "minutia", "minutia",
+      "blondes", "blonde",
+      "eyes", "eye",
+      "swine", "swine",
+      "cognoscenti", "cognoscenti",
+      "bonsai", "bonsai",
+      "taxis", "taxi",
+      "chiefs", "chief",
+      "monarchs", "monarch",
+      "lochs", "loch",
+      "stomachs", "stomach",
+      "Chinese", "Chinese",
+      "people", "person",
+      "money", "money",
+      "vertebrae", "vertebra",
+      "humans", "human",
+      "germans", "german",
+      "romans", "roman",
+      "memoranda", "memorandum",
+      "data", "datum",
+      "appendices", "appendix",
+      "theses", "thesis",
+      "alumni", "alumnus",
+      "solos", "solo",
+      "music", "music",
+      "oxen", "ox",
+      "beef", "beef",
+      "tobacco", "tobacco",
+      "cargo", "cargo",
+      "golf", "golf",
+      "grief", "grief",
+      "cakes", "cake",
+      "dog", "dog",
+      "feet", "foot",
+      "teeth", "tooth",
+      "kisses", "kiss",
+      "children", "child",
+      "randomwords", "randomword",
+      "deer", "deer",
+      "sheep", "sheep",
+      "shrimp", "shrimp",
+      "tomatoes", "tomato",
+      "photos", "photo",
+      "toes", "toe",
+      "series", "series",
+      "men", "man",
+      "mice", "mouse",
+      "lice", "louse",
+      "gases", "gas",
+      "buses", "bus",
+      "happiness", "happiness",
+      "crises", "crisis",
+      "apotheses", "apothesis",
+      "stimuli", "stimulus",
+      "corpora", "corpus",
+      "women", "woman",
+      "congressmen", "congressman",
+      "aldermen", "alderman",
+      "freshmen", "freshman",
+      "firemen", "fireman",
+      "grandchildren", "grandchild",
+      "menus", "menu",
+      "gurus", "guru",
+      "hardness", "hardness",
+      "shortness", "shortness",
+      "dreariness", "dreariness",
+      "unwillingness", "unwillingness",
+      "fish", "fish",
+      "ooze", "ooze",
+      "enterprises", "enterprise",
+      "treatises", "treatise",
+      "houses", "house",
+      "chemises", "chemise",
+      "aquatics", "aquatics",
+      "mechanics", "mechanics",
+      "quarters", "quarter"
+    ];
+    for (let i = 0; i < tests.length; i += 2) {
+      expect(RiTa.pluralize(tests[i + 1])).eq(tests[i]);
+    }
+  });
+
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }
   function eq(a, b, m) { expect(a).eq(b, m); }
