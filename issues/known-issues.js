@@ -3,15 +3,6 @@ const RiTa = require('../src/rita');
 
 describe('RiScript.KnownIssues', () => { // TODO:
 
-  it('Should resolve transforms on phrases', () => {
-    let res = RiTa.evaluate("($a dog).pluralize()\n$a=the", null, opts("trace", true));
-    assertEquals("the dogs", res); 
-  });
-
-  it('Should use phones for articlize', () => {
-    expect(RiTa.articlize("honor")).eq('an honor');
-  });
-
   it('Should throw on infinite recursions', () => {
     console.log(RiTa.evaluate('$s', { s: '$a', a: '$s' }));
     expect(() => RiTa.evaluate('$s', { s: '$a', a: '$s' })).to.throw();
