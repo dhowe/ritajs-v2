@@ -29,21 +29,21 @@ class RiScript {
 
     let onepass = opts.singlePass; // TODO: doc
     let last, expr = input, trace = opts.trace;
-    let rs = this.pushTransforms(ctx);
+    this.pushTransforms(ctx);
 
-    for (let i = 0; /*rs.isParseable(expr) &&*/ expr !== last && i < RiScript.MAX_TRIES; i++) {
+    for (let i = 0; expr !== last && i < RiScript.MAX_TRIES; i++) {
       last = expr;
       if (trace) console.log("--------------------- Pass#" + i + " ----------------------");
-      expr = rs.lexParseVisit(expr, ctx, opts);
+      expr = this.lexParseVisit(expr, ctx, opts);
       if (trace) this.passInfo(ctx, last, expr, i);
-      if (onepass) break;
+      if (onepass || !this.isParseable(expr)) break;
     }
 
     if (!opts.silent && !RiScript.parent.SILENT && SYMBOL_RE.test(expr)) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
     }
 
-    return rs.popTransforms(ctx).resolveEntities(expr);
+    return this.popTransforms(ctx).resolveEntities(expr);
   }
 
   passInfo(ctx, input, output, pass) {
@@ -76,7 +76,7 @@ class RiScript {
     this.lexer.addErrorListener(new LexerErrors());
 
     let silent = opts && opts.silent;
-    let trace = opts && opts.trace;
+    let trace = opts && opts.traceLex;
 
     // try the lexing
     let tokenStream;
@@ -202,26 +202,6 @@ class RiScript {
   static identity(s) {
     return s;
   }
-
-  /*
-    static addTransform(name, func) { // DOC: object case
-      if (typeof name === 'string') {
-        return RiScript.transforms[name] = func;
-      }
-      Object.keys(name).forEach(k => {
-        RiScript.transforms[k] = name[k];
-      });
-    }
-    static removeTransform(name) { // DOC:
-      let obj = {};
-      if (typeof name === 'string') {
-        return delete RiScript.transforms[name];
-      }
-      Object.keys(name).forEach(k => delete RiScript.transforms[k]);
-    }
-    static getTransforms() { // DOC:
-      return Object.keys(RiScript.transforms);
-    } */
 
 }
 
