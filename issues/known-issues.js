@@ -17,6 +17,19 @@ describe('RiScript.KnownIssues', () => { // TODO:
     expect(() => RiTa.evaluate('a.toUpperCase()', 0, { silent: 1, trace: 1 })).to.throw();
   });
 
+  it('Should handle complex inlines in grammars', () => {
+
+    let rg = new Grammar({
+      "start": "[$chosen=$person] talks to $chosen.",
+      "person": "$Dave | $Jill | $Pete",
+      "Dave": "Dave | Jill | Pete",
+      "Jill": "Dave | Jill | Pete",
+      "Pete": "Dave | Jill | Pete",
+    });
+    rs = rg.expand({ trace: 1 });
+    expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
+  });
+
   it('1: pluralize or singularize fails', () => {
     let testPairs = []; // SS FAILING ITEMS HERE
     let res1, res2, res3, i = 0, dbug = true;

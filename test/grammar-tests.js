@@ -96,14 +96,14 @@ describe('RiTa.Grammar', () => {
         expect(rs).to.be.oneOf(["Dave", "Jill", "Pete"]);
     });
 
-    0 && it('should correctly resolve inlines', () => { // KNOWN-ISSUES
+    it('should correctly resolve inlines', () => { // KNOWN-ISSUES
         let rg, rs;
 
         rg = new Grammar({
             "start": "[$chosen=$person] talks to $chosen.",
             "person": "Dave | Jill | Pete"
         });
-        rs = rg.expand({ trace: 1 });
+        rs = rg.expand({ trace: 0 });
         //console.log(rs);
         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
       
@@ -118,16 +118,6 @@ describe('RiTa.Grammar', () => {
         //console.log(rs);
         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
 
-        rg = new Grammar({
-            "start": "[$chosen=$person] talks to $chosen.",
-            "person": "$Dave | $Jill | $Pete", 
-            "Dave": "Dave | Jill | Pete",
-            "Jill": "Dave | Jill | Pete",
-            "Pete": "Dave | Jill | Pete",
-        });
-        rs = rg.expand({ trace: 0 });
-        expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
-        
     });
 
     it("should correctly call addRules", () => {
