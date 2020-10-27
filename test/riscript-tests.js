@@ -220,9 +220,6 @@ describe('RiTa.RiScript', () => {
     it('Should parse transformed assignments', () => {
       let ctx;
 
-      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx = {})).eq(''); // empty string
-      expect(ctx.foo).eq('');
-
       expect(RiTa.evaluate('$foo=(a).toUpperCase()', ctx = {})).eq('');
       expect(ctx.foo).eq('A');
 
@@ -632,7 +629,7 @@ describe('RiTa.RiScript', () => {
       RiTa.addTransform('capA');
 
       ctx = {};
-      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx)).eq('');
+      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx,ST)).eq('');
       expect(ctx.foo).eq('');
 
       ctx = { blah3: () => 'Blah3' };
@@ -737,7 +734,7 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve choice transforms', () => {
 
-      expect(RiTa.evaluate("(a | a).up()", {})).eq("a.up()");
+      expect(RiTa.evaluate("(a | a).up()", {}, ST)).eq("a.up()");
       expect(RiTa.evaluate("(a | a).toUpperCase()", {})).eq("A");
       expect(RiTa.evaluate("(a | a).up()", { up: x => x.toUpperCase() })).eq("A");
       
@@ -766,11 +763,6 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(Abe Lincoln).articlize().capitalize()', { dog: 'abe' })).eq('An Abe Lincoln');
       expect(RiTa.evaluate("<li>$start</li>\n$start=($jrSr).capitalize()\n$jrSr=(junior|junior)")).eq("<li>Junior</li>");
     });
-
-  it('Should throw on infinite recursions', () => {
-    console.log(RiTa.evaluate('$s', { s: '$a', a: '$s' },TT));
-    //expect(() => RiTa.evaluate('$s', { s: '$a', a: '$s' })).to.throw();
-  });
 
     it('Should resolve object properties', () => {
       let dog = { name: 'spot', color: 'white', hair: { color: 'white' } };
@@ -863,8 +855,6 @@ describe('RiTa.RiScript', () => {
       expect(rs).eq('BAZ');
 
       let ctx = {};
-      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx, 0)).eq('');
-      expect(ctx.foo).eq('');
 
       expect(RiTa.evaluate('$foo.capitalize()\n$foo=(a|a)')).eq('A');
       expect(RiTa.evaluate('$start=$r.capitalize()\n$r=(a|a)\n$start', {})).eq('A');
