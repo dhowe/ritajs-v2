@@ -19,6 +19,7 @@ class Visitor extends RiScriptVisitor {
     this.pendingSymbols = [];
     this.context = context || {};
     this.trace = opts && opts.trace;
+    this.silent = opts && opts.silent;
     return this;
   }
 
@@ -272,8 +273,7 @@ class Visitor extends RiScriptVisitor {
 
     let result, raw = target + Visitor.DOT + tx;
 
-    if (this.trace) console.log("applyTransform: '" + target
-      + "' tf=" + tx);
+    if (this.trace) console.log("applyTransform: '" + target + "' tf=" + tx);
 
     // check for function
     if (tx.endsWith(Visitor.FUNCTION)) {
@@ -285,13 +285,16 @@ class Visitor extends RiScriptVisitor {
       if (typeof this.context[tx] === 'function') {
         result = this.context[tx](target);
       }
-      // built-in string functions
+      // member functions (usually on String)
       else if (typeof target[tx] === 'function') {
         result = target[tx]();
+        if (target === '' && result === '') {
+          if (!this.silent) console.warn("[WARN] Unresolved transform[0]: " + raw);
+        }
       }
       else { // function doesn't exist
         result = raw;
-        this.trace && console.warn("[WARN] Unresolved transform: " + result);
+        if (!this.silent)  console.warn("[WARN] Unresolved transform[1]: " + result);
       }
     }
     // check for property
@@ -302,7 +305,7 @@ class Visitor extends RiScriptVisitor {
       }
       else {
         result = raw;
-        this.trace && console.warn("[WARN] Unresolved transform: " + result);
+        if (!this.silent) console.warn("[WARN] Unresolved transform[2]: " + result);
       }
     }
 
@@ -483,39 +486,6 @@ function flattenTx(txs) {
   if (!txs || !txs.length) return "";
   return txs[0].getText();
 }
-
-/*
-function randomElement(arr) {
-  return arr[Math.floor((Math.random() * arr.length))];
-}
-
-function mergeArrays(orig, adds) {
-  return (adds && adds.length) ? (orig || []).concat(adds) : orig;
-}
-
-function inspect(o) {
-  let props = [];
-  let obj = o;
-  do {
-    props = props.concat(Object.getOwnPropertyNames(obj));
-  } while (obj = Object.getPrototypeOf(obj));
-  return props.sort().filter(function (e, i, arr) {
-    return (e != arr[i + 1]);// && typeof o[e] === 'function');
-  });
-}
-
-function typeOf(o) {
-  if (typeof o !== 'object') return typeof o;
-  return Array.isArray(o) ? 'array' : 'object';
-} 
- 
-function emptyExpr() {
-  delete EmptyExpr.transforms;
-  return EmptyExpr;
-} 
-
-const EmptyExpr = new RiScriptParser.ExprContext();
-*/
 
 Visitor.LP = '(';
 Visitor.RP = ')';

@@ -767,6 +767,11 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("<li>$start</li>\n$start=($jrSr).capitalize()\n$jrSr=(junior|junior)")).eq("<li>Junior</li>");
     });
 
+  it('Should throw on infinite recursions', () => {
+    console.log(RiTa.evaluate('$s', { s: '$a', a: '$s' },TT));
+    //expect(() => RiTa.evaluate('$s', { s: '$a', a: '$s' })).to.throw();
+  });
+
     it('Should resolve object properties', () => {
       let dog = { name: 'spot', color: 'white', hair: { color: 'white' } };
       expect(RiTa.evaluate("It was a $dog.hair.color dog.", { dog })).eq('It was a white dog.');

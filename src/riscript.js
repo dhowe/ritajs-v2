@@ -40,7 +40,7 @@ class RiScript {
     }
 
     if (!opts.silent && !RiScript.parent.SILENT && SYMBOL_RE.test(expr)) {
-      console.warn('[WARN] Unresolved symbol(s) in "' + expr + '"');
+      console.warn('[WARN] Unresolved symbol(s) in "' + expr + '" ');
     }
 
     return this.popTransforms(ctx).resolveEntities(expr);
@@ -157,7 +157,7 @@ class RiScript {
   lexParseVisit(input, context, opts) {
 
     let { pre, parse, post } = this.preParse(input, opts);
-    opts.trace && console.log('preParse("' + (pre || '') + '", "' + (post || '') + '"):');
+    opts.trace && console.log('preParse("' + pre + '", "' + post + '");');
     let tree = parse.length && this.lexParse(parse, opts);
     let result = parse.length ? this.visitor.init(context, opts).start(tree) : '';
     return (this.normalize(pre) + ' ' + result + ' ' + this.normalize(post)).trim();

@@ -3,18 +3,18 @@ const RiTa = require('../src/rita');
 
 describe('RiScript.KnownIssues', () => { // TODO:
 
-  it('Should throw on infinite recursions', () => {
+  it('Should handle RiTa function transforms with args', () => {
+    expect(RiTa.evaluate('Is $RiTa.presentParticiple(lie) wrong?',
+      {}, { trace: 1, singlePass: 1 })).eq("Is lying wrong?");
+  });
+
+  it('Should throw on infinite recursions', () => { // error-handling
     console.log(RiTa.evaluate('$s', { s: '$a', a: '$s' }));
     expect(() => RiTa.evaluate('$s', { s: '$a', a: '$s' })).to.throw();
   });
 
-  it('Should throw on bad transforms', () => {
+  it('Should throw on bad transforms', () => { // error-handling
     expect(() => RiTa.evaluate('a.toUpperCase()', 0, { silent: 1, trace: 1 })).to.throw();
-  });
-
-  it('Should handle RiTa function transforms with args', () => {
-    expect(RiTa.evaluate('Is $RiTa.presentParticiple(lie) wrong?',
-      {}, { trace: 1, singlePass: 1 })).eq("Is lying wrong?");
   });
 
   it('1: pluralize or singularize fails', () => {
