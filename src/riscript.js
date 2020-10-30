@@ -177,6 +177,7 @@ class RiScript {
     } */
 
   resolveEntities(result) { // &#10; for line break DOC:
+    if (typeof result === 'undefined') return '';
     return decode(result.replace(/ +/g, ' '))
       .replace(ENTITY_RE, ' ');
   }

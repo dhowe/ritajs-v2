@@ -172,12 +172,13 @@ describe('RiTa.Grammar', () => {
         });
     });
 
-    it("should throw on bad grammar names", () => {
+    it("should throw on missing rules", () => {
         let rg = new Grammar();
-        expect(() => rg.expandFrom("wrongName")).to.throw();
         expect(() => rg.expand()).to.throw();
-    });
 
+        rg = new Grammar({ start: "My rule" });
+        expect(() => rg.expand('bad')).to.throw();
+    });
 
     it("should correctly call expandFrom", () => {
         let rg = new Grammar();
@@ -288,14 +289,14 @@ describe('RiTa.Grammar', () => {
     });
 
     it("should allow context in expand", () => {
-        let context, rg;
-        context = { randomPosition: () => 'job type' };
+        let ctx, rg;
+        ctx = { randomPosition: () => 'job type' };
         rg = new RiTa.Grammar({ start: "My .randomPosition()." });
-        expect(rg.expand({ context })).eq("My job type.");
+        expect(rg.expand(ctx)).eq("My job type.");
 
-        context = { randomPosition: () => 'job type' };
+        ctx = { randomPosition: () => 'job type' };
         rg = new RiTa.Grammar({ stat: "My .randomPosition()." });
-        expect(rg.expand('stat', { context })).eq("My job type.");
+        expect(rg.expand('stat', ctx)).eq("My job type.");
     });
 
     it("should handle custom transforms", () => {

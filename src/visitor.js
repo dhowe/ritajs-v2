@@ -289,12 +289,12 @@ class Visitor extends RiScriptVisitor {
       else if (typeof target[tx] === 'function') {
         result = target[tx]();
         if (target === '' && result === '') {
-          if (!this.silent) console.warn("[WARN] Unresolved transform[0]: " + raw);
+          if (!this.silent && !RiTa.SILENT) console.warn("[WARN] Unresolved transform[0]: " + raw);
         }
       }
       else { // function doesn't exist
         result = raw;
-        if (!this.silent)  console.warn("[WARN] Unresolved transform[1]: " + result);
+        if (!this.silent && !RiTa.SILENT) console.warn("[WARN] Unresolved transform[1]: " + result);
       }
     }
     // check for property
@@ -305,7 +305,7 @@ class Visitor extends RiScriptVisitor {
       }
       else {
         result = raw;
-        if (!this.silent) console.warn("[WARN] Unresolved transform[2]: " + result);
+        if (!this.silent && !RiTa.SILENT) console.warn("[WARN] Unresolved transform[2]: " + result);
       }
     }
 

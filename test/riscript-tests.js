@@ -620,7 +620,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(c).toUpperCase()', ctx)).eq('C');
     });
 
-    it('Should resolve no-input transforms', () => {
+    it('Should resolve no input transforms', () => {
       let ctx = { 'capA': () => 'A' };
       expect(RiTa.evaluate('.capA()', ctx)).eq('A');
 
@@ -629,7 +629,7 @@ describe('RiTa.RiScript', () => {
       RiTa.addTransform('capA');
 
       ctx = {};
-      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx,ST)).eq('');
+      expect(RiTa.evaluate('$foo=.toUpperCase()', ctx, ST)).eq('');
       expect(ctx.foo).eq('');
 
       ctx = { blah3: () => 'Blah3' };

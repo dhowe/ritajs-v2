@@ -58,10 +58,11 @@ class Grammar {
       rule = 'start';
     }
     let ctx = deepMerge(this.context, this.rules);
-    if (opts.context) ctx = deepMerge(ctx, opts.context);
+    if (opts) ctx = deepMerge(ctx, opts);
     if (rule.startsWith('$')) rule = rule.substring(1);
     if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
 
+ 		// a bit strange here as opts entries are included in ctx
     return this.compiler.evaluate(ctx[rule], ctx, opts);
   }
 
