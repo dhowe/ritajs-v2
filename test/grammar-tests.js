@@ -115,7 +115,7 @@ describe('RiTa.Grammar', () => {
         rs = rg.expand({ trace: 0 });
         //console.log(rs);
         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
-      
+
         rg = new Grammar({
             "start": "[$chosen=$person] talks to $chosen.",
             "person": "$Dave | $Jill | $Pete",
@@ -377,16 +377,23 @@ describe('RiTa.Grammar', () => {
         }
     });
 
-    it("should call toJSON and fromJSON",() => {
-      let json = {"$start":"$pet $iphone","$pet":"(dog | cat)","$iphone":"(iphoneSE | iphone12)"};
-      let rg = new Grammar(json);
-      let generatedJSON = rg.toJSON();
-      let rg2 = Grammar.fromJSON(generatedJSON);
-      ok(rg2 !== 'undefined');
-      expect(rg.toString()).eq(rg2.toString());
-      expect(rg.context).eql(rg2.context);
-      expect(rg.rules).eql(rg2.rules);
-      expect(rg).eql(rg2);
+    it("should call to/from JSON", () => {
+        let json = { "$start": "$pet $iphone", "$pet": "(dog | cat)", "$iphone": "(iphoneSE | iphone12)" };
+        let rg = new Grammar(json);
+        let generatedJSON = rg.toJSON();
+        let rg2 = Grammar.fromJSON(generatedJSON);
+        ok(rg2 !== 'undefined');
+        expect(rg.toString()).eq(rg2.toString());
+        expect(rg.context).eql(rg2.context);
+        expect(rg.rules).eql(rg2.rules);
+        expect(rg).eql(rg2);
+
+        /*  grammars.forEach(g => { KnownIssues-Java
+            rg = Grammar.fromJSON(g);
+            rg2 = Grammar.fromJSON(rg.toJSON());
+            ok(rg2.toString() === rg.toString());
+            assertTrue(rg == rg2);
+        }); */
     });
 
     function eql(a, b, c) { expect(a).eql(b, c); }
