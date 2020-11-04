@@ -606,8 +606,7 @@ describe('RiTa.RiScript', () => {
 
     it('should handle phrase transforms', () => {
       let g = "$y=(a | a)\n[$x=$y b].ucf()";
-      let res = RiTa.evaluate(g,{},TT);
-      expect(res).eq("A b");
+      expect(RiTa.evaluate(g)).eq("A b");
     });
 
     it('Should handle empty builtin transforms', () => {

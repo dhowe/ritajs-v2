@@ -39,12 +39,12 @@ describe('RiTa.Grammar', () => {
         ok(typeof new Grammar() !== 'undefined');
     });
 
-    it('should handle phrase transforms', () => { // TODO: add to riscript and java (NEXT)
+    it('should handle phrase transforms', () => {
         let g = {
             "start": "[$x=$y b].ucf()",
             "y": "(a | a)",
         }
-        let res = RiTa.evaluate(new Grammar(g).expand(TT));
+        let res = RiTa.evaluate(new Grammar(g).expand());
         expect(res).eq("A b");
     });
 
