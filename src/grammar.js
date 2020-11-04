@@ -30,7 +30,7 @@ class Grammar {
 
   addRules(rules) { // or rules or ... ?
     if (rules) {
-      if (typeof rules === 'string') { // ??
+      if (typeof rules === 'string') {
         throw Error("Expecting an object");
       }
       Object.keys(rules).forEach(r => this.addRule(r, rules[r]))
@@ -45,7 +45,7 @@ class Grammar {
     if (rule.includes('|') && !(IN_PARENS_RE.test(rule))) {
       rule = '(' + rule + ')';
     }
-    this.rules[name] = rule;
+    this.rules[name] = rule;//'(' + rule + ')';//rule;
     return this;
   }
 
@@ -60,7 +60,7 @@ class Grammar {
     if (rule.startsWith('$')) rule = rule.substring(1);
     if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
 
- 		// a bit strange here as opts entries are included in ctx
+    // a bit strange here as opts entries are included in ctx
     return this.compiler.evaluate(ctx[rule], ctx, opts);
   }
 
@@ -92,6 +92,6 @@ function joinChoice(arr) {
   return opts + ')';
 }
 
-const IN_PARENS_RE = /^\(.*\)$/;
+const IN_PARENS_RE = /^\([^()]*\)$/;
 
 module && (module.exports = Grammar);

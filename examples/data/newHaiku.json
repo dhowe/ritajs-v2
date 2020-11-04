@@ -1,10 +1,11 @@
 {
   "start": "$5line.ucf() % $7plus5",
-  "5line": "$nnnn.art() | $nnnnn | $vp4 again",
-  "7plus5": "((I wake and look for water % $vp5) | $12sen)",
-
-  "12sen": "((((beetle|termite) eats | ant burrows).art() (silently | placidly) % into the) | (spider | inchworm).art() dangles % from the) (chestnut | cedar | ( gum | tea ) tree)",
-
+  "5line": "the $nnnn | $nnnnn | $vp4 again",
+  "7plus5": "(I wake and look for water % $vp5) | ($12sen $tree)",
+  
+  "12sen": "(((beetle|termite) eats | ant burrows).art() (silently | placidly) % into the) | ((spider | inchworm).art() dangles % from the)",
+  "tree": "(chestnut | cedar | old (gum | tea)) tree",
+    
   "nnn": "a black rose | white daisies | sakura | rosemary | a yellow cat | oranges | cool moonlight | dark forest | huge mountain",
   "nnnn": "(mountain | silent) village | (evening | morning) sun | (winter | summer) flower | (star | sky) above",
   "nnnnn": "the (autumn | summer) moonlight",

@@ -43,9 +43,8 @@ describe('RiTa.Grammar', () => {
         let g = {
             "start": "[$x=$y b].ucf()",
             "y": "(a | a)",
-        }
-        let res = RiTa.evaluate(new Grammar(g).expand());
-        expect(res).eq("A b");
+        };
+        expect(RiTa.evaluate(new Grammar(g).expand())).eq("A b");
     });
 
     it('Should support seq() transforms', () => {
