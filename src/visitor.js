@@ -40,8 +40,8 @@ class Visitor extends RiScriptVisitor {
     let txs = ctx.transform();
     let id = symbolName(ctx.symbol().getText());
 
-    this.trace && console.log('visitInline: $' + id + '=' +
-      flatten(token) + ' tfs=' + flattenTx(txs));
+    this.trace && console.log('visitInline: $' + id + '=\'' +
+      flatten(token) + '\' tfs=' + flattenTx(txs));
 
     let visited;
 
@@ -65,7 +65,7 @@ class Visitor extends RiScriptVisitor {
 
     // apply the transforms
     let applied = this.applyTransforms(visited, txs);
-    let result = applied || visited + flattenTx(txs);
+    let result = applied || (Visitor.LP + visited + Visitor.RP + flattenTx(txs));
 
     this.trace && console.log('resolveInline[2]: $' + id + " -> '" + result + "'");
 

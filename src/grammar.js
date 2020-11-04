@@ -26,8 +26,6 @@ class Grammar {
 
   toJSON() {
     return this.toString();
-    /*return JSON.stringify(Object.keys(this).reduce(
-      (acc, k) => Object.assign(acc, { [k]: this[k] }), {}));*/
   }
 
   addRules(rules) { // or rules or ... ?

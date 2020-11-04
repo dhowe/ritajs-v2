@@ -3,6 +3,7 @@ describe('RiTa.Grammar', () => {
 
     if (typeof module !== 'undefined') require('./before');
 
+    const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 };
     const Grammar = RiTa.Grammar;
 
     let sentences1 = {
@@ -36,6 +37,15 @@ describe('RiTa.Grammar', () => {
 
     it('should call constructor', () => {
         ok(typeof new Grammar() !== 'undefined');
+    });
+
+    it('should handle phrase transforms', () => { // TODO: add to riscript and java (NEXT)
+        let g = {
+            "start": "[$x=$y b].ucf()",
+            "y": "(a | a)",
+        }
+        let res = RiTa.evaluate(new Grammar(g).expand(TT));
+        expect(res).eq("A b");
     });
 
     it('Should support seq() transforms', () => {
