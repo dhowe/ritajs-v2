@@ -1,25 +1,27 @@
 {
-  "start": "$5syls % $7syls % $5syls",
-  "5syls": "$5syls2parts | $5syls3parts | $5syls4parts",
-  "7syls": "$7syls2parts | $7syls3parts | $7syls4parts",
-  "7syls2parts": "$4SylNounP $3SylVi | $4SylNounP $3SylVerbPharse | $3SylAdj $4SylNounP",
-  "7syls3parts": "$3SylNounP $1SylVi (to | and) $2SylVi | $3SylNounP $2SylVi (to | and) $1SylVi | $2SylNounP $3SylAdv $2SylVi | $3SylNounP $3SylAdv $1SylVi | $1SylNoun $3SylAdv ($3SylVerbPharse | $3SylVi)",
-  "7syls4parts": "$1SylNoun $2SylAdv $2SylVt $2SylNounP",
-  "5syls2parts": "the $4SylNounP | $4SylNounP $1SylVi | $3SylNounP $2SylVi",
-  "5syls3parts": "$2SylNounP $1SylVi (to | and) $1SylVi | $1SylNoun $2SylVi (to | and) $1SylVi | $1SylNoun $1SylVi (to | and) $2SylVi | $1SylNoun $2SylVt $2SylNounP | $1SylNoun $3SylAdv $1SylVi",
-  "5syls4parts": "$1SylNoun $1SylVi (to | and) $2SylVi",
+  "start": "$5line.ucf() % $7plus5",
+  "5line": "$nnnn.art() | $nnnnn | $vp4 again",
+  "7plus5": "((I wake and look for water % $vp5) | $12sen)",
 
-  "4SylNounP": "(autumn | summer) moonlight | (mountain | silent) village | (evening | morning) sun | (winter | summer) flower",
-  "3SylNounP": "a black rose | white daisy | sakura | night city | rosemary | the yellow cat | oranges | cold moonlight | warm campfire | dark forest | huge mountain",
-  "3SylVi": "fantasize | remember",
-  "3SylAdj": "isolated | suffocated | exciting | beautiful | adorable",
-  "3SylVerbPharse": "singing song | stand silently | rise up hand | walk alone | run along",
-  "3SylAdv": "silently | secretly | painfully | happily | violently | together",
-  "2SylNounP": "people | (the | a) man | women | (the | a) boy | (the | a) girls| children | rabbit | (the | a) dog| racoon | river | mountain | buddha | city | ocean",
-  "2SylVi": "whisper | blossom | recite | swing | speak | twist | appear | forgive | forget",
-  "2SylVt": "believe | betray | adore | follow | question",
-  "2SylAdv": "sadly | calmly | coldly",
-  "1SylNoun": "kids | cloud | tree | leaf | rain | brids | snow | grass | smoke",
-  "1SylAdj": "sad | tall | hot | drunk | plain | grey",
-  "1SylVi": "sing | cry | bow | rise | bloom | dance | drink | fall"
+  "12sen": "((((beetle|termite) eats | ant burrows).art() (silently | placidly) % into the) | (spider | inchworm).art() dangles % from the) (chestnut | cedar | ( gum | tea ) tree)",
+
+  "nnn": "a black rose | white daisies | sakura | rosemary | a yellow cat | oranges | cool moonlight | dark forest | huge mountain",
+  "nnnn": "(mountain | silent) village | (evening | morning) sun | (winter | summer) flower | (star | sky) above",
+  "nnnnn": "the (autumn | summer) moonlight",
+  
+  "vp4": "singing like birds | drifting like snow | falling like (rain | leaves)",
+  "vp5": "crying like a child | singing like a bird | drifting like the snow | falling like (the rain | a leaf)", 
+
+  "aaaa": "isolated | suffocated",
+  "aaa": "exciting | beautiful | adorable",
+  "rrr": "silently | secretly | painfully | happily | violently | together",
+  "vvv": "fantasize | remember",
+
+  "nn": "people | (the | a) man | women | (the | a) boy | (the | a) girls | children | rabbit | (the | a) dog | racoon | river | mountain | buddha | city | ocean",
+  "vv": "whisper | blossom | recite | swing | speak | twist | appear | forgive | forget | believe | betray | adore | follow | question",
+  "aa": "sadly | calmly | coldly",
+
+  "n": "kids | clouds | trees | leaves | rain | birds | snow | grass | smoke",
+  "a": "sad | tall | hot | drunk | plain | grey",
+  "v": "sing | cry | bow | rise | bloom | dance | drink | fall"
 }

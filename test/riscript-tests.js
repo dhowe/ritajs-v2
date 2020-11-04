@@ -850,6 +850,20 @@ describe('RiTa.RiScript', () => {
       expect(rs).eq('result');
     });
 
+    it('Should handle empty builtin transforms', () => {
+
+      expect(RiTa.evaluate("().uc()")).eq("");
+      expect(RiTa.evaluate("().ucf()")).eq( "");
+      expect(RiTa.evaluate("().articlize()")).eq( "");
+      expect(RiTa.evaluate("().capitalize()")).eq( "");
+      expect(RiTa.evaluate("().pluralize()")).eq( "");
+      expect(RiTa.evaluate("().quotify()")).eq("\"\"");
+      expect(RiTa.evaluate("().art()")).eq("");
+
+      expect(RiTa.evaluate("().toLowerCase()", {}, ST)).eq( ""); // ?
+      expect(RiTa.evaluate("().toUpperCase()", {}, ST)).eq( ""); // ?
+    });
+
     it('Should resolve symbols with transforms', () => {
       let rs = RiTa.evaluate('$foo=$bar.toUpperCase()\n$bar=baz\n$foo', {});
       expect(rs).eq('BAZ');

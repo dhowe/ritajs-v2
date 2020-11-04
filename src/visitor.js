@@ -300,7 +300,7 @@ class Visitor extends RiScriptVisitor {
     // check for property
     else {
 
-      if (tx in target) {
+      if (target.hasOwnProperty(tx)) {
         result = target[tx];
       }
       else {
