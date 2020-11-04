@@ -5,7 +5,7 @@ describe('RiTa.Conjugator', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  it('Should correctly call pastParticiple', () => {
+  it('Should call pastParticiple', () => {
 
     equal(RiTa.pastParticiple("sleep"), "slept");
     equal(RiTa.pastParticiple("withhold"), "withheld");
@@ -36,7 +36,7 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.pastParticiple("study"), "studied");
   });
 
-  it('Should correctly call presentParticiple', () => {
+  it('Should call presentParticiple', () => {
 
     equal(RiTa.presentParticiple(""), "");
     equal(RiTa.presentParticiple("sleep"), "sleeping");
@@ -65,7 +65,7 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.presentParticiple(" study"), "studying"); // trim
   });
 
-  it('Should correctly conjugate a vbd', () => {
+  it('Should conjugate VBDs', () => {
     expect(RiTa.conjugate("go", {
       number: RiTa.SINGULAR,
       person: RiTa.FIRST_PERSON,
@@ -78,7 +78,7 @@ describe('RiTa.Conjugator', () => {
     })).eq("ran");
   });
 
-  it('Should correctly call conjugate', () => {
+  it('Should call conjugate', () => {
     let args, s, a;
 
     equal("swum", RiTa.pastParticiple("swim"));

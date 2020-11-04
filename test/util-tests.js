@@ -7,11 +7,11 @@ describe('RiTa.Util', () => {
 
   const rand = RiTa.randomizer;
 
-  it('Should correctly call Util.mapOpts', () => {
+  it('Should call mapOpts', () => {
     expect("Not needed in JS").is.not.null;
   });
 
-  it('Should correctly call random.randomOrdering', () => {
+  it('Should call randomOrdering', () => {
     let ro = rand.randomOrdering(4);
     expect(ro.length).eq(4);
     expect(ro).to.have.members([0,1,2,3]);
@@ -21,7 +21,7 @@ describe('RiTa.Util', () => {
     expect(ro).to.have.members(arr);
   });
 
-  it('Should correctly call deepMerge', () => {
+  it('Should call deepMerge', () => {
     let map = deepMerge({}, { "a": "1" });
     expect(map).eql({ "a": "1" });
 
