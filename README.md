@@ -1,8 +1,8 @@
 ## Installation
 
 * For node: `npm install rita@beta`
-* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.33/rita-web.js) (1.3mb)
-* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.33/rita-web-nolex.js) (.5mb)
+* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.34/rita-web.js) (1.3mb)
+* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.34/rita-web-nolex.js) (.5mb)
 * For [developers](#developing)
 
 ### Example (node)
