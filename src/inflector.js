@@ -99,14 +99,11 @@ const ALL_NOUN_ENDED_WITH_E = "abeyance|abode|aborigine|abrasive|absence|absente
 
 const SING_RULES = [
   RE("(houses|pluses|cases)$", 1, ""),
-  RE("^(" + ALL_NOUN_ENDED_WITH_E + ")s$", 1, ""),
   RE("^(apices|cortices)$", 4, "ex"),
   RE("^(meninges|phalanges)$", 3, "x"), // x -> ges
-  RE("^pelvises$", 2),
-  RE("(brush)es$", 2),
+  RE("^(octopus|pinch|fetus|genus|sinus|tomato|kiss|pelvis)es$", 2),
   RE("^(whizzes)$", 3),
-  RE("^(tomatoes|kisses)$", 2),
-  RE("^(to|wheez|ooz|us|enterpris|alcov|hous|hors|cas|daz|hiv|div|additiv)es$", 1), //End with: es -> e
+  RE("^(" + ALL_NOUN_ENDED_WITH_E + ")s$", 1, ""),
   RE("(l|w)ives$", 3, "fe"),
   RE("(men|women)$", 2, "an"),
   RE("ves$", 3, "f"),
