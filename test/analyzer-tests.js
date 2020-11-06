@@ -29,6 +29,11 @@ describe('RiTa.Analyzer', () => {
     expect(feats.tokens).eq("clothes");
     expect(feats.syllables).eq("k-l-ow-dh-z");
 
+    feats = RiTa.analyze("yoyo");
+    expect(feats.pos).eq("nn");
+    expect(feats.tokens).eq("yoyo");
+    expect(feats.syllables).eq("y-ow/y-ow");
+
     feats = RiTa.analyze("the clothes"); // NOTE: currently fails without lexicon
     expect(feats.pos).eq("dt nns");
     expect(feats.tokens).eq("the clothes");
