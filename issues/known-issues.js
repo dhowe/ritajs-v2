@@ -62,6 +62,11 @@ describe('RiScript.KnownIssues', () => { // TODO:
     expect(RiTa.evaluate('$foo=bar \\nbaz\n$foo', {}, TT)).eq('bar baz'); ``
   });
 
+  it('parse select choices TX', () => {
+    let upf = x => x.toLowerCase();
+    expect(RiTa.evaluate("(a | a).up()", { up: upf }), { trace: true }).eq("A");
+  });
+
 });
 
 describe('RiTa.KnownIssues', () => {

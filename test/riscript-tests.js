@@ -1,4 +1,4 @@
-
+const { expect } = require('chai');
 
 describe('RiTa.RiScript', () => {
 
@@ -8,6 +8,15 @@ describe('RiTa.RiScript', () => {
 
   const RiScript = RiTa.RiScript;
   const Operator = RiTa.Operator;
+
+  it('Should correctly call isParseable0', () => {
+    let rs = new RiScript();
+    expect(rs.isParseable("Hello")).not.eq(true);
+    expect(rs.isParseable("(")).eq(true);
+    expect(rs.isParseable("(A | B)")).eq(true);
+    expect(rs.isParseable("$hello")).eq(true);
+    expect(rs.isParseable("$b")).eq(true);
+  });
 
   describe('Conditionals', () => {
 
@@ -283,6 +292,12 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('The [$foo=blue (dog | dog)]', ctx = {})).eq('The blue dog');
       expect(ctx.foo).eq('blue dog');
     });
+
+    it('Should hanlde nested context', () => {
+      let ctx = { bar: { color: "blue" } };
+      let res = RiTa.evaluate("$foo=$bar.color\n$foo", ctx);
+      expect(res).eq("blue");
+    });
   });
 
   describe('Inline', () => {
@@ -301,9 +316,6 @@ describe('RiTa.RiScript', () => {
       expect(rs).to.be.oneOf(['Dave1 is Dave1', 'Dave2 is Dave2']);
 
       rs = RiTa.evaluate('[$stored=(Dave1 | Dave2)] is $stored', ctx = {});
-      expect(ctx.stored).to.be.oneOf(['Dave1', 'Dave2']);
-      expect(rs).to.be.oneOf(['Dave1 is Dave1', 'Dave2 is Dave2']);
-
       expect(ctx.stored).to.be.oneOf(['Dave1', 'Dave2']);
       expect(rs).to.be.oneOf(['Dave1 is Dave1', 'Dave2 is Dave2']);
 
@@ -430,6 +442,9 @@ describe('RiTa.RiScript', () => {
     */
 
     it('Should resolve linebreak defined variables', () => {
+      let inp = "a.\n$b.";
+      let out = RiTa.evaluate(inp, { b: "c" });
+      expect(out).eq("a. c.");
       let res;
       res = RiTa.evaluate('$foo=hello\n$start=I said $foo to her\n$start', {});
       expect(res).eq('I said hello to her');
@@ -498,8 +513,6 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$dog=lab\nI ate the $dog.', {})).eq('I ate the lab.');
       expect(RiTa.evaluate('$dog=lab\nThe $dog\ntoday.', {})).eq('The lab today.');
       expect(RiTa.evaluate('$dog=lab\nI ate the\n$dog.', {})).eq('I ate the lab.');
-
-      expect(RiTa.evaluate('$foo=bar\n$foo', {})).eq('bar');
       expect(RiTa.evaluate('$foo=baz\n$bar=$foo\n$bar', {})).eq('baz');
 
       // from known-issues
@@ -537,6 +550,16 @@ describe('RiTa.RiScript', () => {
       res = RiTa.evaluate('$1foo=(hello)\n$1start=I said $1foo to her\n$1start', {});
       expect(res).eq('I said hello to her');
     });
+
+    it('Should handle symbols in multiword transforms', () => {
+      let res = RiTa.evaluate("($a dog).pluralize()\n$a=the");
+      expect(res).eq("the dogs");
+    });
+
+    it('Should resolve transformed symbols in context', () => {
+      let ctx = { a: "(terrier | terrier)" };
+      expect(RiTa.evaluate("$a.capitalize()", ctx)).eq("Terrier");
+    });
   });
 
   describe('Choice', () => {
@@ -567,6 +590,14 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(A B | A B).toLowerCase()', 0)).eq('a b');
       expect(RiTa.evaluate('(A B | A B).articlize()', 0)).eq('an A B');
       RiTa.SILENCE_LTS = silent;
+    });
+
+    it('Should parse select choices TX', () => {
+      expect(RiTa.evaluate("(a | a).toUpperCase()", {})).eq("A");
+      expect(RiTa.evaluate("(a | a).up()", {})).eq("a.up()");
+      expect(RiTa.evaluate("$a", { a: 1 })).eq("1");
+      //let upf = x => x.toLowerCase();
+      //expect(RiTa.evaluate("(a | a).up()", { up: upf })).eq("A"); fail, moved to knownIssue
     });
 
     it('Should resolve choices in expressions', () => {
@@ -604,6 +635,43 @@ describe('RiTa.RiScript', () => {
 
   describe('Transform', () => {
 
+    it('Should handle variousTransforms', () => {
+      let ctx = {};
+      expect(RiTa.evaluate("(BAZ).toLowerCase().ucf()", ctx)).eq("Baz");
+      expect(RiTa.evaluate("(a).toUpperCase()", ctx)).eq("A");
+      expect(RiTa.evaluate(".toUpperCase()", ctx)).eq("");
+      expect(RiTa.evaluate("$a=b\n$a.toUpperCase()", ctx)).eq("B");
+      expect(RiTa.evaluate("[$b=((a | a)|a)].toUpperCase() dog.", ctx)).eq("A dog.");
+      expect(RiTa.evaluate("((a)).toUpperCase()", ctx)).eq("A");
+      expect(RiTa.evaluate("$a.toUpperCase()\n($a=b)", ctx)).eq("B");
+      ctx = { dog: "terrier" };
+      expect(RiTa.evaluate("$dog.ucf()", ctx)).eq("Terrier");
+    });
+
+    it('Should handle articlize', () => {
+      let data = [
+        "dog", "a dog",
+        "ant", "an ant",
+        "honor", "an honor",
+        "eagle", "an eagle",
+        "ermintrout", "an ermintrout"
+      ];
+      for (let i = 0; i < data.length; i += 2) {
+        expect(RiTa.articlize(data[i])).eq(data[i + 1]);
+      }
+    });
+
+    it('Should handle articlize phrases', () => {
+      let data = [
+        "black dog", "a black dog",
+        "black ant", "a black ant",
+        "orange ant", "an orange ant"
+      ];
+      for (let i = 0; i < data.length; i += 2) {
+        expect(RiTa.articlize(data[i])).eq(data[i + 1]);
+      }
+    });
+    
     it('should handle phrase transforms', () => {
       let g = "$y=(a | a)\n[$x=$y b].ucf()";
       expect(RiTa.evaluate(g)).eq("A b");
@@ -832,6 +900,22 @@ describe('RiTa.RiScript', () => {
       let Blah3 = () => 'Blah3';
       RiTa.addTransform("Blah3", Blah3);
       expect(RiTa.evaluate('That is (ant).Blah3().')).eq('That is Blah3.');
+    });
+
+    it('Should resolve transform properties and method', () => {
+      class TestClass{
+        constructor(){
+          this.prop = "result";
+        }
+        getProp(){
+          return this.prop;
+        }
+      }
+      let ctx = { bar: new TestClass() };
+      let rs = RiTa.evaluate("$foo=$bar.prop\n$foo", ctx);
+      expect(rs).eq("result");
+      rs = RiTa.evaluate("$foo=$bar.getProp()\n$foo", ctx);
+      expect(rs).eq("result");
     });
   });
 
