@@ -66,6 +66,15 @@ describe('RiScript.KnownIssues', () => { // TODO:
 
 describe('RiTa.KnownIssues', () => {
 
+  it('Failing to puralize correctly', () => {
+    let testPairs = [
+      "minuta", "minuta", //? this not seems to be english word? in Portuguese it seems should be minutas
+    ];
+    for (let i = 0; i < testPairs.length; i += 2) {
+      expect(RiTa.pluralize(testPairs[i + 1])).eq(testPairs[i]);
+    }
+  });
+
   it('Failing to singularize correctly', () => {
 
     let testPairs = [ // also in java
@@ -126,6 +135,7 @@ describe('RiTa.KnownIssues', () => {
       "moves", "move",
       "expanses", "expanse",
       "briefcases", "briefcase",
+      "pleae", "pleae",
     ];
 
     let res1, res2, res3, dbug = 0;

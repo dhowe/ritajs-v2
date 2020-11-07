@@ -379,6 +379,26 @@ describe('RiTa.Grammar', () => {
       expect(rg).eql(rg2);
     });
 
+    it('Should correctly call pluralize phrases in transform', () => {
+        let pluraliseFunction = function(s) {
+            s = s.trim();
+            if (s.includes(" ")) {
+                let words = RiTa.tokenize(s);
+                let lastIdx = words.length - 1;
+                let last = words[lastIdx];
+                word[lastIdx] = RiTa.pluralize(last);
+                return RiTa.untokenize(words);
+            } else {
+                return RiTa.pluralize(s);
+            }
+        };
+        let ctx = { pluralise: pluraliseFunction };
+        let json = {start: "($state feeling).pluralize()", state: "(bad | bad)"};
+        let rg = new Grammar(json,ctx);
+        let res = rg.expand();
+        eql(res, "bad feelings");
+    });
+
     function eql(a, b, c) { expect(a).eql(b, c); }
     function eq(a, b, c) { expect(a).eq(b, c); }
     function ok(a, m) { expect(a, m).to.be.true; }
