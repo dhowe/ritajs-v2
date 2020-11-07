@@ -26,13 +26,11 @@ class Grammar {
 
   toJSON() {
     return this.toString();
-    /*return JSON.stringify(Object.keys(this).reduce(
-      (acc, k) => Object.assign(acc, { [k]: this[k] }), {}));*/
   }
 
   addRules(rules) { // or rules or ... ?
     if (rules) {
-      if (typeof rules === 'string') { // ??
+      if (typeof rules === 'string') {
         throw Error("Expecting an object");
       }
       Object.keys(rules).forEach(r => this.addRule(r, rules[r]))
@@ -47,7 +45,7 @@ class Grammar {
     if (rule.includes('|') && !(IN_PARENS_RE.test(rule))) {
       rule = '(' + rule + ')';
     }
-    this.rules[name] = rule;
+    this.rules[name] = rule;//'(' + rule + ')';//rule;
     return this;
   }
 
@@ -58,10 +56,11 @@ class Grammar {
       rule = 'start';
     }
     let ctx = deepMerge(this.context, this.rules);
-    if (opts.context) ctx = deepMerge(ctx, opts.context);
+    if (opts) ctx = deepMerge(ctx, opts);
     if (rule.startsWith('$')) rule = rule.substring(1);
     if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
 
+    // a bit strange here as opts entries are included in ctx
     return this.compiler.evaluate(ctx[rule], ctx, opts);
   }
 
@@ -93,6 +92,6 @@ function joinChoice(arr) {
   return opts + ')';
 }
 
-const IN_PARENS_RE = /^\(.*\)$/;
+const IN_PARENS_RE = /^\([^()]*\)$/;
 
 module && (module.exports = Grammar);

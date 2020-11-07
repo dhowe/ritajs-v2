@@ -22926,6 +22926,7 @@ module && (module.exports = {
 "yourselves":["y-uh-r s-eh1-l-v-z","prp"],
 "youth":["y-uw1-th","nn"],
 "youthful":["y-uw1-th f-ah-l","jj"],
+"yoyo": ["y-ow1 y-ow","nn"],
 "yummy":["y-ah1 m-iy","jj nn"],
 "yuppie":["y-ah1 p-iy","nn"],
 "zany":["z-ey1 n-iy","jj"],

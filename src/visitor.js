@@ -40,8 +40,8 @@ class Visitor extends RiScriptVisitor {
     let txs = ctx.transform();
     let id = symbolName(ctx.symbol().getText());
 
-    this.trace && console.log('visitInline: $' + id + '=' +
-      flatten(token) + ' tfs=' + flattenTx(txs));
+    this.trace && console.log('visitInline: $' + id + '=\'' +
+      flatten(token) + '\' tfs=' + flattenTx(txs));
 
     let visited;
 
@@ -65,7 +65,7 @@ class Visitor extends RiScriptVisitor {
 
     // apply the transforms
     let applied = this.applyTransforms(visited, txs);
-    let result = applied || visited + flattenTx(txs);
+    let result = applied || (Visitor.LP + visited + Visitor.RP + flattenTx(txs));
 
     this.trace && console.log('resolveInline[2]: $' + id + " -> '" + result + "'");
 
@@ -289,23 +289,23 @@ class Visitor extends RiScriptVisitor {
       else if (typeof target[tx] === 'function') {
         result = target[tx]();
         if (target === '' && result === '') {
-          if (!this.silent) console.warn("[WARN] Unresolved transform[0]: " + raw);
+          if (!this.silent && !RiTa.SILENT) console.warn("[WARN] Unresolved transform[0]: " + raw);
         }
       }
       else { // function doesn't exist
         result = raw;
-        if (!this.silent)  console.warn("[WARN] Unresolved transform[1]: " + result);
+        if (!this.silent && !RiTa.SILENT) console.warn("[WARN] Unresolved transform[1]: " + result);
       }
     }
     // check for property
     else {
 
-      if (tx in target) {
+      if (target.hasOwnProperty(tx)) {
         result = target[tx];
       }
       else {
         result = raw;
-        if (!this.silent) console.warn("[WARN] Unresolved transform[2]: " + result);
+        if (!this.silent && !RiTa.SILENT) console.warn("[WARN] Unresolved transform[2]: " + result);
       }
     }
 

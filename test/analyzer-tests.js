@@ -5,7 +5,7 @@ describe('RiTa.Analyzer', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  it('Should correctly call analyze.lts', () => {
+  it('Should call analyze.lts', () => {
     let feats;
     feats = RiTa.analyze("cloze", { silent: 1 });
     expect(feats.pos).eq("nn");
@@ -14,12 +14,12 @@ describe('RiTa.Analyzer', () => {
     //RiTa.SILENCE_LTS = silent;
   });
 
-  it('Should correctly call syllables.lts', () => {
+  it('Should call syllables.lts', () => {
     let result = RiTa.syllables('The Laggin', {silent:1});
     expect(result).eq('dh-ah l-ae/g-ih-n', 'got \'' + result + "'");
   });
 
-  it('Should correctly call analyze', () => {
+  it('Should call analyze', () => {
 
     expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phones: '', syllables: '' });
 
@@ -28,6 +28,11 @@ describe('RiTa.Analyzer', () => {
     expect(feats.pos).eq("nns");
     expect(feats.tokens).eq("clothes");
     expect(feats.syllables).eq("k-l-ow-dh-z");
+
+    feats = RiTa.analyze("yoyo");
+    expect(feats.pos).eq("nn");
+    expect(feats.tokens).eq("yoyo");
+    expect(feats.syllables).eq("y-ow/y-ow");
 
     feats = RiTa.analyze("the clothes"); // NOTE: currently fails without lexicon
     expect(feats.pos).eq("dt nns");
@@ -39,7 +44,7 @@ describe('RiTa.Analyzer', () => {
     expect(feats.syllables).eq(hasLex ? "sh-eh-v/r-ow/l-ey" : 'ch-eh-v/r-ow/l-ah-t');
   });
 
-  it('Should correctly call stresses', () => {
+  it('Should call stresses', () => {
 
     let result, answer, word;
 
@@ -73,7 +78,7 @@ describe('RiTa.Analyzer', () => {
 
   });
 
-  it('Should correctly call phones', () => {
+  it('Should call phones', () => {
 
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
@@ -115,7 +120,7 @@ describe('RiTa.Analyzer', () => {
     RiTa.SILENCE_LTS = silent;
   });
 
-  it('Should correctly call syllables', () => {
+  it('Should call syllables', () => {
 
     let input, expected;
 
@@ -146,7 +151,7 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.syllables(input)).eq(expected);
   });
 
-  it('Should correctly handle number (singular/plural)', () => {
+  it('Should handle number (singular/plural)', () => {
 
     let testPairs = [
       "dazes", "daze",
