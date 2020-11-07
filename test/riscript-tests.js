@@ -430,17 +430,6 @@ describe('RiTa.RiScript', () => {
   });
   describe('Symbol', () => {
 
-    /*  
-    it('Should throw on bad symbols', () => {
-      expect(() => RiTa.evaluate('$', 0, {silent:1})).to.throw();
-    });
-
-    it('Should throw for riscript in context symbol', () => { // TODO: is there a use-case here?
-      expect(() => RiTa.evaluate('[$stored=$name] is called $stored',
-        ctx = { name: '(Dave | Dave)' }, { trace: 1 })).to.throw();
-    });     
-    */
-
     it('Should resolve linebreak defined variables', () => {
       let inp = "a.\n$b.";
       let out = RiTa.evaluate(inp, { b: "c" });
@@ -592,14 +581,6 @@ describe('RiTa.RiScript', () => {
       RiTa.SILENCE_LTS = silent;
     });
 
-    it('Should parse select choices TX', () => {
-      expect(RiTa.evaluate("(a | a).toUpperCase()", {})).eq("A");
-      expect(RiTa.evaluate("(a | a).up()", {})).eq("a.up()");
-      expect(RiTa.evaluate("$a", { a: 1 })).eq("1");
-      //let upf = x => x.toLowerCase();
-      //expect(RiTa.evaluate("(a | a).up()", { up: upf })).eq("A"); fail, moved to knownIssue
-    });
-
     it('Should resolve choices in expressions', () => {
       expect(RiTa.evaluate("x (a | a | a) x")).eq('x a x');
       expect(RiTa.evaluate("x (a | a | a)")).eq('x a');
@@ -639,13 +620,16 @@ describe('RiTa.RiScript', () => {
       let ctx = {};
       expect(RiTa.evaluate("(BAZ).toLowerCase().ucf()", ctx)).eq("Baz");
       expect(RiTa.evaluate("(a).toUpperCase()", ctx)).eq("A");
-      expect(RiTa.evaluate(".toUpperCase()", ctx)).eq("");
       expect(RiTa.evaluate("$a=b\n$a.toUpperCase()", ctx)).eq("B");
       expect(RiTa.evaluate("[$b=((a | a)|a)].toUpperCase() dog.", ctx)).eq("A dog.");
       expect(RiTa.evaluate("((a)).toUpperCase()", ctx)).eq("A");
       expect(RiTa.evaluate("$a.toUpperCase()\n($a=b)", ctx)).eq("B");
       ctx = { dog: "terrier" };
       expect(RiTa.evaluate("$dog.ucf()", ctx)).eq("Terrier");
+
+      RiTa.SILENT = true;
+      expect(RiTa.evaluate(".toUpperCase()", ctx)).eq("");
+      RiTa.SILENT = false;
     });
 
     it('Should handle articlize', () => {
@@ -820,7 +804,6 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should resolve choice transforms', () => {
-
       expect(RiTa.evaluate("(a | a).up()", {}, ST)).eq("a.up()");
       expect(RiTa.evaluate("(a | a).toUpperCase()", {})).eq("A");
       expect(RiTa.evaluate("(a | a).up()", { up: x => x.toUpperCase() })).eq("A");
@@ -834,6 +817,7 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should resolve symbol transforms', () => {
+
       expect(RiTa.evaluate('$dog.toUpperCase()', { dog: 'spot' })).eq('SPOT');
       expect(RiTa.evaluate('$dog.capitalize()', { dog: 'spot' })).eq('Spot');
       expect(RiTa.evaluate('$1dog.capitalize()', { '1dog': 'spot' })).eq('Spot');
