@@ -671,6 +671,25 @@ describe('RiTa.RiScript', () => {
         expect(RiTa.articlize(data[i])).eq(data[i + 1]);
       }
     });
+    
+    it('should handle phrase transforms', () => {
+      let g = "$y=(a | a)\n[$x=$y b].ucf()";
+      expect(RiTa.evaluate(g)).eq("A b");
+    });
+
+    it('Should handle empty builtin transforms', () => {
+
+      expect(RiTa.evaluate("().uc()")).eq("");
+      expect(RiTa.evaluate("().ucf()")).eq("");
+      expect(RiTa.evaluate("().articlize()")).eq("");
+      expect(RiTa.evaluate("().capitalize()")).eq("");
+      expect(RiTa.evaluate("().pluralize()")).eq("");
+      expect(RiTa.evaluate("().quotify()")).eq("\"\"");
+      expect(RiTa.evaluate("().art()")).eq("");
+
+      expect(RiTa.evaluate("().toLowerCase()", {}, ST)).eq(""); // ?
+      expect(RiTa.evaluate("().toUpperCase()", {}, ST)).eq(""); // ?
+    });
 
     it('Should resolve added transforms', () => {
 
@@ -688,7 +707,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(c).toUpperCase()', ctx)).eq('C');
     });
 
-    it('Should resolve no-input transforms', () => {
+    it('Should resolve no input transforms', () => {
       let ctx = { 'capA': () => 'A' };
       expect(RiTa.evaluate('.capA()', ctx)).eq('A');
 

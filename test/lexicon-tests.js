@@ -6,11 +6,11 @@ describe('RiTa.Lexicon', function () {
   
   const lex = RiTa.lexicon(); // first load
 
-  it('Should correctly call hasWord', () => {
+  it('Should call hasWord', () => {
     expect(RiTa.hasWord("random")).to.be.true;
   });
 
-  it('Should correctly call randomWord', () => {
+  it('Should call randomWord', () => {
 
     expect(() => RiTa.randomWord({ pos: "xxx" })).to.throw;
 
@@ -75,7 +75,7 @@ describe('RiTa.Lexicon', function () {
     lex.data = orig;
   });
 
-  it('Should correctly call randomWord.nns', () => {
+  it('Should call randomWord.nns', () => {
     for (let i = 0; i < 5; i++) {
       let result = RiTa.randomWord({ pos: "nns" });
       if (!RiTa.inflector.isPlural(result)) {
@@ -93,7 +93,7 @@ describe('RiTa.Lexicon', function () {
     }
   });
 
-  it('Should correctly call randomWord.pos', () => {
+  it('Should call randomWord.pos', () => {
 
     let pos = ["nn", "jj", "jjr", "wp"];
     for (let j = 0; j < pos.length; j++) {
@@ -104,7 +104,7 @@ describe('RiTa.Lexicon', function () {
     }
   });
 
-  it('Should correctly call randomWord.syls', () => {
+  it('Should call randomWord.syls', () => {
     let i, result, syllables, num;
     result = RiTa.randomWord({ numSyllables: 3 });
     syllables = RiTa.syllables(result);
@@ -119,11 +119,11 @@ describe('RiTa.Lexicon', function () {
     expect(num === 5, result + ": " + syllables).to.be.true; // "5 syllables: "
   });
 
-  it('Should correctly call search without opts', () => {
+  it('Should call search without opts', () => {
     expect(RiTa.search().length > 20000, "fail").to.be.true;
   });
 
-  it('Should correctly call search with letters', () => {
+  it('Should call search with letters', () => {
     expect(RiTa.search("phant")).eql([
       'elephant',
       'elephantine',
@@ -142,7 +142,7 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should correctly call search with phones, limit', () => {
+  it('Should call search with phones, limit', () => {
     // omitting no limit tests as they are a bit slow
     expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', limit: 10 })).eql([
       "elephant",
@@ -174,7 +174,7 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should correctly call search with pos, limit', () => {
+  it('Should call search with pos, limit', () => {
 
     //console.log(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }));
 
@@ -208,7 +208,7 @@ describe('RiTa.Lexicon', function () {
 
 
   /* omitting no limit tests as they are a bit slow
-  it('Should correctly call search with stresses', () => {
+  it('Should call search with stresses', () => {
     expect(RiTa.search('0/1/0/0/0/0/0', { type: 'stresses' })).eql([
       "environmentalism"
     ]);
@@ -217,7 +217,7 @@ describe('RiTa.Lexicon', function () {
     ]);
   });*/
 
-  it('Should correctly call search with stresses, limit', () => {
+  it('Should call search with stresses, limit', () => {
     expect(RiTa.search('0/1/0/0/0/0', { type: 'stresses', limit: 5 })).eql([
       'accountability',
       'anticipatory',
@@ -246,7 +246,7 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should correctly call randomWord.pos.syls', () => {
+  it('Should call randomWord.pos.syls', () => {
     function fail(result, epos) {
       let test = result.endsWith('es') ? result.substring(-2) : result;
       let ent = RiTa.lexicon()[test];
@@ -284,7 +284,7 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.isNoun(result)).eq(true, fail(result, 'nns'));
   });
 
-  it('Should correctly call alliterations.numSyllables', () => {
+  it('Should call alliterations.numSyllables', () => {
     let result = RiTa.alliterations("cat", { minLength: 1, numSyllables: 7 });
     expect(result).eql(['electrocardiogram', 'electromechanical', 'telecommunications']);
     for (let i = 0; i < result.length; i++) {
@@ -292,7 +292,7 @@ describe('RiTa.Lexicon', function () {
     }
   });
 
-  it('Should correctly call alliterations.pos', () => {
+  it('Should call alliterations.pos', () => {
 
     let result = RiTa.alliterations("cat", { minLength: 1, numSyllables: 7, pos: 'n' });
     expect(result).eql(['electrocardiogram', 'telecommunications']);
@@ -327,7 +327,7 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should correctly call alliterations', () => {
+  it('Should call alliterations', () => {
 
     let result;
 
@@ -375,7 +375,7 @@ describe('RiTa.Lexicon', function () {
     }
   });
 
-  it('Should correctly call rhymes', () => {
+  it('Should call rhymes', () => {
 
     expect(RiTa.rhymes("cat").includes("hat")).to.be.true;
     expect(RiTa.rhymes("yellow").includes("mellow")).to.be.true;
@@ -400,7 +400,7 @@ describe('RiTa.Lexicon', function () {
   });
 
   // TODO: pos
-  it('Should correctly call rhymes.pos', () => {
+  it('Should call rhymes.pos', () => {
 
     expect(RiTa.rhymes("cat", { pos: 'v' }).includes("hat")).to.be.false;
     expect(RiTa.rhymes("yellow", { pos: 'a' }).includes("mellow")).to.be.true;
@@ -424,7 +424,7 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.rhymes("swag", { pos: 'v' }).includes("grab")).to.be.false;
   });
 
-  it('Should correctly call rhymes.numSyllables', () => {
+  it('Should call rhymes.numSyllables', () => {
 
     expect(RiTa.rhymes("cat", { numSyllables: 2 }).includes("hat")).to.be.false;
     expect(RiTa.rhymes("cat", { numSyllables: 3 }).includes("hat")).to.be.false;
@@ -434,13 +434,13 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.rhymes("yellow", { numSyllables: 3 }).includes("mellow")).to.be.false;
   });
 
-  it('Should correctly call rhymes.wordlength', () => {
+  it('Should call rhymes.wordlength', () => {
 
     expect(RiTa.rhymes("cat", { minLength: 4 }).includes("hat")).to.be.false;
     expect(RiTa.rhymes("cat", { maxLength: 2 }).includes("hat")).to.be.false;
   });
 
-  it('Should correctly call spellsLike', () => {
+  it('Should call spellsLike', () => {
     let result;
     result = RiTa.spellsLike("banana", { minLength: 6, maxLength: 6 });
     eql(result, ["cabana"]);
@@ -493,7 +493,7 @@ describe('RiTa.Lexicon', function () {
     expect(result.length > 400).to.be.true;
   });
 
-  it('Should correctly call soundsLike', () => {
+  it('Should call soundsLike', () => {
 
     eql(RiTa.soundsLike("tornado", { type: 'sound' }), ["torpedo"]);
 
@@ -528,7 +528,7 @@ describe('RiTa.Lexicon', function () {
     expect(result.length > answer.length).to.be.true;
   });
 
-  it('Should correctly call soundsLike().matchSpelling', () => {
+  it('Should call soundsLike().matchSpelling', () => {
     let result;
     result = RiTa.soundsLike("try", { matchSpelling: true });
     eql(result, ["cry", "dry", "fry", "pry", "tray", "wry"]);
@@ -549,7 +549,7 @@ describe('RiTa.Lexicon', function () {
     eql(result, ["bonanza"]);
   });
 
-  it('Should correctly call isRhyme', () => {
+  it('Should call isRhyme', () => {
     expect(!RiTa.isRhyme("apple", "polo")).to.be.true;
     expect(!RiTa.isRhyme("this", "these")).to.be.true;
 
@@ -581,7 +581,7 @@ describe('RiTa.Lexicon', function () {
     }
   });
 
-  it('Should correctly call isAlliteration', () => {
+  it('Should call isAlliteration', () => {
 
     expect(RiTa.isAlliteration("knife", "gnat")).to.be.true; // gnat=lts
     expect(RiTa.isAlliteration("knife", "naughty")).to.be.true;

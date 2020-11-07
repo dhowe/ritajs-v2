@@ -20,8 +20,6 @@ class RiScript {
 
   evaluate(input, ctx, opts = {}) { 
 
-    // NEXT: transforms
-
     ctx = ctx || {};
 
     // make sure we have RiTa in context
@@ -169,14 +167,9 @@ class RiScript {
         .replace(/\\n/g, '')
         .replace(/\n/g, ' ') : '';
   }
-  /*
-    createVisitor(context, opts) {
-      if (!this.visitor) this.visitor = new Visitor(this);
-      ;
-      return this.visitor;
-    } */
 
   resolveEntities(result) { // &#10; for line break DOC:
+    if (typeof result === 'undefined') return '';
     return decode(result.replace(/ +/g, ' '))
       .replace(ENTITY_RE, ' ');
   }
@@ -193,6 +186,7 @@ class RiScript {
   }
 
   static articlize(s) {
+    if (!s || !s.length) return '';
     let phones = RiTa().phones(s, { silent: true });
     return (phones && phones.length
       && VOWEL_RE.test(phones[0]) ? 'an ' : 'a ') + s;
@@ -211,24 +205,17 @@ function RiTa() { return RiScript.parent; }
 // -------------------- Default Transforms ----------------------
 
 /// <summary>
-/// articlize: Prefixes the string with 'a' or 'an' as appropriate.
-/// </summary>
-/* function articlize(s) {
-  return RiTa().articlize(s);
-} */
-
-/// <summary>
 /// Capitalizes the first character.
 /// </summary>
 function capitalize(s) {
-  return s[0].toUpperCase() + s.substring(1);
+  return s ? s[0].toUpperCase() + s.substring(1) : '';
 }
 
 /// <summary>
 /// Capitalizes the first character.
 /// </summary>
 function toUpper(s) {
-  return s.toUpperCase();
+  return s ? s.toUpperCase() : '';
 }
 
 /// <summary>
@@ -242,18 +229,19 @@ function quotify(s) {
 /// Pluralizes the word according to english regular/irregular rules.
 /// </summary>
 function pluralize(s) {
-  return RiTa().pluralize(s.trim());
+  s = (s || '').trim();
+  return RiTa().pluralize(s);
 }
 
 RiScript.MAX_TRIES = 99;
 
 RiScript.transforms = {
   capitalize, quotify, pluralize,
-  qq: quotify, uc: toUpper, ucf: capitalize,
   articlize: RiScript.articlize,
   seq: RiScript.identity,
   rseq: RiScript.identity,
-  norep: RiScript.identity
+  norep: RiScript.identity,
+  qq: quotify, uc: toUpper, ucf: capitalize, art: RiScript.articlize // aliases
 };
 
 const VOWEL_RE = /[aeiou]/;

@@ -71,6 +71,35 @@ describe('RiScript.KnownIssues', () => { // TODO:
 
 describe('RiTa.KnownIssues', () => {
 
+  it('Failing to singularize correctly single', () => {
+
+    let testPairs = ["grooves", "groove" ];
+
+    let res1, res2, res3, dbug = 1;
+
+    for (let i = 0; i < testPairs.length; i += 2) {
+
+      dbug && console.log(testPairs[i] + '/' + testPairs[i + 1]);
+
+      res1 = RiTa.singularize(testPairs[i], { dbug: dbug });
+      res2 = RiTa.pluralize(testPairs[i + 1], { dbug: dbug });
+      res3 = RiTa.inflector.isPlural(testPairs[i], { dbug: dbug, fatal: false });
+
+      // singularize
+      eq(res1, testPairs[i + 1], 'FAIL: singularize(' + testPairs[i]
+        + ') was ' + res1 + ', but expected ' + testPairs[i + 1] + '\n        '
+        + 'pluralize(' + testPairs[i + 1] + ') was ' + res2 + '\n\n');
+
+      // pluralize
+      eq(res2, testPairs[i], 'FAIL: pluralize(' + testPairs[i + 1]
+        + ') was ' + res2 + ', but expected ' + testPairs[i] + '\n        '
+        + 'singularize(' + testPairs[i] + ') was ' + res1 + '\n\n');
+
+      // isPlural
+      ok(res3, 'FAIL: isPlural(' + testPairs[i] + ') was false\n\n');
+    }
+  });
+
   it('Failing to singularize correctly', () => {
 
     let testPairs = [ // also in java

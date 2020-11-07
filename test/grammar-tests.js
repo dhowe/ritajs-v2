@@ -3,6 +3,7 @@ describe('RiTa.Grammar', () => {
 
     if (typeof module !== 'undefined') require('./before');
 
+    const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 };
     const Grammar = RiTa.Grammar;
 
     let sentences1 = {
@@ -34,8 +35,16 @@ describe('RiTa.Grammar', () => {
 
     let grammars = [sentences1, sentences2, sentences3];
 
-    it('should correctly call constructor', () => {
+    it('should call constructor', () => {
         ok(typeof new Grammar() !== 'undefined');
+    });
+
+    it('should handle phrase transforms', () => {
+        let g = {
+            "start": "[$x=$y b].ucf()",
+            "y": "(a | a)",
+        };
+        expect(RiTa.evaluate(new Grammar(g).expand())).eq("A b");
     });
 
     it('Should support seq() transforms', () => {
@@ -96,7 +105,7 @@ describe('RiTa.Grammar', () => {
         expect(rs).to.be.oneOf(["Dave", "Jill", "Pete"]);
     });
 
-    it('should correctly resolve inlines', () => { // KNOWN-ISSUES
+    it('should resolve inlines', () => { // KNOWN-ISSUES
         let rg, rs;
 
         rg = new Grammar({
@@ -106,7 +115,7 @@ describe('RiTa.Grammar', () => {
         rs = rg.expand({ trace: 0 });
         //console.log(rs);
         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
-      
+
         rg = new Grammar({
             "start": "[$chosen=$person] talks to $chosen.",
             "person": "$Dave | $Jill | $Pete",
@@ -120,7 +129,7 @@ describe('RiTa.Grammar', () => {
 
     });
 
-    it("should correctly call addRules", () => {
+    it("should call addRules", () => {
 
         let rg = new Grammar();
         ok(typeof rg.rules !== 'undefined');
@@ -144,7 +153,7 @@ describe('RiTa.Grammar', () => {
         });
     });
 
-    it("should correctly call addRule", () => {
+    it("should call addRule", () => {
         let rg = new Grammar();
         rg.addRule("$start", "$pet");
         ok(typeof rg.rules["start"] !== 'undefined');
@@ -152,7 +161,7 @@ describe('RiTa.Grammar', () => {
         ok(typeof rg.rules["start"] !== 'undefined');
     });
 
-    it("should correctly call removeRule", () => {
+    it("should call removeRule", () => {
 
         grammars.forEach(g => {
             let rg1 = new Grammar(g);
@@ -172,14 +181,15 @@ describe('RiTa.Grammar', () => {
         });
     });
 
-    it("should throw on bad grammar names", () => {
+    it("should throw on missing rules", () => {
         let rg = new Grammar();
-        expect(() => rg.expandFrom("wrongName")).to.throw();
         expect(() => rg.expand()).to.throw();
+
+        rg = new Grammar({ start: "My rule" });
+        expect(() => rg.expand('bad')).to.throw();
     });
 
-
-    it("should correctly call expandFrom", () => {
+    it("should call expandFrom", () => {
         let rg = new Grammar();
         rg.addRule("$start", "$pet");
         rg.addRule("$pet", "($bird | $mammal)");
@@ -192,7 +202,7 @@ describe('RiTa.Grammar', () => {
         }
     });
 
-    it("should correctly call toString", () => {
+    it("should call toString", () => {
         let rg = new Grammar({ "$start": "pet" });
         eq(rg.toString(), '{\n  "start": "pet"\n}');
         rg = new Grammar({ "$start": "$pet", "$pet": "dog" });
@@ -203,7 +213,7 @@ describe('RiTa.Grammar', () => {
         eq(rg.toString(), '{\n  "start": "$pet.articlize()",\n  "pet": "(dog | cat)"\n}');
     });
 
-    it("should correctly call toString with arg", () => {
+    it("should call toString with arg", () => {
         let lb = '<br/>';
         let rg = new Grammar({ "$start": "pet" });
         eq(rg.toString(lb), '{<br/>  "start": "pet"<br/>}');
@@ -215,7 +225,7 @@ describe('RiTa.Grammar', () => {
         eq(rg.toString(lb), '{<br/>  "start": "$pet.articlize()",<br/>  "pet": "(dog | cat)"<br/>}');
     });
 
-    it("should correctly call expand", () => {
+    it("should call expand", () => {
         let rg = new Grammar();
         rg.addRule("$start", "pet");
         eq(rg.expand(), "pet");
@@ -225,7 +235,7 @@ describe('RiTa.Grammar', () => {
         eq(rg.expand(), "dog");
     });
 
-    it("should correctly call expand.weights", () => {
+    it("should call expand.weights", () => {
         let rg = new Grammar();
         rg.addRule("$start", "$rule1");
         rg.addRule("$rule1", "cat | dog | boy");
@@ -242,7 +252,7 @@ describe('RiTa.Grammar', () => {
         ok(found1 && found2 && found3); // found all
     });
 
-    it("should correctly call expandFrom.weights", () => {
+    it("should call expandFrom.weights", () => {
 
         let rg = new Grammar();
         rg.addRule("$start", "$pet");
@@ -262,7 +272,7 @@ describe('RiTa.Grammar', () => {
         ok(hawks > dogs * 2), 'got h=' + hawks + ', ' + dogs;
     });
 
-    it("should correctly handle transforms", () => {
+    it("should handle transforms", () => {
         let rg = new Grammar();
         rg.addRule("$start", "$pet.toUpperCase()");
         rg.addRule("$pet", "dog");
@@ -288,14 +298,14 @@ describe('RiTa.Grammar', () => {
     });
 
     it("should allow context in expand", () => {
-        let context, rg;
-        context = { randomPosition: () => 'job type' };
+        let ctx, rg;
+        ctx = { randomPosition: () => 'job type' };
         rg = new RiTa.Grammar({ start: "My .randomPosition()." });
-        expect(rg.expand({ context })).eq("My job type.");
+        expect(rg.expand(ctx)).eq("My job type.");
 
-        context = { randomPosition: () => 'job type' };
+        ctx = { randomPosition: () => 'job type' };
         rg = new RiTa.Grammar({ stat: "My .randomPosition()." });
-        expect(rg.expand('stat', { context })).eq("My job type.");
+        expect(rg.expand('stat', ctx)).eq("My job type.");
     });
 
     it("should handle custom transforms", () => {
@@ -325,7 +335,7 @@ describe('RiTa.Grammar', () => {
         eq(rg.expand({ trace: 0 }), "mice");
     });
 
-    it("should correctly handle special characters", () => {
+    it("should handle special characters", () => {
         let rg, res, s;
 
         s = "{ \"$start\": \"hello &#124; name\" }";
@@ -367,16 +377,23 @@ describe('RiTa.Grammar', () => {
         }
     });
 
-    it("should correctly call toJSON and fromJSON",() => {
-      let json = {"$start":"$pet $iphone","$pet":"(dog | cat)","$iphone":"(iphoneSE | iphone12)"};
-      let rg = new Grammar(json);
-      let generatedJSON = rg.toJSON();
-      let rg2 = Grammar.fromJSON(generatedJSON);
-      ok(rg2 !== 'undefined');
-      expect(rg.toString()).eq(rg2.toString());
-      expect(rg.context).eql(rg2.context);
-      expect(rg.rules).eql(rg2.rules);
-      expect(rg).eql(rg2);
+    it("should call to/from JSON", () => {
+        let json = { "$start": "$pet $iphone", "$pet": "(dog | cat)", "$iphone": "(iphoneSE | iphone12)" };
+        let rg = new Grammar(json);
+        let generatedJSON = rg.toJSON();
+        let rg2 = Grammar.fromJSON(generatedJSON);
+        ok(rg2 !== 'undefined');
+        expect(rg.toString()).eq(rg2.toString());
+        expect(rg.context).eql(rg2.context);
+        expect(rg.rules).eql(rg2.rules);
+        expect(rg).eql(rg2);
+
+        /*  grammars.forEach(g => { KnownIssues-Java
+            rg = Grammar.fromJSON(g);
+            rg2 = Grammar.fromJSON(rg.toJSON());
+            ok(rg2.toString() === rg.toString());
+            assertTrue(rg == rg2);
+        }); */
     });
 
     function eql(a, b, c) { expect(a).eql(b, c); }

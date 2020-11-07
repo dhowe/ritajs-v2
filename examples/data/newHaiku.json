@@ -1,25 +1,28 @@
 {
-  "start": "$5SylLine % $7SylLine % $5SylLine",
-  "5SylLine": "$5SylLinein2parts | $5SylLinein3parts | $5SylLinein4parts",
-  "7SylLine": "$7SylLinein2parts | $7SylLinein3parts | $7SylLinein4parts",
-  "7SylLinein2parts": "$4SylNounOrNounPhrase $3SylVi | $4SylNounOrNounPhrase $3SylVerbPharse | $3SylAdj $4SylNounOrNounPhrase",
-  "7SylLinein3parts": "$3SylNounOrNounPhrase $1SylVi (to | and) $2SylVi | $3SylNounOrNounPhrase $2SylVi (to | and) $1SylVi | $2SylNounOrNounPhrase $3SylAdv $2SylVi | $3SylNounOrNounPhrase $3SylAdv $1SylVi | $1SylNoun $3SylAdv ($3SylVerbPharse | $3SylVi)",
-  "7SylLinein4parts": "$1SylNoun $2SylAdv $2SylVt $2SylNounOrNounPhrase",
-  "5SylLinein2parts": "the $4SylNounOrNounPhrase | $4SylNounOrNounPhrase $1SylVi | $3SylNounOrNounPhrase $2SylVi",
-  "5SylLinein3parts": "$2SylNounOrNounPhrase $1SylVi (to | and) $1SylVi | $1SylNoun $2SylVi (to | and) $1SylVi | $1SylNoun $1SylVi (to | and) $2SylVi | $1SylNoun $2SylVt $2SylNounOrNounPhrase | $1SylNoun $3SylAdv $1SylVi",
-  "5SylLinein4parts": "$1SylNoun $1SylVi (to | and) $2SylVi",
+  "start": "$5line.ucf() % $7plus5",
+  "5line": "the $nnnn | $nnnnn | $vp4 again",
+  "7plus5": "(I wake and look for water % $vp5) | ($12sen $tree)",
+  
+  "12sen": "(((beetle|termite) eats | ant burrows).art() (silently | placidly) % into the) | ((spider | inchworm).art() dangles % from the)",
+  "tree": "(chestnut | cedar | old (gum | tea)) tree",
+    
+  "nnn": "a black rose | white daisies | sakura | rosemary | a yellow cat | oranges | cool moonlight | dark forest | huge mountain",
+  "nnnn": "(mountain | silent) village | (evening | morning) sun | (winter | summer) flower | (star | sky) above",
+  "nnnnn": "the (autumn | summer) moonlight",
+  
+  "vp4": "singing like birds | drifting like snow | falling like (rain | leaves)",
+  "vp5": "crying like a child | singing like a bird | drifting like the snow | falling like (the rain | a leaf)", 
 
-  "4SylNounOrNounPhrase": "(autumn | summer) moonlight | (mountain | silent) village | (evening | morning) sun | (winter|summer) flower",
-  "3SylNounOrNounPhrase": "a black rose | white daisy | sakura | night city | rosemary | the yellow cat | oranges | cold moonlight | warm campfire | dark forest | huge mountain",
-  "3SylVi": "fantasize | remerber",
-  "3SylAdj": "isolated | suffocated | exciting | beautiful | adorable",
-  "3SylVerbPharse": "singing song | stand sliently | rise up hand | walk alone | run along",
-  "3SylAdv": "sliently | secretly | painfully | happliy | voilently | curely | together",
-  "2SylNounOrNounPhrase": "people | (the | a) man | women | (the | a) boy | (the | a) girls| children | rabbit | (the | a) dog| raccon | river | mountain | buddha | city | ocean",
-  "2SylVi": "whisper | blossom | recite | swing | speak | twist | appear | forgive | forget",
-  "2SylVt": "believe | betray | adore | follow | question",
-  "2SylAdv": "sadly | calmly | coldly",
-  "1SylNoun": "kids | cloud | tree | leaf | rain | brids | snow | grass | smoke",
-  "1SylAdj": "sad | tall | hot | drunk | plain | grey",
-  "1SylVi": "sing | cry | bow | rise | bloom | dance | drink | fall"
+  "aaaa": "isolated | suffocated",
+  "aaa": "exciting | beautiful | adorable",
+  "rrr": "silently | secretly | painfully | happily | violently | together",
+  "vvv": "fantasize | remember",
+
+  "nn": "people | (the | a) man | women | (the | a) boy | (the | a) girls | children | rabbit | (the | a) dog | racoon | river | mountain | buddha | city | ocean",
+  "vv": "whisper | blossom | recite | swing | speak | twist | appear | forgive | forget | believe | betray | adore | follow | question",
+  "aa": "sadly | calmly | coldly",
+
+  "n": "kids | clouds | trees | leaves | rain | birds | snow | grass | smoke",
+  "a": "sad | tall | hot | drunk | plain | grey",
+  "v": "sing | cry | bow | rise | bloom | dance | drink | fall"
 }
