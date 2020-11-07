@@ -3,7 +3,12 @@ describe('RiTa.Core', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  it('Should call stem', () => {
+  it('Should have access to static constant and function', () => {
+    eql(RiTa.VERSION, 'DEV');
+    eql(RiTa.hasWord('dog'), true);
+  });
+
+  it('Should correctly call stem', () => {
     let data = [
       "boy", "boy",
       "boys", "boy",

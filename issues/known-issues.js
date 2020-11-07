@@ -155,6 +155,7 @@ describe('RiTa.KnownIssues', () => {
       "moves", "move",
       "expanses", "expanse",
       "briefcases", "briefcase",
+      "pleae", "pleae",
     ];
 
     let res1, res2, res3, dbug = 0;
