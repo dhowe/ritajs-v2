@@ -4,7 +4,14 @@ describe('RiTa.Core', () => {
   if (typeof module !== 'undefined') require('./before');
 
   it('Should have access to statics', () => {
-    eql(RiTa.VERSION, 'DEV');
+    //console.log(process.env.NODE_ENV, process.env.npm_package_version, RiTa.VERSION);
+    if (typeof process.env.npm_package_version !== 'undefined' &&
+      typeof process.env.NODE_ENV !== 'undefined') {
+      eql(RiTa.VERSION, process.env.npm_package_version);
+    }
+    else {
+      eql(RiTa.VERSION, 'DEV');
+    }
     eql(RiTa.hasWord('dog'), true);
   });
 
@@ -277,28 +284,28 @@ describe('RiTa.Core', () => {
     // reference :PENN treebank tokenization document :ftp://ftp.cis.upenn.edu/pub/treebank/public_html/tokenization.html
     //            and aslo English punctuation Wiki page Latin abbreviations Wiki page
     let inputs = ["A simple sentence.",
-    "that's why this is our place).",
-    "most, punctuation; is. split: from! adjoining words?",
-    "double quotes \"OK\"", //Treebank tokenization document says double quotes (") are changed to doubled single forward- and backward- quotes (`` and '') tho
-    "face-to-face class",
-    '"it is strange", said John, "Katherine does not drink alchol."',
-    '"What?!", John yelled.',
-    "more abbreviations: a.m. p.m. Cap. c. et al. etc. P.S. Ph.D R.I.P vs. v. Mr. Ms. Dr. Pf. Mx. Ind. Inc. Corp. Co.,Ltd. Co., Ltd. Co. Ltd. Ltd. Prof.",
-    "elipsis dots... another elipsis dots…",
-    "(testing) [brackets] {all} ⟨kinds⟩",
+      "that's why this is our place).",
+      "most, punctuation; is. split: from! adjoining words?",
+      "double quotes \"OK\"", //Treebank tokenization document says double quotes (") are changed to doubled single forward- and backward- quotes (`` and '') tho
+      "face-to-face class",
+      '"it is strange", said John, "Katherine does not drink alchol."',
+      '"What?!", John yelled.',
+      "more abbreviations: a.m. p.m. Cap. c. et al. etc. P.S. Ph.D R.I.P vs. v. Mr. Ms. Dr. Pf. Mx. Ind. Inc. Corp. Co.,Ltd. Co., Ltd. Co. Ltd. Ltd. Prof.",
+      "elipsis dots... another elipsis dots…",
+      "(testing) [brackets] {all} ⟨kinds⟩",
     ];
-    
+
     let outputs = [
       ["A", "simple", "sentence", "."],
       ["that's", "why", "this", "is", "our", "place", ")", "."],
-      ["most",",","punctuation",";","is",'.','split',':',"from","!","adjoining","words","?"],
-      ["double","quotes","\"","OK","\""],
-      ["face-to-face","class"],
-      ["\"","it","is","strange","\"",",","said","John",",","\"","Katherine","does","not","drink","alchol",".","\""],
-      ["\"","What","?","!","\"",",","John","yelled","."],
-      ["more","abbreviations",":","a.m.","p.m.","Cap.","c.","et al.","etc.","P.S.","Ph.D","R.I.P","vs.","v.","Mr.","Ms.","Dr.","Pf.","Mx.","Ind.","Inc.","Corp.","Co.,Ltd.","Co., Ltd.","Co. Ltd.","Ltd.", "Prof."],
-      ["elipsis","dots","...","another","elipsis","dots","…"],
-      ["(","testing",")","[","brackets","]","{","all","}","⟨","kinds","⟩"],//this might not need to be fix coz ⟨⟩ is rarely seen
+      ["most", ",", "punctuation", ";", "is", '.', 'split', ':', "from", "!", "adjoining", "words", "?"],
+      ["double", "quotes", "\"", "OK", "\""],
+      ["face-to-face", "class"],
+      ["\"", "it", "is", "strange", "\"", ",", "said", "John", ",", "\"", "Katherine", "does", "not", "drink", "alchol", ".", "\""],
+      ["\"", "What", "?", "!", "\"", ",", "John", "yelled", "."],
+      ["more", "abbreviations", ":", "a.m.", "p.m.", "Cap.", "c.", "et al.", "etc.", "P.S.", "Ph.D", "R.I.P", "vs.", "v.", "Mr.", "Ms.", "Dr.", "Pf.", "Mx.", "Ind.", "Inc.", "Corp.", "Co.,Ltd.", "Co., Ltd.", "Co. Ltd.", "Ltd.", "Prof."],
+      ["elipsis", "dots", "...", "another", "elipsis", "dots", "…"],
+      ["(", "testing", ")", "[", "brackets", "]", "{", "all", "}", "⟨", "kinds", "⟩"],//this might not need to be fix coz ⟨⟩ is rarely seen
     ];
 
     expect(inputs.length).eq(outputs.length);
