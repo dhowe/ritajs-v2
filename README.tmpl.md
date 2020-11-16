@@ -94,7 +94,7 @@ console.log(grammar.expand());
 
 ## RiTaScript
 
-RiTaScript can be used as part of any grammar (via RiTa.Grammar) or can be run directly using RiTa.evaluate() 
+RiTaScript can be used as part of any grammar (via RiTa.Grammar) or can be run directly using <a href="https://rednoise.org/rita2/RiTa/evaluate/index.html">RiTa.evaluate()</a>
 
 
 ### Choice
