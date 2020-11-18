@@ -1,9 +1,10 @@
 ## Installation
 
 * For node: `npm install rita@beta`
-* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.36/rita-web.js) (1.3mb)
-* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.36/rita-web-nolex.js) (.5mb)
+* For [the browser](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.40/rita-web.js) (1.3mb)
+* For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v2.0.0-beta.40/rita-web-nolex.js) (.5mb)
 * For [developers](#developing)
+* For [use in Java](https://github.com/dhowe?tab=packages&repo_name=rita2)
 
 ### Example (node)
 
@@ -94,7 +95,7 @@ console.log(grammar.expand());
 
 ## RiTaScript
 
-RiTaScript can be used as part of any grammar (via RiTa.Grammar) or can be run directly using RiTa.evaluate() 
+RiTaScript can be used as part of any grammar (via RiTa.Grammar) or can be run directly using <a href="https://rednoise.org/rita2/RiTa/evaluate/index.html">RiTa.evaluate()</a>
 
 
 ### Choice

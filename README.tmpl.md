@@ -4,6 +4,7 @@
 * For [the browser](https://github.com/dhowe/rita2js/releases/download/v@VERSION@/rita-web.js) (1.3mb)
 * For [the browser (no lexicon)](https://github.com/dhowe/rita2js/releases/download/v@VERSION@/rita-web-nolex.js) (.5mb)
 * For [developers](#developing)
+* For [Java](https://github.com/dhowe?tab=packages&repo_name=rita2)
 
 ### Example (node)
 
