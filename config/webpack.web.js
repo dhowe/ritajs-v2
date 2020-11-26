@@ -2,7 +2,7 @@
 
 module.exports =
 {
-  mode: 'development',
+  mode: 'production',
   target: 'web',
   output: {
     path: require('path').resolve(__dirname, '../lib'),
@@ -23,15 +23,4 @@ module.exports =
   plugins: [new (require('webpack').DefinePlugin)({
     __VERSION__: JSON.stringify(require("../package.json").version)
   })]
-  // optimization: {
-  //   splitChunks: {
-  //     cacheGroups: {
-  //       commons: {
-  //         test: /[\\/]node_modules[\\/]/,
-  //         name: 'vendors',
-  //         chunks: 'all'
-  //       }
-  //     }
-  //   }
-  // }
 };

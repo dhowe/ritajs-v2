@@ -2,7 +2,7 @@
 
 module.exports =
 {
-  mode: 'development',
+  mode: 'production',
   target: 'web',
   output: {
     path: require('path').resolve(__dirname, '../lib'),
