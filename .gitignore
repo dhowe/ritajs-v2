@@ -1,6 +1,5 @@
-ticocd
-./lib
-./lib/rita*.js
+./dist
+./dist/rita*.js
 web/workbench/texts/*
 node_modules
 hs_err_pid*

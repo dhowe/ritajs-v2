@@ -10,17 +10,17 @@
     "url": "https://github.com/dhowe/rita2js.git"
   },
   "files": [
-    "lib/rita.js"
+    "dist/rita.js"
   ],
-  "main": "lib/rita.js",
+  "main": "dist/rita.js",         
   "scripts": {
-    "npmpub": "np --tag beta prerelease && open lib",
+    "npmpub": "np --tag beta prerelease && open dist",
     "bump": "yarn version --no-git-tag-version --prerelease",
     "bump.version": "yarn version --no-git-tag-version --patch",
     "version": "yarn build && yarn test.prod",
     "readme": "sed \"s/@VERSION@/$npm_package_version/g\" README.tmpl.md > README.md",
     "postversion": "yarn readme",
-    "build": "webpack && ls -l lib",
+    "build": "rm dist/rita*.js && webpack && ls -l dist",
     "watch": "webpack --watch",
     "test": "mocha",
     "test.g": "mocha ./test/*.js -g ",
@@ -30,7 +30,7 @@
     "test.watch": "mocha --watch 'src/*.js' './test/**/!(lexicon-tests).js'",
     "watch.grammar": "npm-watch",
     "compile": "yarn antlr4.js",
-    "antlr4.js": "java -Xmx500M -cp 'jlib/antlr-4.8-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -lib grammar -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript.g4"
+    "antlr4.js": "java -Xmx500M -cp 'jlib/antlr-4.8-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -dist grammar -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript.g4"
   },
   "watch": {
     "compile": {

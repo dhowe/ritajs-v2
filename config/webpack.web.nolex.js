@@ -5,7 +5,7 @@ module.exports =
   mode: 'production',
   target: 'web',
   output: {
-    path: require('path').resolve(__dirname, '../lib'),
+    path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
     filename: 'rita-web-nolex.js',
     chunkFilename: 'rita-web.js',

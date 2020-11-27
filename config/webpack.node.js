@@ -5,9 +5,9 @@ module.exports = {
   mode: 'production',
   target: 'node',
   output: {
-    path: require('path').resolve(__dirname, '../lib'),
+    path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
-    filename: 'rita.js',
+    filename: 'rita-node.js',
     libraryTarget: 'commonjs2',
   },  
   node: {
