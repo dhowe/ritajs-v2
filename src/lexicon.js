@@ -324,8 +324,8 @@ class Lexicon {
       case 'vbd':
         return RiTa.conjugate(word, {
           number: RiTa.SINGULAR,
-          person: RiTa.FIRST_PERSON,
-          tense: RiTa.PAST_TENSE
+          person: RiTa.FIRST,
+          tense: RiTa.PAST
         });
       case 'vbg':
         return RiTa.presentParticiple(word);
@@ -336,8 +336,8 @@ class Lexicon {
       case 'vbz':
         return RiTa.conjugate(word, {
           number: RiTa.SINGULAR,
-          person: RiTa.THIRD_PERSON,
-          tense: RiTa.PRESENT_TENSE
+          person: RiTa.THIRD,
+          tense: RiTa.PRESENT
         });
       default: throw Error('Unexpected pos: ' + pos);
     }
@@ -382,7 +382,7 @@ class Lexicon {
 
   _firstPhone(rawPhones) {
     if (rawPhones && rawPhones.length) {
-      let phones = rawPhones.split(this.RiTa.PHONEME_BOUNDARY);
+      let phones = rawPhones.split(this.RiTa.PHONE_BOUNDARY);
       if (phones) return phones[0];
     }
   }
@@ -395,7 +395,7 @@ class Lexicon {
     if (word && word.length) {
       let raw = this.rawPhones(word);
       if (raw) {
-        let idx = raw.lastIndexOf(this.RiTa.STRESSED);
+        let idx = raw.lastIndexOf(this.RiTa.STRESS);
         if (idx >= 0) {
           let c = raw.charAt(--idx);
           while (c != '-' && c != ' ') {
@@ -430,7 +430,7 @@ class Lexicon {
   _firstStressedSyl(word) {
     let raw = this.rawPhones(word);
     if (raw) {
-      let idx = raw.indexOf(this.RiTa.STRESSED);
+      let idx = raw.indexOf(this.RiTa.STRESS);
       if (idx >= 0) {
         let c = raw.charAt(--idx);
         while (c != ' ') {

@@ -24,7 +24,7 @@ class Tokenizer {
     }
 
     let escapeAbbrevs = (text) => {
-      let abbrevs = this.RiTa.ABBREVIATIONS;
+      let abbrevs = this.RiTa.ABRV;
       for (let i = 0; i < abbrevs.length; i++) {
         let abv = abbrevs[i];
         let idx = text.indexOf(abv);

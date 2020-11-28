@@ -11,8 +11,8 @@ class Conjugator {
 
   reset() {
     this.perfect = this.progressive = this.passive = this.interrogative = false;
-    this.tense = this.RiTa.PRESENT_TENSE;
-    this.person = this.RiTa.FIRST_PERSON;
+    this.tense = this.RiTa.PRESENT;
+    this.person = this.RiTa.FIRST;
     this.number = this.RiTa.SINGULAR;
     this.form = this.RiTa.NORMAL;
   }
@@ -49,7 +49,7 @@ class Conjugator {
       actualModal = "to";
     }
 
-    if (this.tense === RiTa.FUTURE_TENSE) {
+    if (this.tense === RiTa.FUTURE) {
       actualModal = "will";
     }
 
@@ -139,31 +139,31 @@ class Conjugator {
       switch (numb) {
         case RiTa.SINGULAR:
           switch (pers) {
-            case RiTa.FIRST_PERSON: break;
-            case RiTa.THIRD_PERSON: return "was";
-            case RiTa.SECOND_PERSON: return "were";
+            case RiTa.FIRST: break;
+            case RiTa.THIRD: return "was";
+            case RiTa.SECOND: return "were";
           }
           break;
         case RiTa.PLURAL:
           return "were";
       }
     }
-    return this.checkRules(PAST_TENSE_RULESET, theVerb);
+    return this.checkRules(PAST_RULESET, theVerb);
   }
 
   presentTense(theVerb, person, number) {
     const RiTa = this.RiTa;
     person = person || this.person;
     number = number || this.number;
-    if (person === RiTa.THIRD_PERSON && number === RiTa.SINGULAR) {
-      return this.checkRules(PRESENT_TENSE_RULESET, theVerb);
+    if (person === RiTa.THIRD && number === RiTa.SINGULAR) {
+      return this.checkRules(PRESENT_RULESET, theVerb);
     }
     else if (theVerb === "be") {
       if (number === RiTa.SINGULAR) {
         switch (person) {
-          case RiTa.FIRST_PERSON: return "am";
-          case RiTa.SECOND_PERSON: return "are";
-          case RiTa.THIRD_PERSON: return "is";
+          case RiTa.FIRST: return "am";
+          case RiTa.SECOND: return "are";
+          case RiTa.THIRD: return "is";
         }
       } else {
         return "are";
@@ -183,9 +183,9 @@ class Conjugator {
 
   verbForm(theVerb, tense, person, number) {
     switch (tense) {
-      case this.RiTa.PRESENT_TENSE:
+      case this.RiTa.PRESENT:
         return this.presentTense(theVerb, person, number);
-      case this.RiTa.PAST_TENSE:
+      case this.RiTa.PAST:
         return this.pastTense(theVerb, person, number);
     }
     return theVerb;
@@ -412,7 +412,7 @@ const PAST_PARTICIPLE_RULES = [
   RE("^" + VERBAL_PREFIX + "?(cast|thrust|typeset|cut|bid|upset|wet|bet|cut|hit|hurt|inset|let|cost|burst|beat|beset|set|upset|hit|offset|put|quit|" + "wed|typeset|wed|spread|split|slit|read|run|rerun|shut|shed)$", 0)
 ];
 
-const PAST_TENSE_RULES = [
+const PAST_RULES = [
   RE("^(reduce)$", 0, "d"),
   RE("e$", 0, "d", 1),
   RE("^" + VERBAL_PREFIX + "?[pls]ay$", 1, "id", 1),
@@ -670,7 +670,7 @@ const PAST_TENSE_RULES = [
   RE("^" + VERBAL_PREFIX + "?(cast|thrust|typeset|cut|bid|upset|wet|bet|cut|hit|hurt|inset|" + "let|cost|burst|beat|beset|set|upset|offset|put|quit|wed|typeset|" + "wed|spread|split|slit|read|run|shut|shed|lay)$", 0)
 ];
 
-const PRESENT_TENSE_RULES = [
+const PRESENT_RULES = [
   RE("^aby$", 0, "es"),
   RE("^bog-down$", 5, "s-down"),
   RE("^chivy$", 1, "vies"),
@@ -832,17 +832,17 @@ const PRESENT_PARTICIPLE_RULESET = {
   doubling: true
 };
 
-const PAST_TENSE_RULESET = {
-  name: "PAST_TENSE",
+const PAST_RULESET = {
+  name: "PAST",
   defaultRule: RE(ANY_STEM_RE, 0, "ed", 2),
-  rules: PAST_TENSE_RULES,
+  rules: PAST_RULES,
   doubling: true
 };
 
-const PRESENT_TENSE_RULESET = {
-  name: "PRESENT_TENSE",
+const PRESENT_RULESET = {
+  name: "PRESENT",
   defaultRule: RE(ANY_STEM_RE, 0, "s", 2),
-  rules: PRESENT_TENSE_RULES,
+  rules: PRESENT_RULES,
   doubling: false
 };
 

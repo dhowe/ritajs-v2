@@ -81,7 +81,7 @@ class Analyzer {
         let stressyls = rawPhones.split(' ');
         for (let j = 0; j < stressyls.length; j++) {
           if (!stressyls[j].length) continue;
-          stresses += stressyls[j].includes(RiTa.STRESSED) ? RiTa.STRESSED : RiTa.UNSTRESSED;
+          stresses += stressyls[j].includes(RiTa.STRESS) ? RiTa.STRESS : RiTa.NOSTRESS;
           if (j < stressyls.length - 1) stresses += slash;
         }
       } else {

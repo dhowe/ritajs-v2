@@ -68,13 +68,13 @@ describe('RiTa.Conjugator', () => {
   it('Should conjugate VBDs', () => {
     expect(RiTa.conjugate("go", {
       number: RiTa.SINGULAR,
-      person: RiTa.FIRST_PERSON,
-      tense: RiTa.PAST_TENSE
+      person: RiTa.FIRST,
+      tense: RiTa.PAST
     })).eq("went");
     expect(RiTa.conjugate("run", {
       number: RiTa.SINGULAR,
-      person: RiTa.FIRST_PERSON,
-      tense: RiTa.PAST_TENSE
+      person: RiTa.FIRST,
+      tense: RiTa.PAST
     })).eq("ran");
   });
 
@@ -89,9 +89,9 @@ describe('RiTa.Conjugator', () => {
     a = ["swims", "needs", "opens"];
 
     args = {
-      tense: RiTa.PRESENT_TENSE,
+      tense: RiTa.PRESENT,
       number: RiTa.SINGULAR,
-      person: RiTa.THIRD_PERSON
+      person: RiTa.THIRD
     };
 
     expect(() => RiTa.conjugate(args)).to.throw;
@@ -104,9 +104,9 @@ describe('RiTa.Conjugator', () => {
     }
 
     args = {
-      tense: RiTa.PRESENT_TENSE,
+      tense: RiTa.PRESENT,
       number: RiTa.SINGULAR,
-      person: RiTa.THIRD_PERSON,
+      person: RiTa.THIRD,
       passive: true
     };
 
@@ -117,8 +117,8 @@ describe('RiTa.Conjugator', () => {
 
     args = {
       number: RiTa.SINGULAR,
-      person: RiTa.FIRST_PERSON,
-      tense: RiTa.PAST_TENSE
+      person: RiTa.FIRST,
+      tense: RiTa.PAST
     };
 
     equal(RiTa.conjugate("swim", args), "swam");
@@ -135,8 +135,8 @@ describe('RiTa.Conjugator', () => {
 
     args = {
       number: RiTa.PLURAL,
-      person: RiTa.SECOND_PERSON,
-      tense: RiTa.PAST_TENSE
+      person: RiTa.SECOND,
+      tense: RiTa.PAST
     };
 
     a = ["swam", "needed", "opened"];
@@ -148,8 +148,8 @@ describe('RiTa.Conjugator', () => {
 
     args = {
       number: RiTa.PLURAL,
-      person: RiTa.SECOND_PERSON,
-      tense: RiTa.FUTURE_TENSE
+      person: RiTa.SECOND,
+      tense: RiTa.FUTURE
     };
     a = ["will swim", "will need", "will open"];
     ok(a.length === s.length);
@@ -159,9 +159,9 @@ describe('RiTa.Conjugator', () => {
     }
 
     args = {
-      tense: RiTa.PAST_TENSE,
+      tense: RiTa.PAST,
       number: RiTa.SINGULAR,
-      person: RiTa.THIRD_PERSON
+      person: RiTa.THIRD
     };
     a = ["swam", "needed", "opened"];
 
@@ -173,9 +173,9 @@ describe('RiTa.Conjugator', () => {
     }
 
     args = {
-      tense: RiTa.PAST_TENSE,
+      tense: RiTa.PAST,
       number: RiTa.SINGULAR,
-      person: RiTa.THIRD_PERSON,
+      person: RiTa.THIRD,
       form: RiTa.INFINITIVE
     };
     a = ["to swim", "to need", "to open"];
@@ -186,9 +186,9 @@ describe('RiTa.Conjugator', () => {
     }
 
     args = {
-      tense: RiTa.PAST_TENSE,
+      tense: RiTa.PAST,
       number: RiTa.SINGULAR,
-      person: RiTa.THIRD_PERSON,
+      person: RiTa.THIRD,
       passive: true
     };
 
@@ -202,9 +202,9 @@ describe('RiTa.Conjugator', () => {
 
     s = ["swim", "need", "open"];
     args = {
-      tense: RiTa.PRESENT_TENSE,
+      tense: RiTa.PRESENT,
       number: RiTa.SINGULAR,
-      person: RiTa.THIRD_PERSON,
+      person: RiTa.THIRD,
       form: RiTa.INFINITIVE,
       progressive: true
     };
@@ -216,9 +216,9 @@ describe('RiTa.Conjugator', () => {
     }
 
     args = {
-      tense: RiTa.PRESENT_TENSE,
+      tense: RiTa.PRESENT,
       number: RiTa.SINGULAR,
-      person: RiTa.THIRD_PERSON,
+      person: RiTa.THIRD,
       form: RiTa.INFINITIVE,
       perfect: true
     };
@@ -232,16 +232,16 @@ describe('RiTa.Conjugator', () => {
 
     args = {
       number: RiTa.PLURAL,
-      person: RiTa.SECOND_PERSON,
-      tense: RiTa.PAST_TENSE
+      person: RiTa.SECOND,
+      tense: RiTa.PAST
     };
     equal(RiTa.conjugate("barter", args), "bartered");
     equal(RiTa.conjugate("run", args), "ran");
 
     args = {
       number: RiTa.PLURAL,
-      person: RiTa.SECOND_PERSON,
-      tense: RiTa.PAST_TENSE
+      person: RiTa.SECOND,
+      tense: RiTa.PAST
     };
     s = ["compete", "complete", "eject"];
     a = ["competed", "completed", "ejected"];
