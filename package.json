@@ -13,6 +13,7 @@
     "dist/rita.js"
   ],
   "main": "dist/rita.js",         
+  "unpkg": "dist/rita-web.js",         
   "scripts": {
     "npmpub": "np --tag beta prerelease && open dist",
     "bump": "yarn version --no-git-tag-version --prerelease",
@@ -25,13 +26,12 @@
     "watch": "webpack --watch",
     "test": "mocha",
     "test.g": "mocha ./test/*.js -g ",
-    "test.quick": "mocha './test/**/!(lexicon-tests).js'",
     "test.prod": "NODE_ENV=dist mocha ./test/*.js",
     "test-g.prod": "NODE_ENV=dist mocha ./test/*.js -g",
-    "test.watch": "mocha --watch 'src/*.js' './test/**/!(lexicon-tests).js'",
+    "test.quick": "mocha './test/**/!(lexicon-tests).js'",
     "watch.grammar": "npm-watch",
     "compile": "yarn antlr4.js",
-    "antlr4.js": "java -Xmx500M -cp 'jlib/antlr-4.8-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -dist grammar -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript.g4"
+    "antlr4.js": "java -Xmx500M -cp 'jlib/antlr-4.8-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript.g4"
   },
   "watch": {
     "compile": {
@@ -46,11 +46,7 @@
     "he": "^1.2.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.4",
-    "@types/webpack": "^4.41.0",
     "chai": "^4.2.0",
-    "eslint": "^6.7.2",
-    "eslint-loader": "^3.0.3",
     "mocha": "^6.2.2",
     "npm-watch": "^0.6.0",
     "webpack": "^4.41.2",
