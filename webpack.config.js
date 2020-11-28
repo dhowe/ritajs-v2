@@ -6,7 +6,7 @@ module.exports = [
   "unpkg": "dist/rita-web.js",      // unpkg.com  */
 
   require('./config/webpack.umd'),
-  require('./config/webpack.web'),
-  require('./config/webpack.web.nolex'),
+/*   require('./config/webpack.web'),
+  require('./config/webpack.web.nolex'), */
   //require('./config/webpack.node')
 ];

@@ -1,5 +1,5 @@
+const he = require('he');
 const antlr4 = require('antlr4');
-const { decode } = require('he');
 const Visitor = require('./visitor');
 const Lexer = require('../grammar/antlr/RiScriptLexer');
 const Parser = require('../grammar/antlr/RiScriptParser');
@@ -170,14 +170,12 @@ class RiScript {
 
   resolveEntities(result) { // &#10; for line break DOC:
     if (typeof result === 'undefined') return '';
-    return decode(result.replace(/ +/g, ' '))
+    return he.decode(result.replace(/ +/g, ' '))
       .replace(ENTITY_RE, ' ');
   }
 
   isParseable(s) {
-    let found = PARSEABLE_RE.test(s);
-    //console.log("FOUND: " + s + ": " + found);
-    return found;
+    return PARSEABLE_RE.test(s);
   }
 
   static addTransform(name, func) {

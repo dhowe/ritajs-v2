@@ -1,4 +1,4 @@
-const { parse, stringify } = require('flatted/cjs');
+const cjs = require('flatted/cjs');
 
 class Markov {
 
@@ -22,13 +22,13 @@ class Markov {
   }
 
   toJSON() {
-    return stringify(Object.keys(this).reduce(
+    return cjs.stringify(Object.keys(this).reduce(
       (acc, k) => Object.assign(acc, { [k]: this[k] }), {}));
   }
 
   static fromJSON(json) {
     // parse the json and merge with new object
-    let rm = Object.assign(new Markov(), parse(json));
+    let rm = Object.assign(new Markov(), cjs.parse(json));
 
     // handle json converting undefined [] to empty []
     if (!json.input) rm.input = undefined;

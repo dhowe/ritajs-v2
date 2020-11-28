@@ -10,11 +10,7 @@ module.exports = {
     filename: 'rita-node.js',
     libraryTarget: 'commonjs2',
   },  
-  node: {
-    fs: "empty",
-    __dirname: false,
-    __filename: false,
-  },
+  resolve: { fallback: { fs: false } },
   watchOptions: {
     ignored: /node_modules/
   },

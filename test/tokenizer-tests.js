@@ -12,7 +12,7 @@ describe('RiTa.Tokenizer', () => {
       ["this", "is", "www", ".", "google", ".", "com"],
       ["it", "is", "'", "hell", "'"]
     ];
-    for (i = 0; i < sentences.length; i++){
+    for (let i = 0; i < sentences.length; i++){
       let usingTokenize = RiTa.tokenize(sentences[i]);
       expect(usingTokenize).eql(tokens[i]);
       let usingUntokenize = RiTa.untokenize(usingTokenize);

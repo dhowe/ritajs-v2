@@ -1,5 +1,3 @@
-const { expect } = require('chai');
-
 describe('RiTa.RiScript', () => {
 
   const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 };
@@ -283,6 +281,7 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should resolve across assignment types', () => {
+      let ctx;
       expect(RiTa.evaluate('The $foo=blue (dog | dog)', ctx = {})).eq('The');
       expect(ctx.foo).eq('blue dog');
 
@@ -655,7 +654,7 @@ describe('RiTa.RiScript', () => {
         expect(RiTa.articlize(data[i])).eq(data[i + 1]);
       }
     });
-    
+
     it('should handle phrase transforms', () => {
       let g = "$y=(a | a)\n[$x=$y b].ucf()";
       expect(RiTa.evaluate(g)).eq("A b");
@@ -887,11 +886,11 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should resolve transform properties and method', () => {
-      class TestClass{
-        constructor(){
+      class TestClass {
+        constructor() {
           this.prop = "result";
         }
-        getProp(){
+        getProp() {
           return this.prop;
         }
       }

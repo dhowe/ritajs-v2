@@ -1,12 +1,12 @@
 
 describe('RiTa.Core', () => {
-
   if (typeof module !== 'undefined') require('./before');
 
   it('Should have access to statics', () => {
+    if (typeof process === 'undefined') return;
     //console.log(process.env.NODE_ENV, process.env.npm_package_version, RiTa.VERSION);
-    if (typeof process.env.npm_package_version !== 'undefined' &&
-      typeof process.env.NODE_ENV !== 'undefined') {
+     if (typeof process.env.npm_package_version !== 'undefined' 
+      && typeof process.env.NODE_ENV !== 'undefined') {
       eql(RiTa.VERSION, process.env.npm_package_version);
     }
     else {
