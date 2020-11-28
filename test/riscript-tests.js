@@ -7,15 +7,6 @@ describe('RiTa.RiScript', () => {
   const RiScript = RiTa.RiScript;
   const Operator = RiTa.Operator;
 
-  it('Should correctly call isParseable0', () => {
-    let rs = new RiScript();
-    expect(rs.isParseable("Hello")).not.eq(true);
-    expect(rs.isParseable("(")).eq(true);
-    expect(rs.isParseable("(A | B)")).eq(true);
-    expect(rs.isParseable("$hello")).eq(true);
-    expect(rs.isParseable("$b")).eq(true);
-  });
-
   describe('Conditionals', () => {
 
     it('Should throw on bad conditionals', () => {
@@ -67,6 +58,16 @@ describe('RiTa.RiScript', () => {
   });
 
   describe('Evaluation', () => {
+
+    it('Should correctly call isParseable', () => {
+      let rs = new RiScript();
+      expect(rs.isParseable("Hello")).not.eq(true);
+      expect(rs.isParseable("(")).eq(true);
+      expect(rs.isParseable("(A | B)")).eq(true);
+      expect(rs.isParseable("$hello")).eq(true);
+      expect(rs.isParseable("$b")).eq(true);
+    });
+
 
     it('Should resolve simple expressions', () => {
       expect(RiTa.evaluate('foo', {})).eq('foo');
@@ -631,30 +632,8 @@ describe('RiTa.RiScript', () => {
       RiTa.SILENT = false;
     });
 
-    it('Should handle articlize', () => {
-      let data = [
-        "dog", "a dog",
-        "ant", "an ant",
-        "honor", "an honor",
-        "eagle", "an eagle",
-        "ermintrout", "an ermintrout"
-      ];
-      for (let i = 0; i < data.length; i += 2) {
-        expect(RiTa.articlize(data[i])).eq(data[i + 1]);
-      }
-    });
 
-    it('Should handle articlize phrases', () => {
-      let data = [
-        "black dog", "a black dog",
-        "black ant", "a black ant",
-        "orange ant", "an orange ant"
-      ];
-      for (let i = 0; i < data.length; i += 2) {
-        expect(RiTa.articlize(data[i])).eq(data[i + 1]);
-      }
-    });
-    
+
     it('should handle phrase transforms', () => {
       let g = "$y=(a | a)\n[$x=$y b].ucf()";
       expect(RiTa.evaluate(g)).eq("A b");
@@ -886,11 +865,11 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should resolve transform properties and method', () => {
-      class TestClass{
-        constructor(){
+      class TestClass {
+        constructor() {
           this.prop = "result";
         }
-        getProp(){
+        getProp() {
           return this.prop;
         }
       }

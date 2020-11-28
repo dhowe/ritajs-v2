@@ -196,7 +196,6 @@ class RiScript {
   static identity(s) {
     return s;
   }
-
 }
 
 function RiTa() { return RiScript.parent; }

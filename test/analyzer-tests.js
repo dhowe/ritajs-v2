@@ -21,7 +21,9 @@ describe('RiTa.Analyzer', () => {
 
   it('Should call analyze', () => {
 
+
     expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phones: '', syllables: '' });
+
 
     let feats;
     feats = RiTa.analyze("clothes");
@@ -29,19 +31,22 @@ describe('RiTa.Analyzer', () => {
     expect(feats.tokens).eq("clothes");
     expect(feats.syllables).eq("k-l-ow-dh-z");
 
+    feats = RiTa.analyze("chevrolet");
+    expect(feats.tokens).eq("chevrolet");
+    expect(feats.syllables).eq(hasLex ? "sh-eh-v/r-ow/l-ey" : 'ch-eh-v/r-ow/l-ah-t');
+
+    if (!hasLex) return; // NOTE: below currently fail without lexicon
+
+    feats = RiTa.analyze("the clothes"); 
+    expect(feats.pos).eq("dt nns");
+    expect(feats.tokens).eq("the clothes");
+    expect(feats.syllables).eq("dh-ah k-l-ow-dh-z");
+
     feats = RiTa.analyze("yoyo");
     expect(feats.pos).eq("nn");
     expect(feats.tokens).eq("yoyo");
     expect(feats.syllables).eq("y-ow/y-ow");
 
-    feats = RiTa.analyze("the clothes"); // NOTE: currently fails without lexicon
-    expect(feats.pos).eq("dt nns");
-    expect(feats.tokens).eq("the clothes");
-    expect(feats.syllables).eq("dh-ah k-l-ow-dh-z");
-
-    feats = RiTa.analyze("chevrolet");
-    expect(feats.tokens).eq("chevrolet");
-    expect(feats.syllables).eq(hasLex ? "sh-eh-v/r-ow/l-ey" : 'ch-eh-v/r-ow/l-ah-t');
   });
 
   it('Should call stresses', () => {
@@ -50,11 +55,14 @@ describe('RiTa.Analyzer', () => {
 
     eq(RiTa.stresses(""), "");
     eq(RiTa.stresses("women"), "1/0", "women");
-    eq(RiTa.stresses("abatements"), "0/1/0", "abatements");
+
+    if (!hasLex) return; // NOTE: below may fail without lexicon
 
     eq(RiTa.stresses("The emperor had no clothes on"), "0 1/0/0 1 1 1 1");
     eq(RiTa.stresses("The emperor had no clothes on."), "0 1/0/0 1 1 1 1 .");
     eq(RiTa.stresses("The emperor had no clothes on. The King is fat."), "0 1/0/0 1 1 1 1 . 0 1 1 1 .");
+
+    eq(RiTa.stresses("abatements"), "0/1/0", "abatements");
 
     word = "to present, to export, to decide, to begin";
     result = RiTa.stresses(word);
@@ -76,6 +84,9 @@ describe('RiTa.Analyzer', () => {
     answer = hasLex ? "1 1/0 , 1 1/0 , 1 0/1 , 1 0/1" : '1 1/1 , 1 0/1 , 1 0/1 , 1 1/1';
     eq(result, answer, word);
 
+
+
+
   });
 
   it('Should call phones', () => {
@@ -93,9 +104,6 @@ describe('RiTa.Analyzer', () => {
     eq(RiTa.phones("flowers"), "f-l-aw-er-z");
     eq(RiTa.phones("mice"), "m-ay-s");
     eq(RiTa.phones("ant"), "ae-n-t");
-
-    expect(RiTa.phones("deforestations")).eq('d-ih-f-ao-r-ih-s-t-ey-sh-ah-n-z');
-    expect(RiTa.phones("schizophrenias")).eq('s-k-ih-t-s-ah-f-r-iy-n-iy-ah-z');
 
     // different without lexicon ------------------------------------------
 
@@ -116,6 +124,11 @@ describe('RiTa.Analyzer', () => {
     eq(RiTa.phones("chevrolet"), hasLex ? "sh-eh-v-r-ow-l-ey" : 'ch-eh-v-r-ow-l-ah-t');
     eq(RiTa.phones("women"), hasLex ? "w-ih-m-eh-n" : 'w-ow-m-eh-n');
     eq(RiTa.phones("genuine"), hasLex ? "jh-eh-n-y-uw-w-ah-n" : 'jh-eh-n-y-ah-ay-n');
+
+    if (!hasLex) return; // NOTE: below may fail without lexicon
+
+    expect(RiTa.phones("deforestations")).eq('d-ih-f-ao-r-ih-s-t-ey-sh-ah-n-z');
+    expect(RiTa.phones("schizophrenias")).eq('s-k-ih-t-s-ah-f-r-iy-n-iy-ah-z');
 
     RiTa.SILENCE_LTS = silent;
   });

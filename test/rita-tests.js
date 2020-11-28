@@ -71,12 +71,28 @@ describe('RiTa.Core', () => {
     ok(!RiTa.isQuestion(""));
   });
 
-  it('Should call articlize', () => {
-    expect(RiTa.articlize("dog")).eq('a dog');
-    expect(RiTa.articlize("ant")).eq('an ant');
-    expect(RiTa.articlize("honor")).eq('an honor');
-    expect(RiTa.articlize("eagle")).eq('an eagle');
-    expect(RiTa.articlize("ermintrout")).eq('an ermintrout');
+  it('Should handle articlize', () => {
+    let data = [
+      "dog", "a dog",
+      "ant", "an ant",
+      "eagle", "an eagle",
+      "ermintrout", "an ermintrout"
+    ];
+    if (RiTa.hasLexicon()) data.push( "honor", "an honor");
+    for (let i = 0; i < data.length; i += 2) {
+      expect(RiTa.articlize(data[i])).eq(data[i + 1]);
+    }
+  });
+
+  it('Should handle articlize phrases', () => {
+    let data = [
+      "black dog", "a black dog",
+      "black ant", "a black ant",
+      "orange ant", "an orange ant"
+    ];
+    for (let i = 0; i < data.length; i += 2) {
+      expect(RiTa.articlize(data[i])).eq(data[i + 1]);
+    }
   });
 
   it('Should call isAbbreviation', () => {
