@@ -1,5 +1,3 @@
-const { expect } = require('chai');
-
 describe('RiTa.RiScript', () => {
 
   const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 };
@@ -283,6 +281,7 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should resolve across assignment types', () => {
+      let ctx;
       expect(RiTa.evaluate('The $foo=blue (dog | dog)', ctx = {})).eq('The');
       expect(ctx.foo).eq('blue dog');
 
