@@ -83,11 +83,13 @@ console.log(grammar.expand());
    </td>
    <td>
     <a href="https://rednoise.org/rita2/Grammar/addRule/index.html">addRule()</a><br/>
+    <a href="https://rednoise.org/rita2/Grammar/addRules/index.html">addRules()</a><br/>
     <a href="https://rednoise.org/rita2/Grammar/expand/index.html">expand()</a><br/>
+    <a href="https://rednoise.org/rita2/Grammar/fromJSON/index.html">fromJSON()</a><br/>
     <a href="https://rednoise.org/rita2/Grammar/removeRule/index.html">removeRule()</a><br/>
-    <a href="https://rednoise.org/rita2/Grammar/setRules/index.html">setRules()</a><br/>
+    <a href="https://rednoise.org/rita2/Grammar/toJSON/index.html">toJSON()</a><br/>
     <a href="https://rednoise.org/rita2/Grammar/toString/index.html">toString()</a><br/>
-    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
  </tr>
 </table>
