@@ -43,12 +43,13 @@ console.log(grammar.expand());
     <a href="https://rednoise.org/rita2/RiTa/isPunctuation/index.html">RiTa.isPunctuation()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/isQuestion/index.html">RiTa.isQuestion()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/isRhyme/index.html">RiTa.isRhyme()</a><br/>
+    <a href="https://rednoise.org/rita2/RiTa/isStopWord/index.html">RiTa.isStopWord()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/isVerb/index.html">RiTa.isVerb()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/kwic/index.html">RiTa.kwic()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/pastParticiple/index.html">RiTa.pastParticiple()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/phones/index.html">RiTa.phones()</a><br/>
    </td>
    <td>
+   <a href="https://rednoise.org/rita2/RiTa/phones/index.html">RiTa.phones()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/pos/index.html">RiTa.pos()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/posInline/index.html">RiTa.posInline()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/presentParticiple/index.html">RiTa.presentParticiple()</a><br/>
@@ -59,7 +60,6 @@ console.log(grammar.expand());
     <a href="https://rednoise.org/rita2/RiTa/rhymes/index.html">RiTa.rhymes()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/search/index.html">RiTa.search()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/sentences/index.html">RiTa.sentences()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/similars/index.html">RiTa.similars()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/singularize/index.html">RiTa.singularize()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/soundsLike/index.html">RiTa.soundsLike()</a><br/>
     <a href="https://rednoise.org/rita2/RiTa/spellsLike/index.html">RiTa.spellsLike()</a><br/>
@@ -83,11 +83,13 @@ console.log(grammar.expand());
    </td>
    <td>
     <a href="https://rednoise.org/rita2/Grammar/addRule/index.html">addRule()</a><br/>
+    <a href="https://rednoise.org/rita2/Grammar/addRules/index.html">addRules()</a><br/>
     <a href="https://rednoise.org/rita2/Grammar/expand/index.html">expand()</a><br/>
+    <a href="https://rednoise.org/rita2/Grammar/fromJSON/index.html">fromJSON()</a><br/>
     <a href="https://rednoise.org/rita2/Grammar/removeRule/index.html">removeRule()</a><br/>
-    <a href="https://rednoise.org/rita2/Grammar/setRules/index.html">setRules()</a><br/>
+    <a href="https://rednoise.org/rita2/Grammar/toJSON/index.html">toJSON()</a><br/>
     <a href="https://rednoise.org/rita2/Grammar/toString/index.html">toString()</a><br/>
-    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
  </tr>
 </table>
