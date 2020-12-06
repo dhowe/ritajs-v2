@@ -19,12 +19,12 @@
     "bump": "yarn version --no-git-tag-version --prerelease",
     "bump.version": "yarn version --no-git-tag-version --patch",
     "version": "yarn build && yarn test.prod",
-    "readme": "sed \"s/@VERSION@/$npm_package_version/g\" README.tmpl.md > README.md",
-    "postversion": "yarn readme",
     "clean": "rm -f dist/*.*",
     "build": "yarn clean && webpack",
     "watch": "webpack --watch",
     "test": "mocha",
+    "test-cov": "nyc --reporter=html mocha",
+    "test-coveralls": "nyc report --reporter=text-lcov | coveralls",
     "test.g": "mocha ./test/*.js -g ",
     "test.prod": "NODE_ENV=dist mocha ./test/*.js",
     "test-g.prod": "NODE_ENV=dist mocha ./test/*.js -g",
@@ -34,6 +34,9 @@
     "analyze": "webpack -c config/webpack-web.js --profile --json > stats.json",
     "view.stats": "webpack-bundle-analyzer stats.json",
     "antlr4.js": "java -Xmx500M -cp 'jlib/antlr-4.8-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript.g4"
+  },
+  "nyc": {
+    "include": "src"
   },
   "watch": {
     "compile": {
@@ -49,8 +52,10 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "coveralls": "^3.1.0",
     "mocha": "^6.2.2",
     "npm-watch": "^0.6.0",
+    "nyc": "^15.1.0",
     "webpack": "^4.41.2",
     "webpack-bundle-analyzer": "^4.1.0",
     "webpack-cli": "^3.3.10"
