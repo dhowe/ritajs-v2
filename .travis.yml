@@ -9,4 +9,3 @@ cache:
     - "node_modules"
 before_script: yarn build 
 script: yarn test
-after_success: yarn test-coveralls
