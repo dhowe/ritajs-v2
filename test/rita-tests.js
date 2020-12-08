@@ -1,3 +1,4 @@
+const { expect } = require('chai');
 
 describe('RiTa.Core', () => {
 
@@ -573,6 +574,41 @@ describe('RiTa.Core', () => {
     expect(data["fish"]).eq(undefined);
     expect(data["fresh"]).eq(2);
     expect(data["fried"]).eq(2);
+  });
+
+  it('Should call kwic',() => {
+    let result;
+    RiTa.concordance("A sentence includes cat."); 
+    result = RiTa.kwic("cat");
+    expect(result[0]).eq("A sentence includes cat.");
+
+    RiTa.concordance("Cats are beautiful.");
+    result = RiTa.kwic("cat");
+    expect(result.length).eq(0);
+
+    RiTa.concordance("This is a very very long sentence includes cat with many many words after it and before it.");
+    result = RiTa.kwic("cat");
+    expect(result[0]).eq("a very very long sentence includes cat with many many words after it");
+
+    RiTa.concordance("A sentence includes cat in the middle. Another sentence includes cat in the middle.");
+    result = RiTa.kwic("cat");
+    expect(result[0]).eq("A sentence includes cat in the middle. Another sentence");
+    expect(result[1]).eq("the middle. Another sentence includes cat in the middle.");
+
+    RiTa.concordance("A sentence includes cat. Another sentence includes cat.");
+    result = RiTa.kwic("cat");
+    expect(result[0]).eq("A sentence includes cat. Another sentence includes cat.");
+    expect(result[1]).eq(undefined);
+
+    RiTa.concordance("A sentence includes cat. Another sentence includes cat.");
+    result = RiTa.kwic("cat", 4);
+    expect(result[0]).eq("A sentence includes cat. Another sentence includes");
+    expect(result[1]).eq(". Another sentence includes cat.");
+
+    RiTa.concordance("The dog ate the cat, what a tragedy! Little Kali loves the cat, it was her best friend.");
+    result = RiTa.kwic("cat", 4);
+    expect(result[0]).eq("The dog ate the cat, what a tragedy");
+    expect(result[1]).eq("Little Kali loves the cat, it was her");
   });
 
   it('Should call sentences', () => {
