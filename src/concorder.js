@@ -12,7 +12,7 @@ class Concorder {
     for (let name in this.model) {
       result[name] = this.model[name].indexes.length;
     }
-    // TODO: sort by value here
+    // TODO: sort by value here?
     return result;
   }
 

@@ -1,235 +1,780 @@
-const { MASS_NOUNS } = require("./util");
-
-class PlingStemmer {
-  // a modified port of the Pling stemmer as documented here:
-  // http://resources.mpi-inf.mpg.de/yago-naga/javatools/doc/javatools/parsers/PlingStemmer.html
-
-  stem(s) {
-
-    // Handle irregular ones
-    if (categoryIRR.includes(s)) {
-      let index = categoryIRR.indexOf(s), irreg;
-      if (index % 2 == 0) {
-        irreg = categoryIRR[index + 1];
-        return (irreg);
-      }
-    }
-    // -on to -a
-    if (categoryON_A.includes(s)) return (this.cut(s, "a") + "on");
-
-    // -um to -a
-    if (categoryUM_A.includes(s)) return (this.cut(s, "a") + "um");
-
-    // -x to -ices
-    if (categoryIX_ICES.includes(s)) return (this.cut(s, "ices") + "ix");
-
-    // -o to -i
-    if (categoryO_I.includes(s)) return (this.cut(s, "i") + "o");
-
-    // -se to ses
-    if (categorySE_SES.includes(s)) return (this.cut(s, "s"));
-
-    // -is to -es
-    if (categoryIS_ES.includes(s) || s.endsWith("theses")) return (this.cut(s, "es") + "is");
-
-    // -us to -i
-    if (categoryUS_I.includes(s)) return (this.cut(s, "i") + "us");
-
-    //Wrong plural
-    if (s.endsWith("uses") && (categoryUS_I.includes(this.cut(s, "uses") + "i") || s === ("genuses") || s === ("corpuses"))) {
-      return (this.cut(s, "es"));
-    }
-
-    // -ex to -ices
-    if (categoryEX_ICES.includes(s)) return (this.cut(s, "ices") + "ex");
-
-    // Words that do not inflect in the plural
-    if (s.endsWith("ois") || s.endsWith("itis") || category00.includes(s) || categoryICS.includes(s) || MASS_NOUNS.includes(s)) {
-      return s;
-    }
-
-    // -en to -ina
-    // No other common words end in -ina
-    if (s.endsWith("ina")) return (this.cut(s, "en"));
-
-    // -a to -ae
-    // No other common words end in -ae
-    if (s.endsWith("ae") && s !== 'pleae') return (this.cut(s, "e")); // special case
-
-    // -a to -ata
-    // No other common words end in -ata
-    if (s.endsWith("ata")) return (this.cut(s, "ta"));
-
-    // trix to -trices
-    // No common word ends with -trice(s)
-    if (s.endsWith("trices")) return (this.cut(s, "trices") + "trix");
-
-    // -us to -us
-    //No other common word ends in -us, except for false plurals of French words
-    //Catch words that are not latin or known to end in -u
-    if (s.endsWith("us") && !s.endsWith("eaus") && !s.endsWith("ieus") && !this.noLatin(s) && !categoryU_US.includes(s)) {
-      return (s);
-    }
-
-    // -tooth to -teeth
-    // -goose to -geese
-    // -foot to -feet
-    // -zoon to -zoa
-    //No other common words end with the indicated suffixes
-    if (s.endsWith("teeth")) return (this.cut(s, "teeth") + "tooth");
-    if (s.endsWith("geese")) return (this.cut(s, "geese") + "goose");
-    if (s.endsWith("feet")) return (this.cut(s, "feet") + "foot");
-    if (s.endsWith("zoa")) return (this.cut(s, "zoa") + "zoon");
-
-    // -men to -man
-    // -firemen to -fireman
-    if (s.endsWith("men")) return (this.cut(s, "men") + "man");
-
-    // -martinis to -martini
-    // -bikinis to -bikini
-    if (s.endsWith("inis")) return (this.cut(s, "inis") + "ini");
-
-    // -children to -child
-    // -schoolchildren to -schoolchild
-    if (s.endsWith("children")) return (this.cut(s, "ren"));
-
-    // -eau to -eaux
-    //No other common words end in eaux
-    if (s.endsWith("eaux")) return (this.cut(s, "x"));
-
-    // -ieu to -ieux
-    //No other common words end in ieux
-    if (s.endsWith("ieux")) return (this.cut(s, "x"));
-
-    // -nx to -nges
-    // Pay attention not to kill words ending in -nge with plural -nges
-    // Take only Greek words (works fine, only a handfull of exceptions)
-    if (s.endsWith("nges") && this.greek(s)) return (this.cut(s, "nges") + "nx");
-
-    // -[sc]h to -[sc]hes
-    //No other common word ends with "shes", "ches" or "she(s)"
-    //Quite a lot end with "che(s)", filter them out
-    if (s.endsWith("shes") || s.endsWith("ches") && !categoryCHE_CHES.includes(s)) {
-      return (this.cut(s, "es"));
-    }
-
-    // -ss to -sses
-    // No other common singular word ends with "sses"
-    // Filter out those ending in "sse(s)"
-    if (s.endsWith("sses") && !categorySSE_SSES.includes(s) && !s.endsWith("mousses")) {
-      return (this.cut(s, "es"));
-    }
-
-    // -x to -xes
-    // No other common word ends with "xe(s)" except for "axe"
-    if (s.endsWith("xes") && s !== "axes") return (this.cut(s, "es"));
-
-    // -[nlw]ife to -[nlw]ives
-    //No other common word ends with "[nlw]ive(s)" except for olive
-    if (s.endsWith("nives") || s.endsWith("lives") && !s.endsWith("olives") || s.endsWith("wives")) {
-      return (this.cut(s, "ves") + "fe");
-    }
-
-    // -[aeo]lf to -ves  exceptions: valve, solve
-    // -[^d]eaf to -ves  exceptions: heave, weave
-    // -arf to -ves      no exception
-    if (s.endsWith("alves") && !s.endsWith("valves") || s.endsWith("olves") && !s.endsWith("solves") || s.endsWith("eaves") && !s.endsWith("heaves") && !s.endsWith("weaves") || s.endsWith("arves") || s.endsWith("shelves") || s.endsWith("selves")) {
-      return (this.cut(s, "ves") + "f");
-    }
-
-    // -y to -ies
-    // -ies is very uncommon as a singular suffix
-    // but -ie is quite common, filter them out
-    if (s.endsWith("ies") && !categoryIE_IES.includes(s)) return (this.cut(s, "ies") + "y");
-
-    // -o to -oes
-    // Some words end with -oe, so don't kill the "e"
-    if (s.endsWith("oes") && !categoryOE_OES.includes(s)) return (this.cut(s, "es"));
-
-    // -s to -ses
-    // -z to -zes
-    // no words end with "-ses" or "-zes" in singular
-    if (s.endsWith("ses") || s.endsWith("zes")) return (this.cut(s, "es"));
-
-    // - to -s
-    if (s.endsWith("s") && !s.endsWith("ss") && !s.endsWith("is")) return (this.cut(s, "s"));
-
-    return (s);
+class Among {
+  constructor(s, substring_i, result, method) {
+    if ((!s && s != "") || (!substring_i && (substring_i != 0)) || !result)
+      throw ("Bad Among initialisation: s:" + s + ", substring_i: "
+        + substring_i + ", result: " + result);
+    this.s_size = s.length;
+    this.s = this.toCharArray(s);
+    this.substring_i = substring_i;
+    this.result = result;
+    this.method = method;
   }
-
-  isRawPlural(s) {
-    for (let i = 0; i < pluralCATS.length; i++) {
-      if (pluralCATS[i].includes(s)) return true;
-    }
-    let idx = categoryIRR.indexOf(s); // plurals at even indices
-    return (idx % 2 === 0) ? true : false;
-  }
-
-  // Cuts a suffix from a string (that is the number of chars given by the
-  cut(s, suffix) {
-    return (s.substring(0, s.length - suffix.length));
-  }
-
-  /* Returns true if a word is probably not Latin */
-  noLatin(s) {
-    return (s.indexOf('h') > 0 || s.indexOf('j') > 0 || s.indexOf('k') > 0 || s.indexOf('w') > 0 || s.indexOf('y') > 0 || s.indexOf('z') > 0 || s.indexOf("ou") > 0 || s.indexOf("sh") > 0 || s.indexOf("ch") > 0 || s.endsWith("aus"));
-  }
-
-  /* Returns true if a word is probably Greek */
-  greek(s) {
-    return (s.indexOf("ph") > 0 || s.indexOf('y') > 0 && s.endsWith("nges"));
+  toCharArray = function (s) {
+    var sLength = s.length, charArr = new Array(sLength);
+    for (var i = 0; i < sLength; i++)
+      charArr[i] = s.charCodeAt(i);
+    return charArr;
   }
 }
 
-/* Words that end in '-se' in their plural forms (like 'nurse' etc.) */
-const categorySE_SES = ['abuses', 'apocalypses', 'blouses', 'bruises', 'chaises', 'cheeses', 'chemises', 'clauses', 'corpses', 'courses', 'crazes', 'creases', 'cruises', 'curses', 'databases', 'dazes', 'dives', 'defenses', 'demises', 'discourses', 'diseases', 'doses', 'eclipses', 'enterprises', 'expenses', 'friezes', 'fuses', 'glimpses', 'guises', 'hearses', 'horses', 'houses', 'impasses', 'impulses', 'kamikazes', 'mazes', 'mousses', 'noises', 'nooses', 'noses', 'nurses', 'obverses', 'offenses', 'oozes', 'overdoses', 'phrases', 'posses', 'premises', 'pretenses', 'proteases', 'pulses', 'purposes', 'purses', 'racehorses', 'recluses', 'recourses', 'relapses', 'responses', 'roses', 'ruses', 'spouses', 'stripteases', 'subleases', 'sunrises', 'tortoises', 'trapezes', 'treatises', 'toes', 'universes', 'uses', 'vases', 'verses', 'vises', 'wheelbases', 'wheezes'];
+const a_0 = [
+  new Among("arsen", -1, -1),
+  new Among("commun", -1, -1),
+  new Among("gener", -1, -1)
+];
+const a_1 = [
+  new Among("'", -1, 1),
+  new Among("'s'", 0, 1),
+  new Among("'s", -1, 1)
+];
+const a_2 = [
+  new Among("ied", -1, 2), new Among("s", -1, 3),
+  new Among("ies", 1, 2), new Among("sses", 1, 1),
+  new Among("ss", 1, -1), new Among("us", 1, -1)
+];
+const a_3 = [
+  new Among("", -1, 3), new Among("bb", 0, 2), new Among("dd", 0, 2),
+  new Among("ff", 0, 2), new Among("gg", 0, 2),
+  new Among("bl", 0, 1), new Among("mm", 0, 2),
+  new Among("nn", 0, 2), new Among("pp", 0, 2),
+  new Among("rr", 0, 2), new Among("at", 0, 1),
+  new Among("tt", 0, 2), new Among("iz", 0, 1)
+];
+const a_4 = [
+  new Among("ed", -1, 2), new Among("eed", 0, 1),
+  new Among("ing", -1, 2), new Among("edly", -1, 2),
+  new Among("eedly", 3, 1), new Among("ingly", -1, 2)
+];
+const a_5 = [
+  new Among("anci", -1, 3), new Among("enci", -1, 2),
+  new Among("ogi", -1, 13), new Among("li", -1, 16),
+  new Among("bli", 3, 12), new Among("abli", 4, 4),
+  new Among("alli", 3, 8), new Among("fulli", 3, 14),
+  new Among("lessli", 3, 15), new Among("ousli", 3, 10),
+  new Among("entli", 3, 5), new Among("aliti", -1, 8),
+  new Among("biliti", -1, 12), new Among("iviti", -1, 11),
+  new Among("tional", -1, 1), new Among("ational", 14, 7),
+  new Among("alism", -1, 8), new Among("ation", -1, 7),
+  new Among("ization", 17, 6), new Among("izer", -1, 6),
+  new Among("ator", -1, 7), new Among("iveness", -1, 11),
+  new Among("fulness", -1, 9), new Among("ousness", -1, 10)
+];
+const a_6 = [
+  new Among("icate", -1, 4), new Among("ative", -1, 6),
+  new Among("alize", -1, 3), new Among("iciti", -1, 4),
+  new Among("ical", -1, 4), new Among("tional", -1, 1),
+  new Among("ational", 5, 2), new Among("ful", -1, 5),
+  new Among("ness", -1, 5)
+];
+const a_7 = [
+  new Among("ic", -1, 1),
+  new Among("ance", -1, 1), new Among("ence", -1, 1),
+  new Among("able", -1, 1), new Among("ible", -1, 1),
+  new Among("ate", -1, 1), new Among("ive", -1, 1),
+  new Among("ize", -1, 1), new Among("iti", -1, 1),
+  new Among("al", -1, 1), new Among("ism", -1, 1),
+  new Among("ion", -1, 2), new Among("er", -1, 1),
+  new Among("ous", -1, 1), new Among("ant", -1, 1),
+  new Among("ent", -1, 1), new Among("ment", 15, 1),
+  new Among("ement", 16, 1)
+];
+const a_8 = [
+  new Among("e", -1, 1),
+  new Among("l", -1, 2)
+];
+const a_9 = [
+  new Among("succeed", -1, -1),
+  new Among("proceed", -1, -1), new Among("exceed", -1, -1),
+  new Among("canning", -1, -1), new Among("inning", -1, -1),
+  new Among("earring", -1, -1), new Among("herring", -1, -1),
+  new Among("outing", -1, -1)
+];
+const a_10 = [
+  new Among("andes", -1, -1),
+  new Among("atlas", -1, -1), new Among("bias", -1, -1),
+  new Among("cosmos", -1, -1), new Among("dying", -1, 3),
+  new Among("early", -1, 9), new Among("gently", -1, 7),
+  new Among("howe", -1, -1), new Among("idly", -1, 6),
+  new Among("lying", -1, 4), new Among("news", -1, -1),
+  new Among("only", -1, 10), new Among("singly", -1, 11),
+  new Among("skies", -1, 2), new Among("skis", -1, 1),
+  new Among("sky", -1, -1), new Among("tying", -1, 5),
+  new Among("ugly", -1, 8)
+];
 
-/* Words that do not have a distinct plural form (like 'atlas' etc.) */
-const category00 = ['alias', 'asbestos', 'atlas', 'barracks', 'bathos', 'bias', 'breeches', 'britches', 'canvas', 'chaos', 'clippers', 'contretemps', 'corps', 'cosmos', 'crossroads', 'diabetes', 'ethos', 'gallows', 'gas', 'graffiti', 'headquarters', 'herpes', 'high-jinks', 'innings', 'jackanapes', 'lens', 'means', 'measles', 'mews', 'mumps', 'news', 'pathos', 'pincers', 'pliers', 'proceedings', 'rabies', 'rhinoceros', 'sassafras', 'scissors', 'series', 'shears', 'species', 'tuna'];
+const g_v = [17, 65, 16, 1];
+const g_v_WXY = [1, 17, 65, 208, 1];
+const g_valid_LI = [55, 141, 2];
+const steps = [
+  r_Step_1b, r_Step_1c, r_Step_2, r_Step_3, r_Step_4, r_Step_5
+];
+let B_Y_found, I_p2, I_p1;
 
-/* Words that change from '-um' to '-a' (like 'curriculum' etc.), listed in their plural forms */
-const categoryUM_A = ['addenda', 'agenda', 'aquaria', 'bacteria', 'candelabra', 'compendia', 'consortia', 'crania', 'curricula', 'data', 'desiderata', 'dicta', 'emporia', 'enconia', 'errata', 'extrema', 'gymnasia', 'honoraria', 'interregna', 'lustra', 'maxima', 'media', 'memoranda', 'millenia', 'minima', 'momenta', 'memorabilia', 'millennia', 'optima', 'ova', 'phyla', 'quanta', 'rostra', 'spectra', 'specula', 'septa', 'stadia', 'strata', 'symposia', 'trapezia', 'ultimata', 'vacua', 'vela'];
+class Stemmer {
+  stem(word) {
+    support.setCurrent(word);
+    let v_1 = support.cursor;
+    if (!r_exception1()) {
+      support.cursor = v_1;
+      let c = support.cursor + 3;
+      if (0 <= c && c <= support.limit) {
+        support.cursor = v_1;
+        r_prelude();
+        support.cursor = v_1;
+        r_mark_regions();
+        support.limit_backward = v_1;
+        support.cursor = support.limit;
+        r_Step_1a();
+        support.cursor = support.limit;
+        if (!r_exception2())
+          for (let i = 0; i < steps.length; i++) {
+            support.cursor = support.limit;
+            steps[i]();
+          }
+        support.cursor = support.limit_backward;
+        r_postlude();
+      }
+    }
+    return support.getCurrent();
+  }
+}
 
-/* Words that change from '-on' to '-a' (like 'phenomenon' etc.), listed in their plural forms */
-const categoryON_A = ['aphelia', 'asyndeta', 'automata', 'criteria', 'hyperbata', 'noumena', 'organa', 'perihelia', 'phenomena', 'prolegomena', 'referenda'];
+class StemmerSupport {
+  constructor() {
+    this.bra = 0;
+    this.ket = 0;
+    this.limit = 0;
+    this.cursor = 0;
+    this.limit_backward = 0;
+    this.current = undefined;
+  }
 
-/* Words that change from '-o' to '-i' (like 'libretto' etc.), listed in their plural forms */
-const categoryO_I = ['alti', 'bassi', 'canti', 'concerti', 'contralti', 'crescendi', 'libretti', 'soli', 'soprani', 'tempi', 'virtuosi'];
+  setCurrent(word) {
+    this.current = word;
+    this.cursor = 0;
+    this.limit = word.length;
+    this.limit_backward = 0;
+    this.bra = this.cursor;
+    this.ket = this.limit;
+  }
+  getCurrent() {
+    let result = this.current;
+    this.current = null;
+    return result;
+  }
+  in_grouping(s, min, max) {
+    if (this.cursor < this.limit) {
+      let ch = this.current.charCodeAt(this.cursor);
+      if (ch <= max && ch >= min) {
+        ch -= min;
+        if (s[ch >> 3] & (0X1 << (ch & 0X7))) {
+          this.cursor++;
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  in_grouping_b(s, min, max) {
+    if (this.cursor > this.limit_backward) {
+      let ch = this.current.charCodeAt(this.cursor - 1);
+      if (ch <= max && ch >= min) {
+        ch -= min;
+        if (s[ch >> 3] & (0X1 << (ch & 0X7))) {
+          this.cursor--;
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  out_grouping(s, min, max) {
+    if (this.cursor < this.limit) {
+      let ch = this.current.charCodeAt(this.cursor);
+      if (ch > max || ch < min) {
+        this.cursor++;
+        return true;
+      }
+      ch -= min;
+      if (!(s[ch >> 3] & (0X1 << (ch & 0X7)))) {
+        this.cursor++;
+        return true;
+      }
+    }
+    return false;
+  }
+  out_grouping_b(s, min, max) {
+    if (this.cursor > this.limit_backward) {
+      let ch = this.current.charCodeAt(this.cursor - 1);
+      if (ch > max || ch < min) {
+        this.cursor--;
+        return true;
+      }
+      ch -= min;
+      if (!(s[ch >> 3] & (0X1 << (ch & 0X7)))) {
+        this.cursor--;
+        return true;
+      }
+    }
+    return false;
+  }
+  eq_s(s_size, s) {
+    if (this.limit - this.cursor < s_size)
+      return false;
+    for (let i = 0; i < s_size; i++)
+      if (this.current.charCodeAt(this.cursor + i) != s.charCodeAt(i))
+        return false;
+    this.cursor += s_size;
+    return true;
+  }
+  eq_s_b(s_size, s) {
+    if (this.cursor - this.limit_backward < s_size)
+      return false;
+    for (let i = 0; i < s_size; i++)
+      if (this.current.charCodeAt(this.cursor - s_size + i) != s
+        .charCodeAt(i))
+        return false;
+    this.cursor -= s_size;
+    return true;
+  }
+  find_among(v, v_size) {
+    let i = 0, j = v_size, c = this.cursor;
+    let l = this.limit, common_i = 0, common_j = 0;
+    let first_key_inspected = false;
+    while (true) {
+      let k = i + ((j - i) >> 1), diff = 0; 
+      let common = common_i < common_j
+        ? common_i
+        : common_j, w = v[k];
+      for (let i2 = common; i2 < w.s_size; i2++) {
+        if (c + common == l) {
+          diff = -1;
+          break;
+        }
+        diff = this.current.charCodeAt(c + common) - w.s[i2];
+        if (diff)
+          break;
+        common++;
+      }
+      if (diff < 0) {
+        j = k;
+        common_j = common;
+      } else {
+        i = k;
+        common_i = common;
+      }
+      if (j - i <= 1) {
+        if (i > 0 || j == i || first_key_inspected)
+          break;
+        first_key_inspected = true;
+      }
+    }
+    while (true) {
+      let w = v[i];
+      if (common_i >= w.s_size) {
+        this.cursor = c + w.s_size;
+        if (!w.method)
+          return w.result;
+        let res = w.method();
+        this.cursor = c + w.s_size;
+        if (res)
+          return w.result;
+      }
+      i = w.substring_i;
+      if (i < 0)
+        return 0;
+    }
+  }
+  find_among_b(v, v_size) {
+    let i = 0, j = v_size, c = this.cursor, lb = this.limit_backward, common_i = 0, common_j = 0, first_key_inspected = false;
+    while (true) {
+      let k = i + ((j - i) >> 1), diff = 0, common = common_i < common_j
+        ? common_i
+        : common_j, w = v[k];
+      for (let i2 = w.s_size - 1 - common; i2 >= 0; i2--) {
+        if (c - common == lb) {
+          diff = -1;
+          break;
+        }
+        diff = this.current.charCodeAt(c - 1 - common) - w.s[i2];
+        if (diff)
+          break;
+        common++;
+      }
+      if (diff < 0) {
+        j = k;
+        common_j = common;
+      } else {
+        i = k;
+        common_i = common;
+      }
+      if (j - i <= 1) {
+        if (i > 0 || j == i || first_key_inspected)
+          break;
+        first_key_inspected = true;
+      }
+    }
+    while (true) {
+      let w = v[i];
+      if (common_i >= w.s_size) {
+        this.cursor = c - w.s_size;
+        if (!w.method)
+          return w.result;
+        let res = w.method();
+        this.cursor = c - w.s_size;
+        if (res)
+          return w.result;
+      }
+      i = w.substring_i;
+      if (i < 0)
+        return 0;
+    }
+  }
+  replace_s(c_bra, c_ket, s) {
+    let adjustment = s.length - (c_ket - c_bra), left = this.current
+      .substring(0, c_bra), right = this.current.substring(c_ket);
+    this.current = left + s + right;
+    this.limit += adjustment;
+    if (this.cursor >= c_ket)
+      this.cursor += adjustment;
+    else if (this.cursor > c_bra)
+      this.cursor = c_bra;
+    return adjustment;
+  }
+  slice_check() {
+    if (this.bra < 0 || this.bra > this.ket || this.ket > this.limit
+      || this.limit > this.current.length)
+      throw ("faulty slice operation");
+  }
+  slice_from(s) {
+    this.slice_check();
+    this.replace_s(this.bra, this.ket, s);
+  }
+  slice_del() {
+    this.slice_from("");
+  }
+  insert(c_bra, c_ket, s) {
+    let adjustment = this.replace_s(c_bra, c_ket, s);
+    if (c_bra <= this.bra)
+      this.bra += adjustment;
+    if (c_bra <= this.ket)
+      this.ket += adjustment;
+  }
+  slice_to() {
+    this.slice_check();
+    return this.current.substring(this.bra, this.ket);
+  }
+  eq_v_b(s) {
+    return this.eq_s_b(s.length, s);
+  }
+}
 
-/*  Words that change from '-us' to '-i' (like 'fungus' etc.), listed in their plural forms		 */
-const categoryUS_I = ['alumni', 'bacilli', 'cacti', 'foci', 'fungi', 'genii', 'hippopotami', 'incubi', 'nimbi', 'nuclei', 'nucleoli', 'octopi', 'radii', 'stimuli', 'styli', 'succubi', 'syllabi', 'termini', 'tori', 'umbilici', 'uteri'];
+function r_prelude() {
+  let v_1 = support.cursor, v_2;
+  B_Y_found = false;
+  support.bra = support.cursor;
+  if (support.eq_s(1, "'")) {
+    support.ket = support.cursor;
+    support.slice_del();
+  }
+  support.cursor = v_1;
+  support.bra = v_1;
+  if (support.eq_s(1, "y")) {
+    support.ket = support.cursor;
+    support.slice_from("Y");
+    B_Y_found = true;
+  }
+  support.cursor = v_1;
+  while (true) {
+    v_2 = support.cursor;
+    if (support.in_grouping(g_v, 97, 121)) {
+      support.bra = support.cursor;
+      if (support.eq_s(1, "y")) {
+        support.ket = support.cursor;
+        support.cursor = v_2;
+        support.slice_from("Y");
+        B_Y_found = true;
+        continue;
+      }
+    }
+    if (v_2 >= support.limit) {
+      support.cursor = v_1;
+      return;
+    }
+    support.cursor = v_2 + 1;
+  }
+}
+function r_mark_regions() {
+  let v_1 = support.cursor;
+  I_p1 = support.limit;
+  I_p2 = I_p1;
+  if (!support.find_among(a_0, 3)) {
+    support.cursor = v_1;
+    if (habr1()) {
+      support.cursor = v_1;
+      return;
+    }
+  }
+  I_p1 = support.cursor;
+  if (!habr1())
+    I_p2 = support.cursor;
+}
+function habr1() {
+  while (!support.in_grouping(g_v, 97, 121)) {
+    if (support.cursor >= support.limit)
+      return true;
+    support.cursor++;
+  }
+  while (!support.out_grouping(g_v, 97, 121)) {
+    if (support.cursor >= support.limit)
+      return true;
+    support.cursor++;
+  }
+  return false;
+}
+function r_shortv() {
+  let v_1 = support.limit - support.cursor;
+  if (!(support.out_grouping_b(g_v_WXY, 89, 121)
+    && support.in_grouping_b(g_v, 97, 121) && support.out_grouping_b(g_v,
+      97, 121))) {
+    support.cursor = support.limit - v_1;
+    if (!support.out_grouping_b(g_v, 97, 121)
+      || !support.in_grouping_b(g_v, 97, 121)
+      || support.cursor > support.limit_backward)
+      return false;
+  }
+  return true;
+}
+function r_R1() {
+  return I_p1 <= support.cursor;
+}
+function r_R2() {
+  return I_p2 <= support.cursor;
+}
+function r_Step_1a() {
+  let among_var, v_1 = support.limit - support.cursor;
+  support.ket = support.cursor;
+  among_let = support.find_among_b(a_1, 3);
+  if (among_var) {
+    support.bra = support.cursor;
+    if (among_let == 1)
+      support.slice_del();
+  } else
+    support.cursor = support.limit - v_1;
+  support.ket = support.cursor;
+  among_let = support.find_among_b(a_2, 6);
+  if (among_var) {
+    support.bra = support.cursor;
+    switch (among_var) {
+      case 1:
+        support.slice_from("ss");
+        break;
+      case 2:
+        let c = support.cursor - 2;
+        if (support.limit_backward > c || c > support.limit) {
+          support.slice_from("ie");
+          break;
+        }
+        support.cursor = c;
+        support.slice_from("i");
+        break;
+      case 3:
+        do {
+          if (support.cursor <= support.limit_backward)
+            return;
+          support.cursor--;
+        } while (!support.in_grouping_b(g_v, 97, 121));
+        support.slice_del();
+        break;
+    }
+  }
+}
+function r_Step_1b() {
+  let among_var, v_1, v_3, v_4;
+  support.ket = support.cursor;
+  among_let = support.find_among_b(a_4, 6);
+  if (among_var) {
+    support.bra = support.cursor;
+    switch (among_var) {
+      case 1:
+        if (r_R1())
+          support.slice_from("ee");
+        break;
+      case 2:
+        v_1 = support.limit - support.cursor;
+        while (!support.in_grouping_b(g_v, 97, 121)) {
+          if (support.cursor <= support.limit_backward)
+            return;
+          support.cursor--;
+        }
+        support.cursor = support.limit - v_1;
+        support.slice_del();
+        v_3 = support.limit - support.cursor;
+        among_let = support.find_among_b(a_3, 13);
+        if (among_var) {
+          support.cursor = support.limit - v_3;
+          switch (among_var) {
+            case 1:
+              let c = support.cursor;
+              support.insert(support.cursor, support.cursor, "e");
+              support.cursor = c;
+              break;
+            case 2:
+              support.ket = support.cursor;
+              if (support.cursor > support.limit_backward) {
+                support.cursor--;
+                support.bra = support.cursor;
+                support.slice_del();
+              }
+              break;
+            case 3:
+              if (support.cursor == I_p1) {
+                v_4 = support.limit - support.cursor;
+                if (r_shortv()) {
+                  support.cursor = support.limit - v_4;
+                  let c = support.cursor;
+                  support.insert(support.cursor, support.cursor, "e");
+                  support.cursor = c;
+                }
+              }
+              break;
+          }
+        }
+        break;
+    }
+  }
+}
+function r_Step_1c() {
+  let v_1 = support.limit - support.cursor;
+  support.ket = support.cursor;
+  if (!support.eq_s_b(1, "y")) {
+    support.cursor = support.limit - v_1;
+    if (!support.eq_s_b(1, "Y"))
+      return;
+  }
+  support.bra = support.cursor;
+  if (support.out_grouping_b(g_v, 97, 121) && support.cursor > support.limit_backward)
+    support.slice_from("i");
+}
+function r_Step_2() {
+  let among_var;
+  support.ket = support.cursor;
+  among_let = support.find_among_b(a_5, 24);
+  if (among_var) {
+    support.bra = support.cursor;
+    if (r_R1()) {
+      switch (among_var) {
+        case 1:
+          support.slice_from("tion");
+          break;
+        case 2:
+          support.slice_from("ence");
+          break;
+        case 3:
+          support.slice_from("ance");
+          break;
+        case 4:
+          support.slice_from("able");
+          break;
+        case 5:
+          support.slice_from("ent");
+          break;
+        case 6:
+          support.slice_from("ize");
+          break;
+        case 7:
+          support.slice_from("ate");
+          break;
+        case 8:
+          support.slice_from("al");
+          break;
+        case 9:
+          support.slice_from("ful");
+          break;
+        case 10:
+          support.slice_from("ous");
+          break;
+        case 11:
+          support.slice_from("ive");
+          break;
+        case 12:
+          support.slice_from("ble");
+          break;
+        case 13:
+          if (support.eq_s_b(1, "l"))
+            support.slice_from("og");
+          break;
+        case 14:
+          support.slice_from("ful");
+          break;
+        case 15:
+          support.slice_from("less");
+          break;
+        case 16:
+          if (support.in_grouping_b(g_valid_LI, 99, 116))
+            support.slice_del();
+          break;
+      }
+    }
+  }
+}
+function r_Step_3() {
+  let among_var;
+  support.ket = support.cursor;
+  among_let = support.find_among_b(a_6, 9);
+  if (among_var) {
+    support.bra = support.cursor;
+    if (r_R1()) {
+      switch (among_var) {
+        case 1:
+          support.slice_from("tion");
+          break;
+        case 2:
+          support.slice_from("ate");
+          break;
+        case 3:
+          support.slice_from("al");
+          break;
+        case 4:
+          support.slice_from("ic");
+          break;
+        case 5:
+          support.slice_del();
+          break;
+        case 6:
+          if (r_R2())
+            support.slice_del();
+          break;
+      }
+    }
+  }
+}
+function r_Step_4() {
+  let among_var, v_1;
+  support.ket = support.cursor;
+  among_let = support.find_among_b(a_7, 18);
+  if (among_var) {
+    support.bra = support.cursor;
+    if (r_R2()) {
+      switch (among_var) {
+        case 1:
+          support.slice_del();
+          break;
+        case 2:
+          v_1 = support.limit - support.cursor;
+          if (!support.eq_s_b(1, "s")) {
+            support.cursor = support.limit - v_1;
+            if (!support.eq_s_b(1, "t"))
+              return;
+          }
+          support.slice_del();
+          break;
+      }
+    }
+  }
+}
+function r_Step_5() {
+  let among_var, v_1;
+  support.ket = support.cursor;
+  among_let = support.find_among_b(a_8, 2);
+  if (among_var) {
+    support.bra = support.cursor;
+    switch (among_var) {
+      case 1:
+        v_1 = support.limit - support.cursor;
+        if (!r_R2()) {
+          support.cursor = support.limit - v_1;
+          if (!r_R1() || r_shortv())
+            return;
+          support.cursor = support.limit - v_1;
+        }
+        support.slice_del();
+        break;
+      case 2:
+        if (!r_R2() || !support.eq_s_b(1, "l"))
+          return;
+        support.slice_del();
+        break;
+    }
+  }
+}
+function r_exception2() {
+  support.ket = support.cursor;
+  if (support.find_among_b(a_9, 8)) {
+    support.bra = support.cursor;
+    return support.cursor <= support.limit_backward;
+  }
+  return false;
+}
+function r_exception1() {
+  let among_var;
+  support.bra = support.cursor;
+  among_let = support.find_among(a_10, 18);
+  if (among_var) {
+    support.ket = support.cursor;
+    if (support.cursor >= support.limit) {
+      switch (among_var) {
+        case 1:
+          support.slice_from("ski");
+          break;
+        case 2:
+          support.slice_from("sky");
+          break;
+        case 3:
+          support.slice_from("die");
+          break;
+        case 4:
+          support.slice_from("lie");
+          break;
+        case 5:
+          support.slice_from("tie");
+          break;
+        case 6:
+          support.slice_from("idl");
+          break;
+        case 7:
+          support.slice_from("gentl");
+          break;
+        case 8:
+          support.slice_from("ugli");
+          break;
+        case 9:
+          support.slice_from("earli");
+          break;
+        case 10:
+          support.slice_from("onli");
+          break;
+        case 11:
+          support.slice_from("singl");
+          break;
+      }
+      return true;
+    }
+  }
+  return false;
+}
+function r_postlude() {
+  let v_1;
+  if (B_Y_found) {
+    while (true) {
+      v_1 = support.cursor;
+      support.bra = v_1;
+      if (support.eq_s(1, "Y")) {
+        support.ket = support.cursor;
+        support.cursor = v_1;
+        support.slice_from("y");
+        continue;
+      }
+      support.cursor = v_1;
+      if (support.cursor >= support.limit)
+        return;
+      support.cursor++;
+    }
+  }
+}
 
-/* Words that change from '-ix' to '-ices' (like 'appendix' etc.), listed in their plural forms */
-const categoryIX_ICES = ['appendices', 'cervices', 'indices', 'matrices'];
+const support = new StemmerSupport();
 
-/* Words that change from '-is' to '-es' (like 'axis' etc.), listed in their plural forms, plus everybody ending in theses */
-const categoryIS_ES = ['analyses', 'axes', 'bases', 'catharses', 'crises', 'diagnoses', 'ellipses', 'emphases', 'neuroses', 'oases', 'paralyses', 'prognoses', 'synopses'];
+module && (module.exports = Stemmer);
 
-/* Words that change from '-oe' to '-oes' (like 'toe' etc.), listed in their plural forms*/
-const categoryOE_OES = ['aloes', 'backhoes', 'beroes', 'canoes', 'chigoes', 'cohoes', 'does', 'felloes', 'floes', 'foes', 'gumshoes', 'hammertoes', 'hoes', 'hoopoes', 'horseshoes', 'leucothoes', 'mahoes', 'mistletoes', 'oboes', 'overshoes', 'pahoehoes', 'pekoes', 'roes', 'shoes', 'sloes', 'snowshoes', 'throes', 'tic-tac-toes', 'tick-tack-toes', 'ticktacktoes', 'tiptoes', 'tit-tat-toes', 'toes', 'toetoes', 'tuckahoes', 'woes'];
-
-/* Words that change from '-ex' to '-ices' (like 'index' etc.), listed in their plural forms*/
-const categoryEX_ICES = ['apices', 'codices', 'cortices', 'indices', 'latices', 'murices', 'pontifices', 'silices', 'simplices', 'vertices', 'vortices'];
-
-/* Words that change from '-u' to '-us' (like 'emu' etc.), listed in their plural forms*/
-const categoryU_US = ['menus', 'gurus', 'apercus', 'barbus', 'cornus', 'ecrus', 'emus', 'fondus', 'gnus', 'iglus', 'mus', 'nandus', 'napus', 'poilus', 'quipus', 'snafus', 'tabus', 'tamandus', 'tatus', 'timucus', 'tiramisus', 'tofus', 'tutus'];
-
-/* Words that change from '-sse' to '-sses' (like 'finesse' etc.), listed in their plural forms,plus those ending in mousse*/
-const categorySSE_SSES = ['bouillabaisses', 'coulisses', 'crevasses', 'crosses', 'cuisses', 'demitasses', 'ecrevisses', 'fesses', 'finesses', 'fosses', 'impasses', 'lacrosses', 'largesses', 'masses', 'noblesses', 'palliasses', 'pelisses', 'politesses', 'posses', 'tasses', 'wrasses'];
-
-/* Words that change from '-che' to '-ches' (like 'brioche' etc.), listed in their plural forms*/
-const categoryCHE_CHES = ['adrenarches', 'attaches', 'avalanches', 'barouches', 'brioches', 'caches', 'caleches', 'caroches', 'cartouches', 'cliches', 'cloches', 'creches', 'demarches', 'douches', 'gouaches', 'guilloches', 'headaches', 'heartaches', 'huaraches', 'menarches', 'microfiches', 'moustaches', 'mustaches', 'niches', 'panaches', 'panoches', 'pastiches', 'penuches', 'pinches', 'postiches', 'psyches', 'quiches', 'schottisches', 'seiches', 'soutaches', 'synecdoches', 'thelarches', 'troches'];
-
-/* Words that end with '-ics' and do not exist as nouns without the 's' (like 'aerobics' etc.)*/
-const categoryICS = ['aerobatics', 'aerobics', 'aerodynamics', 'aeromechanics', 'aeronautics', 'alphanumerics', 'animatronics', 'apologetics', 'architectonics', 'astrodynamics', 'astronautics', 'astrophysics', 'athletics', 'atmospherics', 'autogenics', 'avionics', 'ballistics', 'bibliotics', 'bioethics', 'biometrics', 'bionics', 'bionomics', 'biophysics', 'biosystematics', 'cacogenics', 'calisthenics', 'callisthenics', 'catoptrics', 'civics', 'cladistics', 'cryogenics', 'cryonics', 'cryptanalytics', 'cybernetics', 'cytoarchitectonics', 'cytogenetics', 'diagnostics', 'dietetics', 'dramatics', 'dysgenics', 'econometrics', 'economics', 'electromagnetics', 'electronics', 'electrostatics', 'endodontics', 'enterics', 'ergonomics', 'eugenics', 'eurhythmics', 'eurythmics', 'exodontics', 'fibreoptics', 'futuristics', 'genetics', 'genomics', 'geographics', 'geophysics', 'geopolitics', 'geriatrics', 'glyptics', 'graphics', 'gymnastics', 'hermeneutics', 'histrionics', 'homiletics', 'hydraulics', 'hydrodynamics', 'hydrokinetics', 'hydroponics', 'hydrostatics', 'hygienics', 'informatics', 'kinematics', 'kinesthetics', 'kinetics', 'lexicostatistics', 'linguistics', 'lithoglyptics', 'liturgics', 'logistics', 'macrobiotics', 'macroeconomics', 'magnetics', 'magnetohydrodynamics', 'mathematics', 'metamathematics', 'metaphysics', 'microeconomics', 'microelectronics', 'mnemonics', 'morphophonemics', 'neuroethics', 'neurolinguistics', 'nucleonics', 'numismatics', 'obstetrics', 'onomastics', 'orthodontics', 'orthopaedics', 'orthopedics', 'orthoptics', 'paediatrics', 'patristics', 'patristics', 'pedagogics', 'pediatrics', 'periodontics', 'pharmaceutics', 'pharmacogenetics', 'pharmacokinetics', 'phonemics', 'phonetics', 'phonics', 'photomechanics', 'physiatrics', 'pneumatics', 'poetics', 'politics', 'pragmatics', 'prosthetics', 'prosthodontics', 'proteomics', 'proxemics', 'psycholinguistics', 'psychometrics', 'psychonomics', 'psychophysics', 'psychotherapeutics', 'robotics', 'semantics', 'semiotics', 'semitropics', 'sociolinguistics', 'stemmatics', 'strategics', 'subtropics', 'systematics', 'tectonics', 'telerobotics', 'therapeutics', 'thermionics', 'thermodynamics', 'thermostatics'];
-
-/* Words that change from '-ie' to '-ies' (like 'auntie' etc.), listed in their plural forms*/
-const categoryIE_IES = ['aeries', 'anomies', 'aunties', 'baddies', 'beanies', 'birdies', 'bogies', 'bonhomies', 'boogies', 'bookies', 'booties', 'bourgeoisies', 'brasseries', 'brassies', 'brownies', 'caddies', 'calories', 'camaraderies', 'charcuteries', 'collies', 'commies', 'cookies', 'coolies', 'coonties', 'cooties', 'coteries', 'cowpies', 'cowries', 'cozies', 'crappies', 'crossties', 'curies', 'darkies', 'dearies', 'dickies', 'dies', 'dixies', 'doggies', 'dogies', 'eyries', 'faeries', 'falsies', 'floozies', 'folies', 'foodies', 'freebies', 'gendarmeries', 'genies', 'gillies', 'goalies', 'goonies', 'grannies', 'groupies', 'hippies', 'hoagies', 'honkies', 'indies', 'junkies', 'kelpies', 'kilocalories', 'laddies', 'lassies', 'lies', 'lingeries', 'magpies', 'magpies', 'mashies', 'mealies', 'meanies', 'menageries', 'mollies', 'moxies', 'neckties', 'newbies', 'nighties', 'nookies', 'oldies', 'panties', 'patisseries', 'pies', 'pinkies', 'pixies', 'porkpies', 'potpies', 'prairies', 'preemies', 'pyxies', 'quickies', 'reveries', 'rookies', 'rotisseries', 'scrapies', 'sharpies', 'smoothies', 'softies', 'stoolies', 'stymies', 'swaggies', 'sweeties', 'talkies', 'techies', 'ties', 'tooshies', 'toughies', 'townies', 'veggies', 'walkie-talkies', 'wedgies', 'weenies', 'yuppies', 'zombies'];
-
-/* Maps irregular Germanic English plural nouns to their singular form */
-const categoryIRR = ['blondes', 'blonde', 'teeth', 'tooth', 'beefs', 'beef', 'brethren', 'brother', 'busses', 'bus', 'cattle', 'cow', 'children', 'child', 'corpora', 'corpus', 'femora', 'femur', 'genera', 'genus', 'genies', 'genie', 'genii', 'genie', 'lice', 'louse', 'mice', 'mouse', 'mongooses', 'mongoose', 'monies', 'money', 'octopodes', 'octopus', 'oxen', 'ox', 'people', 'person', 'schemata', 'schema', 'soliloquies', 'soliloquy', 'taxis', 'taxi', 'throes', 'throes', 'trilbys', 'trilby', 'innings', 'inning', 'alibis', 'alibi', 'skis', 'ski', 'safaris', 'safari', 'rabbis', 'rabbi'];
-
-const pluralCATS = [categoryUM_A, categoryON_A, categoryO_I, categoryUS_I, categoryIX_ICES];
-
-
-module && (module.exports = PlingStemmer);
+console.log(new Stemmer().stem("abandoned"));
