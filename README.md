@@ -79,7 +79,7 @@ console.log(grammar.expand());
     <a href="https://rednoise.org/rita2/Markov/size/index.html">size()</a><br/>
     <a href="https://rednoise.org/rita2/Markov/toString/index.html">toString()</a><br/>
     <a href="https://rednoise.org/rita2/Markov/toJSON/index.html">toJSON()</a><br/>
-    <a href="https://rednoise.org/rita2/Markov/fromJSON/index.html">Markov.fromJSON()</a><br/>
+    <a href="https://rednoise.org/rita2/Markov/fromJSON/index.html">fromJSON()</a><br/>
     <br/><br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
    <td>
@@ -89,7 +89,7 @@ console.log(grammar.expand());
     <a href="https://rednoise.org/rita2/Grammar/removeRule/index.html">removeRule()</a><br/>
     <a href="https://rednoise.org/rita2/Grammar/toJSON/index.html">toJSON()</a><br/>
     <a href="https://rednoise.org/rita2/Grammar/toString/index.html">toString()</a><br/>
-    <a href="https://rednoise.org/rita2/Grammar/fromJSON/index.html">Grammar.fromJSON()</a><br/>
+    <a href="https://rednoise.org/rita2/Grammar/fromJSON/index.html">fromJSON()</a><br/>
     <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
  </tr>
