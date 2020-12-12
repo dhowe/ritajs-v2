@@ -17,37 +17,6 @@ describe('RiTa.Core', () => {
     eql(RiTa.hasWord('dog'), true);
   });
 
-  it('Should correctly call stem', () => {
-    let data = [
-      "boy", "boy",
-      "boys", "boy",
-      "biophysics", "biophysics",
-      "automata", "automaton",
-      "genus", "genus",
-      "emus", "emu",
-      "cakes", "cake",
-      "run", "run",
-      "runs", "run",
-      "running", "running",
-      "take", "take",
-      "takes", "take",
-      "taking", "taking",
-      "hide", "hide",
-      "hides", "hide",
-      "hiding", "hiding",
-      "become", "become",
-      "becomes", "become",
-      "becoming", "becoming",
-      "gases", "gas",
-      "buses", "bus",
-      "happiness", "happiness",
-      "terrible", "terrible",
-    ];
-    for (var i = 0; i < data.length; i += 2) {
-      eq(RiTa.stem(data[i]), data[i + 1], 'got ' + RiTa.stem(data[i]));
-    }
-  });
-
   it('Should call randomOrdering', () => {
     expect(RiTa.randomOrdering(1)).eql([0]);
     expect(RiTa.randomOrdering(2)).to.have.members([0, 1])

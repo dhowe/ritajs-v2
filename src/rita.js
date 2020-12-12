@@ -190,7 +190,7 @@ class RiTa {
   }
 
   static stem() {
-    return RiTa.stemmer.stem(...arguments);
+    return Stemmer.stem(...arguments);
   }
 
   static stresses() {
@@ -248,7 +248,6 @@ RiTa.Grammar.parent = RiTa;
 RiTa.RiScript.parent = RiTa;
 
 // COMPONENTS
-RiTa.stemmer = new Stemmer(RiTa);
 RiTa.tagger = new PosTagger(RiTa);
 RiTa.concorder = new Concorder(RiTa);
 RiTa.tokenizer = new Tokenizer(RiTa);

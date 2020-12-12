@@ -171,7 +171,7 @@ class PosTagger {
     }
 
     // Check if this could be a plural noun form
-    if (this._isLikelyPlural(word)) return ['nns'];
+    if (this.isLikelyPlural(word)) return ['nns'];
 
     if (word === 'the' || word === 'a') return ['dt'];
 
@@ -179,11 +179,15 @@ class PosTagger {
     return word.endsWith('ly') ? ['rb'] : (word.endsWith('s') ? ['nns'] : ['nn']);
   }
 
-  _isLikelyPlural(word) {
+  isLikelyPlural(word) {
+		return this._lexHas("n", RiTa.singularize(word)) || RiTa.inflector.isPlural(word);
+  }
+
+/*   _isLikelyPluralOld(word) {
     // Check for plural noun with singularizer and stemmer
     return this.RiTa.stemmer.isRawPlural(word)
       || this._lexHas("n", this.RiTa.singularize(word));
-  }
+  } */
 
   _handleSingleLetter(c) {
     if (c === 'a' || c === 'A') return 'dt';

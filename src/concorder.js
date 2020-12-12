@@ -5,22 +5,37 @@ class Concorder {
   }
 
   concordance(text, options) {
+    
     this.words = Array.isArray(text) ? text : this.RiTa.tokenize(text);
-    this._parseOptions(options);
-    this._build();
+    this.ignoreCase = options && options.ignoreCase || false;
+    this.ignoreStopWords = options && options.ignoreStopWords || false;
+    this.ignorePunctuation = options && options.ignorePunctuation || false;
+    this.wordsToIgnore = options && options.wordsToIgnore || [];
+    
+    this._buildModel();
+    
     let result = {};
     for (let name in this.model) {
       result[name] = this.model[name].indexes.length;
     }
-    // TODO: sort by value here?
-    return result;
+    return result; // TODO: sort by value here?
   }
 
-  kwic(word, numWords=6) {
-    if (!this.model) throw Error('Call concordance() first');
-    if (typeof numWords === 'object') {
-      numWords = numWords['numWords'] || 6; // opts
+  kwic(word, opts) { // opts can be an options object or an integer
+
+    let numWords = 6;
+    if (typeof opts === 'object') { 
+      numWords = opts['numWords'];
+      text = opts['text'];
+      if (opts['text'] && opts['text'].length) this.concordance(opts['text'], opts);
+      if (opts['words'] && opts['words'].length) this.concordance(opts['words'], opts); 
     }
+    else if (typeof opts ==='number') {
+      numWords = opts;
+    }
+
+    if (typeof numWords !== 'number') numWords = 6;      
+    if (!this.model) throw Error('Call concordance() first');
     let result = [];
     let value = this._lookup(word);
     if (value) {
@@ -43,14 +58,7 @@ class Concorder {
 
   ///////////////////////////////////////////////////////////////////////////
 
-  _parseOptions(options) { // provides default
-    this.ignoreCase = options && options.ignoreCase || false;
-    this.ignoreStopWords = options && options.ignoreStopWords || false;
-    this.ignorePunctuation = options && options.ignorePunctuation || false;
-    this.wordsToIgnore = options && options.wordsToIgnore || [];
-  }
-
-  _build() {
+  _buildModel() {
     if (!this.words) throw Error('No text in model');
     this.model = {};
     for (let j = 0; j < this.words.length; j++) {
