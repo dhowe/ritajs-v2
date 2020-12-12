@@ -3,7 +3,7 @@ describe('RiTa.Stemmer', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  it('Should call stem1', () => {
+  it('Should test stem1', () => {
 		test("accompanying", "accompani");
 		test("malediction", "maledict");
 		test("softeners", "soften");
@@ -12,7 +12,7 @@ describe('RiTa.Stemmer', () => {
 		test("write writes writing writings.", "write write write write.");
   });
 
-  it('Should call stem2', () => {
+  it('Should test stem2', () => {
     test("'", "'");
     test("''", "''");
     test("'a", "'a");
