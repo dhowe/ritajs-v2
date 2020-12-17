@@ -1,6 +1,6 @@
 {
   "name": "rita",
-  "version": "2.0.0-beta.51",
+  "version": "2.0.0-beta.52",
   "author": "Daniel C. Howe",
   "license": "GPL-3.0",
   "description": "A toolkit for generative natural language",
@@ -8,6 +8,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/dhowe/rita2js.git"
+  },
+  "np": {
+    "contents": "dist"
   },
   "files": [
     "dist/rita.js"
