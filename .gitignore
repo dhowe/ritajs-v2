@@ -1,6 +1,6 @@
 .nyc_output
 coverage
-./dist
+dist
 stats.json
 web/workbench/texts/*
 node_modules
