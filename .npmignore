@@ -1,2 +1,7 @@
-config/*
-webpack.config.js
+.nyc_output
+coverage
+stats.json
+web/workbench/texts/*
+node_modules
+hs_err_pid*
+*.tgz
