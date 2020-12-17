@@ -54,6 +54,7 @@
     "he": "^1.2.0"
   },
   "devDependencies": {
+    "npe": "^1.1.3",
     "chai": "^4.2.0",
     "codecov": "^3.8.1",
     "mocha": "^6.2.2",
