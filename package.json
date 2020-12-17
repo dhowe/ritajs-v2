@@ -1,6 +1,6 @@
 {
   "name": "rita",
-  "version": "2.0.0-beta.55",
+  "version": "",
   "author": "Daniel C. Howe",
   "license": "GPL-3.0",
   "description": "A toolkit for generative natural language",
@@ -27,7 +27,7 @@
     "test-cov": "nyc --reporter=html mocha && open coverage/index.html",
     "bump": "yarn version --no-git-tag-version --prerelease",
     "bump.version": "yarn version --no-git-tag-version --patch",
-    "version": "yarn build && yarn test.prod",
+    "version": "",
     "test.g": "mocha ./test/*.js -g ",
     "test.prod": "NODE_ENV=dist mocha ./test/*.js",
     "test-g.prod": "NODE_ENV=dist mocha ./test/*.js -g",
