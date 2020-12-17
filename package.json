@@ -13,7 +13,7 @@
     "contents": "dist"
   },
   "files": [
-    "dist/rita.js"
+    "dist"
   ],
   "main": "dist/rita.js",
   "unpkg": "dist/rita-web.js",
