@@ -39,6 +39,23 @@ describe('RiTa.Grammar', () => {
         ok(typeof new Grammar() !== 'undefined');
     });
 
+    it('should call constructorJSON', () => {
+
+        let json = JSON.stringify(sentences1);
+
+		let gr1 = new Grammar(json);
+		ok(gr1 instanceof Grammar);
+
+		let gr2 = Grammar.fromJSON(json);
+		ok(gr2 instanceof Grammar);
+
+		let gr3 = RiTa.grammar(json);
+		ok(gr3 instanceof Grammar);
+
+		ok(gr1.toString() === gr2.toString());
+		ok(gr2.toString()=== gr3.toString());
+	});
+
     it('should handle phrase transforms', () => {
         let g = {
             "start": "[$x=$y b].ucf()",

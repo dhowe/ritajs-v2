@@ -15,7 +15,7 @@ describe('RiTa.Markov', () => {
   });
 
   it('should call createMarkov', () => {
-    ok(typeof RiTa.createMarkov(3) !== 'undefined');
+    ok(typeof RiTa.markov(3) !== 'undefined');
   });
 
   it('should call Random.pSelect', () => {

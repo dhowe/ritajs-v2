@@ -13,16 +13,20 @@ class Grammar {
 
   static fromJSON(json, context) {
     let rg = new Grammar(null, context);
+    rg._parseJSON(json);
+    return rg;
+  }
+
+  _parseJSON(json) {
     try {
       let rules = JSON.parse(json);
-      Object.keys(rules).forEach(r => rg.addRule(r, rules[r]))
+      Object.keys(rules).forEach(r => this.addRule(r, rules[r]))
     } catch (e) {
       throw Error('Grammar appears to be invalid JSON,'
         + ' please check it at http://jsonlint.com/'
         + '\n' + JSON.stringify(json, null, 2));
     }
-    return rg;
-  }
+}
 
   toJSON() {
     return this.toString();
@@ -31,7 +35,7 @@ class Grammar {
   addRules(rules) { // or rules or ... ?
     if (rules) {
       if (typeof rules === 'string') {
-        throw Error("Expecting an object");
+        rules = JSON.parse(rules);
       }
       Object.keys(rules).forEach(r => this.addRule(r, rules[r]))
     }
