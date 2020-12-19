@@ -12,7 +12,7 @@ function setup() {
   textFont(font, 30);
   textAlign(CENTER);
 
-  grammar = new RiTa.Grammar(json);
+  grammar = RiTa.grammar(json);
   lines = ["click to", "generate", "a haiku"];
 }
 

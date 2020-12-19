@@ -39,11 +39,11 @@ class RiTa {
     return RiTa.conjugator.conjugate(...arguments);
   }
 
-  static createGrammar() { // niapi
+  static grammar() {
     return new RiTa.Grammar(...arguments);
   }
 
-  static createMarkov() { // niapi
+  static markov() { 
     return new RiTa.Markov(...arguments);
   }
 
