@@ -8,14 +8,13 @@ describe('RiTa.Core', () => {
     //console.log(process.env.NODE_ENV, process.env.npm_package_version, RiTa.VERSION);
     if (typeof process === 'undefined') return; // TODO:
 
-    // TODO: rethink all this
-/*     if (typeof process.env.npm_package_version !== 'undefined' &&
+    if (typeof process.env.npm_package_version !== 'undefined' &&
       typeof process.env.NODE_ENV !== 'undefined') {
       eql(RiTa.VERSION, process.env.npm_package_version);
     }
     else {
       eql(RiTa.VERSION, 'DEV');
-    } */
+    } 
     eql(RiTa.hasWord('dog'), true);
   });
 
