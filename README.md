@@ -298,7 +298,7 @@ $Opening=(
 &nbsp;
 
 ## Developing
-To install/build the library and run tests (with node/yarn/mocha):
+To install/build the library and run tests (with yarn/mocha):
 ```
 
 $ git clone https://github.com/dhowe/ritajs.git
@@ -308,7 +308,7 @@ $ yarn build
 $ yarn test.prod
 
 ```
-If all goes according to plan, you should see a list of successful tests
+If all goes according to plan, you should see a list of successful tests and find the library built in 'dist'
 
 &nbsp;
 
