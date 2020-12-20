@@ -343,16 +343,6 @@ Create a new file on your desktop called 'test.html' with the following lines, s
 <html>
 ```
 
-#### With [node.js](http://nodejs.org/) and [npm](https://www.npmjs.com/)
- 
-To install: `$ npm install rita`
-
-```javascript
-let rita = require('rita');
-let data = RiTa.features("The elephant took a bite!");
-console.log(data);
-```
-
 #### With [p5.js](http://p5js.org/)
  
 Create a new file on your desktop called 'test.html' and download the latest rita.js from [here](http://rednoise.org/rita/download/rita.min.js), add the following lines, save and drag it into a browser:
@@ -378,6 +368,15 @@ Create a new file on your desktop called 'test.html' and download the latest rit
 </html>
 ```
 
+#### With [node.js](http://nodejs.org/) and [npm](https://www.npmjs.com/)
+ 
+To install: `$ npm install rita`
+
+```javascript
+let rita = require('rita');
+let data = RiTa.features("The elephant took a bite!");
+console.log(data);
+```
 
 #### Can I contribute?
  
