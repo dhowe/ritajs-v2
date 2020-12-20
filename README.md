@@ -1,4 +1,21 @@
-[![Build Status](https://travis-ci.org/dhowe/rita2js.svg?branch=master)](https://travis-ci.org/dhowe/rita2js)
+[![Build Status](https://travis-ci.org/dhowe/RiTaJS.svg?branch=master)](https://travis-ci.org/dhowe/ritajs) <a href="http://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL-orange.svg" alt="npm version"></a> <a href="https://www.npmjs.com/package/rita"><img src="https://img.shields.io/npm/v/rita.svg" alt="npm version"></a> [![CDNJS](https://img.shields.io/cdnjs/v/rita.svg)](https://cdnjs.com/libraries/rita/) [![UNPKG](https://img.shields.io/unpkg/v/rita.svg)](https://unpkg.com//rita/)
+
+## RiTa: generative language tools for JavaScript
+
+<a href="http://rednoise.org/rita"><img height="80" src="http://rednoise.org/rita/img/RiTa-logo3.png"/></a>
+
+### [The RiTa website](http://rednoise.org/rita)
+
+RiTa is an easy-to-use toolkit for experiments in natural language and generative literature. It is implemented in Java and JavaScript (with a common API for both). It is free/libre and open-source via the GPL license.
+
+About the project
+--------
+* Author:   [Daniel C. Howe](http://rednoise.org/daniel)
+* License: 			 GPL (see included [LICENSE](https://github.com/dhowe/rita/blob/master/LICENSE) file for full license)
+* Web Site:          [https://rednoise.org/rita](http://rednoise.org/rita)
+* Github Repo:       [https://github.com/dhowe/rita](https://github.com/dhowe/rita)
+* Issues:       [https://github.com/dhowe/rita/issues](https://github.com/dhowe/rita/issues)
+* Reference:    [https://rednoise.org/rita/reference](http://rednoise.org/rita/reference)
 
 ## Installation
 
