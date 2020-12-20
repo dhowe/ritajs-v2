@@ -43,67 +43,67 @@ console.log(grammar.expand());
    </tr>
    <tr>
 <td>
-    <a href="https://rednoise.org/rita2/RiTa/addTransform/index.html">RiTa.addTransform()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/alliterations/index.html">RiTa.alliterations()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/analyze/index.html">RiTa.analyze()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/concordance/index.html">RiTa.concordance()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/conjugate/index.html">RiTa.conjugate()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/evaluate/index.html">RiTa.evaluate()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/hasWord/index.html">RiTa.hasWord()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/isAbbreviation/index.html">RiTa.isAbbreviation()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/isAdjective/index.html">RiTa.isAdjective()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/isAdverb/index.html">RiTa.isAdverb()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/isAlliteration/index.html">RiTa.isAlliteration()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/isNoun/index.html">RiTa.isNoun()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/isPunctuation/index.html">RiTa.isPunctuation()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/isQuestion/index.html">RiTa.isQuestion()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/isRhyme/index.html">RiTa.isRhyme()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/isStopWord/index.html">RiTa.isStopWord()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/isVerb/index.html">RiTa.isVerb()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/kwic/index.html">RiTa.kwic()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/pastParticiple/index.html">RiTa.pastParticiple()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/addTransform/index.html">RiTa.addTransform()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/alliterations/index.html">RiTa.alliterations()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/analyze/index.html">RiTa.analyze()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/concordance/index.html">RiTa.concordance()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/conjugate/index.html">RiTa.conjugate()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/evaluate/index.html">RiTa.evaluate()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/hasWord/index.html">RiTa.hasWord()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/isAbbreviation/index.html">RiTa.isAbbreviation()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/isAdjective/index.html">RiTa.isAdjective()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/isAdverb/index.html">RiTa.isAdverb()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/isAlliteration/index.html">RiTa.isAlliteration()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/isNoun/index.html">RiTa.isNoun()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/isPunctuation/index.html">RiTa.isPunctuation()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/isQuestion/index.html">RiTa.isQuestion()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/isRhyme/index.html">RiTa.isRhyme()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/isStopWord/index.html">RiTa.isStopWord()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/isVerb/index.html">RiTa.isVerb()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/kwic/index.html">RiTa.kwic()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/pastParticiple/index.html">RiTa.pastParticiple()</a><br/>
    </td>
    <td>
-   <a href="https://rednoise.org/rita2/RiTa/phones/index.html">RiTa.phones()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/pos/index.html">RiTa.pos()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/posInline/index.html">RiTa.posInline()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/presentParticiple/index.html">RiTa.presentParticiple()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/pluralize/index.html">RiTa.pluralize()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/randomOrdering/index.html">RiTa.randomOrdering()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/randomSeed/index.html">RiTa.randomSeed()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/randomWord/index.html">RiTa.randomWord()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/rhymes/index.html">RiTa.rhymes()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/search/index.html">RiTa.search()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/sentences/index.html">RiTa.sentences()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/singularize/index.html">RiTa.singularize()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/soundsLike/index.html">RiTa.soundsLike()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/spellsLike/index.html">RiTa.spellsLike()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/stem/index.html">RiTa.stem()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/stresses/index.html">RiTa.stresses()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/syllables/index.html">RiTa.syllables()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/tokenize/index.html">RiTa.tokenize()</a><br/>
-    <a href="https://rednoise.org/rita2/RiTa/untokenize/index.html">RiTa.untokenize()</a><br/>
+   <a href="https://rednoise.org/rita/reference/RiTa/phones/index.html">RiTa.phones()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/pos/index.html">RiTa.pos()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/posInline/index.html">RiTa.posInline()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/presentParticiple/index.html">RiTa.presentParticiple()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/pluralize/index.html">RiTa.pluralize()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/randomOrdering/index.html">RiTa.randomOrdering()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/randomSeed/index.html">RiTa.randomSeed()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/randomWord/index.html">RiTa.randomWord()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/rhymes/index.html">RiTa.rhymes()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/search/index.html">RiTa.search()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/sentences/index.html">RiTa.sentences()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/singularize/index.html">RiTa.singularize()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/soundsLike/index.html">RiTa.soundsLike()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/spellsLike/index.html">RiTa.spellsLike()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/stem/index.html">RiTa.stem()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/stresses/index.html">RiTa.stresses()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/syllables/index.html">RiTa.syllables()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/tokenize/index.html">RiTa.tokenize()</a><br/>
+    <a href="https://rednoise.org/rita/reference/RiTa/untokenize/index.html">RiTa.untokenize()</a><br/>
    </td>
    <td>
-    <a href="https://rednoise.org/rita2/Markov/addText/index.html">addText()</a><br/>
-    <a href="https://rednoise.org/rita2/Markov/completions/index.html">completions()</a><br/>
-    <a href="https://rednoise.org/rita2/Markov/generate/index.html">generate()</a><br/>
-    <a href="https://rednoise.org/rita2/Markov/probability/index.html">probability()</a><br/>
-    <a href="https://rednoise.org/rita2/Markov/probabilities/index.html">probabilities()</a><br/>
-    <a href="https://rednoise.org/rita2/Markov/size/index.html">size()</a><br/>
-    <a href="https://rednoise.org/rita2/Markov/toString/index.html">toString()</a><br/>
-    <a href="https://rednoise.org/rita2/Markov/toJSON/index.html">toJSON()</a><br/>
-    <a href="https://rednoise.org/rita2/Markov/fromJSON/index.html">fromJSON()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Markov/addText/index.html">addText()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Markov/completions/index.html">completions()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Markov/generate/index.html">generate()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Markov/probability/index.html">probability()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Markov/probabilities/index.html">probabilities()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Markov/size/index.html">size()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Markov/toString/index.html">toString()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Markov/toJSON/index.html">toJSON()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Markov/fromJSON/index.html">fromJSON()</a><br/>
     <br/><br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
    <td>
-    <a href="https://rednoise.org/rita2/Grammar/addRule/index.html">addRule()</a><br/>
-    <a href="https://rednoise.org/rita2/Grammar/addRules/index.html">addRules()</a><br/>
-    <a href="https://rednoise.org/rita2/Grammar/expand/index.html">expand()</a><br/>
-    <a href="https://rednoise.org/rita2/Grammar/removeRule/index.html">removeRule()</a><br/>
-    <a href="https://rednoise.org/rita2/Grammar/toJSON/index.html">toJSON()</a><br/>
-    <a href="https://rednoise.org/rita2/Grammar/toString/index.html">toString()</a><br/>
-    <a href="https://rednoise.org/rita2/Grammar/fromJSON/index.html">fromJSON()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Grammar/addRule/index.html">addRule()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Grammar/addRules/index.html">addRules()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Grammar/expand/index.html">expand()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Grammar/removeRule/index.html">removeRule()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Grammar/toJSON/index.html">toJSON()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Grammar/toString/index.html">toString()</a><br/>
+    <a href="https://rednoise.org/rita/reference/Grammar/fromJSON/index.html">fromJSON()</a><br/>
     <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
    </td>
  </tr>
@@ -112,7 +112,7 @@ console.log(grammar.expand());
 
 ## RiTaScript
 
-RiTaScript can be used as part of any grammar (via RiTa.Grammar) or can be run directly using <a href="https://rednoise.org/rita2/RiTa/evaluate/index.html">RiTa.evaluate()</a>
+RiTaScript can be used as part of any grammar (via RiTa.Grammar) or can be run directly using <a href="https://rednoise.org/rita/reference/RiTa/evaluate/index.html">RiTa.evaluate()</a>
 
 
 ### Choice
