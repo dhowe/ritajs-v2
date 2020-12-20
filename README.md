@@ -325,7 +325,7 @@ If all goes according to plan, you should see a list of successful tests and fin
 
 ## Environments
 
-#### A simple browser sketch
+#### A simple sketch
  
 Create a new file on your desktop called 'test.html' with the following lines, save and drag it into a browser:
 
