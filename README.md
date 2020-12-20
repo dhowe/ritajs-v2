@@ -18,7 +18,7 @@ RiTa is a toolkit for natural language and generative literature. It is implemen
 
 ### Example (node)
 
-```
+```javascript
 let RiTa = require('rita');
 console.log(RiTa.rhymes('sweet'));
 
