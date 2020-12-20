@@ -7,7 +7,7 @@
   "homepage": "https://rednoise.org/rita",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dhowe/rita2js.git"
+    "url": "https://github.com/dhowe/ritajs.git"
   },
   "np": {
     "contents": "dist"

@@ -19,7 +19,7 @@ About the project
 * For node: `npm install rita@beta`
 * For [the browser](https://unpkg.com/rita/)
 * For [developers](#developing)
-* For [Java](https://github.com/dhowe?tab=packages&repo_name=rita2)
+* For [Java](https://github.com/dhowe?tab=packages&repo_name=rita)
 
 ### Example (node)
 
