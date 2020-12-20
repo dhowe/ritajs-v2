@@ -1,7 +1,7 @@
-var IPA_STRESS = "ˈ",
+const IPA_STRESS = "ˈ",
     IPA_2NDSTRESS = "ˌ";
 
-var amap = {
+const amap = {
     "aa": "ɑ", // ɑ or ɒ
     "ae": "æ", // ɑː or æ 
     "ah": "ə", // ə for 'sofa': 'alone'; ʌ for 'but': 'sun'
@@ -45,18 +45,18 @@ var amap = {
 
 function arpaToIPA(phones) {
 
-    var syllables = phones.trim().split(" "),
+    let syllables = phones.trim().split(" "),
         ipaPhones ="";
 
-    var needStress = true;
+    let needStress = true;
 
     if (syllables.length === 1) {
         // one-syllable words dont get stresses 
         needStress = false;
     }
     
-    for (var i = 0; i < syllables.length; i++) {
-        var ipa = syllableToIPA(syllables[i], needStress);
+    for (let i = 0; i < syllables.length; i++) {
+        let ipa = syllableToIPA(syllables[i], needStress);
         if (ipaPhones.length > 0 && !ipa.startsWith(IPA_STRESS) && !ipa.startsWith(IPA_2NDSTRESS)) {
          ipa = " " + ipa;
         }
@@ -68,28 +68,28 @@ function arpaToIPA(phones) {
 
 function syllableToIPA(arpaSyl, needStress) {
     
-    var primarystressed = false,
+    let primarystressed = false,
         secondarydStressed = false;
 
     // handle stressed vowel syllables see https://github.com/dhowe/RiTa/issues/296
-    var isAAStressed = false,
+    let isAAStressed = false,
         isERStressed = false,
         isIYStressed = false,
         isAOStressed = false,
         isUWStressed = false;
 
-    var isAHStressed = false,
+    let isAHStressed = false,
         isAEStressed = false;
 
-    var ipaSyl = "", arpaPhones = arpaSyl.trim().split("-");
+    let ipaSyl = "", arpaPhones = arpaSyl.trim().split("-");
     
-    for (var i = 0; i < arpaPhones.length; i++) {
-        var arpaPhone = arpaPhones[i],
+    for (let i = 0; i < arpaPhones.length; i++) {
+        let arpaPhone = arpaPhones[i],
             stress = arpaPhone.charAt(arpaPhone.length - 1);
 
-        if (stress === RiTa.UNSTRESSED) // no stress
+        if (stress === RiTa.NOSTRESS) // no stress
             arpaPhone = arpaPhone.substring(0, arpaPhone.length - 1);
-        else if (stress === RiTa.STRESSED) { // primary stress
+        else if (stress === RiTa.STRESS) { // primary stress
             arpaPhone = arpaPhone.substring(0, arpaPhone.length - 1);
             primarystressed = true;
 
@@ -112,7 +112,7 @@ function syllableToIPA(arpaSyl, needStress) {
             if (arpaPhone === "ah") isAHStressed = true;
         }
 
-        var IPASyl = phoneToIPA(arpaPhone);
+        let IPASyl = phoneToIPA(arpaPhone);
 
         if (isAAStressed || isERStressed || isIYStressed || isAOStressed || isUWStressed) IPASyl += "ː";
         else if (isAHStressed) IPASyl = "ʌ";
