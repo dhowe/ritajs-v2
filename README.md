@@ -26,15 +26,6 @@ let grammar = RiTa.grammar(jsonRules);
 console.log(grammar.expand());
 ```
 
-### About
-
-* Author:   [Daniel C. Howe](http://rednoise.org/daniel)
-* Web Site:          [https://rednoise.org/rita](http://rednoise.org/rita)
-* Github Repo:       [https://github.com/dhowe/rita](https://github.com/dhowe/rita)
-* Issues:       [https://github.com/dhowe/rita/issues](https://github.com/dhowe/rita/issues)
-* Reference:    [https://rednoise.org/rita/reference](http://rednoise.org/rita/reference)
-
-
 ## API
 
   <table cellspacing="0" cellpadding="0" border="0">
@@ -319,3 +310,74 @@ $ yarn test.prod
 ```
 If all goes according to plan, you should see a list of successful tests
 &nbsp;
+
+
+## About
+
+* Author:   [Daniel C. Howe](http://rednoise.org/daniel)
+* Web Site:          [https://rednoise.org/rita](http://rednoise.org/rita)
+* Github Repo:       [https://github.com/dhowe/rita](https://github.com/dhowe/rita)
+* Issues:       [https://github.com/dhowe/rita/issues](https://github.com/dhowe/rita/issues)
+* Reference:    [https://rednoise.org/rita/reference](http://rednoise.org/rita/reference)
+
+## Environments
+
+#### A simple browser sketch
+--------
+Create a new file on your desktop called 'test.html' with the following lines, save and drag it into a browser:
+
+```html
+<html>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://unpkg.com/rita"></script>
+  <script>
+    window.onload = function() {
+      let words = RiTa.tokenize("The elephant took a bite!");
+      $('#content').text(words);
+    };
+  </script>
+  <div id="content" width=200 height=200></div>
+<html>
+```
+
+#### With [node.js](http://nodejs.org/) and [npm](https://www.npmjs.com/)
+--------
+To install: `$ npm install rita`
+
+```javascript
+let rita = require('rita');
+let data = RiTa.features("The elephant took a bite!");
+console.log(data);
+```
+
+#### With [p5.js](http://p5js.org/)
+--------
+Create a new file on your desktop called 'test.html' and download the latest rita.js from [here](http://rednoise.org/rita/download/rita.min.js), add the following lines, save and drag it into a browser:
+
+```html
+<html>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.3/p5.min.js"></script>
+  <script src="https://unpkg.com/rita"></script>
+  <script>
+  function setup() {
+
+    createCanvas(200,200);
+    background(50);
+    textSize(20);
+    noStroke();
+
+    let words = RiTa.tokenize("The elephant took a bite!")
+    for (let i=0; i < words.length; i++) {
+        text(words[i], 50, 50 + i*20);
+    }
+  }
+  </script>
+</html>
+```
+
+
+#### Can I contribute?
+--------
+Please! We are looking for more coders to help out... Just press *Fork* at the top of this github page and get started!
+
+
