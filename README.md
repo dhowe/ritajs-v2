@@ -378,6 +378,8 @@ let data = RiTa.features("The elephant took a bite!");
 console.log(data);
 ```
 
+&nbsp;
+
 #### Can I contribute?
  
 Please! We are looking for more coders to help out... Just press *Fork* at the top of this github page and get started!
