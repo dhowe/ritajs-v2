@@ -380,8 +380,14 @@ console.log(data);
 
 &nbsp;
 
-#### Can I contribute?
- 
-Please! We are looking for more coders to help out... Just press *Fork* at the top of this github page and get started!
+## Contributors
 
+### Code Contributors
 
+This project exists only because of the people who contribute. Thank you!
+<a href="https://github.com/dhowe/RiTa/graphs/contributors"><img src="https://opencollective.com/RiTa/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+<a href="https://opencollective.com/rita/donate" target="_blank">
+  <img src="https://opencollective.com/rita/contribute/button@2x.png?color=blue" width=300 />
+</a>
