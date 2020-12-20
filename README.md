@@ -8,14 +8,6 @@ RiTa is a toolkit for natural language and generative literature. It is implemen
 
 ###
 
-### About
-
-* Author:   [Daniel C. Howe](http://rednoise.org/daniel)
-* Web Site:          [https://rednoise.org/rita](http://rednoise.org/rita)
-* Github Repo:       [https://github.com/dhowe/rita](https://github.com/dhowe/rita)
-* Issues:       [https://github.com/dhowe/rita/issues](https://github.com/dhowe/rita/issues)
-* Reference:    [https://rednoise.org/rita/reference](http://rednoise.org/rita/reference)
-
 ### Installation
 
 * For node: `npm install rita@beta`
@@ -33,6 +25,15 @@ console.log(RiTa.rhymes('sweet'));
 let grammar = RiTa.grammar(jsonRules);
 console.log(grammar.expand());
 ```
+
+### About
+
+* Author:   [Daniel C. Howe](http://rednoise.org/daniel)
+* Web Site:          [https://rednoise.org/rita](http://rednoise.org/rita)
+* Github Repo:       [https://github.com/dhowe/rita](https://github.com/dhowe/rita)
+* Issues:       [https://github.com/dhowe/rita/issues](https://github.com/dhowe/rita/issues)
+* Reference:    [https://rednoise.org/rita/reference](http://rednoise.org/rita/reference)
+
 
 ## API
 
