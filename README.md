@@ -11,7 +11,7 @@ RiTa is a toolkit for natural language and generative literature. It is implemen
 ### Installation
 
 * For node: `npm install rita`
-* For [the browser](https://unpkg.com/rita/)
+* For [browsers](#a-simple-browser-sketch): ```<script src="https://unpkg.com/rita"></script>```
 * For [developers](#developing)
 * For [Java](https://github.com/dhowe?tab=packages&repo_name=rita)
 
