@@ -14,7 +14,7 @@ About the project
 * Issues:       [https://github.com/dhowe/rita/issues](https://github.com/dhowe/rita/issues)
 * Reference:    [https://rednoise.org/rita/reference](http://rednoise.org/rita/reference)
 
-## Installation
+### Installation
 
 * For node: `npm install rita@beta`
 * For [the browser](https://unpkg.com/rita/)
