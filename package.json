@@ -63,5 +63,22 @@
     "webpack": "^4.41.2",
     "webpack-bundle-analyzer": "^4.1.0",
     "webpack-cli": "^3.3.10"
-  }
+  },
+  "autoupdate": {
+    "source": "npm",
+    "target": "rita",
+    "fileMap": [
+      {
+        "basePath": "dist",
+        "files": [
+          "*.js"
+        ]
+      }
+    ]
+  },
+  "keywords": [
+    "natural language",
+    "generative text",
+    "text analysis"
+  ]
 }
