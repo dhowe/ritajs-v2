@@ -309,6 +309,7 @@ $ yarn test.prod
 
 ```
 If all goes according to plan, you should see a list of successful tests
+
 &nbsp;
 
 
@@ -319,6 +320,8 @@ If all goes according to plan, you should see a list of successful tests
 * Github Repo:       [https://github.com/dhowe/rita](https://github.com/dhowe/rita)
 * Issues:       [https://github.com/dhowe/rita/issues](https://github.com/dhowe/rita/issues)
 * Reference:    [https://rednoise.org/rita/reference](http://rednoise.org/rita/reference)
+
+&nbsp;
 
 ## Environments
 
