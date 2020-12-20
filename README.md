@@ -6,7 +6,6 @@
 
 RiTa is a toolkit for natural language and generative literature. It is implemented in Java and JavaScript, with a common API for both, and it is free/libre/open-source via the GPL license.
 
---------
 
 ### About
 * Author:   [Daniel C. Howe](http://rednoise.org/daniel)
@@ -15,12 +14,14 @@ RiTa is a toolkit for natural language and generative literature. It is implemen
 * Issues:       [https://github.com/dhowe/rita/issues](https://github.com/dhowe/rita/issues)
 * Reference:    [https://rednoise.org/rita/reference](http://rednoise.org/rita/reference)
 
+
 ### Installation
 
 * For node: `npm install rita@beta`
 * For [the browser](https://unpkg.com/rita/)
 * For [developers](#developing)
 * For [Java](https://github.com/dhowe?tab=packages&repo_name=rita)
+
 
 ### Example (node)
 
