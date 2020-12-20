@@ -323,7 +323,7 @@ If all goes according to plan, you should see a list of successful tests
 ## Environments
 
 #### A simple browser sketch
---------
+ 
 Create a new file on your desktop called 'test.html' with the following lines, save and drag it into a browser:
 
 ```html
@@ -341,7 +341,7 @@ Create a new file on your desktop called 'test.html' with the following lines, s
 ```
 
 #### With [node.js](http://nodejs.org/) and [npm](https://www.npmjs.com/)
---------
+ 
 To install: `$ npm install rita`
 
 ```javascript
@@ -351,7 +351,7 @@ console.log(data);
 ```
 
 #### With [p5.js](http://p5js.org/)
---------
+ 
 Create a new file on your desktop called 'test.html' and download the latest rita.js from [here](http://rednoise.org/rita/download/rita.min.js), add the following lines, save and drag it into a browser:
 
 ```html
@@ -377,7 +377,7 @@ Create a new file on your desktop called 'test.html' and download the latest rit
 
 
 #### Can I contribute?
---------
+ 
 Please! We are looking for more coders to help out... Just press *Fork* at the top of this github page and get started!
 
 
