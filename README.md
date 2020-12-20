@@ -4,14 +4,11 @@
 
 <a href="http://rednoise.org/rita"><img height="80" src="http://rednoise.org/rita/img/RiTa-logo3.png"/></a>
 
-### [The RiTa website](http://rednoise.org/rita)
-
-RiTa is an easy-to-use toolkit for experiments in natural language and generative literature. It is implemented in Java and JavaScript (with a common API for both). It is free/libre and open-source via the GPL license.
+RiTa is a toolkit for natural language and generative literature. It is implemented in Java and JavaScript, with a common API for both, and it is free/libre/open-source via the GPL license.
 
 About the project
 --------
 * Author:   [Daniel C. Howe](http://rednoise.org/daniel)
-* License: 			 GPL (see included [LICENSE](https://github.com/dhowe/rita/blob/master/LICENSE) file for full license)
 * Web Site:          [https://rednoise.org/rita](http://rednoise.org/rita)
 * Github Repo:       [https://github.com/dhowe/rita](https://github.com/dhowe/rita)
 * Issues:       [https://github.com/dhowe/rita/issues](https://github.com/dhowe/rita/issues)
@@ -20,7 +17,7 @@ About the project
 ## Installation
 
 * For node: `npm install rita@beta`
-* For [the browser](https://github.com/dhowe/rita2js/releases)
+* For [the browser](https://unpkg.com/rita/)
 * For [developers](#developing)
 * For [Java](https://github.com/dhowe?tab=packages&repo_name=rita2)
 
@@ -30,7 +27,7 @@ About the project
 let RiTa = require('rita');
 console.log(RiTa.rhymes('sweet'));
 
-let grammar = new RiTa.Grammar(jsonRules);
+let grammar = RiTa.grammar(jsonRules);
 console.log(grammar.expand());
 ```
 
@@ -309,12 +306,12 @@ $Opening=(
 To install/build the library and run tests (with node/yarn/mocha):
 ```
 
-$ git clone https://github.com/dhowe/rita2js.git
-$ cd rita2js 
+$ git clone https://github.com/dhowe/ritajs.git
+$ cd ritajs 
 $ yarn install  (run again if you get an error) 
 $ yarn build 
 $ yarn test.prod
 
 ```
-If all works smoothly, you should see a list of successful tests
+If all goes according to plan, you should see a list of successful tests
 &nbsp;
