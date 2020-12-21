@@ -99,7 +99,7 @@ class Markov {
 
           tokens.pop();
           if (tokens.length >= minLength) {
-            let rawtoks = tokens.map(t => t.token);
+            let rawtoks = tokens.map(t => t.token); // convert to strings
 
             // TODO: do we need this if checking mlm with each word? yes
             if (isSubArray(rawtoks, this.input) && fail('in input')) break;
