@@ -301,7 +301,7 @@ $Opening=(
 
 ## Developing
 To install/build the library and run tests (with yarn/mocha):
-```
+```shell
 
 $ git clone https://github.com/dhowe/ritajs.git
 $ cd ritajs 
