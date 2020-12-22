@@ -375,7 +375,7 @@ Create a new file on your desktop called 'test.html' and download the latest rit
 To install: `$ npm install rita`
 
 ```javascript
-let rita = require('rita');
+let RiTa = require('rita');
 let data = RiTa.features("The elephant took a bite!");
 console.log(data);
 ```
