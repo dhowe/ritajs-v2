@@ -376,7 +376,7 @@ To install: `$ npm install rita`
 
 ```javascript
 let RiTa = require('rita');
-let data = RiTa.features("The elephant took a bite!");
+let data = RiTa.analyze("The elephant took a bite!");
 console.log(data);
 ```
 
