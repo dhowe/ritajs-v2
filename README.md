@@ -8,7 +8,7 @@ RiTa is a toolkit for natural language and generative literature. It is implemen
 
 ###
 
-:warning: __RiTa v2.0 contains breaking changes! Please see these [release notes](https://rednoise.org/rita/#whats-new-wrapper).__ :warning:
+:warning: _RiTa v2.0 contains breaking changes! Please see these [release notes](https://rednoise.org/rita/#whats-new-wrapper)._ :warning:
 
 ### Installation
 
