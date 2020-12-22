@@ -4,7 +4,7 @@
 
 <a href="http://rednoise.org/rita"><img height="80" src="http://rednoise.org/rita/img/RiTa-logo3.png"/></a>
 
-:warning: __RiTa v2.0 contains breaking changes! Please see these [release notes](https://rednoise.org/rita/#whats-new-wrapper).__
+:warning: __RiTa v2.0 contains breaking changes! Please see these [release notes](https://rednoise.org/rita/#whats-new-wrapper).__ :warning:
 
 RiTa is a toolkit for natural language and generative literature. It is implemented in Java and JavaScript, with a common API for both, and it is free/libre/open-source via the GPL license.
 
