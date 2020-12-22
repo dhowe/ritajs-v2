@@ -4,27 +4,27 @@ class PosTagger {
 
   constructor(parent) {
     this.RiTa = parent;
-    this.stemmer = parent.stemmer;
     this.lex = parent.lexicon();
+    this.stemmer = parent.stemmer;
   }
 
   isVerb(word) {
-    let pos = this.posOptions(word);
+    let pos = this.allTags(word);
     return pos && pos.filter(p => VERBS.includes(p)).length > 0;
   }
 
   isNoun(word) {
-    let pos = this.posOptions(word);
+    let pos = this.allTags(word);
     return pos && pos.filter(p => NOUNS.includes(p)).length > 0;
   }
 
   isAdverb(word) {
-    let pos = this.posOptions(word);
+    let pos = this.allTags(word);
     return pos && pos.filter(p => ADVS.includes(p)).length > 0;
   }
 
   isAdjective(word) {
-    let pos = this.posOptions(word);
+    let pos = this.allTags(word);
     return pos && pos.filter(p => ADJS.includes(p)).length > 0;
   }
 
@@ -54,10 +54,10 @@ class PosTagger {
     return sb.trim();
   }
 
-  posOptions(word/*, fatal*/) {
+  allTags(word, noDerivations) { // returns an array of choices
     if (word && word.length) {
-      let posData = this.lex._posArr(word);//, fatal); // fail if no lexicon
-      return posData || this._derivePosData(word);
+      let posData = this.lex._posArr(word);
+      return posData || (noDerivations ? null : this._derivePosData(word));
     }
   }
 
@@ -76,7 +76,7 @@ class PosTagger {
         result.push(this._handleSingleLetter(word));
       }
       else {
-        let opts = this.posOptions(word);
+        let opts = this.allTags(word);
         choices2d[i] = opts; // all options
         result[i] = opts[0]; // first option
       }
@@ -180,14 +180,14 @@ class PosTagger {
   }
 
   isLikelyPlural(word) {
-		return this._lexHas("n", RiTa.singularize(word)) || RiTa.inflector.isPlural(word);
+    return this._lexHas("n", RiTa.singularize(word)) || RiTa.inflector.isPlural(word);
   }
 
-/*   _isLikelyPluralOld(word) {
-    // Check for plural noun with singularizer and stemmer
-    return this.RiTa.stemmer.isRawPlural(word)
-      || this._lexHas("n", this.RiTa.singularize(word));
-  } */
+  /*   _isLikelyPluralOld(word) {
+      // Check for plural noun with singularizer and stemmer
+      return this.RiTa.stemmer.isRawPlural(word)
+        || this._lexHas("n", this.RiTa.singularize(word));
+    } */
 
   _handleSingleLetter(c) {
     if (c === 'a' || c === 'A') return 'dt';

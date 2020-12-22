@@ -457,11 +457,6 @@ class Lexicon {
     if (rdata && rdata.length === 2) return rdata[1].split(' ');
   }
 
-  _bestPos(word) {
-    let pl = this._posArr(word);
-    if (pl) return pl[0];
-  }
-
   _lookupRaw(word, fatal) {
     word = word && word.toLowerCase();
     return this._dict(fatal)[word];

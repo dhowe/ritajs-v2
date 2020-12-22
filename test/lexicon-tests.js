@@ -3,7 +3,7 @@ describe('RiTa.Lexicon', function () {
   this.timeout(5000);
 
   if (typeof module !== 'undefined') require('./before');
-  
+
   const lex = RiTa.lexicon(); // first load
 
   it('Should call hasWord', () => {
@@ -98,7 +98,7 @@ describe('RiTa.Lexicon', function () {
     let pos = ["nn", "jj", "jjr", "wp"];
     for (let j = 0; j < pos.length; j++) {
       let result = RiTa.randomWord({ pos: pos[j] });
-      let best = RiTa.lexicon()._bestPos(result);
+      let best = RiTa.tagger.allTags(result)[0];
       //console.log(result+": "+pos[j]+" ?= "+best);
       expect(pos[j]).eq(best, result);
     }
@@ -197,7 +197,7 @@ describe('RiTa.Lexicon', function () {
       .eql(['abandonments', 'abatements', 'abbreviations', 'abdomens', "abductions"]);
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'nns', numSyllables: 3 }))
-      .eql(['abatements', 'abdomens', "abductions", "abeyances", "abortions" ]);
+      .eql(['abatements', 'abdomens', "abductions", "abeyances", "abortions"]);
 
     expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'nns', limit: 3 }))
       .eql(['elephants', 'infants', 'infantries']);

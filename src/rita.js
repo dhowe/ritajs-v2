@@ -211,6 +211,10 @@ class RiTa {
 
   /////////////////////////////////////////////////////////////////
 
+	static capitalize( s) {
+		return s ? s[0].toUpperCase() + s.substring(1) : '';
+	}
+
   static lexicon() { // lazy load
     if (typeof RiTa._lexicon === 'undefined') {
       const LetterToSound = require('./rita_lts');

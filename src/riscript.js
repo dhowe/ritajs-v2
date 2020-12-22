@@ -18,7 +18,7 @@ class RiScript {
     return new RiScript().evaluate(...arguments);
   }
 
-  evaluate(input, ctx, opts = {}) { 
+  evaluate(input, ctx, opts = {}) {
 
     ctx = ctx || {};
 
@@ -121,7 +121,7 @@ class RiScript {
         ("PARSER: '" + input + '\'\n' + e.message + '\n'));
       throw e;
     }
-    trace && console.log('\n'+tree.toStringTree(this.parser.ruleNames) + '\n');
+    trace && console.log('\n' + tree.toStringTree(this.parser.ruleNames) + '\n');
     return tree;
   }
 
@@ -200,14 +200,13 @@ class RiScript {
 
 function RiTa() { return RiScript.parent; }
 
-
 // -------------------- Default Transforms ----------------------
 
 /// <summary>
 /// Capitalizes the first character.
 /// </summary>
 function capitalize(s) {
-  return s ? s[0].toUpperCase() + s.substring(1) : '';
+  return RiTa().capitalize(s);
 }
 
 /// <summary>
@@ -221,14 +220,13 @@ function toUpper(s) {
 /// Wraps the given string in double-quotes.
 /// </summary>
 function quotify(s) {
-  return "&quot;" + s + "&quot;";
+  return "&quot;" + (s || '') + "&quot;";
 }
 
 /// <summary>
 /// Pluralizes the word according to english regular/irregular rules.
 /// </summary>
 function pluralize(s) {
-  s = (s || '').trim();
   return RiTa().pluralize(s);
 }
 
@@ -240,7 +238,9 @@ RiScript.transforms = {
   seq: RiScript.identity,
   rseq: RiScript.identity,
   norep: RiScript.identity,
-  qq: quotify, uc: toUpper, ucf: capitalize, art: RiScript.articlize // aliases
+  qq: quotify, uc: toUpper,
+  art: RiScript.articlize, // aliases
+  ucf: capitalize
 };
 
 const VOWEL_RE = /[aeiou]/;
