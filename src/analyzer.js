@@ -42,7 +42,8 @@ class Analyzer {
     let result = RiTa.CACHING && this.cache[word];
     if (typeof result === 'undefined') {
 
-      let useRaw = false, slash = '/', delim = '-';
+      let useRaw = false; //opts && opts.useRaw;
+      let slash = '/', delim = '-';
       let rawPhones = this.lexicon.rawPhones(word, { noLts: true });
 
       // if its a simple plural ending in 's',

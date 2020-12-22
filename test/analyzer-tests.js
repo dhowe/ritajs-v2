@@ -21,9 +21,7 @@ describe('RiTa.Analyzer', () => {
 
   it('Should call analyze', () => {
 
-
     expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phones: '', syllables: '' });
-
 
     let feats;
     feats = RiTa.analyze("clothes");
@@ -46,7 +44,6 @@ describe('RiTa.Analyzer', () => {
     expect(feats.pos).eq("nn");
     expect(feats.tokens).eq("yoyo");
     expect(feats.syllables).eq("y-ow/y-ow");
-
   });
 
   it('Should call stresses', () => {
@@ -83,10 +80,6 @@ describe('RiTa.Analyzer', () => {
     result = RiTa.stresses(word);
     answer = hasLex ? "1 1/0 , 1 1/0 , 1 0/1 , 1 0/1" : '1 1/1 , 1 0/1 , 1 0/1 , 1 1/1';
     eq(result, answer, word);
-
-
-
-
   });
 
   it('Should call phones', () => {
@@ -132,6 +125,53 @@ describe('RiTa.Analyzer', () => {
 
     RiTa.SILENCE_LTS = silent;
   });
+
+  /*it('Should call phones(raw)', () => {
+
+    let silent = RiTa.SILENCE_LTS;
+    //RiTa.SILENCE_LTS = true;
+
+    let result, answer;
+    let opts = { 'rawPhones': true };
+
+    eq(RiTa.phones("", opts), "");
+    eq(RiTa.phones("b", opts), "b");
+    eq(RiTa.phones("B", opts), "b");
+    eq(RiTa.phones("The", opts), "dh-ah");
+    eq(RiTa.phones("flowers", opts), "f-l-aw-er-z");
+    eq(RiTa.phones("mice", opts), "m-ay-s");
+    eq(RiTa.phones("ant", opts), "ae-n-t");
+
+    eq(RiTa.phones("The.", opts), "dh-ah .");
+
+    // different without lexicon ------------------------------------------
+
+    result = RiTa.phones("The boy jumped over the wild dog.", opts);
+    answer = hasLex ? "dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-ao-g ." : 'dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-aa-g .';
+    eq(result, answer);
+
+    result = RiTa.phones("The boy ran to the store.", opts);
+    answer = hasLex ? "dh-ah b-oy r-ae-n t-uw dh-ah s-t-ao-r ." : 'dh-ah b-oy r-ah-n t-ow dh-ah s-t-ao-r .';
+    eq(result, answer);
+
+    result = RiTa.phones("The dog ran faster than the other dog.  But the other dog was prettier.", opts);
+    answer = hasLex ? "dh-ah d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ah ah-dh-er d-ao-g . b-ah-t dh-ah ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er ." : 'dh-ah d-aa-g r-ah-n f-ae-s-t-er th-ae-n dh-ah ah-dh-er d-aa-g . b-ah-t dh-ah ah-dh-er d-aa-g w-ah-z p-r-eh-t-iy-er .';
+    eq(result, answer);
+
+    eq(RiTa.phones("quiche", opts), hasLex ? "k-iy-sh" : 'k-w-ih-sh');
+    eq(RiTa.phones("said", opts), hasLex ? "s-eh-d" : 's-ey-d');
+    eq(RiTa.phones("chevrolet", opts), hasLex ? "sh-eh-v-r-ow-l-ey" : 'ch-eh-v-r-ow-l-ah-t');
+    eq(RiTa.phones("women", opts), hasLex ? "w-ih-m-eh-n" : 'w-ow-m-eh-n');
+    eq(RiTa.phones("genuine", opts), hasLex ? "jh-eh-n-y-uw-w-ah-n" : 'jh-eh-n-y-ah-ay-n');
+
+    if (!hasLex) return; // NOTE: below may fail without lexicon
+
+    expect(RiTa.phones("deforestations", opts)).eq('d-ih-f-ao-r-ih-s-t-ey-sh-ah-n-z');
+    expect(RiTa.phones("schizophrenias", opts)).eq('s-k-ih-t-s-ah-f-r-iy-n-iy-ah-z');
+
+    RiTa.SILENCE_LTS = silent;
+  });*/
+
 
   it('Should call syllables', () => {
 

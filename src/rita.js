@@ -309,8 +309,6 @@ RiTa.STOP_WORDS = [
 RiTa.INFINITIVE = 1;
 RiTa.GERUND = 2;
 
-RiTa.FEATURES = ['TOKENS', 'STRESSES', 'PHONES', 'SYLLABLES', 'POS', 'TEXT'];
-
 // For tokenization, Can't -> Can not, etc.
 RiTa.SPLIT_CONTRACTIONS = false;
 
