@@ -43,18 +43,18 @@ describe('RiTa.Grammar', () => {
 
         let json = JSON.stringify(sentences1);
 
-		let gr1 = new Grammar(json);
-		ok(gr1 instanceof Grammar);
+        let gr1 = new Grammar(json);
+        ok(gr1 instanceof Grammar);
 
-		let gr2 = Grammar.fromJSON(json);
-		ok(gr2 instanceof Grammar);
+        let gr2 = Grammar.fromJSON(json);
+        ok(gr2 instanceof Grammar);
 
-		let gr3 = RiTa.grammar(json);
-		ok(gr3 instanceof Grammar);
+        let gr3 = RiTa.grammar(json);
+        ok(gr3 instanceof Grammar);
 
-		ok(gr1.toString() === gr2.toString());
-		ok(gr2.toString()=== gr3.toString());
-	});
+        ok(gr1.toString() === gr2.toString());
+        ok(gr2.toString() === gr3.toString());
+    });
 
     it('should handle phrase transforms', () => {
         let g = {
@@ -332,7 +332,8 @@ describe('RiTa.Grammar', () => {
     });
 
     it("should handle symbol transforms", () => {
-        let rg = new Grammar({
+        let rg;
+        rg = new Grammar({
             start: "$tmpl",
             tmpl: "$jrSr.capitalize()",
             jrSr: "(junior|junior)"
@@ -344,7 +345,6 @@ describe('RiTa.Grammar', () => {
             r: "(a|a)"
         });
         eq(rg.expand({ trace: 0 }), "A");
-
         rg = new Grammar({
             start: "$r.pluralize()",
             r: "( mouse | mouse )"
@@ -414,7 +414,7 @@ describe('RiTa.Grammar', () => {
     });
 
     it('Should correctly pluralize phrases', () => {
-        let json = {start: "($state feeling).pluralize()", state: "(bad | bad)"};
+        let json = { start: "($state feeling).pluralize()", state: "(bad | bad)" };
         let rg = new Grammar(json);
         let res = rg.expand();
         eql(res, "bad feelings");

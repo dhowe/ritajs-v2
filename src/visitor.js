@@ -177,7 +177,7 @@ class Visitor extends RiScriptVisitor {
   visitExpr(ctx) {
     if (this.trace) {
       console.log("visitExpr: '" + ctx.getText() + "'");
-      this.printChildren(ctx);
+      //this.printChildren(ctx);
     }
     return this.visitChildren(ctx);
   }

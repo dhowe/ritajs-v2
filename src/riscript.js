@@ -239,8 +239,8 @@ RiScript.transforms = {
   rseq: RiScript.identity,
   norep: RiScript.identity,
   qq: quotify, uc: toUpper,
-  art: RiScript.articlize, // aliases
-  ucf: capitalize
+  art: RiScript.articlize, 
+  ucf: capitalize // aliases
 };
 
 const VOWEL_RE = /[aeiou]/;

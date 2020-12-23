@@ -150,7 +150,7 @@ describe('RiTa.Markov', () => {
     eq(sents.length, 5);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
-      console.log(i + ") " + s);
+      //console.log(i + ") " + s);
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
     }
@@ -158,7 +158,7 @@ describe('RiTa.Markov', () => {
     rm = new Markov(4);
     rm.addText(sample);
     let s = rm.generate();
-    console.log(s);
+    //console.log(s);
     ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
     ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
     let num = RiTa.tokenize(s).length;
