@@ -398,9 +398,8 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.rhymes("swag").includes("grab")).to.be.false;
   });
 
-  // TODO: pos
   it('Should call rhymes.pos', () => {
-
+ 
     expect(RiTa.rhymes("cat", { pos: 'v' }).includes("hat")).to.be.false;
     expect(RiTa.rhymes("yellow", { pos: 'a' }).includes("mellow")).to.be.true;
     expect(RiTa.rhymes("toy", { pos: 'n' }).includes("boy")).to.be.true;
@@ -420,10 +419,21 @@ describe('RiTa.Lexicon', function () {
 
     expect(RiTa.rhymes("hose", { pos: 'v' }).includes("house")).to.be.false;
     expect(RiTa.rhymes("sieve", { pos: 'v' }).includes("mellow")).to.be.false;
-    expect(RiTa.rhymes("swag", { pos: 'v' }).includes("grab")).to.be.false;
+    expect(RiTa.rhymes("swag", { pos: 'v' }).includes("grab")).to.be.false; 
+
+    // special case, where word is not in dictionary
+    expect(RiTa.rhymes("abated", { pos: 'vbd' }).includes("allocated")).to.be.true;
+    expect(RiTa.rhymes("abated", { pos: 'vbd' }).includes("annihilated")).to.be.true;
+    expect(RiTa.rhymes("abated", { pos: 'vbd' }).includes("condensed")).to.be.false;
   });
 
   it('Should call rhymes.numSyllables', () => {
+
+    /* TODO: impose default 'limit'=10 for rhymes, allit, search, soundsLike, etc.
+     *       add new 'abatement' test cases to each 
+     *       sync code changes and tests with java
+     *       add matchSyllables, matchPos, etc. to rhymes, allits (bc we have word)
+     */
 
     expect(RiTa.rhymes("cat", { numSyllables: 2 }).includes("hat")).to.be.false;
     expect(RiTa.rhymes("cat", { numSyllables: 3 }).includes("hat")).to.be.false;
@@ -431,6 +441,11 @@ describe('RiTa.Lexicon', function () {
 
     expect(RiTa.rhymes("yellow", { numSyllables: 2 }).includes("mellow")).to.be.true;
     expect(RiTa.rhymes("yellow", { numSyllables: 3 }).includes("mellow")).to.be.false;
+
+    // special case, where word is not in dictionary
+    expect(RiTa.rhymes("abated", { numSyllables: 3 }).includes("elated")).to.be.true;
+    expect(RiTa.rhymes("abated", { numSyllables: 3 }).includes("allocated")).to.be.false;
+    expect(RiTa.rhymes("abated", { numSyllables: 3 }).includes("condensed")).to.be.false;
   });
 
   it('Should call rhymes.wordlength', () => {

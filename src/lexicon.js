@@ -28,8 +28,8 @@ class Lexicon {
     const dict = this._dict(true), words = Object.keys(dict);
     const fss = this._firstStressedSyl(theWord);
     if (!fss) return [];
-    const phone = this._firstPhone(fss);
-    let result = [];
+
+    const phone = this._firstPhone(fss), result = [];
 
     // make sure we parsed first phoneme
     if (!phone) {
@@ -49,12 +49,20 @@ class Lexicon {
       if (word === theWord || !this.checkCriteria(word, dict[word], opts)) {
         continue;
       }
+      let data = dict[word];
       if (opts.targetPos) {
-        word = this.matchPos(word, dict[word], opts);
+        word = this.matchPos(word, data, opts);
         if (!word) continue;
+        // Note: we may have changed the word here (e.g. via conjugation)
+        // and it is also may no longer be in the dictionary
+        if (word !== words[i]) data = dict[word];
       }
+
+      // TODO: use 'data' here unless we've changed 
+      // to a new word not in dict
       let c2 = this._firstPhone(this._firstStressedSyl(word));
       if (phone === c2) result.push(word);
+
       if (result.length === opts.limit) break;
     }
     opts.silent = _silent;
@@ -81,19 +89,26 @@ class Lexicon {
     for (let i = 0; i < words.length; i++) {
 
       let word = words[i];
+      let data = dict[word];
+
       // check word length and syllables
-      if (word === theWord || !this.checkCriteria(word, dict[word], opts)) {
+      if (word === theWord || !this.checkCriteria(word, data, opts)) {
         continue;
       }
 
       if (opts.targetPos) {
-        word = this.matchPos(word, dict[word], opts);
+        word = this.matchPos(word, data, opts);
         if (!word) continue;
+        // Note: we may have changed the word here (e.g. via conjugation)
+        // and it is also may no longer be in the dictionary
+        if (word !== words[i]) data = dict[word];
       }
-      if (!dict[word] || !dict[word].length) throw Error("Fail: "+word);
-      //console.log(word, dict[word]);
+
+      // recompute phones if not in dict (see note above)
+      let phones = data ? data[0] : this.rawPhones(word);
+
       // check for the rhyme
-      if (dict[word][0].endsWith(phone)) result.push(word);
+      if (phones.endsWith(phone)) result.push(word);
 
       if (result.length === opts.limit) break;
     }
@@ -109,19 +124,18 @@ class Lexicon {
     const dict = this._dict(true);
     const words = Object.keys(dict);
     const ran = Math.floor(this.RiTa.randInt(words.length));
-    //const analyzer = this.RiTa.analyzer();
 
     let _silent = opts.silent;
     opts.silent = true; // auto-silent
 
     for (let k = 0; k < words.length; k++) {
       let j = (ran + k) % words.length;
-      let word = words[j], rdata = dict[word];
+      let rdata = dict[words[j]];
 
-      if (!this.checkCriteria(word, rdata, opts)) continue;
+      if (!this.checkCriteria(words[j], rdata, opts)) continue;
       if (!opts.targetPos) return words[j]; // done if no pos to match
 
-      let result = this.matchPos(word, rdata, opts, true);
+      let result = this.matchPos(words[j], rdata, opts, true);
       if (result) return result;
     }
 
@@ -169,11 +183,17 @@ class Lexicon {
     //let analyzer = this.RiTa.analyzer();
     for (let i = 0; i < words.length; i++) {
       let word = words[i];
-      if (!this.checkCriteria(word, dict[word], opts)) continue;
+      let data = dict[word];
+      if (!this.checkCriteria(word, data, opts)) continue;
       if (opts.targetPos) {
-        word = this.matchPos(word, dict[word], opts);
+        word = this.matchPos(word, data, opts);
         if (!word) continue;
+        // Note: we may have changed the word here (e.g. via conjugation)
+        // and it is also may no longer be in the dictionary
+        if (word !== words[i]) data = dict[word];
       }
+
+      // TODO: use data here if possible
       if (opts.type === 'stresses') { // slow
         let stresses = this.analyzer.analyzeWord(word, opts).stresses;
         if (regex.test(stresses)) result.push(word);
@@ -185,6 +205,7 @@ class Lexicon {
       else {
         if (regex.test(word)) result.push(word);
       }
+
       if (result.length === opts.limit) break;
     }
 
@@ -491,7 +512,7 @@ class Lexicon {
 
     if (!noLts) {
       let phones = this.RiTa.lts && this.RiTa.lts.computePhones(word);
-      return Util.syllablesFromPhones(phones);
+      return Util.syllablesFromPhones(phones); // TODO: bad name
     }
   }
 
