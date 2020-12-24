@@ -252,7 +252,7 @@ describe('RiTa.Lexicon', function () {
       let ent = RiTa.lexicon()[test];
       return ('(' + epos + ') Fail: ' + result + ': expected ' + epos + ', got ' + (ent ? ent[1] : 'null'));
     }
-    let pos, result, syllables;
+    let result, syllables;
 
     result = RiTa.randomWord({ numSyllables: 3, pos: "vbz" });
     //console.log(result);
@@ -280,7 +280,6 @@ describe('RiTa.Lexicon', function () {
     let count = syllables.split(RiTa.SYLLABLE_BOUNDARY).length;
     if (count !== 5) console.warn("Syllabifier problem: "
       + result + ".syllables was " + count + ', expected 5');
-    pos = RiTa.pos(result)[0];
     expect(RiTa.isNoun(result)).eq(true, fail(result, 'nns'));
   });
 

@@ -3,15 +3,15 @@ const Markov = require('./markov');
 const Grammar = require('./grammar');
 const Stemmer = require('./stemmer');
 const Lexicon = require('./lexicon');
+const Analyzer = require('./analyzer');
 const RiScript = require('./riscript');
 const Tokenizer = require('./tokenizer');
-const PosTagger = require('./tagger');
-const Analyzer = require('./analyzer');
 const Concorder = require('./concorder');
 const Conjugator = require('./conjugator');
 const Inflector = require('./inflector');
 const SeededRandom = require('./random');
 const Operator = require('./operator');
+const Tagger = require('./tagger');
 
 class RiTa {
 
@@ -28,7 +28,7 @@ class RiTa {
   }
 
   static analyze() {
-    return RiTa._analyzer().analyze(...arguments);
+    return RiTa.analyzer.analyze(...arguments);
   }
 
   static concordance() { // DOC:
@@ -57,10 +57,6 @@ class RiTa {
 
   static getTransforms() {
     return RiScript.getTransforms();
-  }
-
-  static hasLexicon() {
-    return RiTa.lexicon().size() > 0;
   }
 
   static hasWord(word) {
@@ -121,7 +117,7 @@ class RiTa {
   }
 
   static phones() {
-    return RiTa._analyzer().analyze(...arguments).phones;
+    return RiTa.analyzer.analyze(...arguments).phones;
   }
 
   static pos() { // DOC:
@@ -194,11 +190,11 @@ class RiTa {
   }
 
   static stresses() {
-    return RiTa._analyzer().analyze(...arguments).stresses;
+    return RiTa.analyzer.analyze(...arguments).stresses;
   }
 
   static syllables() {
-    return RiTa._analyzer().analyze(...arguments).syllables;
+    return RiTa.analyzer.analyze(...arguments).syllables;
   }
 
   static tokenize() {
@@ -209,7 +205,7 @@ class RiTa {
     return RiTa.tokenizer.untokenize(...arguments);
   }
 
-  /////////////////////////////////////////////////////////////////
+  ////////////////////////////// niapa /////////////////////////////
 
 	static capitalize( s) {
 		return s ? s[0].toUpperCase() + s.substring(1) : '';
@@ -219,28 +215,20 @@ class RiTa {
     if (typeof RiTa._lexicon === 'undefined') {
       const LetterToSound = require('./rita_lts');
       RiTa.lts = new LetterToSound(RiTa);
-      /*if (typeof __NOLTS__ !== 'undefined') { // used by webpack, don't shorten
-        const LetterToSound = require('./rita_lts');
-        RiTa.lts = new LetterToSound(RiTa);
-      }*/
       if (typeof __NOLEX__ !== 'undefined') { // used by webpack, don't shorten
         RiTa._lexicon = new Lexicon(RiTa);
       }
       else {
+        //let ts = +new Date();
         RiTa._lexicon = new Lexicon(RiTa, require('./rita_dict'));
+        //console.log("lexicon created in " +(+new Date()-ts)+"ms");
       }
     }
     return RiTa._lexicon;
   }
-
-  static _analyzer() { // lazy load
-    if (typeof RiTa.analyzer === 'undefined') {
-      RiTa.lexicon();
-      RiTa.analyzer = new Analyzer(RiTa);
-    }
-    return RiTa.analyzer;
-  }
 }
+
+RiTa.LEXS = 0;
 
 // CLASSES
 RiTa.RiScript = RiScript;
@@ -252,7 +240,8 @@ RiTa.Grammar.parent = RiTa;
 RiTa.RiScript.parent = RiTa;
 
 // COMPONENTS
-RiTa.tagger = new PosTagger(RiTa);
+RiTa.tagger = new Tagger(RiTa);
+RiTa.analyzer = new Analyzer(RiTa);
 RiTa.concorder = new Concorder(RiTa);
 RiTa.tokenizer = new Tokenizer(RiTa);
 RiTa.inflector = new Inflector(RiTa);
@@ -260,7 +249,7 @@ RiTa.conjugator = new Conjugator(RiTa);
 RiTa.randomizer = new SeededRandom(RiTa);
 
 // LAZY-LOADS
-RiTa.analyzer = undefined;
+RiTa._analyzer = undefined;
 RiTa._lexicon = undefined;
 RiTa.dict = undefined;
 RiTa.lts = undefined;

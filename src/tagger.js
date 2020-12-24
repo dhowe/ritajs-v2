@@ -4,7 +4,6 @@ class PosTagger {
 
   constructor(parent) {
     this.RiTa = parent;
-    this.lex = parent.lexicon();
     this.stemmer = parent.stemmer;
   }
 
@@ -56,7 +55,7 @@ class PosTagger {
 
   allTags(word, noDerivations) { // returns an array of choices
     if (word && word.length) {
-      let posData = this.lex._posArr(word);
+      let posData = this.RiTa.lexicon()._posArr(word);
       return posData || (noDerivations ? null : this._derivePosData(word));
     }
   }
@@ -101,7 +100,7 @@ class PosTagger {
   //////////////////////////////////////////////////////////////////
 
   _checkPluralNounOrVerb(stem, result) {
-    let pos = this.lex._posArr(stem);
+    let pos = this.RiTa.lexicon()._posArr(stem);
     if (pos) {
       if (pos.includes('nn')) result.push('nns'); // ?? any case
       if (pos.includes('vb')) result.push('vbz');
@@ -124,9 +123,10 @@ class PosTagger {
       VBZ 	Verb, 3rd person singular present
       NNS   Noun, plural
     */
+    const lex = this.RiTa.lexicon();
     if (word.endsWith('ies')) { // 3rd-person sing. present (satisfies, falsifies)
       let check = word.substring(0, word.length - 3) + "y";
-      let pos = this.lex._posArr(check);
+      let pos = lex._posArr(check);
       if (pos && pos.includes('vb')) return ['vbz'];
     }
     else if (word.endsWith('s')) {  // plural noun or vbz
@@ -148,8 +148,8 @@ class PosTagger {
       if (result.length) return result;
     }
     else if (word.endsWith('ed')) { // simple past or past participle
-      let pos = this.lex._posArr(word.substring(0, word.length - 1))
-        || this.lex._posArr(word.substring(0, word.length - 2));
+      let pos = lex._posArr(word.substring(0, word.length - 1))
+        || lex._posArr(word.substring(0, word.length - 2));
       if (pos && pos.includes('vb')) {
         return ['vbd', 'vbn']; // hate-> hated || row->rowed
       }
@@ -157,12 +157,12 @@ class PosTagger {
     else if (word.endsWith('ing')) {
       let stem = word.substring(0, word.length - 3);
       if (stem) {
-        let pos = this.lex._posArr(stem);
+        let pos = lex._posArr(stem);
         if (pos && pos.includes('vb')) {
           return ['vbg']; // assenting
         }
         else {
-          pos = this.lex._posArr(stem + 'e'); // hate
+          pos = lex._posArr(stem + 'e'); // hate
           if (pos && pos.includes('vb')) {
             return ['vbg'];  // hating
           }
@@ -353,7 +353,7 @@ class PosTagger {
 
   _lexHas(pos, word) { // takes ([n|v|a|r] or a full tag
     if (typeof word === 'string') {
-      let tags = this.lex._posArr(word);
+      let tags = this.RiTa.lexicon()._posArr(word);
       if (!tags) return false;
       for (let j = 0; j < tags.length; j++) {
         if (pos === tags[j]) return true;

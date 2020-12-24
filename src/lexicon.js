@@ -6,6 +6,7 @@ class Lexicon {
     this.RiTa = parent;
     this.data = dict;
     this.lexWarned = false;
+    this.analyzer = parent.analyzer;
   }
 
   hasWord(word, fatal) {
@@ -37,9 +38,11 @@ class Lexicon {
       return result;
     }
 
-    opts._analyzer = this.RiTa._analyzer();
     let _silent = opts.silent;
-    opts.silent = true;
+    opts.silent = true; // auto-silent
+
+    //et analyzer = this.RiTa.analyzer();
+
     for (let i = 0; i < words.length; i++) {
       let word = words[i];
       // check word length and syllables
@@ -61,27 +64,37 @@ class Lexicon {
   rhymes(theWord, opts = {}) {
 
     this.parseArgs(opts);
+
     if (!theWord || !theWord.length) return [];
+
     const dict = this._dict(true), words = Object.keys(dict);
     const phone = this._lastStressedPhoneToEnd(theWord);
+
     if (!phone) return [];
 
-    opts._analyzer = this.RiTa._analyzer();
     let _silent = opts.silent;
     opts.silent = true;
-    let result = [];
+
+    let result = []; 
+    //analyzer = this.RiTa.analyzer();
+
     for (let i = 0; i < words.length; i++) {
+
       let word = words[i];
       // check word length and syllables
       if (word === theWord || !this.checkCriteria(word, dict[word], opts)) {
         continue;
       }
+
       if (opts.targetPos) {
         word = this.matchPos(word, dict[word], opts);
         if (!word) continue;
       }
+      if (!dict[word] || !dict[word].length) throw Error("Fail: "+word);
+      //console.log(word, dict[word]);
       // check for the rhyme
       if (dict[word][0].endsWith(phone)) result.push(word);
+
       if (result.length === opts.limit) break;
     }
     opts.silent = _silent;
@@ -94,11 +107,13 @@ class Lexicon {
     this.parseArgs(opts);
 
     const dict = this._dict(true);
-    let words = Object.keys(dict);
+    const words = Object.keys(dict);
     const ran = Math.floor(this.RiTa.randInt(words.length));
-    opts._analyzer = this.RiTa._analyzer();
+    //const analyzer = this.RiTa.analyzer();
+
     let _silent = opts.silent;
-    opts.silent = true;
+    opts.silent = true; // auto-silent
+
     for (let k = 0; k < words.length; k++) {
       let j = (ran + k) % words.length;
       let word = words[j], rdata = dict[word];
@@ -109,7 +124,9 @@ class Lexicon {
       let result = this.matchPos(word, rdata, opts, true);
       if (result) return result;
     }
-    opts.silent = _silent;
+
+    opts.silent = _silent; // reset
+
     throw Error('No random word with options: ' + JSON.stringify(opts));
   }
 
@@ -145,11 +162,11 @@ class Lexicon {
 
     this.parseArgs(opts);
 
-    opts._analyzer = this.RiTa._analyzer();
     let _silent = opts.silent;
     opts.silent = true;
 
     let result = [];
+    //let analyzer = this.RiTa.analyzer();
     for (let i = 0; i < words.length; i++) {
       let word = words[i];
       if (!this.checkCriteria(word, dict[word], opts)) continue;
@@ -158,11 +175,11 @@ class Lexicon {
         if (!word) continue;
       }
       if (opts.type === 'stresses') { // slow
-        let stresses = opts._analyzer.analyzeWord(word, opts).stresses;
+        let stresses = this.analyzer.analyzeWord(word, opts).stresses;
         if (regex.test(stresses)) result.push(word);
       }
       else if (opts.type === 'phones') {
-        let phones = opts._analyzer.analyzeWord(word, opts).phones;
+        let phones = this.analyzer.analyzeWord(word, opts).phones;
         if (regex.test(phones)) result.push(word);
       }
       else {
@@ -170,7 +187,9 @@ class Lexicon {
       }
       if (result.length === opts.limit) break;
     }
-    opts.silent = _silent;
+
+    opts.silent = _silent; // reset
+
     return result;
   }
 
@@ -213,6 +232,7 @@ class Lexicon {
     const input = theWord.toLowerCase();
     const variations = [input, input + 's', input + 'es'];
     const phonesA = sound ? this._toPhoneArray(this.rawPhones(input)) : input;
+    //const analyzer = this.RiTa.analyzer();
 
     if (!phonesA) return result;
 
@@ -246,12 +266,12 @@ class Lexicon {
   }
 
   matchPos(word, rdata, opts, strict) {
+
     let posArr = rdata[1].split(' ');
-    let analyzer = opts._analyzer;
 
     // check the pos here (based on strict flag)
     if ((strict && opts.targetPos !== posArr[0]) ||
-      !posArr.includes(opts.targetPos)) return;
+      (!posArr.includes(opts.targetPos))) return;
 
     // we've matched our pos, pluralize or inflect if needed
     let result = word;
@@ -265,7 +285,7 @@ class Lexicon {
 
     // verify we haven't changed syllable count
     if (result !== word && opts.numSyllables) {
-      let syls = analyzer.analyzeWord(result, SILENT).syllables;
+      let syls = this.analyzer.analyzeWord(result, SILENT).syllables;
       let num = syls.split(this.RiTa.SYLLABLE_BOUNDARY).length;
 
       // reject if syllable count has changed

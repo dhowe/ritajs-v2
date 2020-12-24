@@ -5,7 +5,6 @@ class Analyzer {
   constructor(parent) {
     this.cache = {};
     this.RiTa = parent;
-    this.lexicon = parent.lexicon();
   }
 
   analyze(text, opts) {
@@ -42,15 +41,17 @@ class Analyzer {
     let result = RiTa.CACHING && this.cache[word];
     if (typeof result === 'undefined') {
 
+
       let useRaw = false; //opts && opts.useRaw;
       let slash = '/', delim = '-';
-      let rawPhones = this.lexicon.rawPhones(word, { noLts: true });
+      let lex = this.RiTa.lexicon();
+      let rawPhones = lex.rawPhones(word, { noLts: true });
 
       // if its a simple plural ending in 's',
       // and the singular is in the lexicon, add '-z' to end
       if (!rawPhones && word.endsWith('s')) {
         let sing = RiTa.singularize(word);
-        rawPhones = this.lexicon.rawPhones(sing, { noLts: true });
+        rawPhones = lex.rawPhones(sing, { noLts: true });
         rawPhones && (rawPhones += '-z'); // add 's' phone
       }
 
@@ -59,7 +60,7 @@ class Analyzer {
         let ltsPhones = RiTa.lts && RiTa.lts.computePhones(word);
         if (ltsPhones && ltsPhones.length > 0) {
           if (!RiTa.SILENT && !RiTa.SILENCE_LTS && !silentLts
-            && RiTa.hasLexicon() && word.match(HAS_LETTER_RE)) {
+            && lex.size() && word.match(HAS_LETTER_RE)) {
             console.log("[RiTa] Used LTS-rules for '" + word + "'");
           }
           rawPhones = Util.syllablesFromPhones(ltsPhones);

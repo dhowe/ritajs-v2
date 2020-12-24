@@ -49,7 +49,9 @@ describe('RiTa.Core', () => {
       "eagle", "an eagle",
       "ermintrout", "an ermintrout"
     ];
-    if (RiTa.hasLexicon()) data.push( "honor", "an honor");
+    if (RiTa.lexicon().size() > 0) {
+      data.push( "honor", "an honor");
+    }
     for (let i = 0; i < data.length; i += 2) {
       expect(RiTa.articlize(data[i])).eq(data[i + 1]);
     }
