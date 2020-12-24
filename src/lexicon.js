@@ -199,7 +199,9 @@ class Lexicon {
         if (regex.test(stresses)) result.push(word);
       }
       else if (opts.type === 'phones') {
-        let phones = this.analyzer.analyzeWord(word, opts).phones;
+        //let phones = this.analyzer.analyzeWord(word, opts).phones;
+        let phones = (data ? data[0] : this.rawPhones(word))
+          .replace(/1/g, '').replace(/ /g, '-') + ' ';
         if (regex.test(phones)) result.push(word);
       }
       else {
@@ -223,7 +225,6 @@ class Lexicon {
   }
 
   isRhyme(word1, word2) {
-
     if (!word1 || !word2 || word1.toUpperCase() === word2.toUpperCase()) {
       return false;
     }
@@ -243,16 +244,16 @@ class Lexicon {
 
   //////////////////////////// helpers /////////////////////////////////
 
-  similarByType(theWord, opts) {
+  similarByType(theWord, opts) { // quite slow
 
     this.parseArgs(opts);
 
     const dict = this._dict(true);
-    const sound = opts.type === 'sound'; // default: letter
     const words = Object.keys(dict);
     const input = theWord.toLowerCase();
+    const matchSound = opts.type === 'sound'; // default: letter
     const variations = [input, input + 's', input + 'es'];
-    const phonesA = sound ? this._toPhoneArray(this.rawPhones(input)) : input;
+    const phonesA = matchSound ? this._toPhoneArray(this.rawPhones(input)) : input;
     //const analyzer = this.RiTa.analyzer();
 
     if (!phonesA) return result;
@@ -260,16 +261,25 @@ class Lexicon {
     let result = [], minVal = Number.MAX_VALUE;
     for (let i = 0; i < words.length; i++) {
       let word = words[i];
-      if (!this.checkCriteria(word, dict[word], opts)) continue;
+      let data = dict[word];
+      if (!this.checkCriteria(word, data, opts)) continue;
       if (variations.includes(word)) continue;
 
       if (opts.targetPos) {
-        word = this.matchPos(word, dict[word], opts);
+        word = this.matchPos(word, data, opts);
         if (!word) continue;
+        // Note: we may have changed the word here (e.g. via conjugation)
+        // and it is also may no longer be in the dictionary
+        if (word !== words[i]) data = dict[word];
+      }
+
+      let phonesB = word;
+      if (matchSound) {
+        let phones = data ? data[0] : this.rawPhones(word);
+        phonesB = phones.replace(/1/g, '').replace(/ /g, '-').split('-');
       }
 
       // TODO: optimise?
-      let phonesB = sound ? dict[word][0].replace(/1/g, '').replace(/ /g, '-').split('-') : word;
       let med = this.minEditDist(phonesA, phonesB);
 
       // found something even closer
@@ -278,12 +288,12 @@ class Lexicon {
         result = [word];
       }
       // another best to add
-      else if (med === minVal) {
+      else if (med === minVal && result.length < opts.limit) {
         result.push(word);
       }
-      if (result.length === opts.limit) break;
     }
-    return result;
+
+    return result.slice(0,opts.limit);
   }
 
   matchPos(word, rdata, opts, strict) {
@@ -336,9 +346,9 @@ class Lexicon {
 
     opts.minDistance = opts.minDistance || 1;
     opts.numSyllables = opts.numSyllables || 0;
-    opts.limit = opts.limit || Number.MAX_SAFE_INTEGER;
     opts.maxLength = opts.maxLength || Number.MAX_SAFE_INTEGER;
     opts.minLength = opts.minLength || 3;
+    opts.limit = opts.limit || 10;
 
     // handle part-of-speech
     let tpos = opts.pos || false;
@@ -386,19 +396,19 @@ class Lexicon {
 
   similarBySoundAndLetter(word, opts) {
 
-    const actualLimit = opts.limit;
+    //const actualLimit = opts.limit;
 
     opts.type = 'letter';
-    opts.limit = Number.MAX_SAFE_INTEGER;
+    //opts.limit = Number.MAX_SAFE_INTEGER;
     const simLetter = this.similarByType(word, opts);
     if (simLetter.length < 1) return [];
 
     opts.type = 'sound';
-    opts.limit = Number.MAX_SAFE_INTEGER;
+    //opts.limit = Number.MAX_SAFE_INTEGER;
     const simSound = this.similarByType(word, opts);
     if (simSound.length < 1) return [];
 
-    return this._intersect(simSound, simLetter).slice(0, actualLimit);
+    return this._intersect(simSound, simLetter).slice(0, opts.limit);
   }
 
   isMassNoun(w, pos) {

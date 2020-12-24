@@ -41,7 +41,6 @@ class Analyzer {
     let result = RiTa.CACHING && this.cache[word];
     if (typeof result === 'undefined') {
 
-
       let useRaw = false; //opts && opts.useRaw;
       let slash = '/', delim = '-';
       let lex = this.RiTa.lexicon();

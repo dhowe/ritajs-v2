@@ -34,7 +34,8 @@ class Concorder {
       numWords = opts;
     }
 
-    if (typeof numWords !== 'number') numWords = 6;      
+    if (typeof numWords !== 'number') numWords = 6;  
+
     if (!this.model) throw Error('Call concordance() first');
     let result = [];
     let value = this._lookup(word);
