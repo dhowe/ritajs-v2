@@ -1,6 +1,6 @@
 const { MASS_NOUNS } = require("./util");
 
-class PosTagger {
+class Tagger {
 
   constructor(parent) {
     this.RiTa = parent;
@@ -373,4 +373,4 @@ const ADVS = ['rb', 'rbr', 'rbs', 'rp'];
 const NOUNS = ['nn', 'nns', 'nnp', 'nnps'];
 const VERBS = ['vb', 'vbd', 'vbg', 'vbn', 'vbp', 'vbz'];
 
-module && (module.exports = PosTagger);
+module && (module.exports = Tagger);

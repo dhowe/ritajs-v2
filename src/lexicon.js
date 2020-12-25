@@ -307,7 +307,6 @@ class Lexicon {
     // we've matched our pos, pluralize or inflect if needed
     let result = word;
     if (opts.pluralize) {
-      if (opts.pos !== 'nns') throw Error("FAIL: "+word);
       if (word.endsWith("ness") || word.endsWith("ism")) return;
       //if (this.isMassNoun(word, rdata[1])) return; // no mass nouns unless nns
       result = this.RiTa.pluralize(word);
@@ -319,6 +318,8 @@ class Lexicon {
     // verify we haven't changed syllable count
     if (result !== word) {
       if (opts.numSyllables) {
+
+        // TODO: use rdata here if possible
         let syls = this.analyzer.analyzeWord(result, SILENT).syllables;
         let num = syls.split(this.RiTa.SYLLABLE_BOUNDARY).length;
 
