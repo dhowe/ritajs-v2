@@ -428,13 +428,6 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call rhymes.numSyllables', () => {
 
-    /* TODO: impose default 'limit'=10 for rhymes, allit, search, soundsLike, etc.
-     *       add new 'abatement' test cases to each 
-     *       sync code changes and tests with java 
-                WORKING HERE in JAVA
-     *       add matchNumSyllables, matchLength, etc. to rhymes, allits (bc we have word) ?
-     */
-
     expect(RiTa.rhymes("cat", { numSyllables: 1 }).includes("hat")).to.be.true;
     expect(RiTa.rhymes("cat", { numSyllables: 2 }).includes("hat")).to.be.false;
     expect(RiTa.rhymes("cat", { numSyllables: 3 }).includes("hat")).to.be.false;
