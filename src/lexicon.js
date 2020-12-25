@@ -307,7 +307,9 @@ class Lexicon {
     // we've matched our pos, pluralize or inflect if needed
     let result = word;
     if (opts.pluralize) {
-      if (this.isMassNoun(word, rdata[1])) return;
+      if (opts.pos !== 'nns') throw Error("FAIL: "+word);
+      if (word.endsWith("ness") || word.endsWith("ism")) return;
+      //if (this.isMassNoun(word, rdata[1])) return; // no mass nouns unless nns
       result = this.RiTa.pluralize(word);
     }
     else if (opts.conjugate) { // inflect
@@ -315,12 +317,18 @@ class Lexicon {
     }
 
     // verify we haven't changed syllable count
-    if (result !== word && opts.numSyllables) {
-      let syls = this.analyzer.analyzeWord(result, SILENT).syllables;
-      let num = syls.split(this.RiTa.SYLLABLE_BOUNDARY).length;
+    if (result !== word) {
+      if (opts.numSyllables) {
+        let syls = this.analyzer.analyzeWord(result, SILENT).syllables;
+        let num = syls.split(this.RiTa.SYLLABLE_BOUNDARY).length;
 
-      // reject if syllable count has changed
-      if (num !== opts.numSyllables) return;
+        // reject if syllable count has changed
+        if (num !== opts.numSyllables) return;
+      }
+      // reject if length no longer matches
+      if (result.length < opts.minLength || result.length > opts.maxLength) {
+        return 
+      }
     }
 
     return result;

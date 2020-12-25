@@ -494,9 +494,15 @@ describe('RiTa.Analyzer', () => {
       "photos", "photo",
       "toes", "toe",
       "series", "series",
+
       "men", "man",
       "mice", "mouse",
       "lice", "louse",
+//    "dice", "die", consider 'dice' as singular
+      "rice", "rice",
+      "women", "woman",
+      "clothes", "clothes",
+
       "gases", "gas",
       "buses", "bus",
       "happiness", "happiness",
@@ -504,7 +510,6 @@ describe('RiTa.Analyzer', () => {
       "apotheses", "apothesis",
       "stimuli", "stimulus",
       "corpora", "corpus",
-      "women", "woman",
       "congressmen", "congressman",
       "aldermen", "alderman",
       "freshmen", "freshman",
