@@ -83,12 +83,21 @@ class RiTa {
     return RiTa.lexicon().isAlliteration(...arguments);
   }
 
+  static isVowel(c) {
+    return c && c.length === 1 && RiTa.VOWELS.includes(c);
+  }
+
+  static isConsonant(c) {
+    return (c && c.length === 1 && !RiTa.VOWELS.includes(c)
+       && IS_LETTER.test(c));
+  }
+
   static isNoun(word) {
     return RiTa.tagger.isNoun(word);
   }
 
   static isPunctuation(text) {
-    return text && text.length && ONLY_PUNCT_RE.test(text);
+    return text && text.length && ONLY_PUNCT.test(text);
   }
 
   static isQuestion(sentence) { // remove?
@@ -303,6 +312,7 @@ RiTa.SPLIT_CONTRACTIONS = false;
 // Set to false to reduce memory (likely slower)
 RiTa.CACHING = true;
 
-const ONLY_PUNCT_RE = /^[^0-9A-Za-z\s]*$/;
+const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
+const IS_LETTER = /^[a-z\u00C0-\u00ff]+$/;
 
 module && (module.exports = RiTa);

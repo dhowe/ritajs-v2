@@ -19,7 +19,7 @@ class Lexicon {
     this.parseArgs(opts);
 
     // only allow consonant inputs
-    if (this.RiTa.VOWELS.includes(theWord.charAt(0))) {
+    if (this.RiTa.isVowel(theWord.charAt(0))) {
       if (!opts.silent && !this.RiTa.SILENT) console.warn
         ('Expects a word starting with a consonant, got: ' + theWord);
       return [];
@@ -83,7 +83,7 @@ class Lexicon {
     let _silent = opts.silent;
     opts.silent = true;
 
-    let result = []; 
+    let result = [];
     //analyzer = this.RiTa.analyzer();
 
     for (let i = 0; i < words.length; i++) {
@@ -221,7 +221,7 @@ class Lexicon {
     if (!word1 || !word2 || !word1.length) return false;
     let c1 = this._firstPhone(this._firstStressedSyl(word1)),
       c2 = this._firstPhone(this._firstStressedSyl(word2));
-    return c1 && c2 && !this._isVowel(c1.charAt(0)) && c1 === c2;
+    return c1 && c2 && !this.isVowel(c1.charAt(0)) && c1 === c2;
   }
 
   isRhyme(word1, word2) {
@@ -293,7 +293,7 @@ class Lexicon {
       }
     }
 
-    return result.slice(0,opts.limit);
+    return result.slice(0, opts.limit);
   }
 
   matchPos(word, rdata, opts, strict) {
@@ -328,7 +328,7 @@ class Lexicon {
       }
       // reject if length no longer matches
       if (result.length < opts.minLength || result.length > opts.maxLength) {
-        return 
+        return
       }
     }
 
@@ -429,15 +429,6 @@ class Lexicon {
 
   _toPhoneArray(raw) {
     return raw.replace(/[01]/g, '').replace(/ /g, '-').split('-');
-  }
-
-  _isVowel(c) {
-    return c && c.length && this.RiTa.VOWELS.includes(c);
-  }
-
-  _isConsonant(p) {
-    return (typeof p === S && p.length === 1 && // precompile
-      this.RiTa.VOWELS.indexOf(p) < 0 && IS_CONS_RE.test(p));
   }
 
   _firstPhone(rawPhones) {
@@ -594,6 +585,5 @@ class Lexicon {
 }
 
 const SILENT = { silent: true };
-const IS_CONS_RE = /^[a-z\u00C0-\u00ff]+$/;
 
 module && (module.exports = Lexicon);

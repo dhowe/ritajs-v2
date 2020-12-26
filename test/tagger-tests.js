@@ -30,6 +30,10 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos("the boy dances".split(/ /), { simple: true }), ["-", "n", "v"]);
   });
 
+  it('Should call allTags', () => {
+    eql(RiTa.tagger.allTags('monkey'), ["nn"]);
+    eql(RiTa.tagger.allTags('monkeys'), ["nns"]);
+  });
 
   it('Should call pos.array.inline.simple', () => {
     let result, answer, txt;
