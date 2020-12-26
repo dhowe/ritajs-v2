@@ -213,8 +213,6 @@ class RiTa {
 
   static lexicon() { // lazy load
     if (typeof RiTa._lexicon === 'undefined') {
-      const LetterToSound = require('./rita_lts');
-      RiTa.lts = new LetterToSound(RiTa);
       if (typeof __NOLEX__ !== 'undefined') { // used by webpack, don't shorten
         RiTa._lexicon = new Lexicon(RiTa);
       }
@@ -249,10 +247,7 @@ RiTa.conjugator = new Conjugator(RiTa);
 RiTa.randomizer = new SeededRandom(RiTa);
 
 // LAZY-LOADS
-RiTa._analyzer = undefined;
 RiTa._lexicon = undefined;
-RiTa.dict = undefined;
-RiTa.lts = undefined;
 
 // MESSAGES
 RiTa.SILENT = false;

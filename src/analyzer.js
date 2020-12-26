@@ -5,11 +5,12 @@ class Analyzer {
   constructor(parent) {
     this.cache = {};
     this.RiTa = parent;
+    this.lts = undefined;
   }
 
   analyze(text, opts) {
     let words = this.RiTa.tokenizer.tokenize(text);
-    let tags = this.RiTa.tagger.tag(text, opts); // don't fail if no lexicon
+    let tags = this.RiTa.pos(text, opts); // don't fail if no lexicon
     let features = {
       phones: '',
       stresses: '',
@@ -31,6 +32,12 @@ class Analyzer {
 
     return features;
   }
+
+	computePhones(word) {
+    const LetterToSound = require("./rita_lts");
+		if (!this.lts) this.lts = new LetterToSound(this.RiTa);
+		return this.lts.buildPhones(word);
+	}
 
   analyzeWord(word, opts = {}) {
 
@@ -56,7 +63,7 @@ class Analyzer {
 
       // if no phones yet, try the lts-engine
       if (!rawPhones) {
-        let ltsPhones = RiTa.lts && RiTa.lts.computePhones(word);
+        let ltsPhones = this.computePhones(word);
         if (ltsPhones && ltsPhones.length > 0) {
           if (!RiTa.SILENT && !RiTa.SILENCE_LTS && !silentLts
             && lex.size() && word.match(HAS_LETTER_RE)) {

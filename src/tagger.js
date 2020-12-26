@@ -4,7 +4,6 @@ class Tagger {
 
   constructor(parent) {
     this.RiTa = parent;
-    this.stemmer = parent.stemmer;
   }
 
   isVerb(word) {
@@ -182,12 +181,6 @@ class Tagger {
   isLikelyPlural(word) {
     return this._lexHas("n", RiTa.singularize(word)) || RiTa.inflector.isPlural(word);
   }
-
-  /*   _isLikelyPluralOld(word) {
-      // Check for plural noun with singularizer and stemmer
-      return this.RiTa.stemmer.isRawPlural(word)
-        || this._lexHas("n", this.RiTa.singularize(word));
-    } */
 
   _handleSingleLetter(c) {
     if (c === 'a' || c === 'A') return 'dt';

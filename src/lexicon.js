@@ -530,7 +530,7 @@ class Lexicon {
     if (rdata && rdata.length) return rdata[0];
 
     if (!noLts) {
-      let phones = this.RiTa.lts && this.RiTa.lts.computePhones(word);
+      let phones = this.RiTa.analyzer.computePhones(word);
       return Util.syllablesFromPhones(phones); // TODO: bad name
     }
   }
