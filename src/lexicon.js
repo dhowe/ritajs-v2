@@ -221,7 +221,7 @@ class Lexicon {
     if (!word1 || !word2 || !word1.length) return false;
     let c1 = this._firstPhone(this._firstStressedSyl(word1)),
       c2 = this._firstPhone(this._firstStressedSyl(word2));
-    return c1 && c2 && !this.isVowel(c1.charAt(0)) && c1 === c2;
+    return c1 && c2 && !this.RiTa.isVowel(c1.charAt(0)) && c1 === c2;
   }
 
   isRhyme(word1, word2) {
