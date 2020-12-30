@@ -67,39 +67,33 @@ class Tokenizer {
     return result;
   }
 
-  untokenize(arr, delim) { // so ugly
+  untokenize(arr, delim) { // so ugly (but works)
 
     delim = delim || ' ';
 
-    let thisNBPunct, thisNAPunct, lastNBPunct, lastNAPunct, thisQuote, lastQuote, thisComma, isLast,
-      lastComma, lastEndWithS, nextIsS, thisLBracket, thisRBracket, lastLBracket, lastRBracket,
-      lastIsWWW, thisDomin, dbug = 0, nextNoSpace = false, afterQuote = false, midSentence = false,
-      withinQuote = arr.length && QUOTE_RE.test(arr[0]), result = arr[0] || '';
+    let nextNoSpace = false, afterQuote = false, midSentence = false;
+    let withinQuote = arr.length && QUOTE_RE.test(arr[0]);
+    let result = arr[0] || '';
 
     for (let i = 1; i < arr.length; i++) {
 
       if (!arr[i]) continue;
 
-      thisComma = arr[i] === ',';
-      thisNBPunct = NO_SPACE_BF_PUNCT_RE.test(arr[i]);//NB -> no space before the punctuation
-      thisNAPunct = NO_SPACE_AFTER_PUNCT_RE.test(arr[i]);//NA -> no space after the punctuation
-      thisQuote = QUOTE_RE.test(arr[i]);
-      thisLBracket = LEFT_BRACKETS_RE.test(arr[i]);//LBracket -> left bracket
-      thisRBracket = RIGHT_BRACKETS_RE.test(arr[i]);//RBracket -> right bracket
-      lastComma = arr[i - 1] === ',';
-      lastNBPunct = NO_SPACE_BF_PUNCT_RE.test(arr[i - 1]);//NB -> no space before
-      lastNAPunct = NO_SPACE_AFTER_PUNCT_RE.test(arr[i - 1]);//NA -> no space after
-      lastQuote = QUOTE_RE.test(arr[i - 1]);
-      lastLBracket = LEFT_BRACKETS_RE.test(arr[i - 1]);
-      lastRBracket = RIGHT_BRACKETS_RE.test(arr[i - 1]);
-      lastEndWithS = (arr[i - 1].charAt(arr[i - 1].length - 1) === 's'
+      let thisComma = arr[i] === ',',  lastComma = arr[i - 1] === ',';
+      let thisNBPunct = NO_SPACE_BF_PUNCT_RE.test(arr[i]); // NB -> no space before the punctuation
+      let thisLBracket = LEFT_BRACKETS_RE.test(arr[i]); // LBracket -> left bracket
+      let thisRBracket = RIGHT_BRACKETS_RE.test(arr[i]); // RBracket -> right bracket
+      let lastNBPunct = NO_SPACE_BF_PUNCT_RE.test(arr[i - 1]); // NB -> no space before
+      let lastNAPunct = NO_SPACE_AFTER_PUNCT_RE.test(arr[i - 1]); // NA -> no space after
+      let lastLB = LEFT_BRACKETS_RE.test(arr[i - 1]), lastRB = RIGHT_BRACKETS_RE.test(arr[i - 1]);
+      let lastEndWithS = (arr[i - 1][arr[i - 1].length - 1] === 's'
         && arr[i - 1] != "is" && arr[i - 1] != "Is" && arr[i - 1] != "IS");
-      lastIsWWW = WWW_RE.test(arr[i - 1]);
-      thisDomin = DOMAIN_RE.test(arr[i]);
-      nextIsS = i == arr.length - 1 ? false : (arr[i + 1] === "s" || arr[i + 1] === "S");
-      isLast = (i == arr.length - 1);
+      let lastIsWWW = WWW_RE.test(arr[i - 1]), isDomain = DOMAIN_RE.test(arr[i]);
+      let nextIsS = i == arr.length - 1 ? false : (arr[i + 1] === "s" || arr[i + 1] === "S");
+      let lastQuote = QUOTE_RE.test(arr[i - 1]), isLast = (i == arr.length - 1);
+      let thisQuote = QUOTE_RE.test(arr[i]);
 
-      if ((arr[i - 1] === "." && thisDomin) || nextNoSpace) {
+      if ((arr[i - 1] === "." && isDomain) || nextNoSpace) {
 
         nextNoSpace = false;
         result += arr[i];
@@ -113,7 +107,7 @@ class Tokenizer {
 
         result += delim;
 
-      } else if (lastRBracket) {
+      } else if (lastRB) {
 
         if (!thisNBPunct && !thisLBracket) {
           result += delim;
@@ -147,16 +141,15 @@ class Tokenizer {
         result += delim;
         midSentence = false;
 
-      } else if ((!thisNBPunct && !lastQuote && !lastNAPunct && !lastLBracket && !thisRBracket)
+      } else if ((!thisNBPunct && !lastQuote && !lastNAPunct && !lastLB && !thisRBracket)
         || (!isLast && thisNBPunct && lastNBPunct && !lastNAPunct
-          && !lastQuote && !lastLBracket && !thisRBracket)) {
+          && !lastQuote && !lastLB && !thisRBracket)) {
 
         result += delim;
       }
 
       result += arr[i]; // add to result
       if (thisNBPunct && !lastNBPunct && !withinQuote && SQUOTE_RE.test(arr[i]) && lastEndWithS) {
-
         result += delim; // ??
       }
     }
