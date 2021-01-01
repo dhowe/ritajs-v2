@@ -3,7 +3,7 @@ let words = Object.keys(dict), result = {};
 let num = words.length, hits = 0;
 words.forEach(w => {
   let pos = dict[w][1];
-  if (pos !== 'vbn') result[w] = dict[w];
+  if (pos !== 'POS') result[w] = dict[w];
   else hits++;
 });
 
