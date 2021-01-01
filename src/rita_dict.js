@@ -2134,7 +2134,6 @@ module && (module.exports = {
   "borer":["b-ao1 r-er","nn"],
   "boring":["b-ao1 r-ih-ng","jj vbg"],
   "born":["b-ao1-r-n","vbn"],
-  "borne":["b-ao1-r-n","vbn"],
   "borough":["b-er1 ow","nn"],
   "borrow":["b-aa1 r-ow","vb vbp"],
   "borrowed":["b-aa1 r-ow-d","vbn vbd jj"],

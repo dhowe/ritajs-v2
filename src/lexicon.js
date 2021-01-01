@@ -308,7 +308,6 @@ class Lexicon {
     let result = word;
     if (opts.pluralize) {
       if (word.endsWith("ness") || word.endsWith("ism")) return;
-      //if (this.isMassNoun(word, rdata[1])) return; // no mass nouns unless nns
       result = this.RiTa.pluralize(word);
     }
     else if (opts.conjugate) { // inflect
