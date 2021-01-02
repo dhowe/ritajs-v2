@@ -6,7 +6,7 @@ RiTa is a toolkit for generative writing and natural language. It is implemented
 
 ###
 
-:warning: Version 2.0 contains breaking changes! Please check the [release notes](https://rednoise.org/rita/#whats-new-wrapper).
+:warning: Version 2.0 contains breaking changes! Please check the [release notes](https://rednoise.org/rita/#whats-new-wrapper)
 
 ### Installation
 
