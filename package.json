@@ -3,7 +3,7 @@
   "version": "2.0.20",
   "author": "Daniel C. Howe",
   "license": "GPL-3.0",
-  "description": "A toolkit for generative natural language",
+  "description": "tools for generative writing",
   "homepage": "https://rednoise.org/rita",
   "repository": {
     "type": "git",
