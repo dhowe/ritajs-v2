@@ -76,7 +76,7 @@
       }
     ]
   },
-  "runkitExampleFilename": ".runkit.js",
+  "runkitExampleFilename": ".example.js",
   "keywords": [
     "natural language",
     "generative text",
