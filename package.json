@@ -13,8 +13,8 @@
     "contents": "dist"
   },
   "files": [
-    "dist",
-    ".example.js"
+    "dist/*.js",
+    "example.js"
   ],
   "main": "dist/rita.js",
   "unpkg": "dist/rita-web.js",
