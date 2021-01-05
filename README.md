@@ -2,7 +2,7 @@
 
 ## RiTa: a toolkit for generative writing and natural language
 
-RiTa is a toolkit for generative writing and natural language. It is implemented in Java and JavaScript, with a common API for both, and it is free/libre/open-source via the GPL license.
+RiTa is a toolkit for generative writing and natural language. It is implemented in [Java](https://github.com/dhowe/rita4j/) and JavaScript, with a common API for both, and is free/libre/open-source via the GPL license.
 
 ###
 
@@ -13,18 +13,25 @@ RiTa is a toolkit for generative writing and natural language. It is implemented
 * For node: `npm install rita`
 * For [browsers](#a-simple-sketch): ```<script src="https://unpkg.com/rita"></script>```
 * For [developers](#developing)
-* For [Java](https://github.com/dhowe?tab=packages&repo_name=rita)
-
 
 ### Example (node)
 
 ```javascript
 let RiTa = require('rita');
-console.log(RiTa.rhymes('sweet'));
 
+// to find rhymes
+let rhymes = RiTa.rhymes('sweet');
+console.log(rhymes);
+
+// to analyze a sentence
+let data = RiTa.analyze("The elephant took a bite!");
+console.log(data);
+
+// to load a grammar
 let grammar = RiTa.grammar(jsonRules);
 console.log(grammar.expand());
 ```
+
 
 ## API
 
@@ -58,7 +65,7 @@ console.log(grammar.expand());
       <a href="./RiTa/kwic/index.html">RiTa.kwic()</a><br/>
       <a href="./RiTa/markov/index.html">RiTa.markov()</a><br/>
     </td>
-    <td style="vertical-align: top; padding-top: 15px">
+    <td style="vertical-align: top; padding-top: 15px"><br/>
       <a href="./RiTa/pastParticiple/index.html">RiTa.pastParticiple()</a><br/>
       <a href="./RiTa/phones/index.html">RiTa.phones()</a><br/>
       <a href="./RiTa/pos/index.html">RiTa.pos()</a><br/>
