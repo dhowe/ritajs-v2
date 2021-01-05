@@ -26,6 +26,7 @@ let grammar = RiTa.grammar(jsonRules);
 console.log(grammar.expand());
 ```
 
+
 ## API
 
   <table cellspacing="0" cellpadding="0" style="vertical-align: top;">
@@ -58,7 +59,7 @@ console.log(grammar.expand());
       <a href="./RiTa/kwic/index.html">RiTa.kwic()</a><br/>
       <a href="./RiTa/markov/index.html">RiTa.markov()</a><br/>
     </td>
-    <td style="vertical-align: top; padding-top: 15px">
+    <td style="vertical-align: top; padding-top: 15px"><br/>
       <a href="./RiTa/pastParticiple/index.html">RiTa.pastParticiple()</a><br/>
       <a href="./RiTa/phones/index.html">RiTa.phones()</a><br/>
       <a href="./RiTa/pos/index.html">RiTa.pos()</a><br/>
