@@ -7,7 +7,7 @@ module.exports = {
   output: {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
-    filename: 'rita.umd.js',
+    filename: 'rita-umd.js',
     libraryTarget: 'umd',
   },  
   node: {
