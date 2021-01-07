@@ -376,6 +376,7 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call rhymes', () => {
 
+    expect(RiTa.rhymes("cat").length).eq(10);
     expect(RiTa.rhymes("cat").includes("hat")).to.be.true;
     expect(RiTa.rhymes("yellow").includes("mellow")).to.be.true;
     expect(RiTa.rhymes("toy").includes("boy")).to.be.true;
@@ -394,6 +395,10 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.rhymes("sieve", { limit: 1000 }).includes("give")).to.be.true;
     expect(RiTa.rhymes("shore", { limit: 1000 }).includes("more")).to.be.true;
     expect(RiTa.rhymes("tense", { limit: 1000 }).includes("sense")).to.be.true;
+
+    expect(RiTa.rhymes("bog").includes("fog")).to.be.true;
+    expect(RiTa.rhymes("dog").includes("log")).to.be.true;
+
   });
 
   it('Should call rhymes.pos', () => {
