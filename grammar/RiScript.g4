@@ -22,7 +22,9 @@ chars: (
 	)+;
 symbol: SYM transform* | transform+;
 wexpr: expr? weight?;
-transform: TF;
+//transform: TF;
+transform: (DOT TFI (LP expr RP)?)+;
+
 op: OP | (LT | GT | EQ);
 
 GT: '>';
@@ -41,10 +43,11 @@ HAT: '^';
 DOL: '$';
 COM: ',';
 NL: '\r'? '\n';
-SYM: ('$' NIDENT);// | ('<' NIDENT '>');
+SYM: ('$' NIDENT);
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
 TF: ('.' IDENT ( '(' ')')?)+;
+TFI: IDENT;
 ENT: '&' [A-Za-z0-9#]+ ';';
 //NUM: ([0-9]+ | ( [0-9]* '.' [0-9]+));
 INT: WS* [0-9]+ WS*;
