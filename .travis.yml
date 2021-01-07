@@ -7,5 +7,8 @@ node_js:
 cache:
   directories:
     - "node_modules"
+branches:
+  only:
+  - master
 before_script: yarn build 
 script: yarn test
