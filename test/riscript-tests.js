@@ -1,6 +1,6 @@
 describe('RiTa.RiScript', () => {
 
-  const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 };
+  const ST = { silent: 1 }, TT = { trace: 1 }, TL = { traceLex: 1 }, TA = { traceLex: 1, trace: 1 }, SP = { singlePass: 1 };
 
   if (typeof module !== 'undefined') require('./before');
 
@@ -67,7 +67,6 @@ describe('RiTa.RiScript', () => {
       expect(rs.isParseable("$hello")).eq(true);
       expect(rs.isParseable("$b")).eq(true);
     });
-
 
     it('Should resolve simple expressions', () => {
       expect(RiTa.evaluate('foo', {})).eq('foo');
@@ -261,7 +260,12 @@ describe('RiTa.RiScript', () => {
 
       //expect(RiTa.evaluate('These ($state feeling).pluralize().',  TODO: SEE KNOWN ISSUES
       //{ state: '(bad | bad)' }, TT)).eq('These bad feelings.');
-    })
+    });
+
+    it('XXX', () => {
+      expect(RiTa.evaluate('That is (ant).articlize()', 0, TA)).eq('That is an ant.');
+
+    });
 
     it('Should resolve transforms on literals', () => {
       expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many "teeth" do you have?');

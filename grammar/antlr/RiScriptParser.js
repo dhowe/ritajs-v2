@@ -76,7 +76,7 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0002\u0002[]\u0007\f\u0002\u0002\\[\u0003\u0002\u0002\u0002]`\u0003",
     "\u0002\u0002\u0002^\\\u0003\u0002\u0002\u0002^_\u0003\u0002\u0002\u0002",
     "_a\u0003\u0002\u0002\u0002`^\u0003\u0002\u0002\u0002ab\u0007\u0007\u0002",
-    "\u0002bc\u0007\u0019\u0002\u0002cg\u0007\b\u0002\u0002df\u0007\f\u0002",
+    "\u0002bc\u0007\u0018\u0002\u0002cg\u0007\b\u0002\u0002df\u0007\f\u0002",
     "\u0002ed\u0003\u0002\u0002\u0002fi\u0003\u0002\u0002\u0002ge\u0003\u0002",
     "\u0002\u0002gh\u0003\u0002\u0002\u0002h\u000b\u0003\u0002\u0002\u0002",
     "ig\u0003\u0002\u0002\u0002jp\u0007\u0005\u0002\u0002kl\u0005\u0016\f",
@@ -95,8 +95,8 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0084\u0003\u0002\u0002\u0002\u0087\u0088\u0005\u0014\u000b\u0002\u0088",
     "\u0089\u0007\u0015\u0002\u0002\u0089\u008a\u0005\u0004\u0003\u0002\u008a",
     "\u0011\u0003\u0002\u0002\u0002\u008b\u0090\t\u0002\u0002\u0002\u008c",
-    "\u0090\u0007\u001b\u0002\u0002\u008d\u0090\u0007\u0018\u0002\u0002\u008e",
-    "\u0090\u0007\u0019\u0002\u0002\u008f\u008b\u0003\u0002\u0002\u0002\u008f",
+    "\u0090\u0007\u001a\u0002\u0002\u008d\u0090\u0007\u0017\u0002\u0002\u008e",
+    "\u0090\u0007\u0018\u0002\u0002\u008f\u008b\u0003\u0002\u0002\u0002\u008f",
     "\u008c\u0003\u0002\u0002\u0002\u008f\u008d\u0003\u0002\u0002\u0002\u008f",
     "\u008e\u0003\u0002\u0002\u0002\u0090\u0091\u0003\u0002\u0002\u0002\u0091",
     "\u008f\u0003\u0002\u0002\u0002\u0091\u0092\u0003\u0002\u0002\u0002\u0092",
@@ -113,14 +113,14 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u00a3\u0003\u0002\u0002\u0002\u00a3\u00a5\u0003\u0002\u0002\u0002\u00a4",
     "\u00a6\u0005\n\u0006\u0002\u00a5\u00a4\u0003\u0002\u0002\u0002\u00a5",
     "\u00a6\u0003\u0002\u0002\u0002\u00a6\u0017\u0003\u0002\u0002\u0002\u00a7",
-    "\u00a8\u0007\u000b\u0002\u0002\u00a8\u00ad\u0007\u0017\u0002\u0002\u00a9",
+    "\u00a8\u0007\u000b\u0002\u0002\u00a8\u00ad\u0005\u0012\n\u0002\u00a9",
     "\u00aa\u0007\u0005\u0002\u0002\u00aa\u00ab\u0005\u0004\u0003\u0002\u00ab",
     "\u00ac\u0007\u0006\u0002\u0002\u00ac\u00ae\u0003\u0002\u0002\u0002\u00ad",
     "\u00a9\u0003\u0002\u0002\u0002\u00ad\u00ae\u0003\u0002\u0002\u0002\u00ae",
     "\u00b0\u0003\u0002\u0002\u0002\u00af\u00a7\u0003\u0002\u0002\u0002\u00b0",
     "\u00b1\u0003\u0002\u0002\u0002\u00b1\u00af\u0003\u0002\u0002\u0002\u00b1",
     "\u00b2\u0003\u0002\u0002\u0002\u00b2\u0019\u0003\u0002\u0002\u0002\u00b3",
-    "\u00b6\u0007\u001a\u0002\u0002\u00b4\u00b6\t\u0003\u0002\u0002\u00b5",
+    "\u00b6\u0007\u0019\u0002\u0002\u00b4\u00b6\t\u0003\u0002\u0002\u00b5",
     "\u00b3\u0003\u0002\u0002\u0002\u00b5\u00b4\u0003\u0002\u0002\u0002\u00b6",
     "\u001b\u0003\u0002\u0002\u0002\u001c\u001f!*,18>GNUY^gpy\u0084\u008f",
     "\u0091\u0097\u009d\u009f\u00a2\u00a5\u00ad\u00b1\u00b5"].join("");
@@ -137,8 +137,8 @@ var literalNames = [ null, "'>'", "'<'", "'('", "')'", "'['", "']'", "'{'",
 
 var symbolicNames = [ null, "GT", "LT", "LP", "RP", "LB", "RB", "LCB", "RCB", 
                       "DOT", "WS", "EXC", "AST", "HAT", "DOL", "COM", "NL", 
-                      "SYM", "OR", "EQ", "TF", "TFI", "ENT", "INT", "OP", 
-                      "CHR" ];
+                      "SYM", "OR", "EQ", "TF", "ENT", "INT", "OP", "CHR", 
+                      "TFI" ];
 
 var ruleNames =  [ "script", "expr", "cexpr", "cond", "weight", "choice", 
                    "inline", "assign", "chars", "symbol", "wexpr", "transform", 
@@ -183,11 +183,11 @@ RiScriptParser.SYM = 17;
 RiScriptParser.OR = 18;
 RiScriptParser.EQ = 19;
 RiScriptParser.TF = 20;
-RiScriptParser.TFI = 21;
-RiScriptParser.ENT = 22;
-RiScriptParser.INT = 23;
-RiScriptParser.OP = 24;
-RiScriptParser.CHR = 25;
+RiScriptParser.ENT = 21;
+RiScriptParser.INT = 22;
+RiScriptParser.OP = 23;
+RiScriptParser.CHR = 24;
+RiScriptParser.TFI = 25;
 
 RiScriptParser.RULE_script = 0;
 RiScriptParser.RULE_expr = 1;
@@ -1710,17 +1710,16 @@ TransformContext.prototype.DOT = function(i) {
 };
 
 
-TransformContext.prototype.TFI = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
+TransformContext.prototype.chars = function(i) {
+    if(i===undefined) {
+        i = null;
+    }
     if(i===null) {
-        return this.getTokens(RiScriptParser.TFI);
+        return this.getTypedRuleContexts(CharsContext);
     } else {
-        return this.getToken(RiScriptParser.TFI, i);
+        return this.getTypedRuleContext(CharsContext,i);
     }
 };
-
 
 TransformContext.prototype.LP = function(i) {
 	if(i===undefined) {
@@ -1797,7 +1796,7 @@ RiScriptParser.prototype.transform = function() {
         		this.state = 165;
         		this.match(RiScriptParser.DOT);
         		this.state = 166;
-        		this.match(RiScriptParser.TFI);
+        		this.chars();
         		this.state = 171;
         		this._errHandler.sync(this);
         		var la_ = this._interp.adaptivePredict(this._input,23,this._ctx);
