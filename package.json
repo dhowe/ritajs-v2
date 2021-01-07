@@ -18,6 +18,7 @@
   ],
   "main": "dist/rita.js",
   "unpkg": "dist/rita-web.js",
+  "jsdelivr": "dist/rita-web.js",
   "scripts": {
     "clean": "rm -f dist/*.*",
     "build": "yarn clean && webpack",
