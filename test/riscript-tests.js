@@ -996,6 +996,12 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("The&nbsp; dog", {})).eq("The  dog");
       expect(RiTa.evaluate("The &nbsp; dog", {})).eq("The   dog");
     });
+
+    it('Should show literal dollar signs', () => {
+      expect(RiTa.evaluate("This is &#x00024", {})).eq("This is $");
+      expect(RiTa.evaluate("This is &#36", {})).eq("This is $");
+      expect(RiTa.evaluate("This is $dollar", { dollar: "&#36" })).eq("This is $");
+    });
   });
 
   describe('Operators', () => {
