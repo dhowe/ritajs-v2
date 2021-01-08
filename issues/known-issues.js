@@ -75,11 +75,6 @@ describe('RiTa.KnownIssues', () => {
     }
   });
 
-  it('Failing for showing literal dollar sign', () => {
-    expect(RiTa.evaluate("This is &#36100", {})).eq("This is $100");
-    expect(RiTa.evaluate("This is &#x00024100", {})).eq("This is $100");
-    //or maybe some way to seperate &#36 and the digits behind in the Riscript?
-  });
 });
 
 function eql(output, expected, msg) { expect(output).eql(expected, msg); }

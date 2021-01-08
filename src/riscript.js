@@ -237,7 +237,7 @@ RiScript.transforms = {
   articlize: RiScript.articlize,
   seq: RiScript.identity,
   rseq: RiScript.identity,
-  norep: RiScript.identity,
+  reps: RiScript.identity,
   qq: quotify, uc: toUpper,
   art: RiScript.articlize, 
   ucf: capitalize // aliases

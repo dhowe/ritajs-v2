@@ -768,17 +768,34 @@ describe('RiTa.RiScript', () => {
       expect(res2).to.have.members(opts);
     });
 
-    it('Should resolve norep transforms', () => {
+    it('Should resolve default (norep) transforms', () => {
       let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').norep()';
+      let rule = '(' + opts.join('|') + ')';
       let rs = new RiScript();
       let last;
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 100; i++) {
         let res = rs.evaluate(rule);
         //console.log('got', i, ':', res);
-        expect(res != last).is.true;
+        expect(res !== last).is.true;
         last = res;
       }
+    });
+
+    it('Should resolve reps (repeats ok) transforms ', () => {
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '(' + opts.join('|') + ').reps()';
+      let rs = new RiScript();
+      let last, ok = false;
+      for (let i = 0; i < 1000; i++) { // should repeat in 1000
+        let res = rs.evaluate(rule);
+        //console.log('got', i, ':', res);
+        if (res === last) {
+          ok = true;
+          break;
+        }
+        last = res;
+      }
+      expect(ok).is.true;
     });
 
     it('Should resolve choice transforms', () => {
@@ -1001,6 +1018,14 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("This is &#x00024", {})).eq("This is $");
       expect(RiTa.evaluate("This is &#36", {})).eq("This is $");
       expect(RiTa.evaluate("This is $dollar", { dollar: "&#36" })).eq("This is $");
+      expect(RiTa.evaluate("&dollar;(100)")).eq("$100");
+      expect(RiTa.evaluate("(&dollar;)100")).eq("$100");
+      expect(RiTa.evaluate("&#36;(100)")).eq("$100");
+      expect(RiTa.evaluate("(&#36;)100")).eq("$100");
+
+      expect(RiTa.evaluate("&#36;100")).eq("$100");
+      expect(RiTa.evaluate("&dollar;100")).eq("$100");
+      expect(RiTa.evaluate("This is &#x00024;100")).eq("This is $100");
     });
   });
 

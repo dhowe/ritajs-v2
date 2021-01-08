@@ -398,7 +398,6 @@ describe('RiTa.Lexicon', function () {
 
     expect(RiTa.rhymes("bog").includes("fog")).to.be.true;
     expect(RiTa.rhymes("dog").includes("log")).to.be.true;
-
   });
 
   it('Should call rhymes.pos', () => {

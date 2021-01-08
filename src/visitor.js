@@ -75,10 +75,11 @@ class Visitor extends RiScriptVisitor {
 
   visitChoice(ctx) {
 
+    // choices are re-used in repeated evaluate() calls
     let choice = this.sequences[++this.indexer];
     if (!choice) {
       choice = new ChoiceState(this, ctx);
-      if (choice.type) this.sequences[choice.id] = choice;
+      this.sequences[choice.id] = choice;
     }
 
     let txs = ctx.transform();
@@ -368,9 +369,9 @@ class ChoiceState {
 
   constructor(parent, ctx) {
 
-    this.type = 0
+    this.type = 0;
     this.index = 0;
-    this.options = []
+    this.options = [];
     this.id = parent.indexer;
 
     ctx.wexpr().map((w, k) => {
@@ -389,8 +390,8 @@ class ChoiceState {
     if (this.type === RSEQUENCE) this.options =
       RiTa.randomizer.randomOrdering(this.options);
 
-    //if (parent.trace) console.log('  new ChoiceState#' + this.id + '('
-    //+ this.options.map(o => o.getText()) + ", type=" + this.type + ")");
+    if (parent.trace) console.log('  new ChoiceState#' + this.id + '('
+      + this.options.map(o => o.getText()) + ", type=" + this.type + ")");
   }
 
   optionStr() {
@@ -400,10 +401,15 @@ class ChoiceState {
   select() {
     if (this.options.length == 0) return null;
     if (this.options.length == 1) return this.options[0];
-    if (this.type == SEQUENCE) return this.selectSequence();
-    if (this.type == NOREPEAT) return this.selectNoRepeat();
+
     if (this.type == RSEQUENCE) return this.selectRandSequence();
-    return RiTa.randomizer.randomItem(this.options); // SIMPLE
+    if (this.type == SEQUENCE) return this.selectSequence();
+
+    // TODO: this should be default, add options for no-check // WORKING
+
+    if (this.type == REPEATS) return RiTa.randomizer.randomItem(this.options); // SIMPLE
+
+    return this.selectNoRepeat(); // default no-repeat
   }
 
   selectNoRepeat() {
@@ -497,7 +503,7 @@ Visitor.ASSIGN = '[]';
 Visitor.FUNCTION = '()';
 Visitor.EMPTY = new RiScriptParser.ExprContext();
 
-const RSEQUENCE = 'rseq', SEQUENCE = 'seq', NOREPEAT = 'norep';
-const TYPES = [RSEQUENCE, SEQUENCE, NOREPEAT];
+const RSEQUENCE = 'rseq', SEQUENCE = 'seq', REPEATS = 'reps';
+const TYPES = [RSEQUENCE, SEQUENCE, REPEATS];
 
 module.exports = Visitor;
