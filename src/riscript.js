@@ -132,7 +132,10 @@ class RiScript {
 
   preParse(input, opts = {}) {
     let parse = input, pre = '', post = '';
-    if (!opts.skipPreParse && !PREPARSE_A_RE.test(parse)) {
+    if (typeof input === 'undefined' || input.length < 1) {
+      parse = '';
+    }
+    else if (!opts.skipPreParse && !PREPARSE_A_RE.test(parse)) {
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
       while (preIdx < words.length) {
@@ -239,7 +242,7 @@ RiScript.transforms = {
   rseq: RiScript.identity,
   norep: RiScript.identity,
   qq: quotify, uc: toUpper,
-  art: RiScript.articlize, 
+  art: RiScript.articlize,
   ucf: capitalize // aliases
 };
 
