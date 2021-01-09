@@ -280,7 +280,7 @@ describe('RiTa.Grammar', () => {
         eq(rg.expand("$mammal"), "dog");
 
         let hawks = 0, dogs = 0;
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 100; i++) {
             let res = rg.expand("$pet");
             ok(res === "hawk" || res === 'dog', 'got ' + res);
             if (res == "dog") dogs++;
