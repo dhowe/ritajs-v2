@@ -1,5 +1,3 @@
-const { expect } = require('chai');
-
 describe('RiTa.Core', () => {
 
   if (typeof module !== 'undefined') require('./before');

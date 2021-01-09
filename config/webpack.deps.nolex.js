@@ -1,5 +1,4 @@
-
-// node/full
+// use with browser, includes deps, no lexicon
 
 module.exports = {
   mode: 'production',
@@ -7,8 +6,10 @@ module.exports = {
   output: {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
-    filename: 'rita-node.js',
-    libraryTarget: 'commonjs2',
+    filename: 'rita-micro.js',
+    chunkFilename: 'rita.js',
+    globalObject: 'this',
+    libraryTarget: 'umd',
   },  
   node: {
     fs: "empty",
@@ -18,9 +19,9 @@ module.exports = {
   watchOptions: {
     ignored: /node_modules/
   },
-  externals: ['he', 'flatted/cjs', 'deepmerge', 'antlr4', /^antlr4\/.+$/ ],
-  entry: './src/rita.js',
+  entry: { 'rita': './src/rita.js' },
   plugins: [new (require('webpack').DefinePlugin)({
+    __NOLEX__: JSON.stringify(true),
     __VERSION__: JSON.stringify(require("../package.json").version)
   })]
 };

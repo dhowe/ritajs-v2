@@ -43,7 +43,7 @@ class RiTa {
     return new RiTa.Grammar(...arguments);
   }
 
-  static markov() { 
+  static markov() {
     return new RiTa.Markov(...arguments);
   }
 
@@ -89,7 +89,7 @@ class RiTa {
 
   static isConsonant(c) {
     return (c && c.length === 1 && !RiTa.VOWELS.includes(c)
-       && IS_LETTER.test(c));
+      && IS_LETTER.test(c));
   }
 
   static isNoun(word) {
@@ -216,9 +216,9 @@ class RiTa {
 
   ////////////////////////////// niapa /////////////////////////////
 
-	static capitalize( s) {
-		return s ? s[0].toUpperCase() + s.substring(1) : '';
-	}
+  static capitalize(s) {
+    return s ? s[0].toUpperCase() + s.substring(1) : '';
+  }
 
   static lexicon() { // lazy load
     if (typeof RiTa._lexicon === 'undefined') {
@@ -226,22 +226,17 @@ class RiTa {
         RiTa._lexicon = new Lexicon(RiTa);
       }
       else {
-        //let ts = +new Date();
         RiTa._lexicon = new Lexicon(RiTa, require('./rita_dict'));
-        //console.log("lexicon created in " +(+new Date()-ts)+"ms");
       }
     }
     return RiTa._lexicon;
   }
 }
 
-RiTa.LEXS = 0;
-
 // CLASSES
 RiTa.RiScript = RiScript;
 RiTa.Grammar = Grammar;
 RiTa.Markov = Markov;
-RiTa.Operator = Operator;
 RiTa.Markov.parent = RiTa;
 RiTa.Grammar.parent = RiTa;
 RiTa.RiScript.parent = RiTa;
@@ -263,9 +258,12 @@ RiTa.SILENT = false;
 RiTa.SILENCE_LTS = false;
 RiTa.CDN_URL = 'https://www.unpkg.com/rita/';
 
+
 // CONSTANTS
 RiTa.PHONES = ['aa', 'ae', 'ah', 'ao', 'aw', 'ay', 'b', 'ch', 'd', 'dh', 'eh', 'er', 'ey', 'f', 'g', 'hh', 'ih', 'iy', 'jh', 'k', 'l', 'm', 'n', 'ng', 'ow', 'oy', 'p', 'r', 's', 'sh', 't', 'th', 'uh', 'uw', 'v', 'w', 'y', 'z', 'zh'];
 RiTa.VERSION = typeof __VERSION__ !== 'undefined' ? __VERSION__ : 'DEV';
+RiTa.HAS_LEXICON = typeof __NOLEX__ === 'undefined';
+
 RiTa.FIRST = 1;
 RiTa.SECOND = 2;
 RiTa.THIRD = 3;

@@ -1,23 +1,22 @@
-// web/full
+// use with browser, includes deps
 
-module.exports =
-{
+module.exports = {
   mode: 'production',
-  target: 'web',
+  target: 'node',
   output: {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
-    filename: 'rita-web.js'
-  },
-  performance: {
-    hints: false
+    filename: 'rita.js',
+    globalObject: 'this',
+    libraryTarget: 'umd',
+  },  
+  node: {
+    fs: "empty",
+    __dirname: false,
+    __filename: false,
   },
   watchOptions: {
     ignored: /node_modules/
-  },
-//  watch: true,
-  node: {
-    fs: "empty"
   },
   entry: './src/rita.js',
   plugins: [new (require('webpack').DefinePlugin)({
