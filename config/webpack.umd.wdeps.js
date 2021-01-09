@@ -8,6 +8,7 @@ module.exports = {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
     filename: 'rita-umd.js',
+    globalObject: 'this',
     libraryTarget: 'umd',
   },  
   node: {
