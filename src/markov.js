@@ -1,6 +1,6 @@
 const { parse, stringify } = require('flatted/cjs');
 
-class Markov {
+class RiMarkov {
 
   constructor(n, opts = {}) {
     this.n = n;
@@ -28,7 +28,7 @@ class Markov {
 
   static fromJSON(json) {
     // parse the json and merge with new object
-    let rm = Object.assign(new Markov(), parse(json));
+    let rm = Object.assign(new RiMarkov(), parse(json));
 
     // handle json converting undefined [] to empty []
     if (!json.input) rm.input = undefined;
@@ -49,7 +49,7 @@ class Markov {
       for (let i = 0; i < sents.length; i++) {
         //let sentence = sentences[i].replace(/\s+/, ' ').trim();
         let words = this.tokenize(sents[i]);
-        tokens.push(Markov.SS, ...words, Markov.SE);
+        tokens.push(RiMarkov.SS, ...words, RiMarkov.SE);
       }
       this.treeify(tokens);
     }
@@ -95,7 +95,7 @@ class Markov {
         if (!next && fail('no next')) break; // possible if all children excluded
 
         tokens.push(next);
-        if (next.token === Markov.SE) {
+        if (next.token === RiMarkov.SE) {
 
           tokens.pop();
           if (tokens.length >= minLength) {
@@ -150,7 +150,7 @@ class Markov {
     if (parent) {
       const children = parent.childNodes();
       const weights = children.map(n => n.count);
-      const pdist = Markov.parent.randomizer.ndist(weights, temp);
+      const pdist = RiMarkov.parent.randomizer.ndist(weights, temp);
       children.forEach((c, i) => probs[c.token] = pdist[i]);
     }
     return probs;
@@ -190,7 +190,7 @@ class Markov {
       return !isSubArray(check.slice(-(this.mlm + 1)), this.input);
     }
 
-    const rand = Markov.parent.randomizer;
+    const rand = RiMarkov.parent.randomizer;
     const children = parent.childNodes();
     const weights = children.map(n => n.count);
     const pdist = rand.ndist(weights, temp);
@@ -213,7 +213,7 @@ class Markov {
 
     root = root || this.root;
 
-    let tokens = [root.child(Markov.SS).pselect()];
+    let tokens = [root.child(RiMarkov.SS).pselect()];
     if (initWith) {
       tokens = [];
       let st = this._pathTo(initWith, root);
@@ -271,8 +271,8 @@ class Markov {
   }
 }
 
-Markov.SS = '<s>';
-Markov.SE = '</s>';
+RiMarkov.SS = '<s>';
+RiMarkov.SE = '</s>';
 
 class Node {
 
@@ -292,7 +292,7 @@ class Node {
   }
 
   pselect() {
-    const rand = Markov.parent.randomizer;
+    const rand = RiMarkov.parent.randomizer;
     const children = this.childNodes();
     const weights = children.map(n => n.count);
     const pdist = rand.ndist(weights);
@@ -315,7 +315,7 @@ class Node {
     if (this.numChildren === -1) { 
       let sum = 0; // a sort of cache
       for (let k in this.children) { 
-        if (excludeMetaTags && (k === Markov.SS || k === Markov.SE)) {
+        if (excludeMetaTags && (k === RiMarkov.SS || k === RiMarkov.SE)) {
           continue;
         }
         sum += this.children[k].count;
@@ -398,7 +398,7 @@ function populate(objNode, jsonNode) {
   }
 }
 
-function RiTa() { return Markov.parent; }
+function RiTa() { return RiMarkov.parent; }
 
 function throwError(tries, oks) {
   throw Error('\nFailed after ' + tries + ' tries'
@@ -419,4 +419,4 @@ function isSubArray(find, arr) {
 
 const MULTI_SP_RE = / +/g;
 
-module && (module.exports = Markov);
+module && (module.exports = RiMarkov);

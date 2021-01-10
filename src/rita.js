@@ -1,6 +1,6 @@
 const Util = require("./util");
-const Markov = require('./markov');
-const Grammar = require('./grammar');
+const RiMarkov = require('./markov');
+const RiGrammar = require('./grammar');
 const Stemmer = require('./stemmer');
 const Lexicon = require('./lexicon');
 const Analyzer = require('./analyzer');
@@ -40,11 +40,11 @@ class RiTa {
   }
 
   static grammar() {
-    return new RiTa.Grammar(...arguments);
+    return new RiTa.RiGrammar(...arguments);
   }
 
   static markov() {
-    return new RiTa.Markov(...arguments);
+    return new RiTa.RiMarkov(...arguments);
   }
 
   static env() { // niapi
@@ -235,10 +235,10 @@ class RiTa {
 
 // CLASSES
 RiTa.RiScript = RiScript;
-RiTa.Grammar = Grammar;
-RiTa.Markov = Markov;
-RiTa.Markov.parent = RiTa;
-RiTa.Grammar.parent = RiTa;
+RiTa.RiGrammar = RiGrammar;
+RiTa.RiMarkov = RiMarkov;
+RiTa.RiMarkov.parent = RiTa;
+RiTa.RiGrammar.parent = RiTa;
 RiTa.RiScript.parent = RiTa;
 
 // COMPONENTS

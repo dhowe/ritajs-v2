@@ -1,10 +1,10 @@
 
-describe('RiTa.Grammar', () => {
+describe('RiTa.RiGrammar', () => {
 
     if (typeof module !== 'undefined') require('./before');
 
     const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 };
-    const Grammar = RiTa.Grammar;
+    const RiGrammar = RiTa.RiGrammar;
 
     let sentences1 = {
         "$start": "$noun_phrase $verb_phrase.",
@@ -36,21 +36,21 @@ describe('RiTa.Grammar', () => {
     let grammars = [sentences1, sentences2, sentences3];
 
     it('should call constructor', () => {
-        ok(typeof new Grammar() !== 'undefined');
+        ok(typeof new RiGrammar() !== 'undefined');
     });
 
     it('should call constructorJSON', () => {
 
         let json = JSON.stringify(sentences1);
 
-        let gr1 = new Grammar(json);
-        ok(gr1 instanceof Grammar);
+        let gr1 = new RiGrammar(json);
+        ok(gr1 instanceof RiGrammar);
 
-        let gr2 = Grammar.fromJSON(json);
-        ok(gr2 instanceof Grammar);
+        let gr2 = RiGrammar.fromJSON(json);
+        ok(gr2 instanceof RiGrammar);
 
         let gr3 = RiTa.grammar(json);
-        ok(gr3 instanceof Grammar);
+        ok(gr3 instanceof RiGrammar);
 
         ok(gr1.toString() === gr2.toString());
         ok(gr2.toString() === gr3.toString());
@@ -61,13 +61,13 @@ describe('RiTa.Grammar', () => {
             "start": "[$x=$y b].ucf()",
             "y": "(a | a)",
         };
-        expect(RiTa.evaluate(new Grammar(g).expand())).eq("A b");
+        expect(RiTa.evaluate(new RiGrammar(g).expand())).eq("A b");
     });
 
     it('Should support seq() transforms', () => {
         let opts = ['a', 'b', 'c', 'd'];
         let rule = '(' + opts.join('|') + ').seq()';
-        let rs = new Grammar({ start: rule });
+        let rs = new RiGrammar({ start: rule });
         for (let i = 0; i < opts.length; i++) {
             let res = rs.expand();
             //console.log(i, ':', res);
@@ -75,7 +75,7 @@ describe('RiTa.Grammar', () => {
         }
 
         rule = '(' + opts.join('|') + ').seq().capitalize()';
-        rs = new Grammar({ start: rule });
+        rs = new RiGrammar({ start: rule });
         for (let i = 0; i < opts.length; i++) {
             let res = rs.expand();
             // console.log(i, ':', res);
@@ -86,7 +86,7 @@ describe('RiTa.Grammar', () => {
     it('Should support rseq() transforms', () => {
         let opts = ['a', 'b', 'c', 'd'], result = [];
         let rule = '(' + opts.join('|') + ').rseq()';
-        let rs = new Grammar({ start: rule });
+        let rs = new RiGrammar({ start: rule });
         for (let i = 0; i < opts.length; i++) {
             let res = rs.expand();
             //console.log(i, ':', res);
@@ -95,7 +95,7 @@ describe('RiTa.Grammar', () => {
         expect(result).to.have.members(opts);
 
         rule = '(' + opts.join('|') + ').rseq().capitalize()';
-        rs = new Grammar({ start: rule });
+        rs = new RiGrammar({ start: rule });
         result = [];
         for (let i = 0; i < opts.length; i++) {
             let res = rs.expand();
@@ -108,14 +108,14 @@ describe('RiTa.Grammar', () => {
     it('Should allow rules starting with numbers', () => {
         let rg, rs;
 
-        rg = new Grammar({
+        rg = new RiGrammar({
             "start": "$1line talks too much.",
             "1line": "Dave | Jill | Pete"
         });
         rs = rg.expand({ trace: 0 });
         expect(rs).to.be.oneOf(["Dave talks too much.", "Jill talks too much.", "Pete talks too much."]);
 
-        rg = new Grammar({
+        rg = new RiGrammar({
             "1line": "Dave | Jill | Pete"
         });
         rs = rg.expand("1line", { trace: 0 });
@@ -125,7 +125,7 @@ describe('RiTa.Grammar', () => {
     it('should resolve inlines', () => { // KNOWN-ISSUES
         let rg, rs;
 
-        rg = new Grammar({
+        rg = new RiGrammar({
             "start": "[$chosen=$person] talks to $chosen.",
             "person": "Dave | Jill | Pete"
         });
@@ -133,7 +133,7 @@ describe('RiTa.Grammar', () => {
         //console.log(rs);
         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
 
-        rg = new Grammar({
+        rg = new RiGrammar({
             "start": "[$chosen=$person] talks to $chosen.",
             "person": "$Dave | $Jill | $Pete",
             "Dave": "Dave",
@@ -148,7 +148,7 @@ describe('RiTa.Grammar', () => {
 
     it("should call addRules", () => {
 
-        let rg = new Grammar();
+        let rg = new RiGrammar();
         ok(typeof rg.rules !== 'undefined');
         ok(typeof rg.rules['start'] === 'undefined');
         ok(typeof rg.rules['noun_phrase'] === 'undefined');
@@ -162,7 +162,7 @@ describe('RiTa.Grammar', () => {
         });
 
         grammars.forEach(g => { // as JSON strings
-            rg = Grammar.fromJSON(JSON.stringify(g));
+            rg = RiGrammar.fromJSON(JSON.stringify(g));
             ok(typeof rg.rules !== 'undefined');
             ok(typeof rg.rules['start'] !== 'undefined');
             ok(typeof rg.rules['noun_phrase'] !== 'undefined');
@@ -171,7 +171,7 @@ describe('RiTa.Grammar', () => {
     });
 
     it("should call addRule", () => {
-        let rg = new Grammar();
+        let rg = new RiGrammar();
         rg.addRule("$start", "$pet");
         ok(typeof rg.rules["start"] !== 'undefined');
         rg.addRule("$start", "$dog", .3);
@@ -181,7 +181,7 @@ describe('RiTa.Grammar', () => {
     it("should call removeRule", () => {
 
         grammars.forEach(g => {
-            let rg1 = new Grammar(g);
+            let rg1 = new RiGrammar(g);
             def(rg1.rules['start']);
             def(rg1.rules['noun_phrase']);
 
@@ -199,15 +199,15 @@ describe('RiTa.Grammar', () => {
     });
 
     it("should throw on missing rules", () => {
-        let rg = new Grammar();
+        let rg = new RiGrammar();
         expect(() => rg.expand()).to.throw();
 
-        rg = new Grammar({ start: "My rule" });
+        rg = new RiGrammar({ start: "My rule" });
         expect(() => rg.expand('bad')).to.throw();
     });
 
     it("should call expandFrom", () => {
-        let rg = new Grammar();
+        let rg = new RiGrammar();
         rg.addRule("$start", "$pet");
         rg.addRule("$pet", "($bird | $mammal)");
         rg.addRule("$bird", "(hawk | crow)");
@@ -220,40 +220,40 @@ describe('RiTa.Grammar', () => {
     });
 
     it("should call toString", () => {
-        let rg = new Grammar({ "$start": "pet" });
+        let rg = new RiGrammar({ "$start": "pet" });
         eq(rg.toString(), '{\n  "start": "pet"\n}');
-        rg = new Grammar({ "$start": "$pet", "$pet": "dog" });
+        rg = new RiGrammar({ "$start": "$pet", "$pet": "dog" });
         eq(rg.toString(), '{\n  "start": "$pet",\n  "pet": "dog"\n}');
-        rg = new Grammar({ "$start": "$pet | $iphone", "$pet": "dog | cat", "$iphone": "iphoneSE | iphone12" });
+        rg = new RiGrammar({ "$start": "$pet | $iphone", "$pet": "dog | cat", "$iphone": "iphoneSE | iphone12" });
         eq(rg.toString(), '{\n  "start": "($pet | $iphone)",\n  "pet": "(dog | cat)",\n  "iphone": "(iphoneSE | iphone12)"\n}');
-        rg = new Grammar({ "start": "$pet.articlize()", "$pet": "dog | cat" });
+        rg = new RiGrammar({ "start": "$pet.articlize()", "$pet": "dog | cat" });
         eq(rg.toString(), '{\n  "start": "$pet.articlize()",\n  "pet": "(dog | cat)"\n}');
     });
 
     it("should call toString with arg", () => {
         let lb = '<br/>';
-        let rg = new Grammar({ "$start": "pet" });
+        let rg = new RiGrammar({ "$start": "pet" });
         eq(rg.toString(lb), '{<br/>  "start": "pet"<br/>}');
-        rg = new Grammar({ "$start": "$pet", "$pet": "dog" });
+        rg = new RiGrammar({ "$start": "$pet", "$pet": "dog" });
         eq(rg.toString(lb), '{<br/>  "start": "$pet",<br/>  "pet": "dog"<br/>}');
-        rg = new Grammar({ "$start": "$pet | $iphone", "$pet": "dog | cat", "$iphone": "iphoneSE | iphone12" });
+        rg = new RiGrammar({ "$start": "$pet | $iphone", "$pet": "dog | cat", "$iphone": "iphoneSE | iphone12" });
         eq(rg.toString(lb), '{<br/>  "start": "($pet | $iphone)",<br/>  "pet": "(dog | cat)",<br/>  "iphone": "(iphoneSE | iphone12)"<br/>}');
-        rg = new Grammar({ "start": "$pet.articlize()", "$pet": "dog | cat" });
+        rg = new RiGrammar({ "start": "$pet.articlize()", "$pet": "dog | cat" });
         eq(rg.toString(lb), '{<br/>  "start": "$pet.articlize()",<br/>  "pet": "(dog | cat)"<br/>}');
     });
 
     it("should call expand", () => {
-        let rg = new Grammar();
+        let rg = new RiGrammar();
         rg.addRule("$start", "pet");
         eq(rg.expand(), "pet");
-        rg = new Grammar();
+        rg = new RiGrammar();
         rg.addRule("$start", "$pet");
         rg.addRule("$pet", "dog");
         eq(rg.expand(), "dog");
     });
 
     it("should call expand.weights", () => {
-        let rg = new Grammar();
+        let rg = new RiGrammar();
         rg.addRule("$start", "$rule1");
         rg.addRule("$rule1", "cat | dog | boy");
         let found1 = false;
@@ -271,7 +271,7 @@ describe('RiTa.Grammar', () => {
 
     it("should call expandFrom.weights", () => {
 
-        let rg = new Grammar();
+        let rg = new RiGrammar();
         rg.addRule("$start", "$pet");
         rg.addRule("$pet", "$bird [9] | $mammal");
         rg.addRule("$bird", "hawk");
@@ -290,24 +290,24 @@ describe('RiTa.Grammar', () => {
     });
 
     it("should handle transforms", () => {
-        let rg = new Grammar();
+        let rg = new RiGrammar();
         rg.addRule("$start", "$pet.toUpperCase()");
         rg.addRule("$pet", "dog");
         eq(rg.expand(), "DOG");
 
-        rg = new Grammar();
+        rg = new RiGrammar();
         rg.addRule("$start", "($pet | $animal)");
         rg.addRule("$animal", "$pet");
         rg.addRule("$pet", "(dog).toUpperCase()");
         eq(rg.expand(), "DOG");
 
-        rg = new Grammar();
+        rg = new RiGrammar();
         rg.addRule("$start", "($pet | $animal)");
         rg.addRule("$animal", "$pet");
         rg.addRule("$pet", "(ant).articlize()");
         eq(rg.expand(), "an ant");
 
-        rg = new Grammar();
+        rg = new RiGrammar();
         rg.addRule("$start", "($pet | $animal).articlize().ucf()");
         rg.addRule("$animal", "$pet");
         rg.addRule("$pet", "ant");
@@ -317,35 +317,35 @@ describe('RiTa.Grammar', () => {
     it("should allow context in expand", () => {
         let ctx, rg;
         ctx = { randomPosition: () => 'job type' };
-        rg = new RiTa.Grammar({ start: "My .randomPosition()." });
+        rg = new RiTa.RiGrammar({ start: "My .randomPosition()." });
         expect(rg.expand(ctx)).eq("My job type.");
 
         ctx = { randomPosition: () => 'job type' };
-        rg = new RiTa.Grammar({ stat: "My .randomPosition()." });
+        rg = new RiTa.RiGrammar({ stat: "My .randomPosition()." });
         expect(rg.expand('stat', ctx)).eq("My job type.");
     });
 
     it("should handle custom transforms", () => {
         let context = { randomPosition: () => 'job type' };
-        let rg = new RiTa.Grammar({ start: "My .randomPosition()." }, context);
+        let rg = new RiTa.RiGrammar({ start: "My .randomPosition()." }, context);
         expect(rg.expand()).eq("My job type.");
     });
 
     it("should handle symbol transforms", () => {
         let rg;
-        rg = new Grammar({
+        rg = new RiGrammar({
             start: "$tmpl",
             tmpl: "$jrSr.capitalize()",
             jrSr: "(junior|junior)"
         });
         eq(rg.expand({ trace: 0 }), "Junior");
 
-        rg = new Grammar({
+        rg = new RiGrammar({
             start: "$r.capitalize()",
             r: "(a|a)"
         });
         eq(rg.expand({ trace: 0 }), "A");
-        rg = new Grammar({
+        rg = new RiGrammar({
             start: "$r.pluralize()",
             r: "( mouse | mouse )"
         });
@@ -356,38 +356,38 @@ describe('RiTa.Grammar', () => {
         let rg, res, s;
 
         s = "{ \"$start\": \"hello &#124; name\" }";
-        rg = Grammar.fromJSON(s);
+        rg = RiGrammar.fromJSON(s);
         res = rg.expand();
         //console.log(res);
         ok(res === "hello | name");
 
         s = "{ \"$start\": \"hello: name\" }";
-        rg = Grammar.fromJSON(s);
+        rg = RiGrammar.fromJSON(s);
         res = rg.expand();
         ok(res === "hello: name");
 
         s = "{ \"$start\": \"&#8220;hello!&#8221;\" }";
-        rg = Grammar.fromJSON(s);
+        rg = RiGrammar.fromJSON(s);
 
         s = "{ \"$start\": \"&lt;start&gt;\" }";
-        rg = Grammar.fromJSON(s);
+        rg = RiGrammar.fromJSON(s);
         res = rg.expand();
         //console.log(res);
         ok(res === "<start>");
 
         s = "{ \"$start\": \"I don&#96;t want it.\" }";
-        rg = Grammar.fromJSON(s);
+        rg = RiGrammar.fromJSON(s);
         res = rg.expand();
         //console.log(res);
         ok(res === "I don`t want it.");
 
         s = "{ \"$start\": \"&#39;I really don&#39;t&#39;\" }";
-        rg = Grammar.fromJSON(s);
+        rg = RiGrammar.fromJSON(s);
         res = rg.expand();
         ok(res === "'I really don't'");
 
         s = "{ \"$start\": \"hello | name\" }";
-        rg = Grammar.fromJSON(s);
+        rg = RiGrammar.fromJSON(s);
         for (let i = 0; i < 10; i++) {
             res = rg.expand();
             ok(res === "hello" || res === "name");
@@ -396,9 +396,9 @@ describe('RiTa.Grammar', () => {
 
     it("should call to/from JSON", () => {
         let json = { "$start": "$pet $iphone", "$pet": "(dog | cat)", "$iphone": "(iphoneSE | iphone12)" };
-        let rg = new Grammar(json);
+        let rg = new RiGrammar(json);
         let generatedJSON = rg.toJSON();
-        let rg2 = Grammar.fromJSON(generatedJSON);
+        let rg2 = RiGrammar.fromJSON(generatedJSON);
         ok(rg2 !== 'undefined');
         expect(rg.toString()).eq(rg2.toString());
         expect(rg.context).eql(rg2.context);
@@ -406,8 +406,8 @@ describe('RiTa.Grammar', () => {
         expect(rg).eql(rg2);
 
         /*  grammars.forEach(g => { KnownIssues-Java
-            rg = Grammar.fromJSON(g);
-            rg2 = Grammar.fromJSON(rg.toJSON());
+            rg = RiGrammar.fromJSON(g);
+            rg2 = RiGrammar.fromJSON(rg.toJSON());
             ok(rg2.toString() === rg.toString());
             assertTrue(rg == rg2);
         }); */
@@ -415,7 +415,7 @@ describe('RiTa.Grammar', () => {
 
     it('Should correctly pluralize phrases', () => {
         let json = { start: "($state feeling).pluralize()", state: "(bad | bad)" };
-        let rg = new Grammar(json);
+        let rg = new RiGrammar(json);
         let res = rg.expand();
         eql(res, "bad feelings");
     });

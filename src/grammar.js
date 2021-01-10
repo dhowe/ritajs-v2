@@ -2,17 +2,17 @@ const deepMerge = require('deepmerge');
 
 // TODO: expandFrom? expandWith?
 
-class Grammar {
+class RiGrammar {
 
   constructor(rules, context) {
     this.rules = {};
     this.context = context || {};
-    this.compiler = new Grammar.parent.RiScript();
+    this.compiler = new RiGrammar.parent.RiScript();
     if (rules) this.addRules(rules);
   }
 
   static fromJSON(json, context) {
-    let rg = new Grammar(null, context);
+    let rg = new RiGrammar(null, context);
     rg._parseJSON(json);
     return rg;
   }
@@ -22,7 +22,7 @@ class Grammar {
       let rules = JSON.parse(json);
       Object.keys(rules).forEach(r => this.addRule(r, rules[r]))
     } catch (e) {
-      throw Error('Grammar appears to be invalid JSON,'
+      throw Error('RiGrammar appears to be invalid JSON,'
         + ' please check it at http://jsonlint.com/'
         + '\n' + JSON.stringify(json, null, 2));
     }
@@ -98,4 +98,4 @@ function joinChoice(arr) {
 
 const IN_PARENS_RE = /^\([^()]*\)$/;
 
-module && (module.exports = Grammar);
+module && (module.exports = RiGrammar);

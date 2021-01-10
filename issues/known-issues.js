@@ -19,7 +19,7 @@ describe('RiScript.KnownIssues', () => { // TODO:
 
   it('Should handle complex inlines in grammars', () => {
 
-    let rg = new Grammar({
+    let rg = new RiGrammar({
       "start": "[$chosen=$person] talks to $chosen.",
       "person": "$Dave | $Jill | $Pete",
       "Dave": "Dave | Jill | Pete",

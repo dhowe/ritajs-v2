@@ -880,7 +880,7 @@ describe('RiTa.RiScript', () => {
     });
   });
 
-  describe('Grammar', () => {
+  describe('RiGrammar', () => {
 
     it('Should evaluate post defined symbols', () => {
       let rs = RiTa.evaluate('$foo=$bar\n$bar=baz\n$foo', {});

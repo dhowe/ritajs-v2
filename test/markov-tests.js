@@ -1,20 +1,20 @@
-describe('RiTa.Markov', () => {
+describe('RiTa.RiMarkov', () => {
 
   if (typeof module !== 'undefined') {
     require('./before');
     fs = require('fs');
   }
 
-  const Markov = RiTa.Markov, Random = RiTa.randomizer;
+  const RiMarkov = RiTa.RiMarkov, Random = RiTa.randomizer;
   let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
   let sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself. After all, I did occasionally want to be embarrassed.";
   let sample3 = sample + ' One reason people are dishonest is to achieve power.';
 
-  it('should call Markov', () => {
-    ok(typeof new Markov(3) !== 'undefined');
+  it('should call RiMarkov', () => {
+    ok(typeof new RiMarkov(3) !== 'undefined');
   });
 
-  it('should call createMarkov', () => {
+  it('should call createRiMarkov', () => {
     ok(typeof RiTa.markov(3) !== 'undefined');
   });
 
@@ -81,7 +81,7 @@ describe('RiTa.Markov', () => {
   });
 
   // it('should load a large model', async () => {
-  //   let rm = new Markov(4, { optimizeMemory: true });
+  //   let rm = new RiMarkov(4, { optimizeMemory: true });
   //   let content = fs.readFileSync('/Users/dhowe/Desktop/dracula.txt', 'utf8');
   //   rm.addText(content);//.then(console.log('done'));
   //   console.log('loaded');
@@ -96,21 +96,21 @@ describe('RiTa.Markov', () => {
 
   it('should call initSentence', () => { // remove?
     let rm, txt;
-    rm = new Markov(4);
+    rm = new RiMarkov(4);
     txt = "The young boy ate it. The fat boy gave up.";
     rm.addText(txt);
     let toks = rm._initSentence();
     eq(toks.length, 1);
     eq(toks[0].token, 'The');
 
-    rm = new Markov(4);
+    rm = new RiMarkov(4);
     rm.addText(RiTa.sentences(sample));
     eq(rm._flatten(rm._initSentence(['I', 'also'])), "I also");
   });
 
 
   it('should throw on failed generate', () => {
-    let rm = new Markov(4);
+    let rm = new RiMarkov(4);
     rm.addText(RiTa.sentences(sample));
     expect(() => rm.generate(5)).to.throw;
   });
@@ -119,7 +119,7 @@ describe('RiTa.Markov', () => {
 
     let text = '家 安 春 夢 家 安 春 夢 ！ 家 安 春 夢 德 安 春 夢 ？ 家 安 春 夢 安 安 春 夢 。';
     let sentArray = text.match(/[^，；。？！]+[，；。？！]/g);
-    let rm = new Markov(4);
+    let rm = new RiMarkov(4);
     rm.addText(sentArray);
     let result = rm.generate(5, { startTokens: '家' });
     eq(result.length, 5);
@@ -133,7 +133,7 @@ describe('RiTa.Markov', () => {
     let tokenize = (sent) => sent.split("");
     let untokenize = (sents) => sents.join("");
 
-    let rm = new Markov(4, { tokenize, untokenize });
+    let rm = new RiMarkov(4, { tokenize, untokenize });
     rm.addText(sentArray);
     let result = rm.generate(5, { startTokens: '家' });
     //console.log(result);
@@ -144,7 +144,7 @@ describe('RiTa.Markov', () => {
 
   it('should call generate', () => {
 
-    let rm = new Markov(4, { disableInputChecks: 1 });
+    let rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
     let sents = rm.generate(5);
     eq(sents.length, 5);
@@ -155,7 +155,7 @@ describe('RiTa.Markov', () => {
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
     }
 
-    rm = new Markov(4);
+    rm = new RiMarkov(4);
     rm.addText(sample);
     let s = rm.generate();
     //console.log(s);
@@ -167,7 +167,7 @@ describe('RiTa.Markov', () => {
 
   it('should call generate.minMaxLength', () => {
 
-    let rm = new Markov(4, { disableInputChecks: 1 }), minLength = 7, maxLength = 20;
+    let rm = new RiMarkov(4, { disableInputChecks: 1 }), minLength = 7, maxLength = 20;
     rm.addText(RiTa.sentences(sample));
 
     let sents = rm.generate(5, { minLength, maxLength });
@@ -180,7 +180,7 @@ describe('RiTa.Markov', () => {
       ok(num >= minLength && num <= maxLength);
     }
 
-    rm = new Markov(4, { disableInputChecks: 1 });
+    rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
       minLength = (3 + i), maxLength = (10 + i);
@@ -195,7 +195,7 @@ describe('RiTa.Markov', () => {
 
   it('should call generate.start', () => {
 
-    let rm = new Markov(4, { disableInputChecks: 1 });
+    let rm = new RiMarkov(4, { disableInputChecks: 1 });
     let start = 'One';
     rm.addText(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
@@ -222,7 +222,7 @@ describe('RiTa.Markov', () => {
 
   it('should call generate.startArray', () => {
 
-    let rm = new Markov(4, { disableInputChecks: 1 });
+    let rm = new RiMarkov(4, { disableInputChecks: 1 });
     let start = ['One'];
     rm.addText(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
@@ -245,7 +245,7 @@ describe('RiTa.Markov', () => {
       ok(arr[0].startsWith(start));
     }
 
-    rm = new Markov(4, { disableInputChecks: 1 });
+    rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
     start = ['One', 'reason'];
     for (let i = 0; i < 1; i++) {
@@ -271,7 +271,7 @@ describe('RiTa.Markov', () => {
 
   it('should call generate.mlm', () => {
 
-    let mlms = 10, rm = new Markov(3, { maxLengthMatch: mlms, trace: 0 });
+    let mlms = 10, rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
     rm.addText(RiTa.sentences(sample3));
     let sents = rm.generate(5);
     for (let i = 0; i < sents.length; i++) {
@@ -299,7 +299,7 @@ describe('RiTa.Markov', () => {
 
   it('should call completions', () => {
 
-    let rm = new Markov(4);
+    let rm = new RiMarkov(4);
     rm.addText((sample));
 
     let res = rm.completions("people lie is".split(' '));
@@ -325,7 +325,7 @@ describe('RiTa.Markov', () => {
 
     ///////////////////// ///////////////////// /////////////////////
 
-    rm = new Markov(4);
+    rm = new RiMarkov(4);
     rm.addText((sample2));
 
     res = rm.completions(['I'], ['not']);
@@ -349,7 +349,7 @@ describe('RiTa.Markov', () => {
 
   it('should call probabilities', () => {
 
-    let rm = new Markov(3);
+    let rm = new RiMarkov(3);
     rm.addText((sample));
 
     let checks = ["reason", "people", "personal", "the", "is", "XXX"];
@@ -377,7 +377,7 @@ describe('RiTa.Markov', () => {
 
   it('should call probabilities.array', () => {
 
-    let rm = new Markov(4);
+    let rm = new RiMarkov(4);
     rm.addText(sample2);
 
     let res = rm.probabilities("the".split(" "));
@@ -434,7 +434,7 @@ describe('RiTa.Markov', () => {
 
     let text, rm;
     text = 'the dog ate the boy the';
-    rm = new Markov(3);
+    rm = new RiMarkov(3);
     rm.addText(text);
 
     eq(rm.probability("the"), .5);
@@ -442,21 +442,21 @@ describe('RiTa.Markov', () => {
     eq(rm.probability("cat"), 0);
 
     text = 'the dog ate the boy that the dog found.';
-    rm = new Markov(3);
+    rm = new RiMarkov(3);
     rm.addText(text);
 
     eq(rm.probability("the"), .3);
     eq(rm.probability("dog"), .2);
     eq(rm.probability("cat"), 0);
 
-    rm = new Markov(3);
+    rm = new RiMarkov(3);
     rm.addText(sample);
     eq(rm.probability("power"), 0.017045454545454544);
   });
 
   it('should call probability.array', () => {
 
-    let rm = new Markov(3);
+    let rm = new RiMarkov(3);
     rm.addText(sample);
 
     let check = 'personal power is'.split(' ');
@@ -472,7 +472,7 @@ describe('RiTa.Markov', () => {
   });
 
   it('should call addText', () => {
-    let rm = new Markov(4);
+    let rm = new RiMarkov(4);
     let sents = RiTa.sentences(sample);
     let count = sents.length; // sentence-end tokens
     for (let i = 0; i < sents.length; i++) {
@@ -483,17 +483,17 @@ describe('RiTa.Markov', () => {
 
     eq(rm.size(), count + sents.length);
 
-    let ss = rm.root.child(Markov.SS);
+    let ss = rm.root.child(RiMarkov.SS);
     eql(Object.keys(ss.children), ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although']);
 
-    let se = rm.root.child(Markov.SE);
-    eql(Object.keys(se.children), [Markov.SS]);
+    let se = rm.root.child(RiMarkov.SE);
+    eql(Object.keys(se.children), [RiMarkov.SS]);
   });
 
   it('should call Node.childCount', () => {
-    let rm = new Markov(2);
+    let rm = new RiMarkov(2);
     expect(rm.root.childCount()).eq(0);
-    rm = new Markov(2);
+    rm = new RiMarkov(2);
     rm.addText('The');
     expect(rm.root.childCount()).eq(3);
     expect(rm.root.child("The").childCount()).eq(1);
@@ -502,13 +502,13 @@ describe('RiTa.Markov', () => {
 
   it('should call toString', () => {
     let rm, exp;
-    rm = new Markov(2);
+    rm = new RiMarkov(2);
     exp = "ROOT {   'The' [1,p=0.333]  {     '</s>' [1,p=1.000]   }   '<s>' [1,p=0.333]  {     'The' [1,p=1.000]   }   '</s>' [1,p=0.333] }";
     rm.addText('The');
     //console.log(rm.toString());
     expect(exp).eq(rm.toString().replace(/\n/g, ' '));
 
-    rm = new Markov(2);
+    rm = new RiMarkov(2);
     exp = "ROOT {   'The' [1,p=0.143]  {     'dog' [1,p=1.000]   }   'the' [1,p=0.143]  {     'cat' [1,p=1.000]   }   'dog' [1,p=0.143]  {     'ate' [1,p=1.000]   }   'cat' [1,p=0.143]  {     '</s>' [1,p=1.000]   }   'ate' [1,p=0.143]  {     'the' [1,p=1.000]   }   '<s>' [1,p=0.143]  {     'The' [1,p=1.000]   }   '</s>' [1,p=0.143] }";
     rm.addText('The dog ate the cat');
     //console.log(rm.toString());
@@ -517,41 +517,41 @@ describe('RiTa.Markov', () => {
 
   it('should call size', () => {
 
-    let rm = new Markov(4);
+    let rm = new RiMarkov(4);
     eq(rm.size(), 0);
     let tokens = RiTa.tokenize(sample);
     let sents = RiTa.sentences(sample);
-    rm = new Markov(3);
+    rm = new RiMarkov(3);
     rm.addText(sample);
     eq(rm.size(), tokens.length + sents.length * 2);
 
-    let rm2 = new Markov(4);
-    rm2 = new Markov(3);
+    let rm2 = new RiMarkov(4);
+    rm2 = new RiMarkov(3);
     rm2.addText(sents);
     eq(rm.size(), rm2.size());
   });
 
   it('should fail when sentence is in inputs', () => {
-    let rm = new Markov(4);
+    let rm = new RiMarkov(4);
     rm.addText(['I ate the dog.']);
     expect(() => rm.generate()).to.throw;
   });
 
   it('should handle disableInputChecks option', () => {
-    let rm = new Markov(4, { disableInputChecks: 0 });
+    let rm = new RiMarkov(4, { disableInputChecks: 0 });
     rm.addText('I ate the dog.');
     expect(typeof rm.input === 'object').to.be.true;
 
-    rm = new Markov(4, { disableInputChecks: 1 });
+    rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText('I ate the dog.');
     expect(typeof rm.input === 'undefined').to.be.true;
   });
 
   it('should serialize and deserialize', () => {
 
-    let rm = new Markov(4, { disableInputChecks: 1 });
+    let rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(['I ate the dog.']);
-    let copy = Markov.fromJSON(rm.toJSON());
+    let copy = RiMarkov.fromJSON(rm.toJSON());
     markovEquals(rm, copy);
     expect(copy.generate()).eql(rm.generate());
   });
