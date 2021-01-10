@@ -152,9 +152,9 @@ class Conjugator {
   }
 
   presentTense(theVerb, person, number) {
-    const RiTa = this.RiTa;
     person = person || this.person;
     number = number || this.number;
+    const RiTa = this.RiTa;
     if (person === RiTa.THIRD && number === RiTa.SINGULAR) {
       return this.checkRules(PRESENT_RULESET, theVerb);
     }
