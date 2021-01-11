@@ -179,7 +179,7 @@ class Tagger {
   }
 
   isLikelyPlural(word) {
-    return this._lexHas("n", RiTa.singularize(word)) || RiTa.inflector.isPlural(word);
+    return this._lexHas("n", this.RiTa.singularize(word)) || this.RiTa.inflector.isPlural(word);
   }
 
   _handleSingleLetter(c) {
