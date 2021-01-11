@@ -1,1 +1,70 @@
-editor here
+<!DOCTYPE html>
+
+<head>
+    <title>RiTa Editor</title>
+
+    <!-- JQuery -->
+    <script src="res/jquery-3.5.1.min.js"></script>
+
+    <!-- Code Mirror -->
+    <script src="res/codemirror.js"></script>
+    <link rel="stylesheet" href="res/codemirror.css">
+    <script src="res/mode/javascript.js"></script>
+    <script src="res/addon/simple.js"></script>
+
+    <!-- RiTa -->
+    <script src="../dist/rita-web.js"></script>
+
+    <!-- css & main script -->
+    <link rel="stylesheet" href="res/style.css">
+    <script src="res/main.js"></script>
+
+</head>
+
+<body>
+    <div id="root">
+        <header class="navBar">
+            <div class="container">
+                <div class="logo-wrapper"><img class="logo" src="res/RiTaLogo.png" /></div>
+                <div class="links-wrapper">
+                    <a class="navBarLink" target="new" href="https://rednoise.org/rita">RiTa Home</a>
+                    &nbsp;|&nbsp;
+                    <a class="navBarLink" target="new" href="https://rednoise.org/rita/#reference">Reference</a>
+                    &nbsp;|&nbsp;
+                    <a class="navBarLink" target="new"
+                        href="https://rednoise.org/rita/reference/riscript.html">Riscript</a>
+                </div>
+            </div>
+        </header>
+        <div class="mainArea">
+            <div class="codeArea">
+                <div id="inputArea"></div>
+            </div>
+            <span class="resizer horizontal"></span>
+            <div class="output-button-wrapper">
+                <div class="buttons">
+                    <button type="buttons" id="clear">Clear</button>
+                    <button type="buttons" id="save">Save</button>
+                    <button type="buttons" id="run">Run</button>
+                </div>
+                <div class="output-wrapper">
+                    <div id="output">
+                        <header class="output-header">
+                            <span class="output-header-text">Output</span>
+                        </header>
+                        <div class="content"></div>
+                    </div>
+                    <span class="resizer vertical"></span>
+                    <div id="console">
+                        <header class="output-header">
+                            <span class="output-header-text">Console</span>
+                            <div style="width: 100%;"></div>
+                            <button class="consoleButton" id="clearConsole">Clear console</button>
+                        </header>
+                        <div class="content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
