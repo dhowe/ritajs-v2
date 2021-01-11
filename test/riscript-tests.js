@@ -85,10 +85,10 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve recursive expressions', () => {
       let ctx, expr;
-      ctx = { a: 'a', b: 'b' };
-      expr = '(a|a)';
-      expect(RiTa.evaluate(expr, ctx)).eq('a');
 
+      ctx = { a: 'a'};
+      expr = '(a|$a)';
+      expect(RiTa.evaluate(expr, ctx)).eq('a');
       ctx = { a: '$b', b: '(c | c)' };
       expr = '$a';
       expect(RiTa.evaluate(expr, ctx)).eq('c');
@@ -97,10 +97,11 @@ describe('RiTa.RiScript', () => {
       expr = '$k = $a\n$k';
       expect(RiTa.evaluate(expr, ctx)).eq('c');
 
+      ctx = { a: '$b', b: '(c | c)' };
       expr = '$s = $a\n$a = $b\n$c = $d\n$d = c\n$s';
       expect(RiTa.evaluate(expr, ctx)).eq('c');
 
-      expr = { s: '$a', a: '$b', c: '$d', d: 'c' };
+      ctx = { s: '$a', a: '$b', b: '$c', c: '$d', d: 'c' };
       expect(RiTa.evaluate('$s', ctx)).eq('c');
     });
   });

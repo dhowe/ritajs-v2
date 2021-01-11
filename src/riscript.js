@@ -22,8 +22,8 @@ class RiScript {
 
     ctx = ctx || {};
 
-    // make sure we have RiTa in context
-    if (!ctx.hasOwnProperty('RiTa')) ctx.RiTa = RiTa();
+    // make sure we have RiTa in context ??
+    //if (!ctx.hasOwnProperty('RiTa')) ctx.RiTa = RiTa();
 
     let onepass = opts.singlePass; // TODO: doc
     let last, expr = input, trace = opts.trace;
@@ -236,14 +236,20 @@ function pluralize(s) {
 RiScript.MAX_TRIES = 99;
 
 RiScript.transforms = {
-  capitalize, quotify, pluralize,
+  quotify,
+  pluralize,
+  capitalize,
   articlize: RiScript.articlize,
+  // sequences
   seq: RiScript.identity,
   rseq: RiScript.identity,
   norep: RiScript.identity,
-  qq: quotify, uc: toUpper,
+  // aliases
   art: RiScript.articlize,
-  ucf: capitalize // aliases
+  ucf: capitalize,
+  uc: toUpper,
+  qq: quotify,
+  s: pluralize   
 };
 
 const VOWEL_RE = /[aeiou]/;
