@@ -123,7 +123,7 @@ class Lexicon {
 
     const dict = this._dict(true);
     const words = Object.keys(dict);
-    const ran = Math.floor(this.RiTa.randInt(words.length));
+    const ran = Math.floor(this.RiTa.random(words.length));
 
     let _silent = opts.silent;
     opts.silent = true; // auto-silent

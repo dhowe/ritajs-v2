@@ -343,13 +343,6 @@ class Visitor extends RiScriptVisitor {
     return result;
   }
 
-  handleSequence(options, shuffle) {
-    if (!this.sequence) {
-      this.sequence = new Sequence(options, shuffle);
-    }
-    return this.sequence.next();
-  }
-
   ruleName(ctx) {
     return ctx.hasOwnProperty('symbol') ?
       this.parent.lexer.symbolicNames[ctx.symbol.type] :
@@ -405,72 +398,31 @@ class ChoiceState {
     if (this.type == SEQUENCE) return this.selectSequence();
     if (this.type == NOREPEAT) return this.selectNoRepeat();
     if (this.type == RSEQUENCE) return this.selectRandSequence();
-    return this.rand.randomItem(this.options); // SIMPLE
+    return this.rand.random(this.options); // SIMPLE
   }
 
   selectNoRepeat() {
     let cand;
     do {
-      cand = RiTa.randomizer.randomItem(this.options);
+      cand =this.rand.random(this.options);
     } while (cand == this.last);
-    //console.log('selectNoRepeat',cand.getText());
+
     return (this.last = cand);
   }
 
   selectSequence() {
-    //console.log('selectSequence');
     let idx = this.index++ % this.options.length;
-    //console.log('IDX', idx);
     return (this.last = this.options[idx]); d
   }
 
 
   selectRandSequence() {
-    //console.log('selectRandSequence', this.index);
-
     while (this.index == this.options.length) {
       this.options = this.rand.randomOrdering(this.options);
       // make sure we are not repeating
       if (this.options[0] != this.last) this.index = 0;
     }
     return this.selectSequence();
-  }
-}
-
-class NoRepeat {
-  //TODO:
-}
-
-class Sequence {
-  constructor(opts, shuffle) {
-    this.last = null;
-    this.index = 0;
-    this.options = opts;
-    this.shuffle = shuffle;
-    if (shuffle) this.shuffleOpts();
-    /*console.log('new Sequence(' + this.options.map
-      (o => o.getText()) + ", " + !!shuffle + ")");*/
-  }
-  next() {
-    //console.log('Sequence#' + this.index);
-    while (this.shuffle && this.index === this.options.length) {
-      this.shuffleOpts();
-      // no repeats
-      if (this.options.length < 2 || this.options[0] !== this.last) {
-        this.index = 0;
-      }
-    }
-    this.last = this.options[this.index++ % this.options.length];
-    return this.last;
-  }
-  shuffleOpts() {
-    let newArray = this.options.slice(), len = newArray.length, i = len;
-    while (i--) {
-      let p = parseInt(Math.random() * len), t = newArray[i];
-      newArray[i] = newArray[p];
-      newArray[p] = t;
-    }
-    this.options = newArray;
   }
 }
 

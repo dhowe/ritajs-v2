@@ -1,5 +1,6 @@
 const Util = require("./util");
 const Markov = require('./markov');
+const Tagger = require('./tagger');
 const Grammar = require('./grammar');
 const Stemmer = require('./stemmer');
 const Lexicon = require('./lexicon');
@@ -9,8 +10,7 @@ const Tokenizer = require('./tokenizer');
 const Concorder = require('./concorder');
 const Conjugator = require('./conjugator');
 const Inflector = require('./inflector');
-const SeededRandom = require('./random');
-const Tagger = require('./tagger');
+const SeededRandom = require('./randgen');
 
 class RiTa {
 
@@ -18,7 +18,7 @@ class RiTa {
     return RiScript.addTransform(...arguments);
   }
 
-  static articlize(s) { // TODO: add to api
+  static articlize(s) {
     return RiScript.articlize(s);
   }
 
@@ -30,7 +30,7 @@ class RiTa {
     return RiTa.analyzer.analyze(...arguments);
   }
 
-  static concordance() { // DOC:
+  static concordance() {
     return RiTa.concorder.concordance(...arguments);
   }
 
@@ -46,11 +46,7 @@ class RiTa {
     return new RiTa.Markov(...arguments);
   }
 
-  static env() { // niapi
-    return Util.isNode() ? RiTa.NODE : RiTa.JS;
-  }
-
-  static evaluate() { // DOC:
+  static evaluate() {
     return RiScript.eval(...arguments);
   }
 
@@ -80,15 +76,6 @@ class RiTa {
 
   static isAlliteration() {
     return RiTa.lexicon().isAlliteration(...arguments);
-  }
-
-  static isVowel(c) {
-    return c && c.length === 1 && RiTa.VOWELS.includes(c);
-  }
-
-  static isConsonant(c) {
-    return (c && c.length === 1 && !RiTa.VOWELS.includes(c)
-      && IS_LETTER.test(c));
   }
 
   static isNoun(word) {
@@ -145,14 +132,6 @@ class RiTa {
     return RiTa.conjugator.presentParticiple(...arguments);
   }
 
-  static random() {
-    return RiTa.randomizer.random(...arguments);
-  }
-
-  static randInt() { // niapi?
-    return Math.floor(RiTa.random(...arguments));
-  }
-
   static randomOrdering() {
     return RiTa.randomizer.randomOrdering(...arguments);
   }
@@ -163,10 +142,6 @@ class RiTa {
 
   static randomWord() {
     return RiTa.lexicon().randomWord(...arguments);
-  }
-
-  static randomItem() {
-    return RiTa.randomizer.randomItem(...arguments);
   }
 
   static rhymes() { // DOC:
@@ -214,6 +189,23 @@ class RiTa {
   }
 
   ////////////////////////////// niapa /////////////////////////////
+
+  static env() { // niapi
+    return Util.isNode() ? RiTa.NODE : RiTa.JS;
+  }
+
+  static random() {
+    return RiTa.randomizer.random(...arguments);
+  }
+
+  static isVowel(c) {
+    return c && c.length === 1 && RiTa.VOWELS.includes(c);
+  }
+
+  static isConsonant(c) {
+    return (c && c.length === 1 && !RiTa.VOWELS.includes(c)
+      && IS_LETTER.test(c));
+  }
 
   static capitalize(s) {
     return s ? s[0].toUpperCase() + s.substring(1) : '';
