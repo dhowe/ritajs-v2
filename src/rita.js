@@ -1,17 +1,16 @@
 const Util = require("./util");
-const RiMarkov = require('./markov');
-const RiGrammar = require('./grammar');
+const Tagger = require('./tagger');
 const Stemmer = require('./stemmer');
 const Lexicon = require('./lexicon');
+const RiMarkov = require('./markov');
+const RiGrammar = require('./grammar');
 const Analyzer = require('./analyzer');
 const RiScript = require('./riscript');
 const Tokenizer = require('./tokenizer');
 const Concorder = require('./concorder');
 const Conjugator = require('./conjugator');
 const Inflector = require('./inflector');
-const SeededRandom = require('./random');
-const Operator = require('./operator');
-const Tagger = require('./tagger');
+const SeededRandom = require('./randgen');
 
 class RiTa {
 
@@ -19,7 +18,7 @@ class RiTa {
     return RiScript.addTransform(...arguments);
   }
 
-  static articlize(s) { // TODO: add to api
+  static articlize(s) {
     return RiScript.articlize(s);
   }
 
@@ -31,7 +30,7 @@ class RiTa {
     return RiTa.analyzer.analyze(...arguments);
   }
 
-  static concordance() { // DOC:
+  static concordance() {
     return RiTa.concorder.concordance(...arguments);
   }
 
@@ -47,11 +46,7 @@ class RiTa {
     return new RiTa.RiMarkov(...arguments);
   }
 
-  static env() { // niapi
-    return Util.isNode() ? RiTa.NODE : RiTa.JS;
-  }
-
-  static evaluate() { // DOC:
+  static evaluate() {
     return RiScript.eval(...arguments);
   }
 
@@ -81,15 +76,6 @@ class RiTa {
 
   static isAlliteration() {
     return RiTa.lexicon().isAlliteration(...arguments);
-  }
-
-  static isVowel(c) {
-    return c && c.length === 1 && RiTa.VOWELS.includes(c);
-  }
-
-  static isConsonant(c) {
-    return (c && c.length === 1 && !RiTa.VOWELS.includes(c)
-      && IS_LETTER.test(c));
   }
 
   static isNoun(word) {
@@ -146,14 +132,6 @@ class RiTa {
     return RiTa.conjugator.presentParticiple(...arguments);
   }
 
-  static random() {
-    return RiTa.randomizer.random(...arguments);
-  }
-
-  static randInt() { // niapi?
-    return Math.floor(RiTa.random(...arguments));
-  }
-
   static randomOrdering() {
     return RiTa.randomizer.randomOrdering(...arguments);
   }
@@ -164,10 +142,6 @@ class RiTa {
 
   static randomWord() {
     return RiTa.lexicon().randomWord(...arguments);
-  }
-
-  static randomItem() {
-    return RiTa.randomizer.randomItem(...arguments);
   }
 
   static rhymes() { // DOC:
@@ -216,6 +190,23 @@ class RiTa {
 
   ////////////////////////////// niapa /////////////////////////////
 
+  static env() { // niapi
+    return Util.isNode() ? RiTa.NODE : RiTa.JS;
+  }
+
+  static random() {
+    return RiTa.randomizer.random(...arguments);
+  }
+
+  static isVowel(c) {
+    return c && c.length === 1 && RiTa.VOWELS.includes(c);
+  }
+
+  static isConsonant(c) {
+    return (c && c.length === 1 && !RiTa.VOWELS.includes(c)
+      && IS_LETTER.test(c));
+  }
+
   static capitalize(s) {
     return s ? s[0].toUpperCase() + s.substring(1) : '';
   }
@@ -233,13 +224,16 @@ class RiTa {
   }
 }
 
+// BACKREFS
+RiMarkov.parent = RiTa;
+RiGrammar.parent = RiTa;
+RiScript.parent = RiTa;
+Stemmer.parent = RiTa;
+
 // CLASSES
 RiTa.RiScript = RiScript;
 RiTa.RiGrammar = RiGrammar;
 RiTa.RiMarkov = RiMarkov;
-RiTa.RiMarkov.parent = RiTa;
-RiTa.RiGrammar.parent = RiTa;
-RiTa.RiScript.parent = RiTa;
 
 // COMPONENTS
 RiTa.tagger = new Tagger(RiTa);
@@ -258,12 +252,10 @@ RiTa.SILENT = false;
 RiTa.SILENCE_LTS = false;
 RiTa.CDN_URL = 'https://www.unpkg.com/rita/';
 
-
 // CONSTANTS
 RiTa.PHONES = ['aa', 'ae', 'ah', 'ao', 'aw', 'ay', 'b', 'ch', 'd', 'dh', 'eh', 'er', 'ey', 'f', 'g', 'hh', 'ih', 'iy', 'jh', 'k', 'l', 'm', 'n', 'ng', 'ow', 'oy', 'p', 'r', 's', 'sh', 't', 'th', 'uh', 'uw', 'v', 'w', 'y', 'z', 'zh'];
 RiTa.VERSION = typeof __VERSION__ !== 'undefined' ? __VERSION__ : 'DEV';
 RiTa.HAS_LEXICON = typeof __NOLEX__ === 'undefined';
-
 RiTa.FIRST = 1;
 RiTa.SECOND = 2;
 RiTa.THIRD = 3;
@@ -282,25 +274,7 @@ RiTa.SENTENCE_BOUNDARY = "|";
 RiTa.VOWELS = "aeiou";
 RiTa.ABRV = ["Adm.", "Capt.", "Cmdr.", "Col.", "Dr.", "Gen.", "Gov.", "Lt.", "Maj.", "Messrs.", "Mr.", "Mrs.", "Ms.", "Prof.", "Rep.", "Reps.", "Rev.", "Sen.", "Sens.", "Sgt.", "Sr.", "St.", "A.k.a.", "C.f.", "I.e.", "E.g.", "Vs.", "V.", "Jan.", "Feb.", "Mar.", "Apr.", "Mar.", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
 RiTa.QUESTIONS = ["was", "what", "when", "where", "which", "why", "who", "will", "would", "who", "how", "if", "is", "could", "might", "does", "are", "have"];
-RiTa.STOP_WORDS = [
-  "and", "a", "of", "in", "i", "you", "is", "to",
-  "that", "it", "for", "on", "have", "with",
-  "this", "be", "not", "are", "as", "was", "but", "or", "from",
-  "my", "at", "if", "they", "your", "all", "he", "by", "one",
-  "me", "what", "so", "can", "will", "do", "an", "about", "we", "just",
-  "would", "there", "no", "like", "out", "his", "has", "up", "more", "who",
-  "when", "don't", "some", "had", "them", "any", "their", "it's", "only",
-  "which", "i'm", "been", "other", "were", "how", "then", "now",
-  "her", "than", "she", "well", "also", "us", "very", "because",
-  "am", "here", "could", "even", "him", "into", "our", "much",
-  "too", "did", "should", "over", "want", "these", "may", "where", "most",
-  "many", "those", "does", "why", "please", "off", "going", "its", "i've",
-  "down", "that's", "can't", "you're", "didn't", "another", "around",
-  "must", "few", "doesn't", "the", "every", "yes", "each", "maybe",
-  "i'll", "away", "doing", "oh", "else", "isn't", "he's", "there's", "hi",
-  "won't", "ok", "they're", "yeah", "mine", "we're", "what's", "shall",
-  "she's", "hello", "okay", "here's", "less"
-];
+RiTa.STOP_WORDS = ["and", "a", "of", "in", "i", "you", "is", "to", "that", "it", "for", "on", "have", "with", "this", "be", "not", "are", "as", "was", "but", "or", "from", "my", "at", "if", "they", "your", "all", "he", "by", "one", "me", "what", "so", "can", "will", "do", "an", "about", "we", "just", "would", "there", "no", "like", "out", "his", "has", "up", "more", "who", "when", "don't", "some", "had", "them", "any", "their", "it's", "only", "which", "i'm", "been", "other", "were", "how", "then", "now", "her", "than", "she", "well", "also", "us", "very", "because", "am", "here", "could", "even", "him", "into", "our", "much", "too", "did", "should", "over", "want", "these", "may", "where", "most", "many", "those", "does", "why", "please", "off", "going", "its", "i've", "down", "that's", "can't", "you're", "didn't", "another", "around", "must", "few", "doesn't", "the", "every", "yes", "each", "maybe", "i'll", "away", "doing", "oh", "else", "isn't", "he's", "there's", "hi", "won't", "ok", "they're", "yeah", "mine", "we're", "what's", "shall", "she's", "hello", "okay", "here's", "less"];
 RiTa.INFINITIVE = 1;
 RiTa.GERUND = 2;
 

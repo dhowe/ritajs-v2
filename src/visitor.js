@@ -9,10 +9,11 @@ const { RiScriptParser } = require('../grammar/antlr/RiScriptParser');
  */
 class Visitor extends RiScriptVisitor {
 
-  constructor(parent) {
+  constructor(parent, RiTa) {
     super();
     this.sequences = {};
     this.parent = parent;
+    this.RiTa = RiTa;
   }
 
   init(context, opts) {
@@ -156,7 +157,7 @@ class Visitor extends RiScriptVisitor {
 
     this.trace && console.log("resolveSymbol[3]: $" + ident + " -> '" + result + "'");
 
-    return result; // TODO: handle RiTa.* functions?
+    return result;
   }
 
   ////////////////////// ///////////// //////////////////////////
@@ -289,12 +290,12 @@ class Visitor extends RiScriptVisitor {
       else if (typeof target[tx] === 'function') {
         result = target[tx]();
         if (target === '' && result === '') {
-          if (!this.silent && !RiTa.SILENT) console.warn("[WARN] Unresolved transform[0]: " + raw);
+          if (!this.silent && !this.RiTa.SILENT) console.warn("[WARN] Unresolved transform[0]: " + raw);
         }
       }
       else { // function doesn't exist
         result = raw;
-        if (!this.silent && !RiTa.SILENT) console.warn("[WARN] Unresolved transform[1]: " + result);
+        if (!this.silent && !this.RiTa.SILENT) console.warn("[WARN] Unresolved transform[1]: " + result);
       }
     }
     // check for property
@@ -305,7 +306,7 @@ class Visitor extends RiScriptVisitor {
       }
       else {
         result = raw;
-        if (!this.silent && !RiTa.SILENT) console.warn("[WARN] Unresolved transform[2]: " + result);
+        if (!this.silent && !this.RiTa.SILENT) console.warn("[WARN] Unresolved transform[2]: " + result);
       }
     }
 
@@ -342,13 +343,6 @@ class Visitor extends RiScriptVisitor {
     return result;
   }
 
-  handleSequence(options, shuffle) {
-    if (!this.sequence) {
-      this.sequence = new Sequence(options, shuffle);
-    }
-    return this.sequence.next();
-  }
-
   ruleName(ctx) {
     return ctx.hasOwnProperty('symbol') ?
       this.parent.lexer.symbolicNames[ctx.symbol.type] :
@@ -372,6 +366,7 @@ class ChoiceState {
     this.index = 0;
     this.options = []
     this.id = parent.indexer;
+    this.rand = parent.RiTa.randomizer;
 
     ctx.wexpr().map((w, k) => {
       let wctx = w.weight();
@@ -387,7 +382,7 @@ class ChoiceState {
     }
 
     if (this.type === RSEQUENCE) this.options =
-      RiTa.randomizer.randomOrdering(this.options);
+      this.rand.randomOrdering(this.options);
 
     //if (parent.trace) console.log('  new ChoiceState#' + this.id + '('
     //+ this.options.map(o => o.getText()) + ", type=" + this.type + ")");
@@ -403,73 +398,31 @@ class ChoiceState {
     if (this.type == SEQUENCE) return this.selectSequence();
     if (this.type == NOREPEAT) return this.selectNoRepeat();
     if (this.type == RSEQUENCE) return this.selectRandSequence();
-    return RiTa.randomizer.randomItem(this.options); // SIMPLE
+    return this.rand.random(this.options); // SIMPLE
   }
 
   selectNoRepeat() {
     let cand;
     do {
-      cand = RiTa.randomizer.randomItem(this.options);
+      cand =this.rand.random(this.options);
     } while (cand == this.last);
-    //console.log('selectNoRepeat',cand.getText());
+
     return (this.last = cand);
   }
 
   selectSequence() {
-    //console.log('selectSequence');
     let idx = this.index++ % this.options.length;
-    //console.log('IDX', idx);
     return (this.last = this.options[idx]); d
   }
 
 
   selectRandSequence() {
-    //console.log('selectRandSequence', this.index);
-
     while (this.index == this.options.length) {
-      this.options = RiTa.randomizer.randomOrdering(this.options);
-      //console.log('rand: ', this.options);
+      this.options = this.rand.randomOrdering(this.options);
       // make sure we are not repeating
       if (this.options[0] != this.last) this.index = 0;
     }
     return this.selectSequence();
-  }
-}
-
-class NoRepeat {
-  //TODO:
-}
-
-class Sequence {
-  constructor(opts, shuffle) {
-    this.last = null;
-    this.index = 0;
-    this.options = opts;
-    this.shuffle = shuffle;
-    if (shuffle) this.shuffleOpts();
-    /*console.log('new Sequence(' + this.options.map
-      (o => o.getText()) + ", " + !!shuffle + ")");*/
-  }
-  next() {
-    //console.log('Sequence#' + this.index);
-    while (this.shuffle && this.index === this.options.length) {
-      this.shuffleOpts();
-      // no repeats
-      if (this.options.length < 2 || this.options[0] !== this.last) {
-        this.index = 0;
-      }
-    }
-    this.last = this.options[this.index++ % this.options.length];
-    return this.last;
-  }
-  shuffleOpts() {
-    let newArray = this.options.slice(), len = newArray.length, i = len;
-    while (i--) {
-      let p = parseInt(Math.random() * len), t = newArray[i];
-      newArray[i] = newArray[p];
-      newArray[p] = t;
-    }
-    this.options = newArray;
   }
 }
 
