@@ -264,7 +264,7 @@ describe('RiTa.RiScript', () => {
     })
 
     it('Should resolve transforms on literals', () => {
-      expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many "teeth" do you have?');
+      expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many “teeth” do you have?');
       expect(RiTa.evaluate('That is (ant).articlize().', 0)).eq('That is an ant.');
       expect(RiTa.evaluate('That is an (ant).capitalize().')).eq('That is an Ant.');
       expect(RiTa.evaluate('(ant).articlize().capitalize()', 0)).eq('An ant');
@@ -273,7 +273,7 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve transforms on phrases', () => {
       expect(RiTa.evaluate('($adj tooth).articlize()', { adj: 'awful' })).eq('an awful tooth')
-      expect(RiTa.evaluate('How many (bad teeth).quotify()?')).eq('How many "bad teeth"?');
+      expect(RiTa.evaluate('How many (bad teeth).quotify()?')).eq('How many “bad teeth”?');
       expect(RiTa.evaluate('(awful tooth).articlize()')).eq('an awful tooth');
       expect(RiTa.evaluate('$adj teeth', { adj: 'awful' })).eq('awful teeth');
       expect(RiTa.evaluate('an ($adj tooth)', { adj: 'awful' })).eq('an awful tooth');
@@ -646,7 +646,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("().articlize()")).eq("");
       expect(RiTa.evaluate("().capitalize()")).eq("");
       expect(RiTa.evaluate("().pluralize()")).eq("");
-      expect(RiTa.evaluate("().quotify()")).eq("\"\"");
+      expect(RiTa.evaluate("().quotify()")).eq("“”");
       expect(RiTa.evaluate("().art()")).eq("");
 
       expect(RiTa.evaluate("().toLowerCase()", {}, ST)).eq(""); // ?
@@ -848,7 +848,7 @@ describe('RiTa.RiScript', () => {
       expect(String.quotify).eq(undefined);
       expect(String.articlize).eq(undefined);
       expect(RiTa.evaluate('How many (teeth).toUpperCase() do you have?', 0)).eq('How many TEETH do you have?');
-      expect(RiTa.evaluate('How many (teeth).quotify() do you have?', 0)).eq('How many "teeth" do you have?');
+      expect(RiTa.evaluate('How many (teeth).quotify() do you have?', 0)).eq('How many “teeth” do you have?');
       expect(RiTa.evaluate('That is (ant).articlize().')).eq('That is an ant.');
       expect(String.articlize).eq(undefined);
       expect(String.quotify).eq(undefined);
