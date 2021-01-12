@@ -40,38 +40,41 @@
             <div class="codeArea">
                 <textarea id="inputArea">function main() {
 
-  //put your main code here
+  //replace with your code here
+  let sentence = RiTa.evaluate("This is a simple example.", {});
+  console.log(sentence);
+  return sentence;
 
 }
                 </textarea>
             </div>
             <span class="resizer horizontal"></span>
-            <div class="output-button-wrapper">
+            <section class="output-button-wrapper">
                 <div class="buttons">
                     <button type="buttons" id="clear">Clear</button>
                     <button type="buttons" id="save">Save</button>
                     <button type="buttons" id="run">Run</button>
                 </div>
                 <div class="output-wrapper">
-                    <div id="output">
+                    <section id="output">
                         <header class="output-header">
                             <span class="output-header-text">Output</span>
+                            <div style="width: 80%;"></div>
+                            <button class="outputButton" id="clearOutput">Clear output</button>
                         </header>
                         <div class="content"></div>
-                    </div>
+                    </section>
                     <span class="resizer vertical"></span>
-                    <div id="console">
+                    <section id="console">
                         <header class="output-header">
                             <span class="output-header-text">Console</span>
-                            <div style="width: 100%;"></div>
-                            <button class="consoleButton" id="clearConsole">Clear console</button>
+                            <div style="width: 80%;"></div>
+                            <button class="outputButton" id="clearConsole">Clear console</button>
                         </header>
-                        <div class="content">
-                            <p id="console-content"></p>
-                        </div>
-                    </div>
+                        <div class="content"></div>
+                    </section>
                 </div>
-            </div>
+            </section>
         </div>
     </div>
 </body>

@@ -11,13 +11,18 @@ h2{
 
 
 .content{
-    
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
+
 .output-button-wrapper{
     margin-top: 5px;
     height: 275px;
     display: flex;
     flex-direction: column;
+    flex: 0 0 auto;
 }
 
 .output-wrapper{
@@ -30,9 +35,11 @@ h2{
 .output-header{
     background-color: #d9d9d9;
     height: 30px;
+    min-height: 30px;
     letter-spacing: 1px;
     display: flex;
     flex-direction: row;
+    justify-content: space-around;
 }
 
 .output-header-text{
@@ -44,7 +51,7 @@ h2{
     color: #1c1c1c;
 }
 
-.consoleButton{
+.outputButton{
     background-color: hsla(0, 0, 0, 0);
     color: #4d4d4d;
     height: 80%;
@@ -146,20 +153,27 @@ h2{
 #console{
     width: 50%;
     background-color: whitesmoke;
+    border-left: 1px solid #ddd;
+    overflow: hidden;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
 }
 
 #output{
     width: 50%;
     background-color: whitesmoke;
     border-right: 1px solid #ddd;
-    float: left;
+    overflow: hidden;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
 }
 
 #inputArea{
     height: 100%;
-    border-left: 1px solid #ddd;
     margin-bottom: 5px;
 }
 

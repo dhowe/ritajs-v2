@@ -1,14 +1,42 @@
 $(document).ready(function () {
     //read console
-    console.stdlog = console.log.bind(console);
-    let logs = [];
-    //rewrite console.log() to get the content
-    console.log = function() {
-        logs.push(Array.from(arguments));
-        console.stdlog.apply(console, arguments);
+    let consoleContents = [];
+    //rewrite console funtions to get the content
+    let _console;
+    if (console) {
+        _console = {
+            log: console.log,
+            info: console.info,
+            debug: console.debug,
+            warn: console.warn,
+            error: console.error,
+        };
+    } else {
+        consoleContents.push('! console is not available');
     }
+    console.log = function() {
+        consoleContents.push(Array.from(arguments));
+        _console.log.apply(console, arguments);
+    };
+    console.info = function() {
+        consoleContents.push(Array.from(arguments));
+        _console.info.apply(console, arguments);
+    };
+    console.debug = function() {
+        consoleContents.push(Array.from(arguments));
+        _console.debug.apply(console, arguments);
+    };
+    console.warn = function() {
+        consoleContents.push(Array.from(arguments));
+        _console.warn.apply(console, arguments);
+    };
+    console.error = function() {
+        consoleContents.push(Array.from(arguments));
+        _console.error.apply(console, arguments);
+    };
 
     //codeMirror
+    let defaultValue = "function main() {\n\n  //replace with your code here\n  let sentence = RiTa.evaluate(\"This is a simple example.\", {});\n  console.log(sentence);\n  return sentence;\n\n}";
     CodeMirror.defineSimpleMode("Riscript", {
         start: [
             // //introduce JavaScript
@@ -70,6 +98,8 @@ $(document).ready(function () {
             let h = $("body").height() - m.pageY;
             $(".output-button-wrapper").css({ height: h })
         });
+        let h = $("#output").height() - 30
+        $(".content-wrapper").css({ height: h });
     });
     $("body").mouseup(function (e) {
         $(this).unbind("mousemove");
@@ -80,6 +110,7 @@ $(document).ready(function () {
         e.preventDefault();
         editor.clearHistory();
         editor.setValue(defaultValue);
+        $("#inputArea").val(defaultValue);
     });
     $("#run").click(function (e) {
         e.preventDefault();
@@ -89,17 +120,31 @@ $(document).ready(function () {
         e.preventDefault();
         saveTheCode();
     });
+    $("#clearConsole").click(function (e) {
+        e.preventDefault();
+        $("#console .content").empty();
+        consoleContents.length = 0;
+    });
+    $("#clearOutput").click(function (e) {
+        e.preventDefault();
+        $("#output .content").empty();
+        consoleContents.length = 0;
+    });
 
-    //helpers
+    //helpers 
     function runTheCode() {
-        logs.length = 0;
         let code = editor.getValue();
         let s = document.createElement("script");
         s.setAttribute("id", "receivedCode");
         s.textContent = code;
         document.body.appendChild(s);
-        $("#output .content").append("<p id='output-content'>"+main()+" </p>");
-        $("#console-content").append(logs);
+        let h = $("#output").height() - 30
+        $(".content-wrapper").css({ height: h });
+        $("#output .content").append("<p class='output-content'>"+main()+" </p>");
+        $("#console .content").empty();
+        consoleContents.forEach(function(e) {
+            $("#console .content").append("<p class='output-content'>"+ e +" </p>");
+        });
     }
 
     function saveTheCode() {
