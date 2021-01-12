@@ -17,6 +17,13 @@ h2{
     box-sizing: border-box;
 }
 
+.content p {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 5px;
+    border-top: 2px solid #ddd;
+}
+
 .output-button-wrapper{
     margin-top: 5px;
     height: 275px;

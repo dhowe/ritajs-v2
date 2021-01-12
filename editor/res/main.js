@@ -14,23 +14,23 @@ $(document).ready(function () {
     } else {
         consoleContents.push('! console is not available');
     }
-    console.log = function() {
+    console.log = function () {
         consoleContents.push(Array.from(arguments));
         _console.log.apply(console, arguments);
     };
-    console.info = function() {
+    console.info = function () {
         consoleContents.push(Array.from(arguments));
         _console.info.apply(console, arguments);
     };
-    console.debug = function() {
+    console.debug = function () {
         consoleContents.push(Array.from(arguments));
         _console.debug.apply(console, arguments);
     };
-    console.warn = function() {
+    console.warn = function () {
         consoleContents.push(Array.from(arguments));
         _console.warn.apply(console, arguments);
     };
-    console.error = function() {
+    console.error = function () {
         consoleContents.push(Array.from(arguments));
         _console.error.apply(console, arguments);
     };
@@ -140,13 +140,19 @@ $(document).ready(function () {
         document.body.appendChild(s);
         let h = $("#output").height() - 30
         $(".content-wrapper").css({ height: h });
-        $("#output .content").append("<p class='output-content'>"+main()+" </p>");
+        $("#output .content").append("<p class='output-content'>" + tryCode() + " </p>");
         $("#console .content").empty();
-        consoleContents.forEach(function(e) {
-            $("#console .content").append("<p class='output-content'>"+ e +" </p>");
+        consoleContents.forEach(function (e) {
+            $("#console .content").append("<p class='output-content'>" + e + " </p>");
         });
     }
-
+    function tryCode() {
+        try {
+            main()
+        } catch (error) {
+            console.error(error)
+        }
+    }
     function saveTheCode() {
         let data = doc.getValue();
 
