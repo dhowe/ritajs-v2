@@ -154,7 +154,7 @@ $(document).ready(function () {
     }
     function tryCode() {
         try {
-            main()
+           return main();
         } catch (e) {
             let string = [].slice.call(e.stack).join('');
             if (string.includes("main") && string.includes("tryCode")) {
