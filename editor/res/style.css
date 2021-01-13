@@ -15,13 +15,31 @@ h2{
     flex-direction: column;
     overflow-y: auto;
     box-sizing: border-box;
+    font-family: sans-serif;
 }
 
-.content p {
+.output-content {
     margin-top: 2px;
     margin-bottom: 2px;
     margin-left: 5px;
     border-top: 2px solid #ddd;
+}
+
+.output-content-error {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 5px;
+    border-top: 2px solid #ddd;
+    color: rgb(209, 21, 24);
+    background-color: rgb(255, 240, 240);
+}
+
+.output-content-warn {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 5px;
+    border-top: 2px solid #ddd;
+    background-color: rgb(255, 245, 189);
 }
 
 .output-button-wrapper{

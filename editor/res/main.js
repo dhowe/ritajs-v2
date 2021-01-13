@@ -15,23 +15,23 @@ $(document).ready(function () {
         consoleContents.push('! console is not available');
     }
     console.log = function () {
-        consoleContents.push(Array.from(arguments));
+        consoleContents.push({ type: 'log', content: [].slice.call(arguments).join('') });
         _console.log.apply(console, arguments);
     };
     console.info = function () {
-        consoleContents.push(Array.from(arguments));
+        consoleContents.push({ type: 'info', content: [].slice.call(arguments).join('') });
         _console.info.apply(console, arguments);
     };
     console.debug = function () {
-        consoleContents.push(Array.from(arguments));
+        consoleContents.push({ type: 'debug', content: [].slice.call(arguments).join('') });
         _console.debug.apply(console, arguments);
     };
     console.warn = function () {
-        consoleContents.push(Array.from(arguments));
+        consoleContents.push({ type: 'warn', content: [].slice.call(arguments).join('') });
         _console.warn.apply(console, arguments);
     };
     console.error = function () {
-        consoleContents.push(Array.from(arguments));
+        consoleContents.push({ type: 'error', content: [].slice.call(arguments).join('') });
         _console.error.apply(console, arguments);
     };
 
@@ -143,14 +143,28 @@ $(document).ready(function () {
         $("#output .content").append("<p class='output-content'>" + tryCode() + " </p>");
         $("#console .content").empty();
         consoleContents.forEach(function (e) {
-            $("#console .content").append("<p class='output-content'>" + e + " </p>");
+            if (e.type == 'log') {
+                $("#console .content").append("<p class='output-content'>" + e.content + " </p>");
+            } else if (e.type == 'error') {
+                $("#console .content").append("<p class='output-content-error'>" + e.content + " </p>");
+            } else if (e.type == 'warn') {
+                $("#console .content").append("<p class='output-content-warn'>" + e.content + " </p>");
+            }
         });
     }
     function tryCode() {
         try {
             main()
-        } catch (error) {
-            console.error(error)
+        } catch (e) {
+            let string = [].slice.call(e.stack).join('');
+            if (string.includes("main") && string.includes("tryCode")) {
+                let arr = string.split(' ');
+                let lineNo = arr[arr.indexOf("main") + 1].split(':')[1];
+                //highLightError(lineNo); TODOS
+                console.error(e.name + ": " + e.message + " at line: " + lineNo);
+            } else {
+                console.error(e.stack);
+            }
         }
     }
     function saveTheCode() {
