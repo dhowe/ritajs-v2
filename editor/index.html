@@ -1,1 +1,86 @@
-editor here
+<!DOCTYPE html>
+
+<head>
+    <title>RiTa Editor</title>
+
+    <!-- JQuery -->
+    <script src="res/jquery-3.5.1.min.js"></script>
+
+    <!-- Code Mirror -->
+    <script src="res/codemirror.js"></script>
+    <link rel="stylesheet" href="res/codemirror.css">
+    <script src="res/mode/javascript.js"></script>
+    <script src="res/addon/simple.js"></script>
+
+    <!-- RiTa -->
+    <script src="../dist/rita-web.js"></script>
+
+    <!-- css & main script -->
+    <link rel="stylesheet" href="res/style.css">
+    <script src="res/main.js"></script>
+
+</head>
+
+<body>
+    <div id="root">
+        <header class="navBar">
+            <div class="container">
+                <div class="logo-wrapper"><img class="logo" src="res/RiTaLogo.png" /></div>
+                <div class="links-wrapper">
+                    <a class="navBarLink" target="new" href="https://rednoise.org/rita">RiTa Home</a>
+                    &nbsp;|&nbsp;
+                    <a class="navBarLink" target="new" href="https://rednoise.org/rita/#reference">Reference</a>
+                    &nbsp;|&nbsp;
+                    <a class="navBarLink" target="new"
+                        href="https://rednoise.org/rita/reference/riscript.html">Riscript</a>
+                </div>
+            </div>
+        </header>
+        <div class="mainArea">
+            <div class="codeArea">
+                <div class="title-wrapper">
+                    <div style="width: 30px; height: 20px;"></div>
+                    <input id="title" type="text" value="Untitle">
+                </div>
+                <div class="inputArea-wrapper">
+                    <textarea id="inputArea">function main() {
+
+  //replace with your code here
+  let sentence = RiTa.evaluate("This is a simple example.", {});
+  console.log(sentence);
+  return sentence;
+                      
+}
+                    </textarea>
+                </div>
+            </div>
+            <span class="resizer horizontal"></span>
+            <section class="output-button-wrapper">
+                <header class="buttons">
+                    <button type="buttons" id="clear">Clear</button>
+                    <button type="buttons" id="save">Save</button>
+                    <button type="buttons" id="run">Run</button>
+                </header>
+                <div class="output-wrapper">
+                    <section id="output">
+                        <header class="output-header">
+                            <span class="output-header-text">Output</span>
+                            <div style="width: 80%;"></div>
+                            <button class="outputButton" id="clearOutput">Clear output</button>
+                        </header>
+                        <div class="content"></div>
+                    </section>
+                    <span class="resizer vertical"></span>
+                    <section id="console">
+                        <header class="output-header">
+                            <span class="output-header-text">Console</span>
+                            <div style="width: 80%;"></div>
+                            <button class="outputButton" id="clearConsole">Clear console</button>
+                        </header>
+                        <div class="content"></div>
+                    </section>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>

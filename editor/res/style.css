@@ -1,0 +1,234 @@
+body, html{
+    height: 100%;
+    margin: 0;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+
+h2{
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+
+.content{
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+.highLightedError{
+    background-color: rgb(255, 226, 226);
+}
+
+.output-content {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 5px;
+    border-top: 2px solid #ddd;
+}
+
+.output-content-error {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 5px;
+    border-top: 2px solid #ddd;
+    color: rgb(209, 21, 24);
+    background-color: rgb(255, 240, 240);
+}
+
+.output-content-warn {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 5px;
+    border-top: 2px solid #ddd;
+    background-color: rgb(255, 245, 189);
+}
+
+.output-button-wrapper{
+    margin-top: 5px;
+    height: 275px;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+}
+
+.output-wrapper{
+    margin-top: 5px;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.output-header{
+    background-color: #d9d9d9;
+    height: 30px;
+    min-height: 30px;
+    letter-spacing: 1px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.output-header-text{
+    padding-top: 5px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    vertical-align: middle;
+    line-height: 1;
+    color: #1c1c1c;
+}
+
+.outputButton{
+    background-color: hsla(0, 0, 0, 0);
+    color: #4d4d4d;
+    height: 80%;
+    width: 150px;
+}
+
+.navBar{
+    background-color: #253c73;
+    padding: 8px 0;
+}
+
+.navBar .container{
+    width: 80%;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.logo{
+    width: 60px;
+}
+
+.logo-wrapper{
+    display: inline-block;
+}
+
+.links-wrapper{
+    width: 80%;
+    margin: auto;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.4;
+    letter-spacing: .2rem;
+    color: white;
+}
+
+.navBarLink{
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.4;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    letter-spacing: .2rem;
+    color: white;
+    text-decoration: none;
+}
+
+.navBarLink:hover{
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.4;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    letter-spacing: .2rem;
+    color: red;
+    text-decoration: none;
+}
+
+.mainArea{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.codeArea{
+    height: 100%;
+    border: 2px solid #ddd;
+    margin-bottom: 5px;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.inputArea-wrapper{
+    height: calc(100% - 30px);
+    overflow: auto;
+}
+
+.resizer{
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    background-clip: padding-box;
+    opacity: .02;
+}
+
+.resizer.horizontal {
+    height: 10px;
+    margin: -5px 0;
+    border-top: 5px solid hsla(0, 0, 0, 0);
+    border-bottom: 5px solid hsla(0, 0, 0, 0);
+    width: 100%;
+    cursor: row-resize;
+}
+
+.resizer.vertical {
+    height: 100%;
+    margin: 0 -5px;
+    border-left: 5px solid hsla(0, 0, 0, 0);
+    border-right: 5px solid hsla(0, 0, 0, 0);
+    width: 10px;
+    cursor: col-resize;
+    float: left;
+}
+
+.title-wrapper{
+    width: 100%;
+    height: 20px;
+    display: flex;
+    flex-direction: row;
+    padding: 5px 0;
+}
+
+
+#console{
+    width: 50%;
+    background-color: whitesmoke;
+    border-left: 1px solid #ddd;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+}
+
+#output{
+    width: 50%;
+    background-color: whitesmoke;
+    border-right: 1px solid #ddd;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+}
+
+#inputArea{
+    height: 100%;
+    margin-bottom: 5px;
+}
+
+#root{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
