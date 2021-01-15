@@ -81,10 +81,10 @@ $(document).ready(function () {
     editor.setSize("100%", "100%");
 
     let doc = editor.getDoc();
-    let errorMarker;
+    let errorLine;
 
     editor.on('change', function() {
-        removeHighLight();
+        removeHighLight(errorLine);
     });
     //resizer
     $(".resizer.vertical").mousedown(function (e) {
@@ -176,11 +176,13 @@ $(document).ready(function () {
 
     }
     function highLightError(lineNo) {
-        errorMarker = doc.markText({line:lineNo, ch: 0}, {line: lineNo, ch: 99999}, {className: "highLightedError"});
+        doc.addLineClass(lineNo, "background", "highLightedError");
+        errorLine = lineNo;
     }
-    function removeHighLight() {
-        if (errorMarker != undefined) {
-            errorMarker.clear();
+    function removeHighLight(lineNo) {
+        if (lineNo) {
+            doc.removeLineClass(lineNo, "background", "highLightedError");
+            errorLine = undefined;
         }
     }
 });
