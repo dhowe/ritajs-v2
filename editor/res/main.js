@@ -172,7 +172,18 @@ $(document).ready(function () {
         }
     }
     function saveTheCode() {
+        //via https://stackoverflow.com/a/30832210
         let data = doc.getValue();
+        let fileName = $("#title").val()+'.js';
+        let b = new Blob([data], { type: 'text' });
+        let a = document.createElement("a");
+        a.href = URL.createObjectURL(b);
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+        }, 0);
 
     }
     function highLightError(lineNo) {

@@ -19,7 +19,7 @@ h2{
 }
 
 .highLightedError{
-    background-color: rgb(255, 193, 193);
+    background-color: rgb(255, 226, 226);
 }
 
 .output-content {
@@ -153,6 +153,11 @@ h2{
     margin-bottom: 5px;
 }
 
+.inputArea-wrapper{
+    height: calc(100% - 30px);
+    overflow: auto;
+}
+
 .resizer{
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -179,6 +184,13 @@ h2{
     float: left;
 }
 
+.title-wrapper{
+    width: 100%;
+    height: 20px;
+    display: flex;
+    flex-direction: row;
+    padding: 5px 0;
+}
 
 
 #console{
