@@ -81,7 +81,11 @@ $(document).ready(function () {
     editor.setSize("100%", "100%");
 
     let doc = editor.getDoc();
+    let errorMarker;
 
+    editor.on('change', function() {
+        removeHighLight();
+    });
     //resizer
     $(".resizer.vertical").mousedown(function (e) {
         e.preventDefault();
@@ -160,7 +164,7 @@ $(document).ready(function () {
             if (string.includes("main") && string.includes("tryCode")) {
                 let arr = string.split(' ');
                 let lineNo = arr[arr.indexOf("main") + 1].split(':')[1];
-                //highLightError(lineNo); TODOS
+                highLightError(lineNo - 1); 
                 console.error(e.name + ": " + e.message + " at line: " + lineNo);
             } else {
                 console.error(e.stack);
@@ -172,10 +176,12 @@ $(document).ready(function () {
 
     }
     function highLightError(lineNo) {
-        doc.addLineClass(lineNo, "wrap", "hightLightedError");
+        errorMarker = doc.markText({line:lineNo, ch: 0}, {line: lineNo, ch: 99999}, {className: "highLightedError"});
     }
-    function removeHighLight(lineNo) {
-        doc.removeLineClass(lineNo, "wrap", "hightLightedError");
+    function removeHighLight() {
+        if (errorMarker != undefined) {
+            errorMarker.clear();
+        }
     }
 });
 

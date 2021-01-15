@@ -18,6 +18,10 @@ h2{
     font-family: sans-serif;
 }
 
+.highLightedError{
+    background-color: rgb(255, 193, 193);
+}
+
 .output-content {
     margin-top: 2px;
     margin-bottom: 2px;
@@ -132,7 +136,7 @@ h2{
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     letter-spacing: .2rem;
     color: red;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .mainArea{
