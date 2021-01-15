@@ -62,7 +62,7 @@ class LetterToSound {
     let dig, phoneList = [], windowSize = 4,
       full_buff, tmp, currentState, startIndex, stateIndex, c;
 
-    if (!word || !word.length || RiTa.isPunctuation(word)) return null;
+    if (!word || !word.length || RiTa.isPunct(word)) return null;
 
     if (!LetterToSound.RULES) {
       if (!this.warnedForNoLTS) {
@@ -103,7 +103,7 @@ class LetterToSound {
       if (isNaN(parseFloat(startIndex)) || !isFinite(startIndex)) { // isNum
         if (!RiTa.SILENT && !RiTa.SILENCE_LTS) {
           console.warn("Unable to generate LTS for '" + word + "', no index for '" +
-            c + "', isDigit=" + Util.isNum(c) + ", isPunct=" + RiTa.isPunctuation(c));
+            c + "', isDigit=" + Util.isNum(c) + ", isPunct=" + RiTa.isPunct(c));
         }
         return null;
       }

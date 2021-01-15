@@ -54,17 +54,17 @@ class Conjugator {
     }
 
     if (this.passive) {
-      conjs.push(this.pastParticiple(frontVG));
+      conjs.push(this.pastPart(frontVG));
       frontVG = "be";
     }
 
     if (this.progressive) {
-      conjs.push(this.presentParticiple(frontVG));
+      conjs.push(this.presentPart(frontVG));
       frontVG = "be";
     }
 
     if (this.perfect) {
-      conjs.push(this.pastParticiple(frontVG));
+      conjs.push(this.pastPart(frontVG));
       frontVG = "have";
     }
 
@@ -76,7 +76,7 @@ class Conjugator {
     // Now inflect frontVG (if it exists) and push it on restVG
     if (frontVG) {
       if (this.form === RiTa.GERUND) { // gerund - use ING form
-        let pp = this.presentParticiple(frontVG);
+        let pp = this.presentPart(frontVG);
         // !@# not yet implemented! ??? WHAT?
         conjs.push(pp);
       } else if (this.interrogative && frontVG != "be" && conjs.length < 1) {
@@ -172,12 +172,12 @@ class Conjugator {
     return theVerb;
   }
 
-  presentParticiple(theVerb) {
+  presentPart(theVerb) {
     return theVerb === 'be' ? 'being' :
       this.checkRules(PRESENT_PARTICIPLE_RULESET, theVerb);
   }
 
-  pastParticiple(theVerb) {
+  pastPart(theVerb) {
     return this.checkRules(PAST_PARTICIPLE_RULESET, theVerb);
   }
 

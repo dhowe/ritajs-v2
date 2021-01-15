@@ -4,7 +4,7 @@ const RiTa = require('../src/rita');
 describe('RiScript.KnownIssues', () => { // TODO:
 
   it('Should handle RiTa function transforms with args', () => {
-    expect(RiTa.evaluate('Is $RiTa.presentParticiple(lie) wrong?',
+    expect(RiTa.evaluate('Is $RiTa.presentPart(lie) wrong?',
       {}, { trace: 1, singlePass: 1 })).eq("Is lying wrong?");
   });
 

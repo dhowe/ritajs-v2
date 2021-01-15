@@ -44,7 +44,7 @@ class Tagger {
     let sb = '';
     for (let i = 0; i < words.length; i++) {
       sb += words[i];
-      if (!this.RiTa.isPunctuation(words[i])) {
+      if (!this.RiTa.isPunct(words[i])) {
         sb += delimiter + tags[i];
       }
       sb += ' ';

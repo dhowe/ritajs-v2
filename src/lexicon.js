@@ -387,9 +387,9 @@ class Lexicon {
           tense: RiTa.PAST
         });
       case 'vbg':
-        return RiTa.presentParticiple(word);
+        return RiTa.presentPart(word);
       case 'vbn':
-        return RiTa.pastParticiple(word);
+        return RiTa.pastPart(word);
       case 'vbp':
         return word;
       case 'vbz':

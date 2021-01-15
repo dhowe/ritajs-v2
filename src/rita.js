@@ -10,7 +10,7 @@ const Tokenizer = require('./tokenizer');
 const Concorder = require('./concorder');
 const Conjugator = require('./conjugator');
 const Inflector = require('./inflector');
-const SeededRandom = require('./randgen');
+const RandGen = require('./randgen');
 
 class RiTa {
 
@@ -58,7 +58,7 @@ class RiTa {
     return RiTa.lexicon().hasWord(word, true);
   }
 
-  static isAbbreviation(input, { caseSensitive = false } = {}) {
+  static isAbbrev(input, { caseSensitive = false } = {}) {
     if (typeof input === 'string') {
       if (caseSensitive) return RiTa.ABRV.includes(input.trim());
       let check = input.trim().toLowerCase();
@@ -82,7 +82,7 @@ class RiTa {
     return RiTa.tagger.isNoun(word);
   }
 
-  static isPunctuation(text) {
+  static isPunct(text) {
     return text && text.length && ONLY_PUNCT.test(text);
   }
 
@@ -107,8 +107,8 @@ class RiTa {
     return RiTa.concorder.kwic(...arguments);
   }
 
-  static pastParticiple() {
-    return RiTa.conjugator.pastParticiple(...arguments);
+  static pastPart() {
+    return RiTa.conjugator.pastPart(...arguments);
   }
 
   static phones() {
@@ -128,8 +128,8 @@ class RiTa {
     return RiTa.inflector.pluralize(...arguments);
   }
 
-  static presentParticiple() {
-    return RiTa.conjugator.presentParticiple(...arguments);
+  static presentPart() {
+    return RiTa.conjugator.presentPart(...arguments);
   }
 
   static randomOrdering() {
@@ -242,7 +242,7 @@ RiTa.concorder = new Concorder(RiTa);
 RiTa.tokenizer = new Tokenizer(RiTa);
 RiTa.inflector = new Inflector(RiTa);
 RiTa.conjugator = new Conjugator(RiTa);
-RiTa.randomizer = new SeededRandom(RiTa);
+RiTa.randomizer = new RandGen(RiTa);
 
 // LAZY-LOADS
 RiTa._lexicon = undefined;

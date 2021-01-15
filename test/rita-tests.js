@@ -66,112 +66,112 @@ describe('RiTa.Core', () => {
     }
   });
 
-  it('Should call isAbbreviation', () => {
+  it('Should call isAbbrev', () => {
 
-    ok(RiTa.isAbbreviation("Dr."));
-    ok(RiTa.isAbbreviation("dr."));
-    ok(RiTa.isAbbreviation("DR."));
-    ok(RiTa.isAbbreviation("Dr. "));
-    ok(RiTa.isAbbreviation(" Dr."));
-    ok(RiTa.isAbbreviation("Prof."));
-    ok(RiTa.isAbbreviation("prof."));
+    ok(RiTa.isAbbrev("Dr."));
+    ok(RiTa.isAbbrev("dr."));
+    ok(RiTa.isAbbrev("DR."));
+    ok(RiTa.isAbbrev("Dr. "));
+    ok(RiTa.isAbbrev(" Dr."));
+    ok(RiTa.isAbbrev("Prof."));
+    ok(RiTa.isAbbrev("prof."));
 
-    ok(!RiTa.isAbbreviation("Dr"));
-    ok(!RiTa.isAbbreviation("Doctor"));
-    ok(!RiTa.isAbbreviation("Doctor."));
-    ok(!RiTa.isAbbreviation("PRFO."));
-    ok(!RiTa.isAbbreviation("PrFo."));
-    ok(!RiTa.isAbbreviation("Professor"));
-    ok(!RiTa.isAbbreviation("professor"));
-    ok(!RiTa.isAbbreviation("PROFESSOR"));
-    ok(!RiTa.isAbbreviation("Professor."));
-    ok(!RiTa.isAbbreviation("@#$%^&*()"));
-    ok(!RiTa.isAbbreviation(""));
-    ok(!RiTa.isAbbreviation(null));
-    ok(!RiTa.isAbbreviation(undefined));
-    ok(!RiTa.isAbbreviation(1));
+    ok(!RiTa.isAbbrev("Dr"));
+    ok(!RiTa.isAbbrev("Doctor"));
+    ok(!RiTa.isAbbrev("Doctor."));
+    ok(!RiTa.isAbbrev("PRFO."));
+    ok(!RiTa.isAbbrev("PrFo."));
+    ok(!RiTa.isAbbrev("Professor"));
+    ok(!RiTa.isAbbrev("professor"));
+    ok(!RiTa.isAbbrev("PROFESSOR"));
+    ok(!RiTa.isAbbrev("Professor."));
+    ok(!RiTa.isAbbrev("@#$%^&*()"));
+    ok(!RiTa.isAbbrev(""));
+    ok(!RiTa.isAbbrev(null));
+    ok(!RiTa.isAbbrev(undefined));
+    ok(!RiTa.isAbbrev(1));
 
-    ok(RiTa.isAbbreviation("Dr.", { caseSensitive: true }));
-    ok(RiTa.isAbbreviation("Dr. ", { caseSensitive: true }));
-    ok(RiTa.isAbbreviation(" Dr.", { caseSensitive: true }));
-    ok(RiTa.isAbbreviation("Prof.", { caseSensitive: true }));
+    ok(RiTa.isAbbrev("Dr.", { caseSensitive: true }));
+    ok(RiTa.isAbbrev("Dr. ", { caseSensitive: true }));
+    ok(RiTa.isAbbrev(" Dr.", { caseSensitive: true }));
+    ok(RiTa.isAbbrev("Prof.", { caseSensitive: true }));
 
-    ok(!RiTa.isAbbreviation("dr.", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("DR.", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("Dr", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("Doctor", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("Doctor.", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("prof.", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("PRFO.", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("PrFo.", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("Professor", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("professor", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("PROFESSOR", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("Professor.", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("@#$%^&*()", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation("", { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation(null, { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation(undefined, { caseSensitive: true }));
-    ok(!RiTa.isAbbreviation(1, { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("dr.", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("DR.", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("Dr", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("Doctor", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("Doctor.", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("prof.", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("PRFO.", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("PrFo.", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("Professor", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("professor", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("PROFESSOR", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("Professor.", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("@#$%^&*()", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev("", { caseSensitive: true }));
+    ok(!RiTa.isAbbrev(null, { caseSensitive: true }));
+    ok(!RiTa.isAbbrev(undefined, { caseSensitive: true }));
+    ok(!RiTa.isAbbrev(1, { caseSensitive: true }));
   });
 
-  it('Should call isPunctuation', () => {
+  it('Should call isPunct', () => {
 
-    ok(!RiTa.isPunctuation("What the"));
-    ok(!RiTa.isPunctuation("What ! the"));
-    ok(!RiTa.isPunctuation(".#\"\\!@i$%&}<>"));
+    ok(!RiTa.isPunct("What the"));
+    ok(!RiTa.isPunct("What ! the"));
+    ok(!RiTa.isPunct(".#\"\\!@i$%&}<>"));
 
-    ok(RiTa.isPunctuation("!"));
-    ok(RiTa.isPunctuation("?"));
-    ok(RiTa.isPunctuation("?!"));
-    ok(RiTa.isPunctuation("."));
-    ok(RiTa.isPunctuation(".."));
-    ok(RiTa.isPunctuation("..."));
-    ok(RiTa.isPunctuation("...."));
-    ok(RiTa.isPunctuation("%..."));
+    ok(RiTa.isPunct("!"));
+    ok(RiTa.isPunct("?"));
+    ok(RiTa.isPunct("?!"));
+    ok(RiTa.isPunct("."));
+    ok(RiTa.isPunct(".."));
+    ok(RiTa.isPunct("..."));
+    ok(RiTa.isPunct("...."));
+    ok(RiTa.isPunct("%..."));
 
-    ok(!RiTa.isPunctuation("! "));
+    ok(!RiTa.isPunct("! "));
     //space
-    ok(!RiTa.isPunctuation(" !"));
+    ok(!RiTa.isPunct(" !"));
     //space
-    ok(!RiTa.isPunctuation("!  "));
+    ok(!RiTa.isPunct("!  "));
     //double space
-    ok(!RiTa.isPunctuation("  !"));
+    ok(!RiTa.isPunct("  !"));
     //double space
-    ok(!RiTa.isPunctuation("!  "));
+    ok(!RiTa.isPunct("!  "));
     //tab space
-    ok(!RiTa.isPunctuation("   !"));
+    ok(!RiTa.isPunct("   !"));
 
     let punct;
 
     punct = '$%&^,';
     for (let i = 0; i < punct.length; i++) {
-      ok(RiTa.isPunctuation(punct[i]));
+      ok(RiTa.isPunct(punct[i]));
     }
 
     punct = ",;:!?)([].#\"\\!@$%&}<>|+=-_\\/*{^";
     for (let i = 0; i < punct.length; i++) {
-      ok(RiTa.isPunctuation(punct[i]));
+      ok(RiTa.isPunct(punct[i]));
     }
 
     // TODO: also test multiple characters strings here ****
     punct = "\"��������`'";
     for (let i = 0; i < punct.length; i++) {
-      ok(RiTa.isPunctuation(punct[i]));
+      ok(RiTa.isPunct(punct[i]));
     }
 
     punct = "\"��������`',;:!?)([].#\"\\!@$%&}<>|+=-_\\/*{^";
     for (let i = 0; i < punct.length; i++) {
-      ok(RiTa.isPunctuation(punct[i]));
+      ok(RiTa.isPunct(punct[i]));
     }
 
     // TODO: and here...
     let nopunct = 'Helloasdfnals  FgG   \t kjdhfakjsdhf askjdfh aaf98762348576';
     for (let i = 0; i < nopunct.length; i++) {
-      ok(!RiTa.isPunctuation(nopunct[i]));
+      ok(!RiTa.isPunct(nopunct[i]));
     }
 
-    ok(!RiTa.isPunctuation(""));
+    ok(!RiTa.isPunct(""));
   });
 
   it('Should call tokenize', () => {

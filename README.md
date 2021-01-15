@@ -52,12 +52,12 @@ console.log(grammar.expand());
       <a href="./RiTa/evaluate/index.html">RiTa.evaluate()</a><br/>
       <a href="./RiTa/grammar/index.html">RiTa.grammar()</a><br/>
       <a href="./RiTa/hasWord/index.html">RiTa.hasWord()</a><br/>
-      <a href="./RiTa/isAbbreviation/index.html">RiTa.isAbbreviation()</a><br/>
+      <a href="./RiTa/isAbbrev/index.html">RiTa.isAbbrev()</a><br/>
       <a href="./RiTa/isAdjective/index.html">RiTa.isAdjective()</a><br/>
       <a href="./RiTa/isAdverb/index.html">RiTa.isAdverb()</a><br/>
       <a href="./RiTa/isAlliteration/index.html">RiTa.isAlliteration()</a><br/>
       <a href="./RiTa/isNoun/index.html">RiTa.isNoun()</a><br/>
-      <a href="./RiTa/isPunctuation/index.html">RiTa.isPunctuation()</a><br/>
+      <a href="./RiTa/isPunct/index.html">RiTa.isPunct()</a><br/>
       <a href="./RiTa/isQuestion/index.html">RiTa.isQuestion()</a><br/>
       <a href="./RiTa/isStopWord/index.html">RiTa.isStopWord()</a><br/>
       <a href="./RiTa/isRhyme/index.html">RiTa.isRhyme()</a><br/>
@@ -66,11 +66,11 @@ console.log(grammar.expand());
       <a href="./RiTa/markov/index.html">RiTa.markov()</a><br/>
     </td>
     <td style="vertical-align: top; padding-top: 15px"><br/>
-      <a href="./RiTa/pastParticiple/index.html">RiTa.pastParticiple()</a><br/>
+      <a href="./RiTa/pastPart/index.html">RiTa.pastPart()</a><br/>
       <a href="./RiTa/phones/index.html">RiTa.phones()</a><br/>
       <a href="./RiTa/pos/index.html">RiTa.pos()</a><br/>
       <a href="./RiTa/posInline/index.html">RiTa.posInline()</a><br/>
-      <a href="./RiTa/presentParticiple/index.html">RiTa.presentParticiple()</a><br/>
+      <a href="./RiTa/presentPart/index.html">RiTa.presentPart()</a><br/>
       <a href="./RiTa/pluralize/index.html">RiTa.pluralize()</a><br/>
       <a href="./RiTa/randomOrdering/index.html">RiTa.randomOrdering()</a><br/>
       <a href="./RiTa/randomSeed/index.html">RiTa.randomSeed()</a><br/>

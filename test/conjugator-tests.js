@@ -5,64 +5,64 @@ describe('RiTa.Conjugator', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  it('Should call pastParticiple', () => {
+  it('Should call pastPart', () => {
 
-    equal(RiTa.pastParticiple("sleep"), "slept");
-    equal(RiTa.pastParticiple("withhold"), "withheld");
+    equal(RiTa.pastPart("sleep"), "slept");
+    equal(RiTa.pastPart("withhold"), "withheld");
 
-    equal(RiTa.pastParticiple("cut"), "cut");
-    equal(RiTa.pastParticiple("go"), "gone");
-    equal(RiTa.pastParticiple("swim"), "swum");
-    equal(RiTa.pastParticiple("would"), "would");
-    equal(RiTa.pastParticiple("might"), "might");
-    equal(RiTa.pastParticiple("run"), "run");
-    equal(RiTa.pastParticiple("speak"), "spoken");
-    equal(RiTa.pastParticiple("break"), "broken");
-    equal(RiTa.pastParticiple(""), "");
+    equal(RiTa.pastPart("cut"), "cut");
+    equal(RiTa.pastPart("go"), "gone");
+    equal(RiTa.pastPart("swim"), "swum");
+    equal(RiTa.pastPart("would"), "would");
+    equal(RiTa.pastPart("might"), "might");
+    equal(RiTa.pastPart("run"), "run");
+    equal(RiTa.pastPart("speak"), "spoken");
+    equal(RiTa.pastPart("break"), "broken");
+    equal(RiTa.pastPart(""), "");
 
     // PROBLEMS
-    equal(RiTa.pastParticiple("awake"), "awoken");
-    equal(RiTa.pastParticiple("become"), "became");
-    equal(RiTa.pastParticiple("drink"), "drunk");
-    equal(RiTa.pastParticiple("plead"), "pled");
-    equal(RiTa.pastParticiple("run"), "run");
-    equal(RiTa.pastParticiple("shine"), "shone");
+    equal(RiTa.pastPart("awake"), "awoken");
+    equal(RiTa.pastPart("become"), "became");
+    equal(RiTa.pastPart("drink"), "drunk");
+    equal(RiTa.pastPart("plead"), "pled");
+    equal(RiTa.pastPart("run"), "run");
+    equal(RiTa.pastPart("shine"), "shone");
 
     // or shined
-    equal(RiTa.pastParticiple("shrink"), "shrunk");
+    equal(RiTa.pastPart("shrink"), "shrunk");
 
     // or shrunken
-    equal(RiTa.pastParticiple("stink"), "stunk");
-    equal(RiTa.pastParticiple("study"), "studied");
+    equal(RiTa.pastPart("stink"), "stunk");
+    equal(RiTa.pastPart("study"), "studied");
   });
 
-  it('Should call presentParticiple', () => {
+  it('Should call presentPart', () => {
 
-    equal(RiTa.presentParticiple(""), "");
-    equal(RiTa.presentParticiple("sleep"), "sleeping");
-    equal(RiTa.presentParticiple("withhold"), "withholding");
+    equal(RiTa.presentPart(""), "");
+    equal(RiTa.presentPart("sleep"), "sleeping");
+    equal(RiTa.presentPart("withhold"), "withholding");
 
-    equal(RiTa.presentParticiple("cut"), "cutting");
-    equal(RiTa.presentParticiple("go"), "going");
-    equal(RiTa.presentParticiple("run"), "running");
-    equal(RiTa.presentParticiple("speak"), "speaking");
-    equal(RiTa.presentParticiple("break"), "breaking");
-    equal(RiTa.presentParticiple("become"), "becoming");
-    equal(RiTa.presentParticiple("plead"), "pleading");
-    equal(RiTa.presentParticiple("awake"), "awaking");
-    equal(RiTa.presentParticiple("study"), "studying");
+    equal(RiTa.presentPart("cut"), "cutting");
+    equal(RiTa.presentPart("go"), "going");
+    equal(RiTa.presentPart("run"), "running");
+    equal(RiTa.presentPart("speak"), "speaking");
+    equal(RiTa.presentPart("break"), "breaking");
+    equal(RiTa.presentPart("become"), "becoming");
+    equal(RiTa.presentPart("plead"), "pleading");
+    equal(RiTa.presentPart("awake"), "awaking");
+    equal(RiTa.presentPart("study"), "studying");
 
-    equal(RiTa.presentParticiple("lie"), "lying");
-    equal(RiTa.presentParticiple("swim"), "swimming");
-    equal(RiTa.presentParticiple("run"), "running");
-    equal(RiTa.presentParticiple("dig"), "digging");
-    equal(RiTa.presentParticiple("set"), "setting");
-    equal(RiTa.presentParticiple("speak"), "speaking");
-    equal(RiTa.presentParticiple("bring"), "bringing");
-    equal(RiTa.presentParticiple("speak"), "speaking");
+    equal(RiTa.presentPart("lie"), "lying");
+    equal(RiTa.presentPart("swim"), "swimming");
+    equal(RiTa.presentPart("run"), "running");
+    equal(RiTa.presentPart("dig"), "digging");
+    equal(RiTa.presentPart("set"), "setting");
+    equal(RiTa.presentPart("speak"), "speaking");
+    equal(RiTa.presentPart("bring"), "bringing");
+    equal(RiTa.presentPart("speak"), "speaking");
 
-    equal(RiTa.presentParticiple("study "), "studying"); // trim
-    equal(RiTa.presentParticiple(" study"), "studying"); // trim
+    equal(RiTa.presentPart("study "), "studying"); // trim
+    equal(RiTa.presentPart(" study"), "studying"); // trim
   });
 
   it('Should conjugate VBDs', () => {
@@ -81,7 +81,7 @@ describe('RiTa.Conjugator', () => {
   it('Should call conjugate', () => {
     let args, s, a;
 
-    equal("swum", RiTa.pastParticiple("swim"));
+    equal("swum", RiTa.pastPart("swim"));
 
     equal(RiTa.conjugate("be", { form: RiTa.GERUND, }), "being");
 

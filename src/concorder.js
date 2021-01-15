@@ -78,7 +78,7 @@ class Concorder {
   }
 
   _isIgnorable(key) {
-    if ((this.ignorePunctuation && this.RiTa.isPunctuation(key)) || 
+    if ((this.ignorePunctuation && this.RiTa.isPunct(key)) || 
       (this.ignoreStopWords && this.RiTa.isStopWord(key))) return true;
     for (let i = 0; i < this.wordsToIgnore.length; i++) {
       let word = this.wordsToIgnore[i];
