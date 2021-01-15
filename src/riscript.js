@@ -213,17 +213,17 @@ function capitalize(s) {
 }
 
 /// <summary>
-/// Capitalizes the first character.
+/// Capitalizes the string.
 /// </summary>
-function toUpper(s) {
+function uppercase(s) {
   return s ? s.toUpperCase() : '';
 }
 
 /// <summary>
-/// Wraps the given string in double-quotes.
+/// Wraps the given string in (smart) quotes.
 /// </summary>
 function quotify(s) {
-  return "&quot;" + (s || '') + "&quot;";
+  return "&#8220;" + (s || '') + "&#8221;";
 }
 
 /// <summary>
@@ -240,14 +240,16 @@ RiScript.transforms = {
   pluralize,
   capitalize,
   articlize: RiScript.articlize,
+
   // sequences
   seq: RiScript.identity,
   rseq: RiScript.identity,
   norep: RiScript.identity,
+
   // aliases
   art: RiScript.articlize,
   ucf: capitalize,
-  uc: toUpper,
+  uc: uppercase,
   qq: quotify,
   s: pluralize   
 };
