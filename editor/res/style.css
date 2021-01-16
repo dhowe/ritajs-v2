@@ -12,7 +12,7 @@ h2 {
 
 .buttons {
     margin: 15px;
-    margin-left: 35px;
+    margin-left: 43px;
 }
 
 .content {
@@ -28,14 +28,24 @@ h2 {
 }
 
 .output-content {
-    margin-top: 2px;
+    margin-top: 6px;
+    padding-top: 6px;
+    margin-bottom: 2px;
+    margin-left: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.output-content-log {
+    margin-top: 6px;
+    padding-top: 6px;
     margin-bottom: 2px;
     margin-left: 5px;
     border-top: 2px solid #ddd;
 }
 
 .output-content-error {
-    margin-top: 2px;
+    margin-top: 6px;
+    padding-top: 6px;
     margin-bottom: 2px;
     margin-left: 5px;
     border-top: 2px solid #ddd;
@@ -44,7 +54,8 @@ h2 {
 }
 
 .output-content-warn {
-    margin-top: 2px;
+    margin-top: 6px;
+    padding-top: 6px;
     margin-bottom: 2px;
     margin-left: 5px;
     border-top: 2px solid #ddd;
@@ -77,13 +88,10 @@ h2 {
     flex-direction: row;
     justify-content: space-around;
     padding-top: 5px;
-
 }
 
 .output-header-text {
-    padding-top: 5px;
-    padding-bottom: 2px;
-    padding-left: 15px;
+    padding: 5px 0 2px 0;
     vertical-align: middle;
     line-height: 1;
     color: #1c1c1c;

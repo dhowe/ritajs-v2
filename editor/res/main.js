@@ -1,54 +1,17 @@
 $(document).ready(function () {
 
-    // read console
-    let consoleContents = [];
-
-    // rewrite console funtions to get the content
-    let _console;
-    if (console) {
-        _console = {
-            log: console.log,
-            info: console.info,
-            debug: console.debug,
-            warn: console.warn,
-            error: console.error,
-        };
-    } else {
-        consoleContents.push('** console not available **');
-    }
-    console.log = function () {
-        consoleContents.push({ type: 'log', content: [].slice.call(arguments).join('') });
-        _console.log.apply(console, arguments);
-    };
-    console.info = function () {
-        consoleContents.push({ type: 'info', content: [].slice.call(arguments).join('') });
-        _console.info.apply(console, arguments);
-    };
-    console.debug = function () {
-        consoleContents.push({ type: 'debug', content: [].slice.call(arguments).join('') });
-        _console.debug.apply(console, arguments);
-    };
-    console.warn = function () {
-        consoleContents.push({ type: 'warn', content: [].slice.call(arguments).join('') });
-        _console.warn.apply(console, arguments);
-    };
-    console.error = function () {
-        consoleContents.push({ type: 'error', content: [].slice.call(arguments).join('') });
-        _console.error.apply(console, arguments);
-    };
-
-    // JC: where is this used?
-    let defaultValue = "\n$mammal=(dog | child | ox)\n\n$verb=(watching | listening)\n\nThe $mammal.pluralize() were $verb.\n";
+    let defaultValue = "", consoleContents = [];
+    let _console = reassignConsole();
 
     CodeMirror.defineSimpleMode("RiScript", {
         start: [
-            //RiScript
+            // RiScript
             { regex: /\$\w+/g, token: ["keyword"] },
-            //vars -> color label 'keyword'
+            // vars -> color label 'keyword'
             { regex: /\((.*\|)+.*\)/g, token: ["string"] },
-            //choices -> color label 'string'
+            // choices -> color label 'string'
             { regex: /(\.[\w]+\(\))/g, token: ["number"] },
-            //transforms -> color label 'number'
+            // transforms -> color label 'number'
         ],
         comment: [
             { regex: /.*?\*\//, token: "comment", next: "start" },
@@ -63,11 +26,13 @@ $(document).ready(function () {
     let editor = CodeMirror.fromTextArea($('#inputArea')[0], {
         lineNumbers: true,
         mode: 'RiScript',
-        extraKeys: { "Ctrl-Enter": function () {
-            runCode(); // wins
-        }, "Cmd-Enter": function() {
-            runCode(); // mac
-        }},
+        extraKeys: {
+            "Ctrl-Enter": function () {
+                runCode(); // wins
+            }, "Cmd-Enter": function () {
+                runCode(); // mac
+            }
+        },
     });
     editor.setSize("100%", "100%");
 
@@ -100,7 +65,7 @@ $(document).ready(function () {
         $(this).unbind("mousemove");
     });
 
-     // buttons
+    // buttons
     $("#clear").click(function (e) {
         e.preventDefault();
         editor.clearHistory();
@@ -128,23 +93,25 @@ $(document).ready(function () {
 
     // helpers
     function runCode() {
-        let rs = doc.getValue();
-        let h = $("#output").height() - 30;
-        $(".content-wrapper").css({ height: h });
-        $("#output .content").append("<p class='output-content'>" + tryCode(rs) + " </p>");
+        let rs = doc.getValue(), res = tryCode(rs);
+        $(".content-wrapper").css({ height: $("#output").height() - 30 });
+        if (res.length) $("#output .content").append("<p class='output-content'>" + res + " </p>");
         $("#console .content").empty();
-        consoleContents.forEach(function (e) {
-            if (e.type == 'log') {
-                $("#console .content").append("<p class='output-content'>" + e.content + " </p>");
-            } else if (e.type == 'error') {
-                $("#console .content").append("<p class='output-content-error'>" + e.content + " </p>");
-            } else if (e.type == 'warn') {
-                $("#console .content").append("<p class='output-content-warn'>" + e.content + " </p>");
+        writeToConsolePanel();
+    }
+
+    function writeToConsolePanel() {
+        consoleContents.forEach(cc => {
+            let msg = cc.content;
+            if (cc.type !== 'log') {
+                msg = msg.replace(/'/g, '"').replace(/PARSER: /, '');
             }
+            $("#console .content").append(
+                "<p class='output-content-" + cc.type + "'>" + msg + " </p>");
         });
     }
 
-    function tryCode(string) { // what is this for ? -> if error occurs it prevent the page to be frozen
+    function tryCode(string) {
         try {
             return RiTa.evaluate(string);
         } catch (e) {
@@ -154,11 +121,12 @@ $(document).ready(function () {
                 let arr = string.split(' ');
                 let lineNo = arr[arr.indexOf("line") + 1].split(':')[0];
                 highlightError(lineNo - 1);
-                console.error(e.name + ": " + e.message);
+                console.error(e.message);
             } else {
                 console.error(e.stack);
             }
         }
+        return '';
     }
 
     function saveCode() {
@@ -186,6 +154,43 @@ $(document).ready(function () {
             doc.removeLineClass(lineNo, "background", "highLightedError");
             errorLine = undefined;
         }
+    }
+
+    // rewrite console funtions to get the content
+    function reassignConsole() {
+        let _console = console;
+        if (console) {
+            _console = {
+                log: console.log,
+                info: console.info,
+                debug: console.debug,
+                warn: console.warn,
+                error: console.error,
+            };
+            console.log = function () {
+                consoleContents.push({ type: 'log', content: Array.prototype.join.call(arguments, '') });
+                _console.log.apply(console, arguments);
+            };
+            console.info = function () {
+                consoleContents.push({ type: 'info', content: Array.prototype.join.call(arguments, '') });
+                _console.info.apply(console, arguments);
+            };
+            console.debug = function () {
+                consoleContents.push({ type: 'debug', content: Array.prototype.join.call(arguments, '') });
+                _console.debug.apply(console, arguments);
+            };
+            console.warn = function () {
+                consoleContents.push({ type: 'warn', content: Array.prototype.join.call(arguments, '') });
+                _console.warn.apply(console, arguments);
+            };
+            console.error = function () {
+                consoleContents.push({ type: 'error', content: Array.prototype.join.call(arguments, 'XXX') });
+                _console.error.apply(console, arguments);
+            };
+        } else {
+            consoleContents.push('** console not available **');
+        }
+        return _console;
     }
 });
 
