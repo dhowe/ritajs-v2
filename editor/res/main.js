@@ -1,7 +1,9 @@
 $(document).ready(function () {
-    //read console
+
+    // read console
     let consoleContents = [];
-    //rewrite console funtions to get the content
+
+    // rewrite console funtions to get the content
     let _console;
     if (console) {
         _console = {
@@ -12,7 +14,7 @@ $(document).ready(function () {
             error: console.error,
         };
     } else {
-        consoleContents.push('! console is not available');
+        consoleContents.push('** console not available **');
     }
     console.log = function () {
         consoleContents.push({ type: 'log', content: [].slice.call(arguments).join('') });
@@ -35,14 +37,15 @@ $(document).ready(function () {
         _console.error.apply(console, arguments);
     };
 
-    //codeMirror
-    let defaultValue = "function main() {\n\n  //replace with your code here\n  let sentence = RiTa.evaluate(\"This is a simple example.\", {});\n  console.log(sentence);\n  return sentence;\n\n}";
-    CodeMirror.defineSimpleMode("Riscript", {
+    // JC: where is this used?
+    let defaultValue = "\n$mammal=(dog | child | ox)\n\n$verb=(watching | listening)\n\nThe $mammal.pluralize() were $verb.\n";
+
+    CodeMirror.defineSimpleMode("RiScript", {
         start: [
             // //introduce JavaScript
             // { regex: /\!\-\-Start/, token: "meta", mode: { spec: 'javascript', end: /\!\-\-End/}},
 
-            //Riscript
+            //RiScript
             { regex: /\$\w+/g, token: ["keyword"] },
             //vars
             { regex: /\((.*\|)+.*\)/g, token: ["keyword"] },
@@ -76,17 +79,17 @@ $(document).ready(function () {
 
     let editor = CodeMirror.fromTextArea($('#inputArea')[0], {
         lineNumbers: true,
-        mode: 'Riscript',
+        mode: 'RiScript',
     });
     editor.setSize("100%", "100%");
 
-    let doc = editor.getDoc();
-    let errorLine;
+    let errorLine, doc = editor.getDoc();
 
-    editor.on('change', function() {
-        removeHighLight(errorLine);
+    editor.on('change', function () {
+        removeHighlight(errorLine);
     });
-    //resizer
+
+    // resizing
     $(".resizer.vertical").mousedown(function (e) {
         e.preventDefault();
         $("body").mousemove(function (m) {
@@ -109,7 +112,7 @@ $(document).ready(function () {
         $(this).unbind("mousemove");
     });
 
-    //buttons
+     // buttons
     $("#clear").click(function (e) {
         e.preventDefault();
         editor.clearHistory();
@@ -118,11 +121,11 @@ $(document).ready(function () {
     });
     $("#run").click(function (e) {
         e.preventDefault();
-        runTheCode();
+        runCode();
     });
     $("#save").click(function (e) {
         e.preventDefault();
-        saveTheCode();
+        saveCode();
     });
     $("#clearConsole").click(function (e) {
         e.preventDefault();
@@ -135,8 +138,11 @@ $(document).ready(function () {
         consoleContents.length = 0;
     });
 
-    //helpers 
-    function runTheCode() {
+    // helpers
+    function runCode() {
+
+        // JC: need to run the code via RiTa.evaluate(theCode);
+
         let code = editor.getValue();
         let s = document.createElement("script");
         s.setAttribute("id", "receivedCode");
@@ -156,41 +162,44 @@ $(document).ready(function () {
             }
         });
     }
-    function tryCode() {
+
+    function tryCode() { // what is this for ?
         try {
-           return main();
+            return main(); // what is main?
         } catch (e) {
             let string = [].slice.call(e.stack).join('');
             if (string.includes("main") && string.includes("tryCode")) {
                 let arr = string.split(' ');
                 let lineNo = arr[arr.indexOf("main") + 1].split(':')[1];
-                highLightError(lineNo - 1); 
+                highlightError(lineNo - 1);
                 console.error(e.name + ": " + e.message + " at line: " + lineNo);
             } else {
                 console.error(e.stack);
             }
         }
     }
-    function saveTheCode() {
+
+    function saveCode() {
         //via https://stackoverflow.com/a/30832210
         let data = doc.getValue();
-        let fileName = $("#title").val()+'.js';
+        let fileName = $("#title").val() + '.rs';
         let b = new Blob([data], { type: 'text' });
         let a = document.createElement("a");
         a.href = URL.createObjectURL(b);
         a.download = fileName;
         document.body.appendChild(a);
         a.click();
-        setTimeout(function() {
+        setTimeout(function () {
             document.body.removeChild(a);
         }, 0);
-
     }
-    function highLightError(lineNo) {
+
+    function highlightError(lineNo) {
         doc.addLineClass(lineNo, "background", "highLightedError");
         errorLine = lineNo;
     }
-    function removeHighLight(lineNo) {
+
+    function removeHighlight(lineNo) {
         if (lineNo) {
             doc.removeLineClass(lineNo, "background", "highLightedError");
             errorLine = undefined;

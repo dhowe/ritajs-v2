@@ -1,16 +1,20 @@
-body, html{
+body, html {
     height: 100%;
     margin: 0;
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
 }
 
-h2{
+h2 {
     font-size: 1rem;
     font-weight: 400;
 }
 
+.buttons {
+    margin: 15px;
+    margin-left: 35px;
+}
 
-.content{
+.content {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -18,7 +22,7 @@ h2{
     font-family: sans-serif;
 }
 
-.highLightedError{
+.highLightedError {
     background-color: rgb(255, 226, 226);
 }
 
@@ -46,7 +50,7 @@ h2{
     background-color: rgb(255, 245, 189);
 }
 
-.output-button-wrapper{
+.output-button-wrapper {
     margin-top: 5px;
     height: 275px;
     display: flex;
@@ -54,7 +58,7 @@ h2{
     flex: 0 0 auto;
 }
 
-.output-wrapper{
+.output-wrapper {
     margin-top: 5px;
     height: 100%;
     display: flex;
@@ -63,7 +67,7 @@ h2{
     overflow: hidden;
 }
 
-.output-header{
+.output-header {
     background-color: #d9d9d9;
     height: 30px;
     min-height: 30px;
@@ -71,45 +75,48 @@ h2{
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    padding-top: 5px;
+
 }
 
-.output-header-text{
+.output-header-text {
     padding-top: 5px;
     padding-bottom: 2px;
-    padding-left: 5px;
+    padding-left: 15px;
     vertical-align: middle;
     line-height: 1;
     color: #1c1c1c;
 }
 
-.outputButton{
+.outputButton {
     background-color: hsla(0, 0, 0, 0);
     color: #4d4d4d;
     height: 80%;
-    width: 150px;
+    width: 60px;
 }
 
-.navBar{
+.navBar {
     background-color: #253c73;
     padding: 8px 0;
 }
 
-.navBar .container{
-    width: 80%;
+.navBar .container {
+    
     margin: auto;
+    padding-left: 15px;
     display: flex;
     flex-direction: row;
 }
 
-.logo{
+.logo {
     width: 60px;
 }
 
-.logo-wrapper{
+.logo-wrapper {
     display: inline-block;
 }
 
-.links-wrapper{
+.links-wrapper {
     width: 80%;
     margin: auto;
     font-weight: 300;
@@ -119,7 +126,7 @@ h2{
     color: white;
 }
 
-.navBarLink{
+.navBarLink {
     font-weight: 300;
     font-size: 16px;
     line-height: 1.4;
@@ -129,7 +136,7 @@ h2{
     text-decoration: none;
 }
 
-.navBarLink:hover{
+.navBarLink:hover {
     font-weight: 300;
     font-size: 16px;
     line-height: 1.4;
@@ -139,7 +146,7 @@ h2{
     text-decoration: none;
 }
 
-.mainArea{
+.mainArea {
     width: 100%;
     height: 100%;
     display: flex;
@@ -148,7 +155,7 @@ h2{
     overflow: hidden;
 }
 
-.codeArea{
+.codeArea {
     height: 100%;
     border: 2px solid #ddd;
     margin-bottom: 5px;
@@ -156,12 +163,12 @@ h2{
     overflow: hidden;
 }
 
-.inputArea-wrapper{
+.inputArea-wrapper {
     height: calc(100% - 30px);
     overflow: auto;
 }
 
-.resizer{
+.resizer {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     background-clip: padding-box;
@@ -187,16 +194,15 @@ h2{
     float: left;
 }
 
-.title-wrapper{
+.title-wrapper {
     width: 100%;
     height: 20px;
     display: flex;
     flex-direction: row;
-    padding: 5px 0;
+    padding: 15px 0;
 }
 
-
-#console{
+#console {
     width: 50%;
     background-color: whitesmoke;
     border-left: 1px solid #ddd;
@@ -207,7 +213,7 @@ h2{
     flex: 0 0 auto;
 }
 
-#output{
+#output {
     width: 50%;
     background-color: whitesmoke;
     border-right: 1px solid #ddd;
@@ -218,12 +224,12 @@ h2{
     flex: 0 0 auto;
 }
 
-#inputArea{
+#inputArea {
     height: 100%;
     margin-bottom: 5px;
 }
 
-#root{
+#root {
     width: 100%;
     height: 100%;
     display: flex;
@@ -231,4 +237,3 @@ h2{
     flex-grow: 1;
     overflow: hidden;
 }
-
