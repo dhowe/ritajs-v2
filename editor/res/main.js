@@ -64,7 +64,9 @@ $(document).ready(function () {
         lineNumbers: true,
         mode: 'RiScript',
         extraKeys: { "Ctrl-Enter": function () {
-            runCode();
+            runCode(); // wins
+        }, "Cmd-Enter": function() {
+            runCode(); // mac
         }},
     });
     editor.setSize("100%", "100%");
