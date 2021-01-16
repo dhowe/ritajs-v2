@@ -44,9 +44,11 @@ $(document).ready(function () {
         start: [
             //RiScript
             { regex: /\$\w+/g, token: ["keyword"] },
-            //vars
-            { regex: /\((.*\|)+.*\)/g, token: ["keyword"] },
-            //choices
+            //vars -> color label 'keyword'
+            { regex: /\((.*\|)+.*\)/g, token: ["string"] },
+            //choices -> color label 'string'
+            { regex: /(\.[\w]+\(\))/g, token: ["number"] },
+            //transforms -> color label 'number'
         ],
         comment: [
             { regex: /.*?\*\//, token: "comment", next: "start" },
@@ -61,6 +63,11 @@ $(document).ready(function () {
     let editor = CodeMirror.fromTextArea($('#inputArea')[0], {
         lineNumbers: true,
         mode: 'RiScript',
+        extraKeys: { "Ctrl-Enter": function () {
+            runCode(); // wins
+        }, "Cmd-Enter": function() {
+            runCode(); // mac
+        }},
     });
     editor.setSize("100%", "100%");
 
