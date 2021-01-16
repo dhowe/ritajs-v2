@@ -8,8 +8,6 @@ const { LexerErrors, ParserErrors } = require('./errors');
 class RiScript {
 
   constructor() {
-    this.lexer = undefined;
-    this.parser = undefined;
     this.appliedTransforms = [];
     this.visitor = new Visitor(this, RiTa());
   }
