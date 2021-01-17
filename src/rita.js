@@ -148,6 +148,13 @@ class RiTa {
     return RiTa.lexicon().rhymes(...arguments);
   }
 
+  static scripting() {
+    if (typeof RiTa._interpreter === 'undefined') {
+      RiTa._interpreter = new RiScript();
+    }
+    return RiTa._interpreter;
+  }
+
   static search() {
     return RiTa.lexicon().search(...arguments);
   }
@@ -246,6 +253,7 @@ RiTa.randomizer = new RandGen(RiTa);
 
 // LAZY-LOADS
 RiTa._lexicon = undefined;
+RiTa._interpreter = undefined;
 
 // MESSAGES
 RiTa.SILENT = false;

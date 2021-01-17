@@ -32,7 +32,6 @@ let grammar = RiTa.grammar(jsonRules);
 console.log(grammar.expand());
 ```
 
-
 ## API
 
   <table cellspacing="0" cellpadding="0" style="vertical-align: top;">
@@ -64,9 +63,9 @@ console.log(grammar.expand());
       <a href="./RiTa/isVerb/index.html">RiTa.isVerb()</a><br/>
       <a href="./RiTa/kwic/index.html">RiTa.kwic()</a><br/>
       <a href="./RiTa/markov/index.html">RiTa.markov()</a><br/>
-    </td>
-    <td style="vertical-align: top; padding-top: 15px"><br/>
       <a href="./RiTa/pastPart/index.html">RiTa.pastPart()</a><br/>
+    </td>
+    <td style="vertical-align: top; padding-top: 15px">
       <a href="./RiTa/phones/index.html">RiTa.phones()</a><br/>
       <a href="./RiTa/pos/index.html">RiTa.pos()</a><br/>
       <a href="./RiTa/posInline/index.html">RiTa.posInline()</a><br/>
@@ -76,6 +75,7 @@ console.log(grammar.expand());
       <a href="./RiTa/randomSeed/index.html">RiTa.randomSeed()</a><br/>
       <a href="./RiTa/randomWord/index.html">RiTa.randomWord()</a><br/>
       <a href="./RiTa/rhymes/index.html">RiTa.rhymes()</a><br/>
+      <a href="./RiTa/scripting/index.html">RiTa.scripting()</a><br/>
       <a href="./RiTa/search/index.html">RiTa.search()</a><br/>
       <a href="./RiTa/sentences/index.html">RiTa.sentences()</a><br/>
       <a href="./RiTa/singularize/index.html">RiTa.singularize()</a><br/>
@@ -85,28 +85,28 @@ console.log(grammar.expand());
       <a href="./RiTa/stresses/index.html">RiTa.stresses()</a><br/>
       <a href="./RiTa/syllables/index.html">RiTa.syllables()</a><br/>
       <a href="./RiTa/tokenize/index.html">RiTa.tokenize()</a><br/>
-      <a href="./RiTa/untokenize/index.html">RiTa.untokenize()</a><br/><br/>
-      <!--a href="./RiTa/VERSION/index.html">RiTa.VERSION</a><br/-->
+      <a href="./RiTa/untokenize/index.html">RiTa.untokenize()</a><br/>
+      <a href="./RiTa/VERSION/index.html">RiTa.VERSION</a><br/>
     </td>
     <td style="vertical-align: top; padding-top: 15px; min-width: 125px">
-      <a href="https://rednoise.org/rita/reference/RiMarkov/addText/index.html">addText()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiMarkov/completions/index.html">completions()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiMarkov/generate/index.html">generate()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiMarkov/probability/index.html">probability()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiMarkov/probabilities/index.html">probabilities()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiMarkov/size/index.html">size()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiMarkov/toString/index.html">toString()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiMarkov/toJSON/index.html">toJSON()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiMarkov/fromJSON/index.html">fromJSON()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Markov/addText/index.html">addText()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Markov/completions/index.html">completions()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Markov/generate/index.html">generate()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Markov/probability/index.html">probability()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Markov/probabilities/index.html">probabilities()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Markov/size/index.html">size()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Markov/toString/index.html">toString()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Markov/toJSON/index.html">toJSON()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Markov/fromJSON/index.html">fromJSON()</a><br/>
     </td>
     <td style="vertical-align: top; padding-top: 15px; min-width: 125px">
-      <a href="https://rednoise.org/rita/reference/RiGrammar/addRule/index.html">addRule()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiGrammar/addRules/index.html">addRules()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiGrammar/expand/index.html">expand()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiGrammar/removeRule/index.html">removeRule()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiGrammar/toJSON/index.html">toJSON()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiGrammar/toString/index.html">toString()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiGrammar/fromJSON/index.html">fromJSON()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Grammar/addRule/index.html">addRule()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Grammar/addRules/index.html">addRules()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Grammar/expand/index.html">expand()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Grammar/removeRule/index.html">removeRule()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Grammar/toJSON/index.html">toJSON()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Grammar/toString/index.html">toString()</a><br/>
+      <a href="https://rednoise.org/rita/reference/Grammar/fromJSON/index.html">fromJSON()</a><br/>
     </td>
  </tr>
 </table>

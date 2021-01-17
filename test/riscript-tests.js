@@ -571,6 +571,17 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
     });
 
+    it('Should resolve choices via scripting', () => {
+      let rs = RiTa.scripting();
+      expect(rs.evaluate('(|)')).eq('');
+      expect(rs.evaluate('(a)')).eq('a');
+      expect(rs.evaluate('(a | a)', 0)).eq('a');
+      expect(rs.evaluate('(a | )')).to.be.oneOf(['a', '']);
+      expect(rs.evaluate('(a | b)')).to.be.oneOf(['a', 'b']);
+      expect(rs.evaluate('(a | b | c)'), {}).to.be.oneOf(['a', 'b', 'c']);
+      expect(rs.evaluate('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
+    });
+
     it('Should resolve multiword choices', () => {
       let silent = RiTa.SILENCE_LTS;
       RiTa.SILENCE_LTS = true;
