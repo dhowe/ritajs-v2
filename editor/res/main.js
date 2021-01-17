@@ -1,6 +1,6 @@
 $(document).ready(function () {
     //switch mode
-    $("#darkmode").onchange = function() {
+    $("#darkmode").on("change", function () {
         if (editor) {
             if ($("#darkmode").prop("checked")) {
                 editor.setOption("theme","darkMode");
@@ -8,7 +8,7 @@ $(document).ready(function () {
                 editor.setOption("theme","lightMode");
             }
         }
-    }
+    });
 
     // read console
     let consoleContents = [];
