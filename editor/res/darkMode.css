@@ -1,0 +1,27 @@
+/*
+darkMode theme for rs editor 
+*/
+
+.CodeMirror.cm-s-darkMode { background: #1e1e1e; color: #cbcbcb; }
+
+.cm-s-darkMode .CodeMirror-selected { background: #264f78; }
+.cm-s-darkMode .CodeMirror-gutters { background: #464646; border-right: 0px; color: #cbcbcb;}
+.cm-s-darkMode .CodeMirror-linenumber { color: #cbcbcb; }
+
+.cm-s-darkMode .CodeMirror-cursor { border-left: 1px solid #c4c2bd; }
+
+/* color for vars (e.g $foo) */
+.cm-s-darkMode span.cm-vars { color: #9bdbff; }
+
+/* color for choice (e.g (a|b)) */
+.cm-s-darkMode span.cm-choice { color: #4ebfff; }
+
+/* color for transforms (e.g $foo.pluralize()) */
+.cm-s-darkMode span.cm-trans { color: #cdab53; }
+
+/* color for comment */
+.cm-s-darkMode span.cm-comment { color: #669851; }
+
+
+.cm-s-darkMode .CodeMirror-activeline-background { background: #2F2F2F; }
+.cm-s-darkMode .CodeMirror-matchingbracket { text-decoration: underline; color: white !important; }

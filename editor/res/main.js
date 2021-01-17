@@ -1,4 +1,14 @@
 $(document).ready(function () {
+    //switch mode
+    $("#darkmode").onchange = function() {
+        if (editor) {
+            if ($("#darkmode").prop("checked")) {
+                editor.setOption("theme","darkMode");
+            } else {
+                editor.setOption("theme","lightMode");
+            }
+        }
+    }
 
     // read console
     let consoleContents = [];
@@ -37,27 +47,26 @@ $(document).ready(function () {
         _console.error.apply(console, arguments);
     };
 
-    // JC: where is this used?
     let defaultValue = "\n$mammal=(dog | child | ox)\n\n$verb=(watching | listening)\n\nThe $mammal.pluralize() were $verb.\n";
 
     CodeMirror.defineSimpleMode("RiScript", {
         start: [
             //RiScript
-            { regex: /\$\w+/g, token: ["keyword"] },
-            //vars -> color label 'keyword'
-            { regex: /\((.*\|)+.*\)/g, token: ["string"] },
-            //choices -> color label 'string'
-            { regex: /(\.[\w]+\(\))/g, token: ["number"] },
-            //transforms -> color label 'number'
+            { regex: /\$\w+/g, token: "vars" },
+            //vars
+            { regex: /\((.*\|)+.*\)/g, token: "choice" },
+            //choices
+            { regex: /(\.[\w]+\(\))/g, token: "trans" },
+            //transforms 
+            { regex: /\/\/.*/g, token: "comment" },
+            //single line comment
+            { regex: /\/\*/, token: "comment", next: "comment" },
+            //multi lines comment
         ],
         comment: [
-            { regex: /.*?\*\//, token: "comment", next: "start" },
-            { regex: /.*/, token: "comment" }
+            {regex: /.*?\*\//, token: "comment", next: "start"},
+            {regex: /.*/, token: "comment"}
         ],
-        meta: {
-            dontIndentStates: ["comment"],
-            lineComment: "//"
-        }
     });
 
     let editor = CodeMirror.fromTextArea($('#inputArea')[0], {
@@ -68,6 +77,7 @@ $(document).ready(function () {
         }, "Cmd-Enter": function() {
             runCode(); // mac
         }},
+        theme: "darkMode", //default = darkMode
     });
     editor.setSize("100%", "100%");
 
