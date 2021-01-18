@@ -8,7 +8,6 @@ const { LexerErrors, ParserErrors } = require('./errors');
 class RiScript {
 
   constructor() {
-    this.appliedTransforms = [];
     this.visitor = new Visitor(this, RiTa());
   }
 
@@ -50,6 +49,9 @@ class RiScript {
   }
 
   pushTransforms(ctx) {
+    if (typeof this.appliedTransforms === 'undefined') {
+      this.appliedTransforms = [];
+    }
     Object.keys(RiScript.transforms).forEach(t => {
       if (!ctx.hasOwnProperty(t)) {
         ctx[t] = RiScript.transforms[t];
@@ -60,7 +62,10 @@ class RiScript {
   }
 
   popTransforms(ctx) {
+    // remove it from the context
     this.appliedTransforms.forEach(t => delete ctx[t]);
+    // and clear the array
+    this.appliedTransforms = [];
     return this;
   }
 
