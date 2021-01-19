@@ -2,10 +2,6 @@ grammar RiScript;
 
 // --------- NOTE: changing this file require a re-compile: use $ yarn run watch-grammar --------- 
 
-// TODO: Add recursive arg, and call multeval when recursive || unrseolved symbol
-// 			 Transforms: (store in riscript, static?) conditionals with number vars (need to OPS: test booleans,
-//       Apply to String before each run (including builtins), then remove at end ?
-
 script: (expr | cexpr | NL)+ EOF;
 expr: (symbol | choice | assign | inline | chars)+;
 cexpr: WS* LCB cond+ RCB WS* expr;
@@ -41,7 +37,7 @@ HAT: '^';
 DOL: '$';
 COM: ',';
 NL: '\r'? '\n';
-SYM: ('$' NIDENT);// | ('<' NIDENT '>');
+SYM: ('$' NIDENT);
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
 TF: ('.' IDENT ( '(' ')')?)+;

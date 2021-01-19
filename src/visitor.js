@@ -163,16 +163,20 @@ class Visitor extends RiScriptVisitor {
   ////////////////////// ///////////// //////////////////////////
 
   visitAssign(ctx) {
+
     // visit value and create a mapping in the symbol table */
     let token = ctx.expr();
     let id = symbolName(ctx.symbol().getText());
-    this.trace && console.log('visitAssign: $'
-      + id + '=\'' + flatten(token) + "'");
+    this.trace && console.log('visitAssign: $'+ id + '=\'' + flatten(token));
+      // + "' "+ctx.start.column+"-"+ctx.stop.column);
     let result = this.visit(token);
     this.context[id] = result;
     this.trace && console.log("resolveAssign: $"
       + id + " -> '" + result + "' " + JSON.stringify(this.context));
     return ''; // no output on vanilla assign
+
+    // NEXT:
+    //return ctx.start.column === 0 ? '' :  result; // no output if first on line
   }
 
   visitExpr(ctx) {

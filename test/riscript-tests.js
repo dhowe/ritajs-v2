@@ -357,6 +357,39 @@ describe('RiTa.RiScript', () => {
       expect(ctx.a).eq('a')
     });
 
+    false && it('Working here on parens for Inlines', () => {
+      let ctx ;
+      expect(RiTa.evaluate('$a=a', ctx = {})).eq('');
+      expect(ctx.a).eq('a');
+
+      expect(RiTa.evaluate('($a=a)', ctx = {})).eq('a');
+      expect(ctx.a).eq('a');
+
+      expect(RiTa.evaluate('hello($a=a)', ctx = {})).eq('helloa');
+      expect(ctx.a).eq('a');
+
+      expect(RiTa.evaluate('hello\n$a=a', ctx = {})).eq('hello');
+      expect(ctx.a).eq('a');
+
+      expect(RiTa.evaluate('hello \n($a=A)', ctx = {})).eq('hello A');
+      expect(ctx.a).eq('A');
+
+      expect(RiTa.evaluate('x($a=a)', ctx = {})).eq('xa');
+      expect(ctx.a).eq('a');
+
+      expect(RiTa.evaluate('($foo=hi)', ctx = {})).eq('hi');
+      expect(ctx.foo).eq('hi');
+
+      expect(RiTa.evaluate('($foo=(hi | hi)) there', ctx = {})).eq('hi there');
+      expect(ctx.foo).eq('hi');
+
+      expect(RiTa.evaluate('($foo=(hi | hi).ucf()) there', ctx = {})).eq('Hi there');
+      expect(ctx.foo).eq('Hi');
+
+      expect(RiTa.evaluate('($foo=(hi | hi)).ucf() there', ctx = {})).eq('Hi there');
+      expect(ctx.foo).eq('hi');
+    });
+
     it('Should resolve inline transforms', () => {
       let ctx = {};
       expect(RiTa.evaluate('[$stored=(a | a).toUpperCase()] dog is a mammal.', ctx))
@@ -635,6 +668,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("[$b=((a | a)|a)].toUpperCase() dog.", ctx)).eq("A dog.");
       expect(RiTa.evaluate("((a)).toUpperCase()", ctx)).eq("A");
       expect(RiTa.evaluate("$a.toUpperCase()\n($a=b)", ctx)).eq("B");
+
       ctx = { dog: "terrier" };
       expect(RiTa.evaluate("$dog.ucf()", ctx)).eq("Terrier");
 
