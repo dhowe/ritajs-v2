@@ -779,9 +779,9 @@ describe('RiTa.RiScript', () => {
       expect(res2).to.have.members(opts);
     });
 
-    it('Should resolve norep transforms', () => {
+    it('Should resolve no-repeat transforms', () => {
       let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').norep()';
+      let rule = '(' + opts.join('|') + ').nore()';
       let rs = new RiScript();
       let last;
       for (let i = 0; i < 10; i++) {

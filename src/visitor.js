@@ -395,9 +395,10 @@ class ChoiceState {
   select() {
     if (this.options.length == 0) return null;
     if (this.options.length == 1) return this.options[0];
-    if (this.type == SEQUENCE) return this.selectSequence();
-    if (this.type == NOREPEAT) return this.selectNoRepeat();
+    if (this.type == SEQUENCE) return this.selectSequence();    
     if (this.type == RSEQUENCE) return this.selectRandSequence();
+    if (this.type == NOREPEAT) return this.selectNoRepeat();
+    if (this.type == "norep") return this.selectNoRepeat(); // TODO: remove
     return this.rand.random(this.options); // SIMPLE
   }
 
@@ -450,7 +451,7 @@ Visitor.ASSIGN = '[]';
 Visitor.FUNCTION = '()';
 Visitor.EMPTY = new RiScriptParser.ExprContext();
 
-const RSEQUENCE = 'rseq', SEQUENCE = 'seq', NOREPEAT = 'norep';
+const RSEQUENCE = 'rseq', SEQUENCE = 'seq', NOREPEAT = 'nore';
 const TYPES = [RSEQUENCE, SEQUENCE, NOREPEAT];
 
 module.exports = Visitor;

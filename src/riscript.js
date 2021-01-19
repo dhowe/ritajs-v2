@@ -247,7 +247,8 @@ RiScript.transforms = {
   // sequences
   seq: RiScript.identity,
   rseq: RiScript.identity,
-  norep: RiScript.identity,
+  norep: RiScript.identity, // TODO: remove
+  nore: RiScript.identity,
 
   // aliases
   art: RiScript.articlize,
