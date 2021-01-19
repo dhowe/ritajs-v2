@@ -39,11 +39,11 @@ class RiTa {
   }
 
   static grammar() {
-    return new RiTa.RiGrammar(...arguments);
+    return new RiGrammar(...arguments);
   }
 
   static markov() {
-    return new RiTa.RiMarkov(...arguments);
+    return new RiMarkov(...arguments);
   }
 
   static evaluate() {
@@ -149,10 +149,7 @@ class RiTa {
   }
 
   static scripting() {
-    if (typeof RiTa._interpreter === 'undefined') {
-      RiTa._interpreter = new RiScript();
-    }
-    return RiTa._interpreter;
+    return new RiScript(...arguments);
   }
 
   static search() {
@@ -238,9 +235,9 @@ RiScript.parent = RiTa;
 Stemmer.parent = RiTa;
 
 // CLASSES
-RiTa.RiScript = RiScript;
 RiTa.RiGrammar = RiGrammar;
 RiTa.RiMarkov = RiMarkov;
+RiTa.RiScript = RiScript;
 
 // COMPONENTS
 RiTa.tagger = new Tagger(RiTa);
@@ -253,7 +250,6 @@ RiTa.randomizer = new RandGen(RiTa);
 
 // LAZY-LOADS
 RiTa._lexicon = undefined;
-RiTa._interpreter = undefined;
 
 // MESSAGES
 RiTa.SILENT = false;
