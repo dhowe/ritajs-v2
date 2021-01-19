@@ -12,7 +12,7 @@ class Visitor extends RiScriptVisitor {
   constructor(parent, RiTa) {
     super();
     this.sequences = {};
-    this.parent = parent;
+    this.parent = parent; // RiScript instance
     this.RiTa = RiTa;
   }
 
@@ -285,6 +285,10 @@ class Visitor extends RiScriptVisitor {
       // function in context
       if (typeof this.context[tx] === 'function') {
         result = this.context[tx](target);
+      }
+      // function in transforms
+      else if (typeof this.parent.transforms[tx] === 'function') {
+        result = this.parent.transforms[tx](target);
       }
       // member functions (usually on String)
       else if (typeof target[tx] === 'function') {

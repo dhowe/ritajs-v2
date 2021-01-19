@@ -9,6 +9,7 @@ class RiScript {
 
   constructor() {
     this.visitor = new Visitor(this, RiTa());
+    this.transforms = RiScript.transforms;
   }
 
   static eval() {
@@ -19,12 +20,8 @@ class RiScript {
 
     ctx = ctx || {};
 
-    // make sure we have RiTa in context ??
-    //if (!ctx.hasOwnProperty('RiTa')) ctx.RiTa = RiTa();
-
     let onepass = opts.singlePass; // TODO: doc
     let last, expr = input, trace = opts.trace;
-    this.pushTransforms(ctx);
 
     for (let i = 0; expr !== last && i < RiScript.MAX_TRIES; i++) {
       last = expr;
@@ -38,7 +35,7 @@ class RiScript {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '" ');
     }
 
-    return this.popTransforms(ctx).resolveEntities(expr);
+    return this.resolveEntities(expr);
   }
 
   passInfo(ctx, input, output, pass) {
@@ -46,27 +43,6 @@ class RiScript {
       + "\nResult:  " + output + "\nContext: " + JSON.stringify(ctx) + "\n");
     if (pass >= RiScript.MAX_TRIES - 1) throw Error('Unable to resolve:\n"'
       + input + '"\nafter ' + RiScript.MAX_TRIES + ' tries. An infinite loop?');
-  }
-
-  pushTransforms(ctx) {
-    if (typeof this.appliedTransforms === 'undefined') {
-      this.appliedTransforms = [];
-    }
-    Object.keys(RiScript.transforms).forEach(t => {
-      if (!ctx.hasOwnProperty(t)) {
-        ctx[t] = RiScript.transforms[t];
-        this.appliedTransforms.push(t);
-      }
-    });
-    return this;
-  }
-
-  popTransforms(ctx) {
-    // remove it from the context
-    this.appliedTransforms.forEach(t => delete ctx[t]);
-    // and clear the array
-    this.appliedTransforms = [];
-    return this;
   }
 
   lex(input, opts) {
