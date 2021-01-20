@@ -65,15 +65,6 @@ RiScriptListener.prototype.exitChoice = function(ctx) {
 };
 
 
-// Enter a parse tree produced by RiScriptParser#inline.
-RiScriptListener.prototype.enterInline = function(ctx) {
-};
-
-// Exit a parse tree produced by RiScriptParser#inline.
-RiScriptListener.prototype.exitInline = function(ctx) {
-};
-
-
 // Enter a parse tree produced by RiScriptParser#assign.
 RiScriptListener.prototype.enterAssign = function(ctx) {
 };

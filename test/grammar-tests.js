@@ -58,7 +58,7 @@ describe('RiTa.RiGrammar', () => {
 
     it('should handle phrase transforms', () => {
         let g = {
-            "start": "[$x=$y b].ucf()",
+            "start": "($x=$y b).ucf()",
             "y": "(a | a)",
         };
         expect(RiTa.evaluate(new RiGrammar(g).expand())).eq("A b");
@@ -120,30 +120,6 @@ describe('RiTa.RiGrammar', () => {
         });
         rs = rg.expand("1line", { trace: 0 });
         expect(rs).to.be.oneOf(["Dave", "Jill", "Pete"]);
-    });
-
-    it('should resolve inlines', () => { // KNOWN-ISSUES
-        let rg, rs;
-
-        rg = new RiGrammar({
-            "start": "[$chosen=$person] talks to $chosen.",
-            "person": "Dave | Jill | Pete"
-        });
-        rs = rg.expand({ trace: 0 });
-        //console.log(rs);
-        expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
-
-        rg = new RiGrammar({
-            "start": "[$chosen=$person] talks to $chosen.",
-            "person": "$Dave | $Jill | $Pete",
-            "Dave": "Dave",
-            "Jill": "Jill",
-            "Pete": "Pete",
-        });
-        rs = rg.expand({ trace: 0 });
-        //console.log(rs);
-        expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
-
     });
 
     it("should call addRules", () => {

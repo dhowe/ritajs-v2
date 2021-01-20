@@ -141,7 +141,7 @@ class Visitor extends RiScriptVisitor {
     // if the symbol is not fully resolved, save it for next time (as an inline*)
     if (this.parent.isParseable(resolved)) {
       this.pendingSymbols.push(ident);
-      let tmp = '[$' + ident + '=' + resolved + ']' + flattenTx(txs);
+      let tmp = '($' + ident + '=' + resolved + ')' + flattenTx(txs);
       this.trace && console.log("resolveSymbol[P]: $" + ident + " -> " + tmp);
       return tmp;
     }
@@ -173,10 +173,8 @@ class Visitor extends RiScriptVisitor {
     this.context[id] = result;
     this.trace && console.log("resolveAssign: $"
       + id + " -> '" + result + "' " + JSON.stringify(this.context));
-    return ''; // no output on vanilla assign
 
-    // NEXT:
-    //return ctx.start.column === 0 ? '' :  result; // no output if first on line
+    return ctx.start.column === 0 ? '' :  result; // no output if first on line
   }
 
   visitExpr(ctx) {

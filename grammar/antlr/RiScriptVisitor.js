@@ -48,12 +48,6 @@ RiScriptVisitor.prototype.visitChoice = function(ctx) {
 };
 
 
-// Visit a parse tree produced by RiScriptParser#inline.
-RiScriptVisitor.prototype.visitInline = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
 // Visit a parse tree produced by RiScriptParser#assign.
 RiScriptVisitor.prototype.visitAssign = function(ctx) {
   return this.visitChildren(ctx);

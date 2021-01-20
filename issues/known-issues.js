@@ -3,6 +3,28 @@ const RiTa = require('../src/rita');
 
 describe('RiScript.KnownIssues', () => { // TODO:
 
+it('Should handle complex inlines in grammars', () => {
+
+    let rg, rs;
+    rg = new RiGrammar({
+      "start": "($chosen=$person) talks to $chosen.",
+      "person": "Dave | Jill | Pete"
+    });
+    rs = rg.expand({ trace: 0 });
+    //console.log(rs);
+    expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
+
+    rg = new RiGrammar({
+      "start": "($chosen=$person) talks to $chosen.",
+      "person": "$Dave | $Jill | $Pete",
+      "Dave": "Dave",
+      "Jill": "Jill",
+      "Pete": "Pete",
+    });
+    rs = rg.expand({ trace: 1 });
+    expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
+  });
+
   it('Should handle RiTa function transforms with args', () => {
     expect(RiTa.evaluate('Is $RiTa.presentPart(lie) wrong?',
       {}, { trace: 1, singlePass: 1 })).eq("Is lying wrong?");
@@ -17,18 +39,7 @@ describe('RiScript.KnownIssues', () => { // TODO:
     expect(() => RiTa.evaluate('a.toUpperCase()', 0, { silent: 1, trace: 1 })).to.throw();
   });
 
-  it('Should handle complex inlines in grammars', () => {
-
-    let rg = new RiGrammar({
-      "start": "[$chosen=$person] talks to $chosen.",
-      "person": "$Dave | $Jill | $Pete",
-      "Dave": "Dave | Jill | Pete",
-      "Jill": "Dave | Jill | Pete",
-      "Pete": "Dave | Jill | Pete",
-    });
-    rs = rg.expand({ trace: 1 });
-    expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
-  });
+  
 
   it('Should eval simple expressions', () => {
     // NOT SURE WHAT THIS TEST IS ABOUT
@@ -47,7 +58,8 @@ describe('RiTa.KnownIssues', () => {
   it('Failing to pluralize correctly', () => {
 
     let testPairs = [ // also in java
-      "pleae", "pleae",// can't find it in dictionary
+
+      // NOTHING NOW
     ];
 
     let res1, res2, res3, dbug = 0;

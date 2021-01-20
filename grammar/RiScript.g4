@@ -3,12 +3,12 @@ grammar RiScript;
 // --------- NOTE: changing this file require a re-compile: use $ yarn run watch-grammar --------- 
 
 script: (expr | cexpr | NL)+ EOF;
-expr: (symbol | choice | assign | inline | chars)+;
+expr: (symbol | choice | assign | chars)+;
 cexpr: WS* LCB cond+ RCB WS* expr;
 cond: SYM WS* op WS* chars WS* COM?;
 weight: WS* LB INT RB WS*;
 choice: (LP (wexpr OR)* wexpr RP) transform*;
-inline: LB symbol EQ expr RB transform*;
+//inline: LB symbol EQ expr RB transform*;
 assign: symbol EQ expr; //transform*
 chars: (
 		(DOT | WS | EXC | AST | GT | LT | DOL | HAT | COM)
