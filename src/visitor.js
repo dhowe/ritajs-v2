@@ -35,45 +35,6 @@ class Visitor extends RiScriptVisitor {
 
   ////////////////////// transformable //////////////////////////
 
-  /* output expr value and create a mapping in the symbol table */
-  visitInline(ctx) {
-    let token = ctx.expr();
-    let txs = ctx.transform();
-    let id = symbolName(ctx.symbol().getText());
-
-    this.trace && console.log('visitInline: $' + id + '=\'' +
-      flatten(token) + '\' tfs=' + flattenTx(txs));
-
-    let visited;
-
-    // if we've already resolved (likely as an inline) just return
-    let lookup = this.context[id];
-    if (typeof lookup !== 'undefined' && !this.parent.isParseable(lookup)) {
-      this.trace && console.log('symbolDefined[0]: $' + id + " -> '" + lookup + "' (already defined)");
-      visited = lookup;
-    }
-    else {
-      // visit the token and add result to the context
-      visited = this.visit(token);
-      this.context[id] = visited;
-    }
-
-    // if no transforms just return;
-    if (!txs.length) {
-      this.trace && console.log('resolveInline[1]: $' + id + " -> '" + visited + "'");
-      return visited;
-    }
-
-    // apply the transforms
-    let applied = this.applyTransforms(visited, txs);
-    let result = applied || (Visitor.LP + visited + Visitor.RP + flattenTx(txs));
-
-    this.trace && console.log('resolveInline[2]: $' + id + " -> '" + result + "'");
-
-    // return result or defer for later
-    return result || ctx.getText();
-  }
-
   visitChoice(ctx) {
 
     let choice = this.sequences[++this.indexer];
@@ -107,9 +68,7 @@ class Visitor extends RiScriptVisitor {
 
   visitSymbol(ctx) {
 
-    let txs = ctx.transform();
-    let result = ctx.getText();
-    let tn = ctx.SYM();
+    let txs = ctx.transform(), result = ctx.getText(), tn = ctx.SYM();
 
     // handle transform on empty string    
     if (!tn) {
@@ -125,7 +84,7 @@ class Visitor extends RiScriptVisitor {
 
     // if the symbol is pending just return it
     if (this.pendingSymbols.includes(ident)) {
-      this.trace && console.log("resolveSymbol[0]: (pending) $" + ident);//+ " -> " + result);
+      this.trace && console.log("resolveSymbol[0]: (pending) $" + ident);
       return result;
     }
 
@@ -141,7 +100,8 @@ class Visitor extends RiScriptVisitor {
     // if the symbol is not fully resolved, save it for next time (as an inline*)
     if (this.parent.isParseable(resolved)) {
       this.pendingSymbols.push(ident);
-      let tmp = '($' + ident + '=' + resolved + ')' + flattenTx(txs);
+      let { LP, SYM, EQ, RP } = Visitor;
+      let tmp = LP + SYM + ident + EQ + resolved + RP + flattenTx(txs);
       this.trace && console.log("resolveSymbol[P]: $" + ident + " -> " + tmp);
       return tmp;
     }
@@ -167,14 +127,14 @@ class Visitor extends RiScriptVisitor {
     // visit value and create a mapping in the symbol table */
     let token = ctx.expr();
     let id = symbolName(ctx.symbol().getText());
-    this.trace && console.log('visitAssign: $'+ id + '=\'' + flatten(token));
-      // + "' "+ctx.start.column+"-"+ctx.stop.column);
+    this.trace && console.log('visitAssign: $' + id + '=\'' + flatten(token));
+    // + "' "+ctx.start.column+"-"+ctx.stop.column);
     let result = this.visit(token);
     this.context[id] = result;
     this.trace && console.log("resolveAssign: $"
       + id + " -> '" + result + "' " + JSON.stringify(this.context));
 
-    return ctx.start.column === 0 ? '' :  result; // no output if first on line
+    return ctx.start.column === 0 ? '' : result; // no output if first on line
   }
 
   visitExpr(ctx) {
@@ -202,7 +162,7 @@ class Visitor extends RiScriptVisitor {
       let accept = sym ? op.invoke(sym, val) : false;
       /* this.trace && console.log('  cond(' + ctx.getText() + ')',
         id, op.toString(), val, '->', accept); */
-      if (!accept) return this.visitExpr(Visitor.EMPTY);
+      if (!accept) return this.visitExpr(Visitor.EC);
     }
     return this.visitExpr(ctx.expr());
   }
@@ -275,11 +235,11 @@ class Visitor extends RiScriptVisitor {
   applyTransform(target, tx) {
 
     let result, raw = target + Visitor.DOT + tx;
-
-    if (this.trace) console.log("applyTransform: '" + target + "' tf=" + tx);
+    if (this.trace) console.log
+      ("applyTransform: '" + target + "' tf=" + tx);
 
     // check for function
-    if (tx.endsWith(Visitor.FUNCTION)) {
+    if (tx.endsWith(Visitor.FUNC)) {
 
       // strip parens
       tx = tx.substring(0, tx.length - 2);
@@ -296,12 +256,14 @@ class Visitor extends RiScriptVisitor {
       else if (typeof target[tx] === 'function') {
         result = target[tx]();
         if (target === '' && result === '') {
-          if (!this.silent && !this.RiTa.SILENT) console.warn("[WARN] Unresolved transform[0]: " + raw);
+          if (!this.silent && !this.RiTa.SILENT) console.warn
+            ("[WARN] Unresolved transform[0]: " + raw);
         }
       }
       else { // function doesn't exist
         result = raw;
-        if (!this.silent && !this.RiTa.SILENT) console.warn("[WARN] Unresolved transform[1]: " + result);
+        if (!this.silent && !this.RiTa.SILENT) console.warn
+          ("[WARN] Unresolved transform[1]: " + result);
       }
     }
     // check for property
@@ -312,7 +274,8 @@ class Visitor extends RiScriptVisitor {
       }
       else {
         result = raw;
-        if (!this.silent && !this.RiTa.SILENT) console.warn("[WARN] Unresolved transform[2]: " + result);
+        if (!this.silent && !this.RiTa.SILENT) console.warn
+          ("[WARN] Unresolved transform[2]: " + result);
       }
     }
 
@@ -377,7 +340,7 @@ class ChoiceState {
     ctx.wexpr().map((w, k) => {
       let wctx = w.weight();
       let weight = wctx ? parseInt(wctx.INT()) : 1;
-      let expr = w.expr() || Visitor.EMPTY;
+      let expr = w.expr() || Visitor.EC;
       for (let i = 0; i < weight; i++) this.options.push(expr);
     });
 
@@ -389,7 +352,6 @@ class ChoiceState {
 
     if (this.type === RSEQUENCE) this.options =
       this.rand.randomOrdering(this.options);
-
     //if (parent.trace) console.log('  new ChoiceState#' + this.id + '('
     //+ this.options.map(o => o.getText()) + ", type=" + this.type + ")");
   }
@@ -401,7 +363,7 @@ class ChoiceState {
   select() {
     if (this.options.length == 0) return null;
     if (this.options.length == 1) return this.options[0];
-    if (this.type == SEQUENCE) return this.selectSequence();    
+    if (this.type == SEQUENCE) return this.selectSequence();
     if (this.type == RSEQUENCE) return this.selectRandSequence();
     if (this.type == NOREPEAT) return this.selectNoRepeat();
     if (this.type == "norep") return this.selectNoRepeat(); // TODO: remove
@@ -411,7 +373,7 @@ class ChoiceState {
   selectNoRepeat() {
     let cand;
     do {
-      cand =this.rand.random(this.options);
+      cand = this.rand.random(this.options);
     } while (cand == this.last);
 
     return (this.last = cand);
@@ -449,13 +411,14 @@ function flattenTx(txs) {
 
 Visitor.LP = '(';
 Visitor.RP = ')';
+Visitor.EQ = '=';
 Visitor.OR = 'OR';
 Visitor.SYM = '$';
 Visitor.DOT = '.';
 Visitor.EOF = '<EOF>';
 Visitor.ASSIGN = '[]';
-Visitor.FUNCTION = '()';
-Visitor.EMPTY = new RiScriptParser.ExprContext();
+Visitor.FUNC = '()';
+Visitor.EC = new RiScriptParser.ExprContext();
 
 const RSEQUENCE = 'rseq', SEQUENCE = 'seq', NOREPEAT = 'nore';
 const TYPES = [RSEQUENCE, SEQUENCE, NOREPEAT];
