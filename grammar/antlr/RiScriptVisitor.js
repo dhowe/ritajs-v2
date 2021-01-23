@@ -84,5 +84,11 @@ RiScriptVisitor.prototype.visitOp = function(ctx) {
 };
 
 
+// Visit a parse tree produced by RiScriptParser#stype.
+RiScriptVisitor.prototype.visitStype = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
 
 exports.RiScriptVisitor = RiScriptVisitor;

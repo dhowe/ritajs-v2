@@ -5,7 +5,7 @@ grammar RiScript;
 script: (expr | cexpr | NL)+ EOF;
 expr: (symbol | choice | assign | chars)+;
 cexpr: WS* LCB cond+ RCB WS* expr;
-cond: SYM WS* op WS* chars WS* COM?;
+cond: symbol WS* op WS* chars WS* COM?;
 weight: WS* LB INT RB WS*;
 choice: (LP (wexpr OR)* wexpr RP) transform*;
 assign: symbol EQ expr;
@@ -15,10 +15,13 @@ chars: (
 		| ENT
 		| INT
 	)+;
-symbol: SYM transform* | transform+;
+symbol: stype transform* | transform+;
+/* variable: VAR transform* | transform+; // why 2nd half?
+dynamic: DYN transform* | transform+; */
 wexpr: expr? weight?;
 transform: TF;
 op: OP | (LT | GT | EQ);
+stype: (VAR | DYN);
 
 GT: '>';
 LT: '<';
@@ -36,7 +39,8 @@ HAT: '^';
 DOL: '$';
 COM: ',';
 NL: '\r'? '\n';
-SYM: ('$' NIDENT);
+DYN: ('&' NIDENT);
+VAR: ('$' NIDENT);
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
 TF: ('.' IDENT ( '(' ')')?)+;

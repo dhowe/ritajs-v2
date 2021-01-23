@@ -3,7 +3,7 @@ describe('RiTa.RiGrammar', () => {
 
     if (typeof module !== 'undefined') require('./before');
 
-    const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 };
+    const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 }, TLP = { trace: 1, traceLex: 1 };
     const RiGrammar = RiTa.RiGrammar;
 
     let sentences1 = {
@@ -225,6 +225,19 @@ describe('RiTa.RiGrammar', () => {
         rg = new RiGrammar();
         rg.addRule("$start", "$pet");
         rg.addRule("$pet", "dog");
+        eq(rg.expand(), "dog");
+    });
+
+    it("should resolve dynamics", () => {
+        let rg = new RiGrammar();
+        rg.addRule("&start", "$item $item");
+        rg.addRule("&item", "(a|b|c|d|e)");
+        console.log(rg.expand(TT));
+        return;
+        rg = new RiGrammar();
+        rg.addRule("$start", "(a|b|c|d|e) (a|b|c|d|e)");
+        console.log(rg.expand(TT));
+        console.log();
         eq(rg.expand(), "dog");
     });
 

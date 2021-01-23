@@ -12,6 +12,7 @@ class Visitor extends RiScriptVisitor {
   constructor(parent, RiTa) {
     super();
     this.sequences = {};
+    this.dynamic = {};
     this.parent = parent; // RiScript instance
     this.RiTa = RiTa;
   }
@@ -68,7 +69,9 @@ class Visitor extends RiScriptVisitor {
 
   visitSymbol(ctx) {
 
-    let txs = ctx.transform(), result = ctx.getText(), tn = ctx.SYM();
+    let txs = ctx.transform(), result = ctx.getText(), tn = ctx.stype();
+
+    let raw = tn.getText();
 
     // handle transform on empty string    
     if (!tn) {
@@ -93,6 +96,11 @@ class Visitor extends RiScriptVisitor {
 
     // if it fails, give up / wait for next pass
     if (!resolved) {
+      let dynamic = this.context[Visitor.DYN+ident];
+      if (dynamic) {
+        this.trace && console.log("**resolveSymbol[dyn]: &" + ident + " -> '" + dynamic + "'");
+        return dynamic;
+      }
       this.trace && console.log("resolveSymbol[1]: $" + ident + " -> '" + result + "'");
       return result;
     }
@@ -123,6 +131,13 @@ class Visitor extends RiScriptVisitor {
   ////////////////////// ///////////// //////////////////////////
 
   visitAssign(ctx) {
+    let symbol = ctx.symbol().getText();
+    if (symbol[0] === Visitor.SYM) return this.handleVariable(ctx);
+    if (symbol[0] === Visitor.DYN) return this.handleDynamic(ctx);
+    throw Error('unexpected assignment: '+symbol);
+  }
+
+  handleVariable(ctx) {
 
     // visit value and create a mapping in the symbol table */
     let token = ctx.expr();
@@ -133,6 +148,20 @@ class Visitor extends RiScriptVisitor {
     this.context[id] = result;
     this.trace && console.log("resolveAssign: $"
       + id + " -> '" + result + "' " + JSON.stringify(this.context));
+
+    return ctx.start.column === 0 ? '' : result; // no output if first on line
+  }
+
+  handleDynamic(ctx) {
+
+    // visit value and create a mapping in the symbol table */
+    let token = ctx.expr();
+    let id = symbolName(ctx.symbol().getText());
+    this.trace && console.log('visitDynamic: ' + id + '=\'' + flatten(token) + "' "+ctx.start.column);
+    let result = token.getText();
+    this.context[id] = result;
+    this.trace && console.log("resolveDynamic: "
+      + id + " -> '" + result + "' ");// JSON.stringify(this.context));
 
     return ctx.start.column === 0 ? '' : result; // no output if first on line
   }
@@ -155,7 +184,7 @@ class Visitor extends RiScriptVisitor {
     this.trace && console.log('visitCexpr:' + ctx.expr().getText() + "'",
       'cond={' + conds.map(c => c.getText().replace(',', '')) + '}');
     for (let i = 0; i < conds.length; i++) {
-      let id = symbolName(conds[i].SYM().getText());
+      let id = symbolName(conds[i].symbol().getText());
       let op = Operator.fromString(conds[i].op().getText());
       let val = conds[i].chars().getText();
       let sym = this.context[id];
@@ -396,7 +425,8 @@ class ChoiceState {
 }
 
 function symbolName(text) {
-  return (text.length && text[0] === Visitor.SYM) ? text.substring(1) : text;
+  return (text.length && text[0] === Visitor.SYM)// || text[0] === Visitor.DYN)
+     ? text.substring(1) : text;
 }
 
 function flatten(tok) {
@@ -414,6 +444,7 @@ Visitor.RP = ')';
 Visitor.EQ = '=';
 Visitor.OR = 'OR';
 Visitor.SYM = '$';
+Visitor.DYN = '&';
 Visitor.DOT = '.';
 Visitor.EOF = '<EOF>';
 Visitor.ASSIGN = '[]';

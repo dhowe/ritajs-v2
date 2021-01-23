@@ -119,5 +119,14 @@ RiScriptListener.prototype.exitOp = function(ctx) {
 };
 
 
+// Enter a parse tree produced by RiScriptParser#stype.
+RiScriptListener.prototype.enterStype = function(ctx) {
+};
+
+// Exit a parse tree produced by RiScriptParser#stype.
+RiScriptListener.prototype.exitStype = function(ctx) {
+};
+
+
 
 exports.RiScriptListener = RiScriptListener;
