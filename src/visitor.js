@@ -67,11 +67,13 @@ class Visitor extends RiScriptVisitor {
     return result;
   }
 
+/*   visitDynamic(ctx) {
+    throw Error("[PARSER] the & (dynamic) modifier can only be used in an assignment:\n  "+ctx.getText());
+  } */
+
   visitSymbol(ctx) {
 
-    let txs = ctx.transform(), result = ctx.getText(), tn = ctx.stype();
-
-    let raw = tn.getText();
+    let txs = ctx.transform(), result = ctx.getText(), tn = ctx.SYM();
 
     // handle transform on empty string    
     if (!tn) {
@@ -96,13 +98,15 @@ class Visitor extends RiScriptVisitor {
 
     // if it fails, give up / wait for next pass
     if (!resolved) {
-      let dynamic = this.context[Visitor.DYN+ident];
-      if (dynamic) {
-        this.trace && console.log("**resolveSymbol[dyn]: &" + ident + " -> '" + dynamic + "'");
-        return dynamic;
+      resolved = this.context[Visitor.DYN + ident];
+      if (!resolved) {
+        this.trace && console.log("resolveSymbol[1]: $" + ident + " -> '" + result + "'");
+        return result;
+      } else {
+        this.trace && console.log("resolveDynamic[1]: &" + ident + " -> '" + resolved + "'");
+        return resolved;
       }
-      this.trace && console.log("resolveSymbol[1]: $" + ident + " -> '" + result + "'");
-      return result;
+
     }
 
     // if the symbol is not fully resolved, save it for next time (as an inline*)
@@ -131,13 +135,6 @@ class Visitor extends RiScriptVisitor {
   ////////////////////// ///////////// //////////////////////////
 
   visitAssign(ctx) {
-    let symbol = ctx.symbol().getText();
-    if (symbol[0] === Visitor.SYM) return this.handleVariable(ctx);
-    if (symbol[0] === Visitor.DYN) return this.handleDynamic(ctx);
-    throw Error('unexpected assignment: '+symbol);
-  }
-
-  handleVariable(ctx) {
 
     // visit value and create a mapping in the symbol table */
     let token = ctx.expr();
@@ -152,12 +149,12 @@ class Visitor extends RiScriptVisitor {
     return ctx.start.column === 0 ? '' : result; // no output if first on line
   }
 
-  handleDynamic(ctx) {
+  visitDassign(ctx) {
 
     // visit value and create a mapping in the symbol table */
     let token = ctx.expr();
-    let id = symbolName(ctx.symbol().getText());
-    this.trace && console.log('visitDynamic: ' + id + '=\'' + flatten(token) + "' "+ctx.start.column);
+    let id = ctx.dynamic().getText();
+    this.trace && console.log('visitDynamic: ' + id + '=\'' + flatten(token) + "'");
     let result = token.getText();
     this.context[id] = result;
     this.trace && console.log("resolveDynamic: "
@@ -426,7 +423,7 @@ class ChoiceState {
 
 function symbolName(text) {
   return (text.length && text[0] === Visitor.SYM)// || text[0] === Visitor.DYN)
-     ? text.substring(1) : text;
+    ? text.substring(1) : text;
 }
 
 function flatten(tok) {

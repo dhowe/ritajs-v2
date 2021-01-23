@@ -65,6 +65,15 @@ RiScriptListener.prototype.exitChoice = function(ctx) {
 };
 
 
+// Enter a parse tree produced by RiScriptParser#dassign.
+RiScriptListener.prototype.enterDassign = function(ctx) {
+};
+
+// Exit a parse tree produced by RiScriptParser#dassign.
+RiScriptListener.prototype.exitDassign = function(ctx) {
+};
+
+
 // Enter a parse tree produced by RiScriptParser#assign.
 RiScriptListener.prototype.enterAssign = function(ctx) {
 };
@@ -80,6 +89,15 @@ RiScriptListener.prototype.enterChars = function(ctx) {
 
 // Exit a parse tree produced by RiScriptParser#chars.
 RiScriptListener.prototype.exitChars = function(ctx) {
+};
+
+
+// Enter a parse tree produced by RiScriptParser#dynamic.
+RiScriptListener.prototype.enterDynamic = function(ctx) {
+};
+
+// Exit a parse tree produced by RiScriptParser#dynamic.
+RiScriptListener.prototype.exitDynamic = function(ctx) {
 };
 
 
@@ -116,15 +134,6 @@ RiScriptListener.prototype.enterOp = function(ctx) {
 
 // Exit a parse tree produced by RiScriptParser#op.
 RiScriptListener.prototype.exitOp = function(ctx) {
-};
-
-
-// Enter a parse tree produced by RiScriptParser#stype.
-RiScriptListener.prototype.enterStype = function(ctx) {
-};
-
-// Exit a parse tree produced by RiScriptParser#stype.
-RiScriptListener.prototype.exitStype = function(ctx) {
 };
 
 

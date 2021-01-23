@@ -28,7 +28,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('"foo"', {})).eq('"foo"');
       expect(RiTa.evaluate("'foo'", {})).eq("'foo'");
       expect(RiTa.evaluate('foo\nbar', {})).eq('foo bar');
-      expect(RiTa.evaluate('foo&#10;bar', {})).eq('foo\nbar');
+      expect(RiTa.evaluate('foo&#10;bar', {})).eq('foo\nbar'); 
       expect(RiTa.evaluate('$foo=bar\nbaz', {})).eq('baz');
       expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {})).eq('baz bar');
       expect(RiTa.evaluate('$foo=(a|b|c)\n$foo is $foo')).to.be.oneOf(['a is a', 'b is b', 'c is c']);;
@@ -42,7 +42,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('&foo=bar\nbaz', {})).eq('baz');
       expect(RiTa.evaluate('(&foo=bar)\nbaz', {})).eq('bar baz');
 
-      expect(RiTa.evaluate('&foo=bar\nbaz$foo', {})).eq('bazbar');
+      expect(RiTa.evaluate('&foo=bar\nbaz$foo', {}, TT)).eq('bazbar');
       expect(RiTa.evaluate('&foo=bar\n($foo)baz', {})).eq('barbaz');
 
       expect(RiTa.evaluate('&foo=bar\n$foo baz $foo', {})).eq('bar baz bar');
@@ -86,23 +86,13 @@ describe('RiTa.RiScript', () => {
     it('Should resolve recursive dynamic expressions', () => {
       let ctx, expr;
 
-      ctx = { a: 'a' };
-      expr = '(a|&a)';
-      expect(RiTa.evaluate(expr, ctx)).eq('a');
-      ctx = { a: '&b', b: '(c | c)' };
-      expr = '&a';
+      ctx = { a: '$b', b: '(c | c)' };
+      expr = '&k=$a\n$k';
       expect(RiTa.evaluate(expr, ctx)).eq('c');
 
-      ctx = { a: '&b', b: '(c | c)' };
-      expr = '&k = &a\n&k';
+      ctx = { a: '$b', b: '(c | c)' };
+      expr = '&s = $a\n&a = $b\n&c = $d\n&d = c\n$s';
       expect(RiTa.evaluate(expr, ctx)).eq('c');
-
-      ctx = { a: '&b', b: '(c | c)' };
-      expr = '&s = &a\n&a = &b\n&c = &d\n&d = c\n&s';
-      expect(RiTa.evaluate(expr, ctx)).eq('c');
-
-      ctx = { s: '&a', a: '&b', b: '&c', c: '&d', d: 'c' };
-      expect(RiTa.evaluate('&s', ctx)).eq('c');
     });
   });
 
@@ -223,21 +213,21 @@ describe('RiTa.RiScript', () => {
       expect(ctx['&foo']).eq('()');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=a\n&bar=&foo', ctx)).eq(''); // empty string
+      expect(RiTa.evaluate('&foo=a\n&bar=$foo', ctx, TT)).eq(''); // empty string
       expect(ctx['&foo']).eq('a');
-      expect(ctx['&bar']).eq('&foo');
+      expect(ctx['&bar']).eq('$foo');
 
-      expect(RiTa.evaluate('&foo=a\n&bar=&foo.', ctx, { trace: 0 })).eq(''); // empty string
+      expect(RiTa.evaluate('&foo=a\n&bar=$foo.', ctx, { trace: 0 })).eq(''); // empty string
       expect(ctx['&foo']).eq('a');
-      expect(ctx['&bar']).eq('&foo.');
+      expect(ctx['&bar']).eq('$foo.');
 
       expect(RiTa.evaluate('&foo=(a | a)', ctx = {})).eq('');
       expect(ctx['&foo']).eq('(a | a)');
 
-      expect(RiTa.evaluate('&foo=(a | a)\n&foo', ctx = {}, TT)).eq('a');
+      expect(RiTa.evaluate('&foo=(a | a)\n$foo', ctx = {}, TT)).eq('a');
       expect(ctx['&foo']).eq('(a | a)');
 
-      expect(RiTa.evaluate('&foo=(hi | hi)\n&foo there', ctx = {})).eq('hi there');
+      expect(RiTa.evaluate('&foo=(hi | hi)\n$foo there', ctx = {})).eq('hi there');
       expect(ctx['&foo']).eq('(hi | hi)');
 
       expect(RiTa.evaluate('&foo=The boy walked his dog', ctx = {})).eq('');

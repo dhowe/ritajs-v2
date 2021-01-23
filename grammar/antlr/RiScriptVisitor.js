@@ -48,6 +48,12 @@ RiScriptVisitor.prototype.visitChoice = function(ctx) {
 };
 
 
+// Visit a parse tree produced by RiScriptParser#dassign.
+RiScriptVisitor.prototype.visitDassign = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
 // Visit a parse tree produced by RiScriptParser#assign.
 RiScriptVisitor.prototype.visitAssign = function(ctx) {
   return this.visitChildren(ctx);
@@ -56,6 +62,12 @@ RiScriptVisitor.prototype.visitAssign = function(ctx) {
 
 // Visit a parse tree produced by RiScriptParser#chars.
 RiScriptVisitor.prototype.visitChars = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
+// Visit a parse tree produced by RiScriptParser#dynamic.
+RiScriptVisitor.prototype.visitDynamic = function(ctx) {
   return this.visitChildren(ctx);
 };
 
@@ -80,12 +92,6 @@ RiScriptVisitor.prototype.visitTransform = function(ctx) {
 
 // Visit a parse tree produced by RiScriptParser#op.
 RiScriptVisitor.prototype.visitOp = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by RiScriptParser#stype.
-RiScriptVisitor.prototype.visitStype = function(ctx) {
   return this.visitChildren(ctx);
 };
 

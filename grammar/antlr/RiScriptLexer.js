@@ -162,7 +162,7 @@ RiScriptLexer.DOL = 14;
 RiScriptLexer.COM = 15;
 RiScriptLexer.NL = 16;
 RiScriptLexer.DYN = 17;
-RiScriptLexer.VAR = 18;
+RiScriptLexer.SYM = 18;
 RiScriptLexer.OR = 19;
 RiScriptLexer.EQ = 20;
 RiScriptLexer.TF = 21;
@@ -183,14 +183,14 @@ RiScriptLexer.prototype.literalNames = [ null, "'>'", "'<'", "'('", "')'",
 RiScriptLexer.prototype.symbolicNames = [ null, "GT", "LT", "LP", "RP", 
                                           "LB", "RB", "LCB", "RCB", "DOT", 
                                           "WS", "EXC", "AST", "HAT", "DOL", 
-                                          "COM", "NL", "DYN", "VAR", "OR", 
+                                          "COM", "NL", "DYN", "SYM", "OR", 
                                           "EQ", "TF", "ENT", "INT", "OP", 
                                           "CHR" ];
 
 RiScriptLexer.prototype.ruleNames = [ "GT", "LT", "LP", "RP", "LB", "RB", 
                                       "LCB", "RCB", "DOT", "WS", "EXC", 
                                       "AST", "HAT", "DOL", "COM", "NL", 
-                                      "DYN", "VAR", "OR", "EQ", "TF", "ENT", 
+                                      "DYN", "SYM", "OR", "EQ", "TF", "ENT", 
                                       "INT", "OP", "CHR", "IDENT", "NIDENT" ];
 
 RiScriptLexer.prototype.grammarFileName = "RiScript.g4";

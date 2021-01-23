@@ -3,25 +3,28 @@ grammar RiScript;
 // --------- NOTE: changing this file requires a re-compile: use $ yarn watch.grammar --------- 
 
 script: (expr | cexpr | NL)+ EOF;
-expr: (symbol | choice | assign | chars)+;
+expr: (symbol | choice | assign | dassign | chars)+; //| dynamic
 cexpr: WS* LCB cond+ RCB WS* expr;
 cond: symbol WS* op WS* chars WS* COM?;
 weight: WS* LB INT RB WS*;
 choice: (LP (wexpr OR)* wexpr RP) transform*;
+
+dassign: dynamic EQ expr;
 assign: symbol EQ expr;
+
 chars: (
 		(DOT | WS | EXC | AST | GT | LT | DOL | HAT | COM)
 		| CHR
 		| ENT
 		| INT
 	)+;
-symbol: stype transform* | transform+;
-/* variable: VAR transform* | transform+; // why 2nd half?
-dynamic: DYN transform* | transform+; */
+dynamic: DYN transform* | transform+;
+symbol: SYM transform* | transform+;
+/* variable: VAR transform* | transform+; // why 2nd half? dynamic: DYN transform* | transform+;
+ */
 wexpr: expr? weight?;
 transform: TF;
 op: OP | (LT | GT | EQ);
-stype: (VAR | DYN);
 
 GT: '>';
 LT: '<';
@@ -39,8 +42,8 @@ HAT: '^';
 DOL: '$';
 COM: ',';
 NL: '\r'? '\n';
-DYN: ('&' NIDENT);
-VAR: ('$' NIDENT);
+DYN: '&' NIDENT;
+SYM: '$' NIDENT;
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;
 TF: ('.' IDENT ( '(' ')')?)+;

@@ -45,7 +45,7 @@ DOL
 COM
 NL
 DYN
-VAR
+SYM
 OR
 EQ
 TF
@@ -72,7 +72,7 @@ DOL
 COM
 NL
 DYN
-VAR
+SYM
 OR
 EQ
 TF
