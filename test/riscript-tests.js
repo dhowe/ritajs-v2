@@ -237,11 +237,6 @@ describe('RiTa.RiScript', () => {
     it('Should resolve sentences', () => {
       let res, ctx;
 
-      /* // MOVE TO KNOWN ISSUES  
-        ctx = {};  
-       expect(RiTa.evaluate('$foo=.r', ctx, 1)).eq('');
-       expect(ctx.foo).eq('.r');  */
-
       expect(RiTa.evaluate('.', null)).eq('.');
 
       ctx = {};
@@ -282,6 +277,49 @@ describe('RiTa.RiScript', () => {
       expect(res).eq('I sat.');
     });
 
+   it('Should resolve dynamic sentences', () => {
+      let res, ctx;
+
+      expect(RiTa.evaluate('.', null)).eq('.');
+
+      ctx = {};
+      expect(RiTa.evaluate('&foo=a', ctx)).eq('');
+      expect(ctx['&foo']).eq('a');
+
+      ctx = {};
+      expect(RiTa.evaluate('&foo=.', ctx)).eq('');
+      expect(ctx['&foo']).eq('.');
+
+      ctx = {};
+      expect(RiTa.evaluate('&foo=r.', ctx)).eq('');
+      expect(ctx['&foo']).eq('r.');
+
+      ctx = {};
+      expect(RiTa.evaluate('&foo=ran.', ctx)).eq('');
+      expect(ctx['&foo']).eq('ran.');
+
+      ctx = {};
+      res = RiTa.evaluate('&start=dog\n$start', ctx);
+      expect(ctx['&start']).eq('dog');
+      expect(res).eq('dog');
+
+      ctx = {};
+      res = RiTa.evaluate('&start=.\n$start', ctx);
+      expect(ctx['&start']).eq('.');
+      expect(res).eq('.');
+
+      ctx = {};
+      res = RiTa.evaluate('&noun=I\n&start=$noun ran.\n$start', ctx);
+      expect(ctx['&noun']).eq('I');
+      expect(res).eq('I ran.');
+
+      ctx = {};
+      res = RiTa.evaluate('&noun=I\n&verb=sat\n&start=$noun $verb.\n$start', ctx);
+      expect(ctx['&noun']).eq('I');
+      expect(ctx['&verb']).eq('sat');
+      expect(res).eq('I sat.');
+    });
+
 
     it('Should parse transformed assignments', () => {
       let ctx;
@@ -317,6 +355,8 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('These ($state feeling).pluralize().', { state: 'bad' })).eq('These bad feelings.');
       expect(RiTa.evaluate('$state=(bad | bad)\nThese ($state feeling).pluralize().', {})).eq('These bad feelings.');
 
+      expect(RiTa.evaluate('&state=(bad | bad)\nThese ($state feeling).pluralize().', {})).eq('These bad feelings.');
+
       //expect(RiTa.evaluate('These ($state feeling).pluralize().',  TODO: SEE KNOWN ISSUES
       //{ state: '(bad | bad)' }, TT)).eq('These bad feelings.');
     })
@@ -341,7 +381,7 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve across assignment types', () => {
       let ctx;
-      expect(RiTa.evaluate('The $foo=blue (dog | dog)', ctx = {})).eq('The');
+      expect(RiTa.evaluate('The $foo=blue (dog | dog)', ctx = {})).eq('The'); // doesn't need to be first in line ***
       expect(ctx.foo).eq('blue dog');
 
       expect(RiTa.evaluate('The ($foo=blue) (dog | dog)', ctx = {})).eq('The blue dog');
@@ -351,16 +391,32 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('blue dog');
     });
 
-    it('Should hanlde nested context', () => {
+    it('Should resolve dynamics across assignment types', () => {
+      let ctx;
+
+      expect(RiTa.evaluate('The (&foo=blue) (dog | dog)', ctx = {})).eq('The blue dog');
+      expect(ctx['&foo']).eq('blue');
+
+      expect(RiTa.evaluate('The (&foo=blue (dog | dog))', ctx = {})).eq('The blue dog');
+      expect(ctx['&foo']).eq('blue (dog | dog)');
+
+      expect(RiTa.evaluate('The &foo=blue (dog | dog)', ctx = {})).eq('The');
+      expect(ctx['&foo']).eq('blue (dog | dog)');
+    });
+
+    it('Should handle nested context', () => {
       let ctx = { bar: { color: "blue" } };
-      let res = RiTa.evaluate("$foo=$bar.color\n$foo", ctx);
+      let res = RiTa.evaluate("&foo=$bar.color\n$foo", ctx);
+      expect(res).eq("blue");
+
+      res = RiTa.evaluate("&foo=$bar.color\n$foo", ctx); // dyn
       expect(res).eq("blue");
     });
   });
 
   describe('Inline', () => {
 
-    it('Should resolve inline vars', () => {
+    it('Should resolve inline symbols', () => {
       let rs, ctx;
 
       rs = RiTa.evaluate('$person=(a | b | c)\n($a=$person) is $a', context);
