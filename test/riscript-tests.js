@@ -431,7 +431,7 @@ describe('RiTa.RiScript', () => {
       expect(rs).eq("Dave is called Dave");
     });
 
-    it('Should distinguish dynamics', () => {  // WORKING HERE: SLOW! short-circuit
+    it('Should distinguish dynamics', () => {  // WORKING HERE: SLOW! short-circuit (next add similar multi-tests for grammars)
 
       let rs, ctx;
       for (let i = 0; i < 10; i++) { // $: should always match
