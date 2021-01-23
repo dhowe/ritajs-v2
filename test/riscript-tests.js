@@ -21,14 +21,13 @@ describe('RiTa.RiScript', () => {
       expect(rs.isParseable("(&nbsp;)")).eq(true);//?
     });
 
-
     it('Should resolve simple expressions', () => {
       expect(RiTa.evaluate('foo', {})).eq('foo');
       expect(RiTa.evaluate('foo.', {})).eq('foo.');
       expect(RiTa.evaluate('"foo"', {})).eq('"foo"');
       expect(RiTa.evaluate("'foo'", {})).eq("'foo'");
       expect(RiTa.evaluate('foo\nbar', {})).eq('foo bar');
-      expect(RiTa.evaluate('foo&#10;bar', {})).eq('foo\nbar'); 
+      expect(RiTa.evaluate('foo&#10;bar', {})).eq('foo\nbar');
       expect(RiTa.evaluate('$foo=bar\nbaz', {})).eq('baz');
       expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {})).eq('baz bar');
       expect(RiTa.evaluate('$foo=(a|b|c)\n$foo is $foo')).to.be.oneOf(['a is a', 'b is b', 'c is c']);;
@@ -42,7 +41,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('&foo=bar\nbaz', {})).eq('baz');
       expect(RiTa.evaluate('(&foo=bar)\nbaz', {})).eq('bar baz');
 
-      expect(RiTa.evaluate('&foo=bar\nbaz$foo', {}, TT)).eq('bazbar');
+      expect(RiTa.evaluate('&foo=bar\nbaz$foo', {})).eq('bazbar');
       expect(RiTa.evaluate('&foo=bar\n($foo)baz', {})).eq('barbaz');
 
       expect(RiTa.evaluate('&foo=bar\n$foo baz $foo', {})).eq('bar baz bar');
@@ -104,8 +103,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('a');
 
       ctx = {};
-      //RiTa.evaluate('$foo=(a) b', ctx, {trace:0});
-      expect(RiTa.evaluate('$foo=(a) b', ctx, TT)).eq('');
+      expect(RiTa.evaluate('$foo=(a) b', ctx)).eq('');
       expect(ctx.foo).eq('a b');
 
       ctx = {};
@@ -213,7 +211,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx['&foo']).eq('()');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=a\n&bar=$foo', ctx, TT)).eq(''); // empty string
+      expect(RiTa.evaluate('&foo=a\n&bar=$foo', ctx)).eq(''); // empty string
       expect(ctx['&foo']).eq('a');
       expect(ctx['&bar']).eq('$foo');
 
@@ -224,7 +222,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('&foo=(a | a)', ctx = {})).eq('');
       expect(ctx['&foo']).eq('(a | a)');
 
-      expect(RiTa.evaluate('&foo=(a | a)\n$foo', ctx = {}, TT)).eq('a');
+      expect(RiTa.evaluate('&foo=(a | a)\n$foo', ctx = {})).eq('a');
       expect(ctx['&foo']).eq('(a | a)');
 
       expect(RiTa.evaluate('&foo=(hi | hi)\n$foo there', ctx = {})).eq('hi there');
@@ -277,7 +275,7 @@ describe('RiTa.RiScript', () => {
       expect(res).eq('I sat.');
     });
 
-   it('Should resolve dynamic sentences', () => {
+    it('Should resolve dynamic sentences', () => {
       let res, ctx;
 
       expect(RiTa.evaluate('.', null)).eq('.');
@@ -419,7 +417,7 @@ describe('RiTa.RiScript', () => {
     it('Should resolve inline symbols', () => {
       let rs, ctx;
 
-      rs = RiTa.evaluate('$person=(a | b | c)\n($a=$person) is $a', context);
+      rs = RiTa.evaluate('$person=(a | b | c)\n($a=$person) is $a', ctx = {});
       expect(rs).to.be.oneOf(['a is a', 'b is b', 'c is c']);
 
       ctx = { name: '(Dave1 | Dave2)' };
@@ -429,12 +427,65 @@ describe('RiTa.RiScript', () => {
       expect(ctx.stored).to.be.oneOf(['Dave1', 'Dave2']);
       expect(rs).to.be.oneOf(['Dave1 is Dave1', 'Dave2 is Dave2']);
 
-      rs = RiTa.evaluate('($stored=(Dave1 | Dave2)) is $stored', ctx = {});
-      expect(ctx.stored).to.be.oneOf(['Dave1', 'Dave2']);
-      expect(rs).to.be.oneOf(['Dave1 is Dave1', 'Dave2 is Dave2']);
-
-      rs = RiTa.evaluate('$name=(Dave | Dave)\n($stored=$name) is called $stored', {});
+      rs = RiTa.evaluate('$name=(Dave | Dave)\n($stored=$name) is called $stored', ctx = {});
       expect(rs).eq("Dave is called Dave");
+    });
+
+    it('Should distinguish dynamics', () => {  // WORKING HERE: SLOW! short-circuit
+
+      let rs, ctx;
+      for (let i = 0; i < 10; i++) { // $: should always match
+        rs = RiTa.evaluate('($name=(Dave | Jack | Mary)) is called $name.', ctx = {});
+        expect(ctx.name).to.be.oneOf(['Dave', 'Jack', 'Mary']);
+        expect(rs).to.be.oneOf(['Dave is called Dave.', 'Jack is called Jack.', 'Mary is called Mary.']);
+      }
+
+      let matches = 0, count = 10;
+      for (let i = 0; i < count; i++) { // &: should not always match
+        rs = RiTa.evaluate('(&name=(Dave | Jack | Mary)) is called $name.', ctx = {});
+        expect(ctx['&name']).eq('(Dave | Jack | Mary)');
+        expect(/^(Dave|Jack|Mary) is called (Dave|Jack|Mary)\.$/.test(rs)).eq(true);
+        if (['Dave is called Dave.', 'Jack is called Jack.', 'Mary is called Mary.'].includes(rs)) {
+           matches++;
+        }
+      }
+      expect(matches<count).eq(true); // need some to not match
+
+      for (let i = 0; i < 10; i++) { // $: should always match
+        rs = RiTa.evaluate('($name=(dave | jack | mary).ucf()) is called $name.', ctx = {});
+        expect(ctx.name).to.be.oneOf(['Dave', 'Jack', 'Mary']);
+        expect(rs).to.be.oneOf(['Dave is called Dave.', 'Jack is called Jack.', 'Mary is called Mary.']);
+      }
+
+      for (let i = 0; i < 10; i++) { // $: should always match
+        rs = RiTa.evaluate('($name=(dave | jack | mary)).ucf() is called $name.', ctx = {});
+        expect(ctx.name).to.be.oneOf(['dave', 'jack', 'mary']);
+        expect(/^(Dave|Jack|Mary) is called (dave|jack|mary)\.$/.test(rs)).eq(true);
+        expect(rs).to.be.oneOf(['Dave is called dave.', 'Jack is called jack.', 'Mary is called mary.']);
+      }
+
+      matches = 0; count = 10;
+      for (let i = 0; i < count; i++) { // &: should not always match
+        rs = RiTa.evaluate('(&name=(dave | jack | mary).ucf()) is called $name.', ctx = {});
+        //console.log(i+") "+rs);
+        expect(ctx['&name']).eq('(dave | jack | mary).ucf()');
+        expect(/^(Dave|Jack|Mary) is called (Dave|Jack|Mary)\.$/.test(rs)).eq(true);
+        if (['Dave is called Dave.', 'Jack is called Jack.', 'Mary is called Mary.'].includes(rs)) {
+           matches++;
+        }
+      }
+      expect(matches<count).eq(true); // need some to not match 
+
+      matches = 0; count = 10;
+      for (let i = 0; i < count; i++) { // &: should not always match
+        rs = RiTa.evaluate('(&name=(dave | jack | mary)).ucf() is called $name.', ctx = {});
+        expect(ctx['&name']).eq('(dave | jack | mary)');
+        expect(/^(Dave|Jack|Mary) is called (dave|jack|mary)\./.test(rs)).eq(true);
+        if (['Dave is called dave.', 'Jack is called Jack.', 'Mary is called Mary.'].includes(rs)) {
+           matches++;
+        }
+      }
+      expect(matches<count).eq(true); // need some to not match 
     });
 
     it('Should resolve inline assigns', () => {
@@ -1007,7 +1058,6 @@ describe('RiTa.RiScript', () => {
       let ctx = { user: { name: 'jen' } }
       expect(RiTa.evaluate("That was $user.name!", ctx)).eq('That was jen!');
       expect(RiTa.evaluate("That was $user.name.", ctx)).eq('That was jen.');
-
     });
 
     it('Should resolve transforms on literals', () => {
@@ -1047,7 +1097,7 @@ describe('RiTa.RiScript', () => {
     });
   });
 
-  describe('RiGrammar', () => {
+  describe('Grammar-like', () => {
 
     it('Should evaluate post defined symbols', () => {
       let rs = RiTa.evaluate('$foo=$bar\n$bar=baz\n$foo', {});
@@ -1104,7 +1154,6 @@ describe('RiTa.RiScript', () => {
       let rs = RiTa.evaluate('$foo=$bar.toUpperCase().ucf\n$bar=baz\n$foo', {}, {trace:0});
       expect(rs).eq('BAZ.ucf');
     });*/
-
 
     it('Should resolve converted grammars', () => {
       let script = [

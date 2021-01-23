@@ -95,25 +95,31 @@ class Visitor extends RiScriptVisitor {
 
     // now try to resolve from context
     let resolved = this.context[ident];
+    let isDynamic = false;
 
-    // if it fails, give up / wait for next pass
+    // if it fails
     if (!resolved) {
+
+      // try with a dynamic version
       resolved = this.context[Visitor.DYN + ident];
-      if (!resolved) {
+      if (resolved) {
+        // return if we have a dynamic
+        this.trace && console.log("resolveDynamic[1]: &" + ident + " -> '" + resolved + "'");
+        isDynamic = true; // mark it
+      } else {
+        // otherwise give up, wait for next pass
         this.trace && console.log("resolveSymbol[1]: $" + ident + " -> '" + result + "'");
         return result;
-      } else {
-        this.trace && console.log("resolveDynamic[1]: &" + ident + " -> '" + resolved + "'");
-        return resolved;
       }
-
     }
 
     // if the symbol is not fully resolved, save it for next time (as an inline*)
     if (this.parent.isParseable(resolved)) {
+      
       this.pendingSymbols.push(ident);
-      let { LP, SYM, EQ, RP } = Visitor;
-      let tmp = LP + SYM + ident + EQ + resolved + RP + flattenTx(txs);
+      let { LP, SYM, DYN, EQ, RP } = Visitor;
+      let type = isDynamic ? DYN : SYM; // Place into context as $ or &
+      let tmp = LP + type + ident + EQ + resolved + RP + flattenTx(txs);
       this.trace && console.log("resolveSymbol[P]: $" + ident + " -> " + tmp);
       return tmp;
     }

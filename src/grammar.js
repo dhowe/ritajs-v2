@@ -26,7 +26,7 @@ class RiGrammar {
         + ' please check it at http://jsonlint.com/'
         + '\n' + JSON.stringify(json, null, 2));
     }
-}
+  }
 
   toJSON() {
     return this.toString();
@@ -43,8 +43,7 @@ class RiGrammar {
   }
 
   addRule(name, rule) {
-    if (!name || !name.length) throw Error('expected [string] name');
-    if (name.startsWith('$')) name = name.substring(1);
+    name = checkRuleName(name);
     if (Array.isArray(rule)) rule = joinChoice(rule);
     if (rule.includes('|') && !(IN_PARENS_RE.test(rule))) {
       rule = '(' + rule + ')';
@@ -53,15 +52,16 @@ class RiGrammar {
     return this;
   }
 
-  expand(rule = 'start', opts = {}) {
+  expand(rule = '&start', opts = {}) {
 
     if (arguments.length && typeof arguments[0] !== 'string') {
       opts = rule;
-      rule = 'start';
+      rule = '&start';
     }
     let ctx = deepMerge(this.context, this.rules);
     if (opts) ctx = deepMerge(ctx, opts);
-    if (rule.startsWith('$')) rule = rule.substring(1);
+
+    rule = checkRuleName(rule);
     if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
 
     // a bit strange here as opts entries are included in ctx
@@ -69,13 +69,14 @@ class RiGrammar {
   }
 
   toString(lb) {
-    let str = JSON.stringify(this.rules, null, 2);
-    return lb ? str.replace(/\n/g, lb) : str;
+    let rules = removeAmp(this.rules);
+    let str = JSON.stringify(rules, null, 2);
+    return lb ? str.replace(/\n/g, lb).replace(/"&/g, '"') : str;
   }
 
   removeRule(name) {
     if (name) {
-      if (name.startsWith('$')) name = name.substring(1);
+      name = checkRuleName(name);
       delete this.rules[name];
     }
     return this;
@@ -85,6 +86,23 @@ class RiGrammar {
   addTransform() { RiScript.addTransform(...arguments); return this }
   removeTransform() { RiScript.removeTransform(...arguments); return this }
   getTransforms() { return RiScript.getTransforms(); }
+}
+
+function removeAmp(item) {
+    const newItem = {};
+    Object.keys(item).forEach(key => {
+      let newKey = key;
+      if (newKey.startsWith('&')) newKey = newKey.substring(1);
+      newItem[newKey] = item[[key]];
+    });
+    return newItem;
+}
+
+function checkRuleName(name) {
+  if (!name || !name.length) throw Error('expected [string] name');
+  if (name.startsWith('$')) name = name.substring(1);
+  if (!name.startsWith('&')) name = '&' + name;
+  return name;
 }
 
 function joinChoice(arr) {

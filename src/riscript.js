@@ -236,7 +236,7 @@ RiScript.transforms = {
 
 // Add ampersands here for dynamics
 const VOWEL_RE = /[aeiou]/;
-const SYMBOL_RE = /[$&][A-Za-z_]/;
+const SYMBOL_RE = /$[A-Za-z_]/;
 const PREPARSE_A_RE = /^[$&{]/;
 const PREPARSE_B_RE = /[()$&|{}]/;
 const PARSEABLE_RE = /([()]|[$&][A-Za-z_0-9][A-Za-z_0-9-]*)/;
