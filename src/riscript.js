@@ -242,4 +242,6 @@ const PREPARSE_B_RE = /[()$&|{}]/;
 const PARSEABLE_RE = /([()]|[$&][A-Za-z_0-9][A-Za-z_0-9-]*)/;
 const ENTITY_RE = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 
+// Dynamic-options: ~ @ & % #, or only $ _ $$
+
 module && (module.exports = RiScript);

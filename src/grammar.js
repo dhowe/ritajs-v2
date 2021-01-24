@@ -1,16 +1,15 @@
 const deepMerge = require('deepmerge');
 
-// TODO: expandFrom? expandWith?
 
 class RiGrammar {
 
   /*
-   * default behavior for rule is that they are dynamic (&rulename)
+   * default behavior for rules is dynamic (using &rulename)
    * and stored in the context with the & prefix { '&rule': '(a | b) }
    *
    * this can be overridden by setting a rule with a $ prefix
    * which will be stored in the context with no prefix (as a normal variable)
-   */ 
+   */
   constructor(rules, context) {
     this.rules = {};
     this.context = context || {};
@@ -20,23 +19,18 @@ class RiGrammar {
 
   static fromJSON(json, context) {
     let rg = new RiGrammar(null, context);
-    rg._parseJSON(json);
+    parseJSON(rg, json);
     return rg;
   }
 
-  _parseJSON(json) {
-    try {
-      let rules = JSON.parse(json);
-      Object.keys(rules).forEach(r => this.addRule(r, rules[r]))
-    } catch (e) {
-      throw Error('RiGrammar appears to be invalid JSON,'
-        + ' please check it at http://jsonlint.com/'
-        + '\n' + JSON.stringify(json, null, 2));
-    }
-  }
-
   toJSON() {
-    return this.toString();
+    let rules = {};
+    for (let [name, rule] of Object.entries(this.rules)) {
+      if (!name.startsWith('&')) name = '$' + name;
+      //console.log('rules['+name+'] = '+rule);
+      rules[name] = rule;
+    }
+    return JSON.stringify(rules, null, 2);
   }
 
   addRules(rules) { // or rules or ... ?
@@ -65,7 +59,7 @@ class RiGrammar {
       opts = rule;
       rule = 'start';
     }
-    let ctx = deepMerge(this.context, this.rules);
+    let ctx = deepMerge(this.context, this.rules); // ?
     if (opts) ctx = deepMerge(ctx, opts);
 
     rule = checkRuleName(rule);
@@ -100,7 +94,7 @@ class RiGrammar {
   getTransforms() { return RiScript.getTransforms(); }
 }
 
-function removeAmp(item) {
+/* function removeAmp(item) {
   const newItem = {};
   Object.keys(item).forEach(key => {
     let newKey = key;
@@ -108,7 +102,7 @@ function removeAmp(item) {
     newItem[newKey] = item[[key]];
   });
   return newItem;
-}
+} */
 
 function checkRuleName(name) {
   if (!name || !name.length) {
@@ -123,11 +117,23 @@ function checkRuleName(name) {
   return name;
 }
 
-function staticRuleName(name) {
-  if (name.startsWith('$') || name.startsWith('&')) { 
-    name = name.substring(1);
+function parseJSON(grammar, json) {
+  try {
+    let rules = JSON.parse(json);
+    Object.keys(rules).forEach(r => {
+      /* let rname = r;
+      if (!r.startsWith("&")) {
+        rname = '$' + r;
+      }
+      console.log('adding rule: '+rname+" -> "+rules[r]); 
+      grammar.addRule(rname, rules[r]);*/
+      grammar.addRule(r, rules[r]);
+    });
+  } catch (e) {
+    throw Error('RiGrammar appears to be invalid JSON,'
+      + ' please check it at http://jsonlint.com/'
+      + '\n' + JSON.stringify(json, null, 2));
   }
-  return '$' + name;
 }
 
 function joinChoice(arr) {

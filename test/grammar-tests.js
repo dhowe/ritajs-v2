@@ -52,8 +52,8 @@ describe('RiTa.RiGrammar', () => {
         let gr3 = RiTa.grammar(json);
         ok(gr3 instanceof RiGrammar);
 
-        ok(gr1.toString() === gr2.toString());
-        ok(gr2.toString() === gr3.toString());
+        ok(gr1.toString() === gr2.toString(), 'FAIL\n' + gr1 + '\n' + gr2+ '\n');
+        ok(gr2.toString() === gr3.toString(), 'FAIL\n' + gr1 + '\n' + gr2+ '\n');
     });
 
     it("should call static expand", () => {
@@ -285,6 +285,9 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.toString(), '{\n  "&start": "($pet | $iphone)",\n  "&pet": "(dog | cat)",\n  "&iphone": "(iphoneSE | iphone12)"\n}');
         rg = new RiGrammar({ "start": "$pet.articlize()", "pet": "dog | cat" });
         eq(rg.toString(), '{\n  "&start": "$pet.articlize()",\n  "&pet": "(dog | cat)"\n}');
+
+        rg = new RiGrammar({ "start": "$pet.articlize()", "$pet": "dog | cat" }); // static var
+        eq(rg.toString(), '{\n  "&start": "$pet.articlize()",\n  "pet": "(dog | cat)"\n}');
     });
 
     it("should call toString with arg", () => {
@@ -297,6 +300,7 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.toString(lb), '{<br/>  "&start": "($pet | $iphone)",<br/>  "&pet": "(dog | cat)",<br/>  "&iphone": "(iphoneSE | iphone12)"<br/>}');
         rg = new RiGrammar({ "start": "$pet.articlize()", "pet": "dog | cat" });
         eq(rg.toString(lb), '{<br/>  "&start": "$pet.articlize()",<br/>  "&pet": "(dog | cat)"<br/>}');
+
         rg = new RiGrammar({ "start": "$pet.articlize()", "$pet": "dog | cat" }); // static var
         eq(rg.toString(lb), '{<br/>  "&start": "$pet.articlize()",<br/>  "pet": "(dog | cat)"<br/>}');
     });
@@ -311,17 +315,18 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.expand(), "dog");
     });
 
-    it("should override dynamics", () => {
+    it("should override dynamic default", () => {
+        let count = 4;
 
         // here is the normal (dynamic) behavior
         let rg = new RiGrammar();
         rg.addRule("start", "$rule $rule");
         rg.addRule("rule", "(a|b|c|d|e)");
         let ok = false;
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < count; i++) {
             let parts = rg.expand().split(" ");
             eq(parts.length, 2);
-            console.log(i + ") " + parts[0] + " " + parts[1]);
+            //console.log(i + ") " + parts[0] + " " + parts[1]);
             if (parts[0] !== parts[1]) {
                 ok = true;
                 break;
@@ -334,10 +339,10 @@ describe('RiTa.RiGrammar', () => {
         rg.addRule("start", "$rule $rule");
         rg.addRule("$rule", "(a|b|c|d|e)");
         ok = false;
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < count; i++) {
             let parts = rg.expand().split(" ");
             eq(parts.length, 2);
-            console.log(i + ") " + parts[0] + " " + parts[1]);
+            //console.log(i + ") " + parts[0] + " " + parts[1]);
             expect(parts[0]).eq(parts[1]);
         }
     });
@@ -476,34 +481,46 @@ describe('RiTa.RiGrammar', () => {
     it("should allow context in expand on statics", () => {
         let ctx, rg;
         ctx = { randomPosition: () => 'job type' };
-        rg = new RiTa.RiGrammar({ $start: "My .randomPosition()." });
+        rg = RiTa.grammar({ $start: "My .randomPosition()." });
         expect(rg.expand(ctx)).eq("My job type.");
 
         ctx = { randomPosition: () => 'job type' };
-        rg = new RiTa.RiGrammar({ $stat: "My .randomPosition()." });
+        rg = RiTa.grammar({ $stat: "My .randomPosition()." });
         expect(rg.expand('stat', ctx)).eq("My job type.");
+    });
+
+    it("should resolve rules in context", () => {
+        let ctx, rg;
+        ctx = { rule: '(job | mob)' };
+        rg = RiTa.grammar({ $start: "$rule $rule" });
+        expect(rg.expand(ctx)).to.be.oneOf(['job job','mob mob']);
+
+        ctx = {};
+        ctx['&rule'] = '(job | mob)'; // dynamic
+        rg = RiTa.grammar({ $start: "$rule $rule" });
+        expect(/^[jm]ob [jm]ob$/.test(rg.expand(ctx))).eq(true);
     });
 
     it("should handle custom transforms on statics", () => {
         let context = { randomPosition: () => 'job type' };
-        let rg = new RiTa.RiGrammar({ $start: "My .randomPosition()." }, context);
+        let rg = RiTa.grammar({ $start: "My .randomPosition()." }, context);
         expect(rg.expand()).eq("My job type.");
     });
 
     it("should allow context in expand", () => {
         let ctx, rg;
         ctx = { randomPosition: () => 'job type' };
-        rg = new RiTa.RiGrammar({ start: "My .randomPosition()." });
+        rg = RiTa.grammar({ start: "My .randomPosition()." });
         expect(rg.expand(ctx)).eq("My job type.");
 
         ctx = { randomPosition: () => 'job type' };
-        rg = new RiTa.RiGrammar({ stat: "My .randomPosition()." });
+        rg = RiTa.grammar({ stat: "My .randomPosition()." });
         expect(rg.expand('stat', ctx)).eq("My job type.");
     });
 
     it("should handle custom transforms", () => {
         let context = { randomPosition: () => 'job type' };
-        let rg = new RiTa.RiGrammar({ start: "My .randomPosition()." }, context);
+        let rg = RiTa.grammar({ start: "My .randomPosition()." }, context);
         expect(rg.expand()).eq("My job type.");
     });
 
@@ -658,14 +675,11 @@ describe('RiTa.RiGrammar', () => {
         let json = '{ "$start": "$pet $iphone", "$pet": "(dog | cat)", "$iphone": "(iphoneSE | iphone12)" }';
         let rg = new RiGrammar(json);
         let generatedJSON = rg.toJSON();
-        console.log(generatedJSON);
-
+        console.log("\n"+generatedJSON);
         // WORKING HERE: last failing test, then back to riscript-tests, adding dynamics variations to each
 
         let rg2 = RiGrammar.fromJSON(generatedJSON);
-        ok(rg2 !== 'undefined');
-        //console.log(rg.toString());
-        console.log(rg2.toString());
+
         expect(rg.toString()).eq(rg2.toString());
         expect(rg.context).eql(rg2.context);
         expect(rg.rules).eql(rg2.rules);
