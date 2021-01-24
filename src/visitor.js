@@ -13,7 +13,7 @@ class Visitor extends RiScriptVisitor {
     super();
     this.sequences = {};
     this.dynamic = {};
-    this.parent = parent; // RiScript instance
+    this.parent = parent; // RiScript
     this.RiTa = RiTa;
   }
 
@@ -33,8 +33,6 @@ class Visitor extends RiScriptVisitor {
     let result = this.visitScript(ctx).trim();
     return result;
   }
-
-  ////////////////////// transformable //////////////////////////
 
   visitChoice(ctx) {
 
@@ -70,7 +68,7 @@ class Visitor extends RiScriptVisitor {
     return result;
   }
 
-  visitChoiceOrig(ctx) {  // NEXT: redo without objects, then back to sequences
+  visitChoiceWithChoiceState(ctx) { // not used (save)
 
     let choice = this.sequences[++this.indexer];
     if (!choice) {
@@ -101,22 +99,18 @@ class Visitor extends RiScriptVisitor {
     return result;
   }
 
-  /*   visitDynamic(ctx) {
+  /* visitDynamic(ctx) {
       throw Error("[PARSER] the & (dynamic) modifier can only be used in an assignment:\n  "+ctx.getText());
-    } */
-
-/*   dynamicSymbol(id, value) {
-    this.trace && console.log("dynamicSymbol: &" + id + ": " +value);
-    if (!this.parent.isParseable(value)) {
-      this.trace && console.log("resolveDynamic[0]: $" + id + " -> " + tmp);
-    }
-    else {
-      let { LP, DYN, EQ, RP } = Visitor;
-      value = LP + DYN + id + EQ + value + RP;
-      this.trace && console.log("resolveDynamic[1]: $" + id + " -> " + value);
-    } 
-    return value;
   } */
+
+  resolveDynamic(ident, resolved, txs) {
+    if (!/^\([^()]*\)$/.test(resolved)) {  // add parens if needed
+      resolved = Visitor.LP + resolved + Visitor.RP;
+    }
+    let result = resolved + flattenTx(txs);
+    this.trace && console.log("resolveDynamic[1]: &" + ident + " -> '" + result + "'");
+    return result;
+  }
 
   visitSymbol(ctx) {
 
@@ -130,10 +124,6 @@ class Visitor extends RiScriptVisitor {
     }
 
     let ident = symbolName(tn.getText());
-/*     let dynamic = this.context[Visitor.DYN + ident];
-    if (dynamic) return this.visit(dynamic);
- */    //if (dynamic) return this.dynamicSymbol(ident, dynamic);
-
     this.trace && console.log("visitSymbol: $" + ident
       + (this.context[Visitor.DYN + ident] ? " [dynamic]" : "") + " tfs=" + flattenTx(txs));
 
@@ -143,40 +133,25 @@ class Visitor extends RiScriptVisitor {
       return result + flattenTx(txs);
     }
 
-    // now try to resolve from context
-    let resolved = this.context[ident];
-    //let isDynamic = false;
-
-    // if it fails
+    let resolved = this.context[ident];  // try the context
     if (!resolved) {
 
-      // try with a dynamic version
+      // try for a dynamic in context
       resolved = this.context[Visitor.DYN + ident];
-      if (resolved) {
-        // check if we have a dynamic
-        result = Visitor.LP + resolved + Visitor.RP + flattenTx(txs);
-        this.trace && console.log("resolveDynamic[1]: &" + ident + " -> '" + result + "'");
-        return result;
-        //isDynamic = true; // mark it
-       /*  if (this.parent.isParseable(resolved)) {
-          retirn resolved;
-        } */
-      } else {
-        // otherwise give up, wait for next pass
-        this.trace && console.log("resolveSymbol[1]: $" + ident + " -> '" + result + "'");
-        return result;
-      }
+      if (resolved) return this.resolveDynamic(ident, resolved, txs);
+
+      // otherwise give up, wait for next pass
+      this.trace && console.log("resolveSymbol[1]: $" + ident + " -> '" + result + "'");
+      return result;
     }
 
-    // if the symbol is not fully resolved, save it for next time (as an inline*)
+    // if not fully resolved, save for next time (as inline)
     if (this.parent.isParseable(resolved)) {
-
-      /*if (!isDynamic)*/ this.pendingSymbols.push(ident);
-      let { LP, SYM, DYN, EQ, RP } = Visitor;
-      let tmp = LP + SYM + ident + EQ + resolved + RP + flattenTx(txs); 
-      //if (isDynamic) tmp = resolved;
+      this.pendingSymbols.push(ident);
+      result = Visitor.LP + Visitor.SYM + ident 
+        + Visitor.EQ + resolved + Visitor.RP + flattenTx(txs);
       this.trace && console.log("resolveSymbol[P]: $" + ident + " -> " + tmp);
-      return tmp;
+      return result;
     }
 
     // now check for transforms
@@ -186,8 +161,7 @@ class Visitor extends RiScriptVisitor {
     }
 
     let applied = this.applyTransforms(resolved, txs);
-    result = applied || (resolved + flattenTx(txs)); // TODO: PROBLEM?
-
+    result = applied || (resolved + flattenTx(txs));
     this.trace && console.log("resolveSymbol[3]: $" + ident + " -> '" + result + "'");
 
     return result;
@@ -198,41 +172,24 @@ class Visitor extends RiScriptVisitor {
   visitAssign(ctx) {
 
     // visit value and create a mapping in the symbol table */
-    let id, result;
-    let token = ctx.expr(), symbol = ctx.symbol() || ctx.dynamic();
+    let result, symbol = ctx.symbol() || ctx.dynamic();
+    let token = ctx.expr(), id = symbol.getText();
 
-    if (symbol.getText().startsWith(Visitor.DYN)) {
-      id = symbol.getText();
-      this.trace && console.log('visitAssign[DYN]: ' + id + '=\'' + flatten(token));
+    if (id.startsWith(Visitor.DYN)) {
+      this.trace && console.log('visitAssign: ' + id + '=\'' + flatten(token) + ' [*DYN*]');
       result = token.getText();
       this.context[id] = result;
-      this.trace && console.log('resolveAssign[DYN]: ' + id + " -> '" 
-        + result + "' " + JSON.stringify(this.context));
     }
     else {
-      id = symbolName(symbol.getText());
+      id = symbolName(id);
       this.trace && console.log('visitAssign: $' + id + '=\'' + flatten(token));
       result = this.visit(token);
       this.context[id] = result;
-      this.trace && console.log("resolveAssign: $" + id + " -> '" 
-        + result + "' " + JSON.stringify(this.context));
     }
+    this.trace && console.log('resolveAssign: context[' + id + "] -> '"
+      + result + "' ");// + JSON.stringify(this.context));
 
     return ctx.start.column === 0 ? '' : result; // no output if raw
-  }
-
-  visitDassign(ctx) {
-
-    // visit value and create a mapping in the symbol table */
-    let token = ctx.expr(), id = ctx.dynamic().getText();//txs = ctx.transform();
-    let result = token.getText();
-    this.trace && console.log('visitDAssign: ' + id + '=\'' + result);// + "' tfs=" + flattenTx(txs));
-
-    this.context[id] = result;
-    this.trace && console.log("resolveDAssign: "
-      + id + " -> '" + result + "' ");// JSON.stringify(this.context));
-
-    return ctx.start.column === 0 ? '' : result; // no output if first on line
   }
 
   visitExpr(ctx) {
@@ -425,7 +382,7 @@ class Visitor extends RiScriptVisitor {
   }
 }
 
-class ChoiceState {
+class ChoiceState { // unused at moment (for sequences)
 
   constructor(parent, ctx) {
 
