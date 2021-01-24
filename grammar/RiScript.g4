@@ -18,10 +18,8 @@ chars: (
 		| ENT
 		| INT
 	)+;
-dynamic: DYN transform* | transform+;
-symbol: SYM transform* | transform+;
-/* variable: VAR transform* | transform+; // why 2nd half? dynamic: DYN transform* | transform+;
- */
+dynamic: DYN transform*;
+symbol: SYM transform* | transform+; // handle empty-string transforms
 wexpr: expr? weight?;
 transform: TF;
 op: OP | (LT | GT | EQ);

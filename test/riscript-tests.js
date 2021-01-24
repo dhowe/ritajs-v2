@@ -4,8 +4,191 @@ describe('RiTa.RiScript', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
-  const RiScript = RiTa.RiScript;
+  const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
 
+
+  SKIP_FOR_NOW || describe('Sequences', () => { // on-hold
+
+    it('Should resolve seq transforms', () => {
+
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '&rule=(' + opts.join('|') + ').seq()';
+      let res = RiTa.evaluate(rule+'\n$rule $rule $rule $rule',{}, TT);
+      expect(res).eq(opts.join(' '));
+
+      /*  for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule, {});
+        //console.log('got', i, ':', res);
+        expect(res).eq(opts[i]);
+      }
+      let rule2 = '(' + opts.join('|') + ').seq().capitalize()';
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule2);
+        //console.log(i, ':', res);
+        expect(res).eq(opts[i].toUpperCase());
+      } */
+    });
+
+    it('Should resolve rseq transforms', () => {
+      let opts = ['a', 'b', 'c', 'd'], result = [];
+      let rule = '(' + opts.join('|') + ').rseq()';
+      let rs = new RiScript();
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule);
+        //console.log(i, ':', res);
+        result.push(res);
+      }
+      expect(result).to.have.members(opts);
+
+      let rule2 = '(' + opts.join('|') + ').rseq().capitalize()';
+      result = [];
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule2);
+        //console.log(i, ':', res);
+        result.push(res);
+      }
+      expect(result).to.have.members(opts.map(o => o.toUpperCase()));
+
+      let last;
+      for (let i = 0; i < opts.length * 10; i++) {
+        let res = rs.evaluate(rule2);
+        //console.log(i, ':', res);
+        expect(res).not.eq(last);
+        last = res;
+      }
+
+    });
+
+    it('Should resolve interleaved seq transforms', () => {
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '(' + opts.join('|') + ').seq() (' + opts.join(' | ') + ').seq()';
+      let rs = new RiScript();
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule);
+        //console.log(i, ':', res);
+        expect(res).eq(opts[i] + " " + opts[i]);
+      }
+    });
+
+    it('Should resolve interleaved rseq transforms', () => {
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '(' + opts.join('|') + ').rseq() (' + opts.join(' | ') + ').rseq()';
+      let rs = new RiScript();
+      let res1 = [], res2 = [];
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule);
+        let parts = res.split(' ');
+        //console.log(i, ':', res);
+        res1.push(parts[0])
+        res2.push(parts[1]);
+      }
+      expect(res1).to.have.members(opts);
+      expect(res2).to.have.members(opts);
+    });
+
+    it('Should resolve nore transforms', () => {
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '(' + opts.join('|') + ').nore()';
+      let rs = new RiScript();
+      let last;
+      for (let i = 0; i < 10; i++) {
+        let res = rs.evaluate(rule);
+        //console.log('got', i, ':', res);
+        expect(res != last).is.true;
+        last = res;
+      }
+    });
+  });
+
+  SKIP_FOR_NOW || describe('Sequences-original', () => {
+
+    it('Should resolve seq transforms original', () => {
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '(' + opts.join('|') + ').seq()';
+      let rs = new RiScript();
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule, {});
+        //console.log('got', i, ':', res);
+        expect(res).eq(opts[i]);
+      }
+      let rule2 = '(' + opts.join('|') + ').seq().capitalize()';
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule2);
+        //console.log(i, ':', res);
+        expect(res).eq(opts[i].toUpperCase());
+      }
+    });
+
+    it('Should resolve rseq transforms original', () => {
+      let opts = ['a', 'b', 'c', 'd'], result = [];
+      let rule = '(' + opts.join('|') + ').rseq()';
+      let rs = new RiScript();
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule);
+        //console.log(i, ':', res);
+        result.push(res);
+      }
+      expect(result).to.have.members(opts);
+
+      let rule2 = '(' + opts.join('|') + ').rseq().capitalize()';
+      result = [];
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule2);
+        //console.log(i, ':', res);
+        result.push(res);
+      }
+      expect(result).to.have.members(opts.map(o => o.toUpperCase()));
+
+      let last;
+      for (let i = 0; i < opts.length * 10; i++) {
+        let res = rs.evaluate(rule2);
+        //console.log(i, ':', res);
+        expect(res).not.eq(last);
+        last = res;
+      }
+
+    });
+
+    it('Should resolve interleaved seq transforms original', () => {
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '(' + opts.join('|') + ').seq() (' + opts.join(' | ') + ').seq()';
+      let rs = new RiScript();
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule);
+        //console.log(i, ':', res);
+        expect(res).eq(opts[i] + " " + opts[i]);
+      }
+    });
+
+    it('Should resolve interleaved rseq transforms original', () => {
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '(' + opts.join('|') + ').rseq() (' + opts.join(' | ') + ').rseq()';
+      let rs = new RiScript();
+      let res1 = [], res2 = [];
+      for (let i = 0; i < opts.length; i++) {
+        let res = rs.evaluate(rule);
+        let parts = res.split(' ');
+        //console.log(i, ':', res);
+        res1.push(parts[0])
+        res2.push(parts[1]);
+      }
+      expect(res1).to.have.members(opts);
+      expect(res2).to.have.members(opts);
+    });
+
+    it('Should resolve nore transforms original', () => {
+      let opts = ['a', 'b', 'c', 'd'];
+      let rule = '(' + opts.join('|') + ').nore()';
+      let rs = new RiScript();
+      let last;
+      for (let i = 0; i < 10; i++) {
+        let res = rs.evaluate(rule);
+        //console.log('got', i, ':', res);
+        expect(res != last).is.true;
+        last = res;
+      }
+    });
+  });
   describe('Evaluation', () => {
 
     it('Should correctly call isParseable', () => {
@@ -665,7 +848,7 @@ describe('RiTa.RiScript', () => {
       expect(res).eq('I said hello to her');
     });
 
-    it('Should return input for undefined symbol', () => {
+    it('Should give input for undefined symbol', () => {
       expect(RiTa.evaluate('$a', {}, ST)).eq('$a');
       expect(RiTa.evaluate('$a.capitalize()', {}, ST)).eq('$a.capitalize()');
       expect(RiTa.evaluate('The $a.capitalize() dog.', {}, ST)).eq('The $a.capitalize() dog.');
@@ -933,93 +1116,6 @@ describe('RiTa.RiScript', () => {
       expect(rs.evaluate('Does $RiTa.env() equal node?')).eq("Does node equal node?");
     });*/
 
-    it('Should resolve seq transforms', () => {
-      let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').seq()';
-      let rs = new RiScript();
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule, {});
-        //console.log('got', i, ':', res);
-        expect(res).eq(opts[i]);
-      }
-      let rule2 = '(' + opts.join('|') + ').seq().capitalize()';
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule2);
-        //console.log(i, ':', res);
-        expect(res).eq(opts[i].toUpperCase());
-      }
-    });
-
-    it('Should resolve rseq transforms', () => {
-      let opts = ['a', 'b', 'c', 'd'], result = [];
-      let rule = '(' + opts.join('|') + ').rseq()';
-      let rs = new RiScript();
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule);
-        //console.log(i, ':', res);
-        result.push(res);
-      }
-      expect(result).to.have.members(opts);
-
-      let rule2 = '(' + opts.join('|') + ').rseq().capitalize()';
-      result = [];
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule2);
-        //console.log(i, ':', res);
-        result.push(res);
-      }
-      expect(result).to.have.members(opts.map(o => o.toUpperCase()));
-
-      let last;
-      for (let i = 0; i < opts.length * 10; i++) {
-        let res = rs.evaluate(rule2);
-        //console.log(i, ':', res);
-        expect(res).not.eq(last);
-        last = res;
-      }
-
-    });
-
-    it('Should resolve interleaved seq transforms', () => {
-      let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').seq() (' + opts.join(' | ') + ').seq()';
-      let rs = new RiScript();
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule);
-        //console.log(i, ':', res);
-        expect(res).eq(opts[i] + " " + opts[i]);
-      }
-    });
-
-    it('Should resolve interleaved rseq transforms', () => {
-      let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').rseq() (' + opts.join(' | ') + ').rseq()';
-      let rs = new RiScript();
-      let res1 = [], res2 = [];
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule);
-        let parts = res.split(' ');
-        //console.log(i, ':', res);
-        res1.push(parts[0])
-        res2.push(parts[1]);
-      }
-      expect(res1).to.have.members(opts);
-      expect(res2).to.have.members(opts);
-    });
-
-    it('Should resolve no-repeat transforms', () => {
-      let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').nore()';
-      let rs = new RiScript();
-      let last;
-      for (let i = 0; i < 10; i++) {
-        let res = rs.evaluate(rule);
-        //console.log('got', i, ':', res);
-        expect(res != last).is.true;
-        last = res;
-      }
-    });
-
     it('Should resolve choice transforms', () => {
       expect(RiTa.evaluate("(a | a).up()", {}, ST)).eq("a.up()");
       expect(RiTa.evaluate("(a | a).toUpperCase()", {})).eq("A");
@@ -1119,12 +1215,11 @@ describe('RiTa.RiScript', () => {
     });
   });
 
-  describe('Grammar-like', () => {
+  describe('Grammaresque', () => {
 
     it('Should evaluate post defined symbols', () => {
       let rs = RiTa.evaluate('$foo=$bar\n$bar=baz\n$foo', {});
       expect(rs).eq('baz');
-
       expect(RiTa.evaluate('$foo=$bar.toLowerCase().ucf()\n$bar=baz\n$foo', {})).eq('Baz');
     });
 
