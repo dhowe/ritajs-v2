@@ -1,26 +1,72 @@
 $(document).ready(function () {
+    //switch mode
+    $("#darkmode").on("change", function () {
+        if (editor) {
+            if ($("#darkmode").prop("checked")) {
+                editor.setOption("theme","darkMode");
+            } else {
+                editor.setOption("theme","lightMode");
+            }
+        }
+    });
 
-    let defaultValue = "", consoleContents = [];
-    let _console = reassignConsole();
+    // read console
+    let consoleContents = [];
+
+    // rewrite console funtions to get the content
+    let _console;
+    if (console) {
+        _console = {
+            log: console.log,
+            info: console.info,
+            debug: console.debug,
+            warn: console.warn,
+            error: console.error,
+        };
+    } else {
+        consoleContents.push('** console not available **');
+    }
+    console.log = function () {
+        consoleContents.push({ type: 'log', content: [].slice.call(arguments).join('') });
+        _console.log.apply(console, arguments);
+    };
+    console.info = function () {
+        consoleContents.push({ type: 'info', content: [].slice.call(arguments).join('') });
+        _console.info.apply(console, arguments);
+    };
+    console.debug = function () {
+        consoleContents.push({ type: 'debug', content: [].slice.call(arguments).join('') });
+        _console.debug.apply(console, arguments);
+    };
+    console.warn = function () {
+        consoleContents.push({ type: 'warn', content: [].slice.call(arguments).join('') });
+        _console.warn.apply(console, arguments);
+    };
+    console.error = function () {
+        consoleContents.push({ type: 'error', content: [].slice.call(arguments).join('') });
+        _console.error.apply(console, arguments);
+    };
+
+    let defaultValue = "\n$mammal=(dog | child | ox)\n\n$verb=(watching | listening)\n\nThe $mammal.pluralize() were $verb.\n";
 
     CodeMirror.defineSimpleMode("RiScript", {
         start: [
-            // RiScript
-            { regex: /\$\w+/g, token: ["keyword"] },
-            // vars -> color label 'keyword'
-            { regex: /\((.*\|)+.*\)/g, token: ["string"] },
-            // choices -> color label 'string'
-            { regex: /(\.[\w]+\(\))/g, token: ["number"] },
-            // transforms -> color label 'number'
+            //RiScript
+            { regex: /\$\w+/g, token: "vars" },
+            //vars
+            { regex: /\((.*\|)+.*\)/g, token: "choice" },
+            //choices
+            { regex: /(\.[\w]+\(\))/g, token: "trans" },
+            //transforms 
+            { regex: /\/\/.*/g, token: "comment" },
+            //single line comment
+            { regex: /\/\*/, token: "comment", next: "comment" },
+            //multi lines comment
         ],
         comment: [
-            { regex: /.*?\*\//, token: "comment", next: "start" },
-            { regex: /.*/, token: "comment" }
+            {regex: /.*?\*\//, token: "comment", next: "start"},
+            {regex: /.*/, token: "comment"}
         ],
-        meta: {
-            dontIndentStates: ["comment"],
-            lineComment: "//"
-        }
     });
 
     let editor = CodeMirror.fromTextArea($('#inputArea')[0], {
