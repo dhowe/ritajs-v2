@@ -115,7 +115,7 @@ describe('RiTa.RiGrammar', () => {
         rs = new RiGrammar({ start: rule });
         for (let i = 0; i < opts.length; i++) {
             let res = rs.expand();
-            // console.log(i, ':', res);
+            //console.log(i, ':', res);
             expect(res).eq(opts[i].toUpperCase());
         }
     });
@@ -564,7 +564,7 @@ describe('RiTa.RiGrammar', () => {
             $start: "$r.pluralize() $r",
             $r: "( mouse | ant )"
         });
-        expect(rg.expand({ trace: 1 })).to.be.oneOf(["mice mouse", "ants ant"]);
+        expect(rg.expand({ trace: 0 })).to.be.oneOf(["mice mouse", "ants ant"]);
     });
 
     it("should handle special characters", () => {
@@ -675,7 +675,7 @@ describe('RiTa.RiGrammar', () => {
         let json = '{ "$start": "$pet $iphone", "$pet": "(dog | cat)", "$iphone": "(iphoneSE | iphone12)" }';
         let rg = new RiGrammar(json);
         let generatedJSON = rg.toJSON();
-        console.log("\n"+generatedJSON);
+        //console.log("\n"+generatedJSON);
         // WORKING HERE: last failing test, then back to riscript-tests, adding dynamics variations to each
 
         let rg2 = RiGrammar.fromJSON(generatedJSON);
