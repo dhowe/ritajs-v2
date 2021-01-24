@@ -65,15 +65,6 @@ RiScriptListener.prototype.exitChoice = function(ctx) {
 };
 
 
-// Enter a parse tree produced by RiScriptParser#dassign.
-RiScriptListener.prototype.enterDassign = function(ctx) {
-};
-
-// Exit a parse tree produced by RiScriptParser#dassign.
-RiScriptListener.prototype.exitDassign = function(ctx) {
-};
-
-
 // Enter a parse tree produced by RiScriptParser#assign.
 RiScriptListener.prototype.enterAssign = function(ctx) {
 };

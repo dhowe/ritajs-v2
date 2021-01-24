@@ -198,16 +198,27 @@ class Visitor extends RiScriptVisitor {
   visitAssign(ctx) {
 
     // visit value and create a mapping in the symbol table */
-    let token = ctx.expr();
-    let id = symbolName(ctx.symbol().getText());
-    this.trace && console.log('visitAssign: $' + id + '=\'' + flatten(token));
-    // + "' "+ctx.start.column+"-"+ctx.stop.column);
-    let result = this.visit(token);
-    this.context[id] = result;
-    this.trace && console.log("resolveAssign: $"
-      + id + " -> '" + result + "' " + JSON.stringify(this.context));
+    let id, result;
+    let token = ctx.expr(), symbol = ctx.symbol() || ctx.dynamic();
 
-    return ctx.start.column === 0 ? '' : result; // no output if first on line
+    if (symbol.getText().startsWith(Visitor.DYN)) {
+      id = symbol.getText();
+      this.trace && console.log('visitAssign[DYN]: ' + id + '=\'' + flatten(token));
+      result = token.getText();
+      this.context[id] = result;
+      this.trace && console.log('resolveAssign[DYN]: ' + id + " -> '" 
+        + result + "' " + JSON.stringify(this.context));
+    }
+    else {
+      id = symbolName(symbol.getText());
+      this.trace && console.log('visitAssign: $' + id + '=\'' + flatten(token));
+      result = this.visit(token);
+      this.context[id] = result;
+      this.trace && console.log("resolveAssign: $" + id + " -> '" 
+        + result + "' " + JSON.stringify(this.context));
+    }
+
+    return ctx.start.column === 0 ? '' : result; // no output if raw
   }
 
   visitDassign(ctx) {
@@ -483,7 +494,7 @@ class ChoiceState {
 }
 
 function symbolName(text) {
-  return (text.length && text[0] === Visitor.SYM)// || text[0] === Visitor.DYN)
+  return (text.length && text[0] === Visitor.SYM) /// || text[0] === Visitor.DYN)
     ? text.substring(1) : text;
 }
 

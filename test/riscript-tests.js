@@ -189,6 +189,8 @@ describe('RiTa.RiScript', () => {
       }
     });
   });
+
+
   describe('Evaluation', () => {
 
     it('Should correctly call isParseable', () => {
@@ -230,8 +232,9 @@ describe('RiTa.RiScript', () => {
 
       let passed = false;
       for (let i = 0; i < 10; i++) { // &: must not always match
-        let res = RiTa.evaluate('&foo=(a|b|c|d)\n$foo $foo $foo');
-        //console.log(i+") "+res);
+        let res = RiTa.evaluate('&foo=(a|b|c|d)\n$foo $foo $foo',{},TT);
+        console.log(i+") "+res);
+return;
         let pts = res.split(' ');
         expect(pts.length).eq(3);
         if (pts[0] != pts[1] || pts[1] != pts[2] || pts[2] != pts[0]) {
