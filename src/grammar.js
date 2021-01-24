@@ -4,6 +4,13 @@ const deepMerge = require('deepmerge');
 
 class RiGrammar {
 
+  /*
+   * default behavior for rule is that they are dynamic (&rulename)
+   * and stored in the context with the & prefix { '&rule': '(a | b) }
+   *
+   * this can be overridden by setting a rule with a $ prefix
+   * which will be stored in the context with no prefix (as a normal variable)
+   */ 
   constructor(rules, context) {
     this.rules = {};
     this.context = context || {};
@@ -43,35 +50,40 @@ class RiGrammar {
   }
 
   addRule(name, rule) {
-    name = checkRuleName(name);
+    let rname = checkRuleName(name);
+    //console.log('addRule: '+name +' -> '+rname);
     if (Array.isArray(rule)) rule = joinChoice(rule);
     if (rule.includes('|') && !(IN_PARENS_RE.test(rule))) {
       rule = '(' + rule + ')';
     }
-    this.rules[name] = rule;//'(' + rule + ')';//rule;
+    this.rules[rname] = rule;//'(' + rule + ')';//rule;
     return this;
   }
 
-  expand(rule = '&start', opts = {}) {
-
+  expand(rule = 'start', opts = {}) {
     if (arguments.length && typeof arguments[0] !== 'string') {
       opts = rule;
-      rule = '&start';
+      rule = 'start';
     }
     let ctx = deepMerge(this.context, this.rules);
     if (opts) ctx = deepMerge(ctx, opts);
 
     rule = checkRuleName(rule);
-    if (!ctx.hasOwnProperty(rule)) throw Error('Rule ' + rule + ' not found');
+    if (!ctx.hasOwnProperty(rule)) {
+      rule = rule.substring(1); // check for non-dynamic version
+      if (!ctx.hasOwnProperty(rule)) {
+        throw Error('Rule ' + rule + ' not found');
+      }
+    }
 
     // a bit strange here as opts entries are included in ctx
     return this.compiler.evaluate(ctx[rule], ctx, opts);
   }
 
   toString(lb) {
-    let rules = removeAmp(this.rules);
-    let str = JSON.stringify(rules, null, 2);
-    return lb ? str.replace(/\n/g, lb).replace(/"&/g, '"') : str;
+    //let rules = removeAmp(this.rules);
+    let str = JSON.stringify(this.rules, null, 2);
+    return lb ? str.replace(/\n/g, lb) : str;
   }
 
   removeRule(name) {
@@ -89,20 +101,33 @@ class RiGrammar {
 }
 
 function removeAmp(item) {
-    const newItem = {};
-    Object.keys(item).forEach(key => {
-      let newKey = key;
-      if (newKey.startsWith('&')) newKey = newKey.substring(1);
-      newItem[newKey] = item[[key]];
-    });
-    return newItem;
+  const newItem = {};
+  Object.keys(item).forEach(key => {
+    let newKey = key;
+    if (newKey.startsWith('&')) newKey = newKey.substring(1);
+    newItem[newKey] = item[[key]];
+  });
+  return newItem;
 }
 
 function checkRuleName(name) {
-  if (!name || !name.length) throw Error('expected [string] name');
-  if (name.startsWith('$')) name = name.substring(1);
-  if (!name.startsWith('&')) name = '&' + name;
+  if (!name || !name.length) {
+    throw Error('expected [string] name');
+  }
+  if (name.startsWith('$')) { // override dynamic default
+    name = name.substring(1);
+  }
+  else { // use dynamic default
+    if (!name.startsWith('&')) name = '&' + name;
+  }
   return name;
+}
+
+function staticRuleName(name) {
+  if (name.startsWith('$') || name.startsWith('&')) { 
+    name = name.substring(1);
+  }
+  return '$' + name;
 }
 
 function joinChoice(arr) {
