@@ -31,7 +31,7 @@ class RiScript {
       if (onepass || !this.isParseable(expr)) break;
     }
 
-    if (!opts.silent && !RiScript.parent.SILENT && SYMBOL_RE.test(expr)) {
+    if (!opts.silent && !RiScript.parent.SILENT && SYM_RE.test(expr)) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '" ');
     }
 
@@ -111,19 +111,19 @@ class RiScript {
 
   preParse(input, opts = {}) {
     let parse = input || '', pre = '', post = '';
-    let skipPre = /[$&]/.test(parse); // see issue:rita#59
+    let skipPre = PP59_RE.test(parse); // see issue:rita#59
 
-    if (!opts.skipPreParse && !PREPARSE_A_RE.test(parse)) {
+    if (!opts.skipPreParse && !PPA_RE.test(parse)) {
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
 
       while (!skipPre && preIdx < words.length) {
-        if (PREPARSE_B_RE.test(words[preIdx])) break;
+        if (PPB_RE.test(words[preIdx])) break;
         preIdx++;
       }
       if (preIdx < words.length) {
         while (postIdx >= 0) {
-          if (PREPARSE_B_RE.test(words[postIdx])) break;
+          if (PPB_RE.test(words[postIdx])) break;
           postIdx--;
         }
       }
@@ -154,11 +154,11 @@ class RiScript {
   resolveEntities(result) { // &#10; for line break DOC:
     if (typeof result === 'undefined') return '';
     return decode(result.replace(/ +/g, ' '))
-      .replace(ENTITY_RE, ' ');
+      .replace(ENT_RE, ' ');
   }
 
   isParseable(s) {
-    let found = PARSEABLE_RE.test(s);
+    let found = PRS_RE.test(s);
     //console.log("FOUND: " + s + ": " + found);
     return found;
   }
@@ -172,7 +172,7 @@ class RiScript {
     if (!s || !s.length) return '';
     let phones = RiTa().phones(s, { silent: true });
     return (phones && phones.length
-      && VOWEL_RE.test(phones[0]) ? 'an ' : 'a ') + s;
+      && VOW_RE.test(phones[0]) ? 'an ' : 'a ') + s;
   }
 
   // a no-op transform for sequences
@@ -235,12 +235,14 @@ RiScript.transforms = {
   s: pluralize   
 };
 
-const VOWEL_RE = /[aeiou]/;
-const SYMBOL_RE = /$[A-Za-z_0-9]/;
-const PREPARSE_A_RE = /^[$&{]/;
-const PREPARSE_B_RE = /[()$&|{}]/;
-const PARSEABLE_RE = /([()]|[$&][A-Za-z_0-9]+)/;
-const ENTITY_RE = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
+const VOW_RE = /[aeiou]/;
+const ENT_RE = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
+
+const PP59_RE = /[$&]/;
+const PPA_RE = /^[$&{]/;
+const PPB_RE = /[()$&|{}]/;
+const PRS_RE = /([()]|[$&][A-Za-z_0-9]+)/;
+const SYM_RE = /[$&][A-Za-z_0-9]+/;
 
 // Dynamic-options: ~ @ & % #, or only $ _ $$
 

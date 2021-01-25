@@ -254,7 +254,7 @@ RiTa._lexicon = undefined;
 // MESSAGES
 RiTa.SILENT = false;
 RiTa.SILENCE_LTS = false;
-RiTa.CDN_URL = 'https://www.unpkg.com/rita/';
+RiTa.CDN = 'https://www.unpkg.com/rita/';
 
 // CONSTANTS
 RiTa.PHONES = ['aa', 'ae', 'ah', 'ao', 'aw', 'ay', 'b', 'ch', 'd', 'dh', 'eh', 'er', 'ey', 'f', 'g', 'hh', 'ih', 'iy', 'jh', 'k', 'l', 'm', 'n', 'ng', 'ow', 'oy', 'p', 'r', 's', 'sh', 't', 'th', 'uh', 'uw', 'v', 'w', 'y', 'z', 'zh'];
@@ -288,7 +288,7 @@ RiTa.SPLIT_CONTRACTIONS = false;
 // Set to false to reduce memory (likely slower)
 RiTa.CACHING = true;
 
-const ONLY_PUNCT = /^[^0-9A-Za-z\s]*$/;
+const ONLY_PUNCT = /^[^\w\s]*$/;
 const IS_LETTER = /^[a-z\u00C0-\u00ff]+$/;
 
 module && (module.exports = RiTa);

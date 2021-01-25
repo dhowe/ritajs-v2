@@ -119,7 +119,7 @@ describe('RiTa.Core', () => {
 
     ok(!RiTa.isPunct("What the"));
     ok(!RiTa.isPunct("What ! the"));
-    ok(!RiTa.isPunct(".#\"\\!@i$%&}<>"));
+    ok(!RiTa.isPunct(".#\"\\!@i$%&_+=}<>"));
 
     ok(RiTa.isPunct("!"));
     ok(RiTa.isPunct("?"));
@@ -149,7 +149,7 @@ describe('RiTa.Core', () => {
       ok(RiTa.isPunct(punct[i]));
     }
 
-    punct = ",;:!?)([].#\"\\!@$%&}<>|+=-_\\/*{^";
+    punct = ",;:!?)([].#\"\\!@$%&}<>|-\/\\*{^";
     for (let i = 0; i < punct.length; i++) {
       ok(RiTa.isPunct(punct[i]));
     }
@@ -160,7 +160,7 @@ describe('RiTa.Core', () => {
       ok(RiTa.isPunct(punct[i]));
     }
 
-    punct = "\"��������`',;:!?)([].#\"\\!@$%&}<>|+=-_\\/*{^";
+    punct = "\"��������`',;:!?)([].#\"\\!@$%&}<>|-\/\\*{^";
     for (let i = 0; i < punct.length; i++) {
       ok(RiTa.isPunct(punct[i]));
     }
