@@ -70,6 +70,7 @@ $(document).ready(function () {
     });
 
     let editor = CodeMirror.fromTextArea($('#inputArea')[0], {
+        theme: 'darkMode',
         lineNumbers: true,
         mode: 'RiScript',
         extraKeys: {
