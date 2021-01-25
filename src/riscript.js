@@ -110,14 +110,14 @@ class RiScript {
   }
 
   preParse(input, opts = {}) {
-    let parse = input, pre = '', post = '';
-    if (typeof input === 'undefined' || input.length < 1) {
-      parse = '';
-    }
-    else if (!opts.skipPreParse && !PREPARSE_A_RE.test(parse)) {
+    let parse = input || '', pre = '', post = '';
+    let skipPre = /[$&]/.test(parse); // see issue:rita#59
+
+    if (!opts.skipPreParse && !PREPARSE_A_RE.test(parse)) {
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
-      while (preIdx < words.length) {
+
+      while (!skipPre && preIdx < words.length) {
         if (PREPARSE_B_RE.test(words[preIdx])) break;
         preIdx++;
       }
@@ -235,12 +235,11 @@ RiScript.transforms = {
   s: pluralize   
 };
 
-// Add ampersands here for dynamics
 const VOWEL_RE = /[aeiou]/;
-const SYMBOL_RE = /$[A-Za-z_]/;
+const SYMBOL_RE = /$[A-Za-z_0-9]/;
 const PREPARSE_A_RE = /^[$&{]/;
 const PREPARSE_B_RE = /[()$&|{}]/;
-const PARSEABLE_RE = /([()]|[$&][A-Za-z_0-9][A-Za-z_0-9-]*)/;
+const PARSEABLE_RE = /([()]|[$&][A-Za-z_0-9]+)/;
 const ENTITY_RE = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 
 // Dynamic-options: ~ @ & % #, or only $ _ $$

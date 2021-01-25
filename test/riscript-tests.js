@@ -562,8 +562,8 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should resolve across assignment types', () => {
-      let ctx;
-      expect(RiTa.evaluate('The $foo=blue (dog | dog)', ctx = {})).eq('The'); // doesn't need to be first in line ***
+      let ctx; // see issue:rita#59
+      expect(RiTa.evaluate('The $foo=blue (dog | dog)', ctx = {})).eq('The blue dog'); 
       expect(ctx.foo).eq('blue dog');
 
       expect(RiTa.evaluate('The ($foo=blue) (dog | dog)', ctx = {})).eq('The blue dog');
@@ -571,10 +571,18 @@ describe('RiTa.RiScript', () => {
 
       expect(RiTa.evaluate('The ($foo=blue (dog | dog))', ctx = {})).eq('The blue dog');
       expect(ctx.foo).eq('blue dog');
+
+      expect(RiTa.evaluate('$foo=blue (dog | dog)', ctx = {})).eq('');
+      expect(ctx.foo).eq('blue dog');
+
+      expect(RiTa.evaluate('The\n$foo=blue (dog | dog)', ctx = {})).eq('The');
+      expect(ctx.foo).eq('blue dog');
     });
 
     it('Should resolve dynamics across assignment types', () => {
       let ctx;
+      expect(RiTa.evaluate('The &foo=blue (dog | dog)', ctx = {})).eq('The blue dog');
+      expect(ctx['&foo']).eq('blue (dog | dog)');
 
       expect(RiTa.evaluate('The (&foo=blue) (dog | dog)', ctx = {})).eq('The blue dog');
       expect(ctx['&foo']).eq('blue');
@@ -582,7 +590,10 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('The (&foo=blue (dog | dog))', ctx = {})).eq('The blue dog');
       expect(ctx['&foo']).eq('blue (dog | dog)');
 
-      expect(RiTa.evaluate('The &foo=blue (dog | dog)', ctx = {})).eq('The');
+      expect(RiTa.evaluate('&foo=blue (dog | dog)', ctx = {})).eq('');
+      expect(ctx['&foo']).eq('blue (dog | dog)');
+
+      expect(RiTa.evaluate('The\n&foo=blue (dog | dog)', ctx = {})).eq('The');
       expect(ctx['&foo']).eq('blue (dog | dog)');
     });
 
