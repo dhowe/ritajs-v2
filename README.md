@@ -75,7 +75,7 @@ console.log(grammar.expand());
       <a href="./RiTa/randomSeed/index.html">RiTa.randomSeed()</a><br/>
       <a href="./RiTa/randomWord/index.html">RiTa.randomWord()</a><br/>
       <a href="./RiTa/rhymes/index.html">RiTa.rhymes()</a><br/>
-      <a href="./RiTa/scripting/index.html">RiTa.scripting()</a><br/>
+      <!--a href="./RiTa/scripting/index.html">RiTa.scripting()</a><br/-->
       <a href="./RiTa/search/index.html">RiTa.search()</a><br/>
       <a href="./RiTa/sentences/index.html">RiTa.sentences()</a><br/>
       <a href="./RiTa/singularize/index.html">RiTa.singularize()</a><br/>
