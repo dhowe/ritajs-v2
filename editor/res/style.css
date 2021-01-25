@@ -86,6 +86,16 @@ h2 {
     background-color: rgb(255, 240, 240);
 }
 
+.output-content-error.dark {
+    margin-top: 6px;
+    padding-top: 6px;
+    margin-bottom: 2px;
+    margin-left: 5px;
+    border-top: 2px solid #ddd;
+    color: rgb(209, 21, 24);
+    background-color: #1c1c1c;
+}
+
 .output-content-warn {
     margin-top: 6px;
     padding-top: 6px;
@@ -94,6 +104,16 @@ h2 {
     border-top: 2px solid #ddd;
     background-color: rgb(255, 245, 189);
 }
+
+.output-content-warn.dark {
+    margin-top: 6px;
+    padding-top: 6px;
+    margin-bottom: 2px;
+    margin-left: 5px;
+    border-top: 2px solid #ddd;
+    background-color: #1c1c1c;
+}
+
 
 .output-button-wrapper {
     margin-top: 5px;

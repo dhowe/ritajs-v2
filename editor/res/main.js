@@ -8,6 +8,18 @@ $(document).ready(function () {
                 editor.setOption("theme","lightMode");
             }
         }
+        $(".mainArea").toggleClass("dark");
+        $(".codeArea").toggleClass("dark");
+        $(".title-wrapper").toggleClass("dark");  
+        $(".output-button-wrapper").toggleClass("dark");
+        $(".output-wrapper").toggleClass("dark");
+        $("#output").toggleClass("dark");
+        $("#console").toggleClass("dark");
+        $(".output-header").toggleClass("dark");
+        $(".output-header-text").toggleClass("dark");
+        $(".output-content-log").toggleClass("dark");
+        $(".output-content-warn").toggleClass("dark");
+        $(".output-content-error").toggleClass("dark");
     });
 
     // read console
@@ -153,8 +165,12 @@ $(document).ready(function () {
             if (cc.type !== 'log') {
                 msg = msg.replace(/'/g, '"').replace(/PARSER: /, '');
             }
+            let dark = '';
+            if ($("#darkmode").prop("checked")) {
+                dark = ' dark'
+            }
             $("#console .content").append(
-                "<p class='output-content-" + cc.type + "'>" + msg + " </p>");
+                "<p class='output-content-" + cc.type + dark + "'>" + msg + " </p>");
         });
     }
 
