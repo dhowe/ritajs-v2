@@ -178,14 +178,14 @@ class Visitor extends RiScriptVisitor {
     if (id.startsWith(Visitor.DYN)) {
       this.trace && console.log('visitAssign: ' + id + '=\'' + flatten(token) + ' [*DYN*]');
       result = token.getText();
-      this.context[id] = result;
     }
     else {
       id = symbolName(id);
       this.trace && console.log('visitAssign: $' + id + '=\'' + flatten(token));
-      result = this.visit(token);
-      this.context[id] = result;
+      result = this.visit(token);  
     }
+
+    this.context[id] = result;
     this.trace && console.log('resolveAssign: context[' + id + "] -> '"
       + result + "' ");// + JSON.stringify(this.context));
 
