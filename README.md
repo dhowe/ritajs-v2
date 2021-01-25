@@ -63,9 +63,9 @@ console.log(grammar.expand());
       <a href="./RiTa/isVerb/index.html">RiTa.isVerb()</a><br/>
       <a href="./RiTa/kwic/index.html">RiTa.kwic()</a><br/>
       <a href="./RiTa/markov/index.html">RiTa.markov()</a><br/>
-      <a href="./RiTa/pastPart/index.html">RiTa.pastPart()</a><br/>
     </td>
     <td style="vertical-align: top; padding-top: 15px">
+      <a href="./RiTa/pastPart/index.html">RiTa.pastPart()</a><br/>
       <a href="./RiTa/phones/index.html">RiTa.phones()</a><br/>
       <a href="./RiTa/pos/index.html">RiTa.pos()</a><br/>
       <a href="./RiTa/posInline/index.html">RiTa.posInline()</a><br/>
