@@ -181,9 +181,14 @@ $(document).ready(function () {
         } catch (e) {
             //console.error(e);
             let string = [].slice.call(e.stack).join('');
-            _console.log(string);
+            let messageString = [].slice.call(e.message).join('');
             if (string.includes("Parser failed at line")) {
                 let arr = string.split(' ');
+                let lineNo = arr[arr.indexOf("line") + 1].split(':')[0];
+                highlightError(lineNo - 1);
+                console.error(e.message);
+            } else if (messageString.includes("Parser failed at line")) {
+                let arr = messageString.split(' ');
                 let lineNo = arr[arr.indexOf("line") + 1].split(':')[0];
                 highlightError(lineNo - 1);
                 console.error(e.message);
