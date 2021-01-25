@@ -20,6 +20,7 @@ $(document).ready(function () {
         $(".output-content-log").toggleClass("dark");
         $(".output-content-warn").toggleClass("dark");
         $(".output-content-error").toggleClass("dark");
+        $(".highLightedError").toggleClass("dark");
     });
 
     // read console
@@ -180,6 +181,7 @@ $(document).ready(function () {
         } catch (e) {
             //console.error(e);
             let string = [].slice.call(e.stack).join('');
+            _console.log(string);
             if (string.includes("Parser failed at line")) {
                 let arr = string.split(' ');
                 let lineNo = arr[arr.indexOf("line") + 1].split(':')[0];
@@ -210,11 +212,15 @@ $(document).ready(function () {
     function highlightError(lineNo) {
         doc.addLineClass(lineNo, "background", "highLightedError");
         errorLine = lineNo;
+        if ($("#darkmode").prop("checked")) {
+            doc.addLineClass(lineNo, "background", "dark");
+        }
     }
 
     function removeHighlight(lineNo) {
         if (lineNo) {
             doc.removeLineClass(lineNo, "background", "highLightedError");
+            doc.removeLineClass(lineNo, "background", "dark");
             errorLine = undefined;
         }
     }
