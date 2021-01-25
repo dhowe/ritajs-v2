@@ -4,7 +4,7 @@ class Tokenizer {
 
   constructor(parent) {
     this.RiTa = parent;
-    this.splitter = /(\S.+?[.!?]["”\u201D]?)(?=\s+|$)/g;
+    this.splitter = /(\S.+?[.!?]["\u201D]?)(?=\s+|$)/g;
   }
 
   sentences(text, regex) {
@@ -158,16 +158,16 @@ class Tokenizer {
   }
 }
 
-const LEFT_BRACKETS_RE = /^[\[\(\{⟨]+$/;
-const RIGHT_BRACKETS_RE = /^[\)\]\}⟩]+$/;
-const QUOTE_RE = /^[""“”\u2019‘`''«»‘’]+$/;
-const SQUOTE_RE = /^[\u2019‘`']+$/;
-const APOS_RE = /^[\u2019'’]+$/;
+const LEFT_BRACKETS_RE = /^[\[\(\{\u27e8]+$/;
+const RIGHT_BRACKETS_RE = /^[\)\]\}\u27e9]+$/;
+const QUOTE_RE = /^[""\u201c\u201d\u2019\u2018`''\u00ab\u00bb]+$/;
+const SQUOTE_RE = /^[\u2019\u2018`']+$/;
+const APOS_RE = /^[\u2019']+$/;
 const LB_RE = /(\r?\n)+/g;
 const WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
-const NO_SPACE_AFTER_PUNCT_RE = /^[\^\*\$\/⁄#\-@°]+$/;
+const NO_SPACE_AFTER_PUNCT_RE = /^[\^\*\$\/\u2044#\-@\u00b0]+$/;
 const DOMAIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|ch|fr)$/;
-const NO_SPACE_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""“”\u2019‘`'%…\u2103\^\*°\/⁄\-@]+$/;
+const NO_SPACE_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""\u201c\u201d\u2019\u2018`'%\u2026\u2103\^\*\u00b0\/\u2044\-@]+$/;
 
 const TOKENIZE_RE = [
 
@@ -199,11 +199,11 @@ const TOKENIZE_RE = [
   //--------------------------
   /\.\.\.\s/g, "_elipsisDDD_ ",
   /([\?!\"\u201C\.,;:@#$%&])/g, " $1 ",
-  /…/g, " … ",
+  /\u2026/g, " \u2026 ",
   /\s+/g, ' ',
   /,([^0-9])/g, " , $1",
-  /([^.])([.])([\])}>\"'’]*)\s*$/g, "$1 $2$3 ",
-  /([\[\](){}<>⟨⟩])/g, " $1 ",
+  /([^.])([.])([\])}>\"'\u2019]*)\s*$/g, "$1 $2$3 ",
+  /([\[\](){}<>\u27e8\u27e9])/g, " $1 ",
   /--/g, " -- ",
   /$/g, ' ',
   /^/g, ' ',
@@ -213,7 +213,7 @@ const TOKENIZE_RE = [
   / ([A-Z]) \./g, " $1. ",
   /^\s+/g, '',
   /\^/g, " ^ ",
-  /°/g, " ° ",
+  /\u00b0/g, " \u00b0 ",
   /_elipsisDDD_/g, " ... ",
 
   //pop abbreviations------------------
@@ -243,14 +243,14 @@ const TOKENIZE_RE = [
 ];
 
 const CONTRACTIONS_RE = [
-  /([Cc])an['’]t/g, "$1an not",
-  /([Dd])idn['’]t/g, "$1id not",
-  /([CcWw])ouldn['’]t/g, "$1ould not",
-  /([Ss])houldn['’]t/g, "$1hould not",
-  /([Ii])t['’]s/g, " $1t is",
-  /n['’]t /g, " not ",
-  /['’]ve /g, " have ",
-  /['’]re /g, " are "
+  /([Cc])an['\u2019]t/g, "$1an not",
+  /([Dd])idn['\u2019]t/g, "$1id not",
+  /([CcWw])ouldn['\u2019]t/g, "$1ould not",
+  /([Ss])houldn['\u2019]t/g, "$1hould not",
+  /([Ii])t['\u2019]s/g, " $1t is",
+  /n['\u2019]t /g, " not ",
+  /['\u2019]ve /g, " have ",
+  /['\u2019]re /g, " are "
 ];
 
 module && (module.exports = Tokenizer);
