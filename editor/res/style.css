@@ -57,11 +57,11 @@ h2 {
 }
 
 .highLightedError {
-    background-color: rgb(255, 226, 226)!important;
+    background-color: rgb(255, 226, 226);
 }
 
 .highLightedError.dark {
-    background-color: rgb(158, 93, 93)!important;
+    background-color: rgb(158, 93, 93);
 }
 
 .output-content {
