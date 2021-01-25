@@ -1,29 +1,58 @@
 $(document).ready(function () {
+    //switch mode
+    $("#darkmode").on("change", function () {
+        if (editor) {
+            if ($("#darkmode").prop("checked")) {
+                editor.setOption("theme","darkMode");
+            } else {
+                editor.setOption("theme","lightMode");
+            }
+        }
+        $(".mainArea").toggleClass("dark");
+        $(".codeArea").toggleClass("dark");
+        $(".title-wrapper").toggleClass("dark");  
+        $(".output-button-wrapper").toggleClass("dark");
+        $(".output-wrapper").toggleClass("dark");
+        $("#output").toggleClass("dark");
+        $("#console").toggleClass("dark");
+        $(".output-header").toggleClass("dark");
+        $(".output-header-text").toggleClass("dark");
+        $(".output-content-log").toggleClass("dark");
+        $(".output-content-warn").toggleClass("dark");
+        $(".output-content-error").toggleClass("dark");
+        $(".highLightedError").toggleClass("dark");
+    });
 
-    let defaultValue = "", consoleContents = [];
+    // read console
+    let consoleContents = [];
+
+    // rewrite console funtions to get the content
     let _console = reassignConsole();
+
+    let defaultValue = "\n$mammal=(dog | child | ox)\n\n$verb=(watching | listening)\n\nThe $mammal.pluralize() were $verb.\n";
 
     CodeMirror.defineSimpleMode("RiScript", {
         start: [
-            // RiScript
-            { regex: /\$\w+/g, token: ["keyword"] },
-            // vars -> color label 'keyword'
-            { regex: /\((.*\|)+.*\)/g, token: ["string"] },
-            // choices -> color label 'string'
-            { regex: /(\.[\w]+\(\))/g, token: ["number"] },
-            // transforms -> color label 'number'
+            //RiScript
+            { regex: /\$\w+/g, token: "vars" },
+            //vars
+            { regex: /\((.*\|)+.*\)/g, token: "choice" },
+            //choices
+            { regex: /(\.[\w]+\(\))/g, token: "trans" },
+            //transforms 
+            { regex: /\/\/.*/g, token: "comment" },
+            //single line comment
+            { regex: /\/\*/, token: "comment", next: "comment" },
+            //multi lines comment
         ],
         comment: [
-            { regex: /.*?\*\//, token: "comment", next: "start" },
-            { regex: /.*/, token: "comment" }
+            {regex: /.*?\*\//, token: "comment", next: "start"},
+            {regex: /.*/, token: "comment"}
         ],
-        meta: {
-            dontIndentStates: ["comment"],
-            lineComment: "//"
-        }
     });
 
     let editor = CodeMirror.fromTextArea($('#inputArea')[0], {
+        theme: 'darkMode',
         lineNumbers: true,
         mode: 'RiScript',
         extraKeys: {
@@ -106,8 +135,12 @@ $(document).ready(function () {
             if (cc.type !== 'log') {
                 msg = msg.replace(/'/g, '"').replace(/PARSER: /, '');
             }
+            let dark = '';
+            if ($("#darkmode").prop("checked")) {
+                dark = ' dark'
+            }
             $("#console .content").append(
-                "<p class='output-content-" + cc.type + "'>" + msg + " </p>");
+                "<p class='output-content-" + cc.type + dark + "'>" + msg + " </p>");
         });
     }
 
@@ -117,8 +150,14 @@ $(document).ready(function () {
         } catch (e) {
             //console.error(e);
             let string = [].slice.call(e.stack).join('');
+            let messageString = [].slice.call(e.message).join('');
             if (string.includes("Parser failed at line")) {
                 let arr = string.split(' ');
+                let lineNo = arr[arr.indexOf("line") + 1].split(':')[0];
+                highlightError(lineNo - 1);
+                console.error(e.message);
+            } else if (messageString.includes("Parser failed at line")) {
+                let arr = messageString.split(' ');
                 let lineNo = arr[arr.indexOf("line") + 1].split(':')[0];
                 highlightError(lineNo - 1);
                 console.error(e.message);
@@ -147,11 +186,15 @@ $(document).ready(function () {
     function highlightError(lineNo) {
         doc.addLineClass(lineNo, "background", "highLightedError");
         errorLine = lineNo;
+        if ($("#darkmode").prop("checked")) {
+            doc.addLineClass(lineNo, "background", "dark");
+        }
     }
 
     function removeHighlight(lineNo) {
         if (lineNo) {
             doc.removeLineClass(lineNo, "background", "highLightedError");
+            doc.removeLineClass(lineNo, "background", "dark");
             errorLine = undefined;
         }
     }

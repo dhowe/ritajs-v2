@@ -23,8 +23,45 @@ h2 {
     font-family: sans-serif;
 }
 
+.dark {
+    background-color: #1c1c1c;
+    color: #ffffff;
+}
+
+.output-wrapperl.dark {
+    background-color: #1c1c1c;
+
+}
+
+.output-header.dark {
+    background-color: #464646;
+}
+
+.codeArea.dark {
+    border: #464646 !important;
+}
+
+.output-header-text.dark {
+    background-color: #464646;
+    color: #ffffff !important;
+}
+
+#output.dark {
+    background-color: #1c1c1c !important;
+
+}
+
+#console.dark {
+    background-color: #1c1c1c !important;
+
+}
+
 .highLightedError {
     background-color: rgb(255, 226, 226);
+}
+
+.highLightedError.dark {
+    background-color: rgb(158, 93, 93);
 }
 
 .output-content {
@@ -53,6 +90,16 @@ h2 {
     background-color: rgb(255, 240, 240);
 }
 
+.output-content-error.dark {
+    margin-top: 6px;
+    padding-top: 6px;
+    margin-bottom: 2px;
+    margin-left: 5px;
+    border-top: 2px solid #ddd;
+    color: rgb(209, 21, 24);
+    background-color: #1c1c1c;
+}
+
 .output-content-warn {
     margin-top: 6px;
     padding-top: 6px;
@@ -61,6 +108,16 @@ h2 {
     border-top: 2px solid #ddd;
     background-color: rgb(255, 245, 189);
 }
+
+.output-content-warn.dark {
+    margin-top: 6px;
+    padding-top: 6px;
+    margin-bottom: 2px;
+    margin-left: 5px;
+    border-top: 2px solid #ddd;
+    background-color: #1c1c1c;
+}
+
 
 .output-button-wrapper {
     margin-top: 5px;
