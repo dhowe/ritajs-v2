@@ -86,7 +86,7 @@ console.log(grammar.expand());
       <a href="./RiTa/syllables/index.html">RiTa.syllables()</a><br/>
       <a href="./RiTa/tokenize/index.html">RiTa.tokenize()</a><br/>
       <a href="./RiTa/untokenize/index.html">RiTa.untokenize()</a><br/>
-      <a href="./RiTa/VERSION/index.html">RiTa.VERSION</a><br/>
+      <!--a href="./RiTa/VERSION/index.html">RiTa.VERSION</a><br/-->
     </td>
     <td style="vertical-align: top; padding-top: 15px; min-width: 125px">
       <a href="https://rednoise.org/rita/reference/Markov/addText/index.html">addText()</a><br/>
