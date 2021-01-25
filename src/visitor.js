@@ -470,7 +470,7 @@ Visitor.RP = ')';
 Visitor.EQ = '=';
 Visitor.OR = 'OR';
 Visitor.SYM = '$';
-Visitor.DYN = '&';
+Visitor.DYN = '$$';
 Visitor.DOT = '.';
 Visitor.EOF = '<EOF>';
 Visitor.ASSIGN = '[]';

@@ -4,10 +4,10 @@ const deepMerge = require('deepmerge');
 class RiGrammar {
 
   /*
-   * default behavior for rules is dynamic (using &rulename)
-   * and stored in the context with the & prefix { '&rule': '(a | b) }
+   * Default behavior for rules is dynamic (using $$rulename)
+   * and stored in the context with the $$ prefix { '$$rule': '(a | b) }
    *
-   * this can be overridden by setting a rule with a $ prefix
+   * This can be overridden by setting a rule with a $ prefix
    * which will be stored in the context with no prefix (as a normal variable)
    */
   constructor(rules, context) {
@@ -26,7 +26,7 @@ class RiGrammar {
   toJSON() {
     let rules = {};
     for (let [name, rule] of Object.entries(this.rules)) {
-      if (!name.startsWith('&')) name = '$' + name;
+      if (!name.startsWith(DYN)) name = SYM + name;
       //console.log('rules['+name+'] = '+rule);
       rules[name] = rule;
     }
@@ -88,31 +88,20 @@ class RiGrammar {
     return this;
   }
 
-  // TODO: should be static or instance methods?
   addTransform() { RiScript.addTransform(...arguments); return this }
   removeTransform() { RiScript.removeTransform(...arguments); return this }
   getTransforms() { return RiScript.getTransforms(); }
 }
 
-/* function removeAmp(item) {
-  const newItem = {};
-  Object.keys(item).forEach(key => {
-    let newKey = key;
-    if (newKey.startsWith('&')) newKey = newKey.substring(1);
-    newItem[newKey] = item[[key]];
-  });
-  return newItem;
-} */
-
 function checkRuleName(name) {
   if (!name || !name.length) {
     throw Error('expected [string] name');
   }
-  if (name.startsWith('$')) { // override dynamic default
+  if (SYM_RE.test(SYM)) { // override dynamic default
     name = name.substring(1);
   }
   else { // use dynamic default
-    if (!name.startsWith('&')) name = '&' + name;
+    if (!name.startsWith(DYN)) name = DYN + name;
   }
   return name;
 }
@@ -121,12 +110,6 @@ function parseJSON(grammar, json) {
   try {
     let rules = JSON.parse(json);
     Object.keys(rules).forEach(r => {
-      /* let rname = r;
-      if (!r.startsWith("&")) {
-        rname = '$' + r;
-      }
-      console.log('adding rule: '+rname+" -> "+rules[r]); 
-      grammar.addRule(rname, rules[r]);*/
       grammar.addRule(r, rules[r]);
     });
   } catch (e) {
@@ -145,6 +128,8 @@ function joinChoice(arr) {
   return opts + ')';
 }
 
+const SYM = '$', DYN = '$$';
+const SYM_RE = /\${1,2}\w+/;
 const IN_PARENS_RE = /^\([^()]*\)$/;
 
 module && (module.exports = RiGrammar);

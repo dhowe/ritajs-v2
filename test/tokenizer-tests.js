@@ -130,7 +130,7 @@ describe('RiTa.Tokenizer', () => {
 
     let txt1 = "Dr. Chan is talking slowly with Mr. Cheng, and they're friends."; // strange but same as RiTa-java
     let txt2 = "He can't didn't couldn't shouldn't wouldn't eat.";
-    let txt3 = "Shouldn't he eat?";
+    let txt3 = "Wouldn't he eat?";
     let txt4 = "It's not that I can't.";
     let txt5 = "We've found the cat.";
     let txt6 = "We didn't find the cat.";
@@ -138,7 +138,7 @@ describe('RiTa.Tokenizer', () => {
     RiTa.SPLIT_CONTRACTIONS = true;
     expect(RiTa.tokenize(txt1)).eql(["Dr.", "Chan", "is", "talking", "slowly", "with", "Mr.", "Cheng", ",", "and", "they", "are", "friends", "."]);
     expect(RiTa.tokenize(txt2)).eql(["He", "can", "not", "did", "not", "could", "not", "should", "not", "would", "not", "eat", "."]);
-    expect(RiTa.tokenize(txt3)).eql(["Should", "not", "he", "eat", "?"]);
+    expect(RiTa.tokenize(txt3)).eql(["Would", "not", "he", "eat", "?"]);
     expect(RiTa.tokenize(txt4)).eql(["It", "is", "not", "that", "I", "can", "not", "."]);
     expect(RiTa.tokenize(txt5)).eql(["We", "have", "found", "the", "cat", "."]);
     expect(RiTa.tokenize(txt6)).eql(["We", "did", "not", "find", "the", "cat", "."]);
@@ -146,7 +146,7 @@ describe('RiTa.Tokenizer', () => {
     RiTa.SPLIT_CONTRACTIONS = false;
     expect(RiTa.tokenize(txt1)).eql(["Dr.", "Chan", "is", "talking", "slowly", "with", "Mr.", "Cheng", ",", "and", "they're", "friends", "."]);
     expect(RiTa.tokenize(txt2)).eql(["He", "can't", "didn't", "couldn't", "shouldn't", "wouldn't", "eat", "."]);
-    expect(RiTa.tokenize(txt3)).eql(["Shouldn't", "he", "eat", "?"]);
+    expect(RiTa.tokenize(txt3)).eql(["Wouldn't", "he", "eat", "?"]);
     expect(RiTa.tokenize(txt4)).eql(["It's", "not", "that", "I", "can't", "."]);
     expect(RiTa.tokenize(txt5)).eql(["We've", "found", "the", "cat", "."]);
     expect(RiTa.tokenize(txt6)).eql(["We", "didn't", "find", "the", "cat", "."]);

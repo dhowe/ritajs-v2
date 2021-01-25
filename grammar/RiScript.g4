@@ -37,7 +37,7 @@ HAT: '^';
 DOL: '$';
 COM: ',';
 NL: '\r'? '\n';
-DYN: '&' NIDENT;
+DYN: '$$' NIDENT;
 SYM: '$' NIDENT;
 OR: WS* '|' WS*;
 EQ: WS* '=' WS*;

@@ -195,15 +195,19 @@ describe('RiTa.RiScript', () => {
 
     it('Should correctly call isParseable', () => {
       let rs = new RiScript();
-      expect(rs.isParseable("Hello")).not.eq(true);
       expect(rs.isParseable("(")).eq(true);
       expect(rs.isParseable("(A | B)")).eq(true);
       expect(rs.isParseable("$hello")).eq(true);
       expect(rs.isParseable("$b")).eq(true);
-      expect(rs.isParseable("&b")).eq(true);
+      expect(rs.isParseable("$$b")).eq(true);
       expect(rs.isParseable("($b)")).eq(true);
-      expect(rs.isParseable("(&b)")).eq(true);
-      expect(rs.isParseable("(&nbsp;)")).eq(true);//?
+      expect(rs.isParseable("(&nbsp;)")).eq(true);
+
+      expect(rs.isParseable("Hello")).eq(false);
+      expect(rs.isParseable("&nbsp;")).eq(false);
+      expect(rs.isParseable("&181;")).eq(false);
+      expect(rs.isParseable("&b")).eq(false);
+      expect(rs.isParseable("&&b")).eq(false);
     });
 
     it('Should resolve simple expressions', () => {
@@ -223,16 +227,16 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve simple dynamics', () => {
 
-      expect(RiTa.evaluate('&foo=bar\nbaz', {})).eq('baz');
-      expect(RiTa.evaluate('(&foo=bar)\nbaz', {})).eq('bar baz');
-      expect(RiTa.evaluate('&foo=bar\nbaz$foo', {})).eq('bazbar');
-      expect(RiTa.evaluate('&foo=bar\n($foo)baz', {})).eq('barbaz');
-      expect(RiTa.evaluate('&foo=bar\n$foo baz $foo', {})).eq('bar baz bar');
-      expect(RiTa.evaluate('&foo=bar\nbaz\n$foo $foo', {})).eq('baz bar bar');
+      expect(RiTa.evaluate('$$foo=bar\nbaz', {})).eq('baz');
+      expect(RiTa.evaluate('($$foo=bar)\nbaz', {})).eq('bar baz');
+      expect(RiTa.evaluate('$$foo=bar\nbaz$foo', {})).eq('bazbar');
+      expect(RiTa.evaluate('$$foo=bar\n($foo)baz', {})).eq('barbaz');
+      expect(RiTa.evaluate('$$foo=bar\n$foo baz $foo', {})).eq('bar baz bar');
+      expect(RiTa.evaluate('$$foo=bar\nbaz\n$foo $foo', {})).eq('baz bar bar');
 
       let passed = false;
-      for (let i = 0; i < 10; i++) { // &: must not always match
-        let res = RiTa.evaluate('&foo=(a|b|c|d)\n$foo $foo $foo',{});
+      for (let i = 0; i < 10; i++) { // $$: must not always match
+        let res = RiTa.evaluate('$$foo=(a|b|c|d)\n$foo $foo $foo',{});
         //console.log(i+") "+res);
         let pts = res.split(' ');
         expect(pts.length).eq(3);
@@ -270,11 +274,11 @@ describe('RiTa.RiScript', () => {
       let ctx, expr;
 
       ctx = { a: '$b', b: '(c | c)' };
-      expr = '&k=$a\n$k';
+      expr = '$$k=$a\n$k';
       expect(RiTa.evaluate(expr, ctx)).eq('c');
 
       ctx = { a: '$b', b: '(c | c)' };
-      expr = '&s = $a\n&a = $b\n&c = $d\n&d = c\n$s';
+      expr = '$$s = $a\n$$a = $b\n$$c = $d\n$$d = c\n$s';
       expect(RiTa.evaluate(expr, ctx)).eq('c');
     });
   });
@@ -350,70 +354,70 @@ describe('RiTa.RiScript', () => {
 
     it('Should parse dynamic assignments', () => {
       let ctx = {};
-      expect(RiTa.evaluate('&foo=a', ctx)).eq('');
-      expect(ctx['&foo']).eq('a');
+      expect(RiTa.evaluate('$$foo=a', ctx)).eq('');
+      expect(ctx['$$foo']).eq('a');
 
       ctx = {};
-      //RiTa.evaluate('&foo=(a) b', ctx, {trace:0});
-      expect(RiTa.evaluate('&foo=(a) b', ctx)).eq('');
-      expect(ctx['&foo']).eq('(a) b');
+      //RiTa.evaluate('$$foo=(a) b', ctx, {trace:0});
+      expect(RiTa.evaluate('$$foo=(a) b', ctx)).eq('');
+      expect(ctx['$$foo']).eq('(a) b');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=a\nb', ctx)).eq('b');
-      expect(ctx['&foo']).eq('a');
+      expect(RiTa.evaluate('$$foo=a\nb', ctx)).eq('b');
+      expect(ctx['$$foo']).eq('a');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=(a | a)', ctx)).eq('');
-      expect(ctx['&foo']).eq('(a | a)');
+      expect(RiTa.evaluate('$$foo=(a | a)', ctx)).eq('');
+      expect(ctx['$$foo']).eq('(a | a)');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=ab', ctx)).eq('');
-      expect(ctx['&foo']).eq('ab');
+      expect(RiTa.evaluate('$$foo=ab', ctx)).eq('');
+      expect(ctx['$$foo']).eq('ab');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=ab bc', ctx)).eq('');
-      expect(ctx['&foo']).eq('ab bc');
+      expect(RiTa.evaluate('$$foo=ab bc', ctx)).eq('');
+      expect(ctx['$$foo']).eq('ab bc');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=(ab) (bc)', ctx)).eq('');
-      expect(ctx['&foo']).eq('(ab) (bc)');
+      expect(RiTa.evaluate('$$foo=(ab) (bc)', ctx)).eq('');
+      expect(ctx['$$foo']).eq('(ab) (bc)');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=(ab bc)', ctx)).eq('');
-      expect(ctx['&foo']).eq('(ab bc)');
+      expect(RiTa.evaluate('$$foo=(ab bc)', ctx)).eq('');
+      expect(ctx['$$foo']).eq('(ab bc)');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=(a | a) (b | b)', ctx)).eq('');
-      expect(ctx['&foo']).eq('(a | a) (b | b)');
+      expect(RiTa.evaluate('$$foo=(a | a) (b | b)', ctx)).eq('');
+      expect(ctx['$$foo']).eq('(a | a) (b | b)');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=((a | a) | (a | a))', ctx)).eq('');
-      expect(ctx['&foo']).eq('((a | a) | (a | a))');
+      expect(RiTa.evaluate('$$foo=((a | a) | (a | a))', ctx)).eq('');
+      expect(ctx['$$foo']).eq('((a | a) | (a | a))');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=()', ctx)).eq(''); // empty string
-      expect(ctx['&foo']).eq('()');
+      expect(RiTa.evaluate('$$foo=()', ctx)).eq(''); // empty string
+      expect(ctx['$$foo']).eq('()');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=a\n&bar=$foo', ctx)).eq(''); // empty string
-      expect(ctx['&foo']).eq('a');
-      expect(ctx['&bar']).eq('$foo');
+      expect(RiTa.evaluate('$$foo=a\n$$bar=$foo', ctx)).eq(''); // empty string
+      expect(ctx['$$foo']).eq('a');
+      expect(ctx['$$bar']).eq('$foo');
 
-      expect(RiTa.evaluate('&foo=a\n&bar=$foo.', ctx, { trace: 0 })).eq(''); // empty string
-      expect(ctx['&foo']).eq('a');
-      expect(ctx['&bar']).eq('$foo.');
+      expect(RiTa.evaluate('$$foo=a\n$$bar=$foo.', ctx, { trace: 0 })).eq(''); // empty string
+      expect(ctx['$$foo']).eq('a');
+      expect(ctx['$$bar']).eq('$foo.');
 
-      expect(RiTa.evaluate('&foo=(a | a)', ctx = {})).eq('');
-      expect(ctx['&foo']).eq('(a | a)');
+      expect(RiTa.evaluate('$$foo=(a | a)', ctx = {})).eq('');
+      expect(ctx['$$foo']).eq('(a | a)');
 
-      expect(RiTa.evaluate('&foo=(a | a)\n$foo', ctx = {})).eq('a');
-      expect(ctx['&foo']).eq('(a | a)');
+      expect(RiTa.evaluate('$$foo=(a | a)\n$foo', ctx = {})).eq('a');
+      expect(ctx['$$foo']).eq('(a | a)');
 
-      expect(RiTa.evaluate('&foo=(hi | hi)\n$foo there', ctx = {})).eq('hi there');
-      expect(ctx['&foo']).eq('(hi | hi)');
+      expect(RiTa.evaluate('$$foo=(hi | hi)\n$foo there', ctx = {})).eq('hi there');
+      expect(ctx['$$foo']).eq('(hi | hi)');
 
-      expect(RiTa.evaluate('&foo=The boy walked his dog', ctx = {})).eq('');
-      expect(ctx['&foo']).eq('The boy walked his dog');
+      expect(RiTa.evaluate('$$foo=The boy walked his dog', ctx = {})).eq('');
+      expect(ctx['$$foo']).eq('The boy walked his dog');
     });
 
     it('Should resolve sentences', () => {
@@ -465,40 +469,40 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('.', null)).eq('.');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=a', ctx)).eq('');
-      expect(ctx['&foo']).eq('a');
+      expect(RiTa.evaluate('$$foo=a', ctx)).eq('');
+      expect(ctx['$$foo']).eq('a');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=.', ctx)).eq('');
-      expect(ctx['&foo']).eq('.');
+      expect(RiTa.evaluate('$$foo=.', ctx)).eq('');
+      expect(ctx['$$foo']).eq('.');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=r.', ctx)).eq('');
-      expect(ctx['&foo']).eq('r.');
+      expect(RiTa.evaluate('$$foo=r.', ctx)).eq('');
+      expect(ctx['$$foo']).eq('r.');
 
       ctx = {};
-      expect(RiTa.evaluate('&foo=ran.', ctx)).eq('');
-      expect(ctx['&foo']).eq('ran.');
+      expect(RiTa.evaluate('$$foo=ran.', ctx)).eq('');
+      expect(ctx['$$foo']).eq('ran.');
 
       ctx = {};
-      res = RiTa.evaluate('&start=dog\n$start', ctx);
-      expect(ctx['&start']).eq('dog');
+      res = RiTa.evaluate('$$start=dog\n$start', ctx);
+      expect(ctx['$$start']).eq('dog');
       expect(res).eq('dog');
 
       ctx = {};
-      res = RiTa.evaluate('&start=.\n$start', ctx);
-      expect(ctx['&start']).eq('.');
+      res = RiTa.evaluate('$$start=.\n$start', ctx);
+      expect(ctx['$$start']).eq('.');
       expect(res).eq('.');
 
       ctx = {};
-      res = RiTa.evaluate('&noun=I\n&start=$noun ran.\n$start', ctx);
-      expect(ctx['&noun']).eq('I');
+      res = RiTa.evaluate('$$noun=I\n$$start=$noun ran.\n$start', ctx);
+      expect(ctx['$$noun']).eq('I');
       expect(res).eq('I ran.');
 
       ctx = {};
-      res = RiTa.evaluate('&noun=I\n&verb=sat\n&start=$noun $verb.\n$start', ctx);
-      expect(ctx['&noun']).eq('I');
-      expect(ctx['&verb']).eq('sat');
+      res = RiTa.evaluate('$$noun=I\n$$verb=sat\n$$start=$noun $verb.\n$start', ctx);
+      expect(ctx['$$noun']).eq('I');
+      expect(ctx['$$verb']).eq('sat');
       expect(res).eq('I sat.');
     });
 
@@ -537,7 +541,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('These ($state feeling).pluralize().', { state: 'bad' })).eq('These bad feelings.');
       expect(RiTa.evaluate('$state=(bad | bad)\nThese ($state feeling).pluralize().', {})).eq('These bad feelings.');
 
-      expect(RiTa.evaluate('&state=(bad | bad)\nThese ($state feeling).pluralize().', {})).eq('These bad feelings.');
+      expect(RiTa.evaluate('$$state=(bad | bad)\nThese ($state feeling).pluralize().', {})).eq('These bad feelings.');
 
       //expect(RiTa.evaluate('These ($state feeling).pluralize().',  TODO: SEE KNOWN ISSUES
       //{ state: '(bad | bad)' }, TT)).eq('These bad feelings.');
@@ -581,28 +585,28 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve dynamics across assignment types', () => {
       let ctx;
-      expect(RiTa.evaluate('The &foo=blue (dog | dog)', ctx = {})).eq('The blue dog');
-      expect(ctx['&foo']).eq('blue (dog | dog)');
+      expect(RiTa.evaluate('The $$foo=blue (dog | dog)', ctx = {})).eq('The blue dog');
+      expect(ctx['$$foo']).eq('blue (dog | dog)');
 
-      expect(RiTa.evaluate('The (&foo=blue) (dog | dog)', ctx = {})).eq('The blue dog');
-      expect(ctx['&foo']).eq('blue');
+      expect(RiTa.evaluate('The ($$foo=blue) (dog | dog)', ctx = {})).eq('The blue dog');
+      expect(ctx['$$foo']).eq('blue');
 
-      expect(RiTa.evaluate('The (&foo=blue (dog | dog))', ctx = {})).eq('The blue dog');
-      expect(ctx['&foo']).eq('blue (dog | dog)');
+      expect(RiTa.evaluate('The ($$foo=blue (dog | dog))', ctx = {})).eq('The blue dog');
+      expect(ctx['$$foo']).eq('blue (dog | dog)');
 
-      expect(RiTa.evaluate('&foo=blue (dog | dog)', ctx = {})).eq('');
-      expect(ctx['&foo']).eq('blue (dog | dog)');
+      expect(RiTa.evaluate('$$foo=blue (dog | dog)', ctx = {})).eq('');
+      expect(ctx['$$foo']).eq('blue (dog | dog)');
 
-      expect(RiTa.evaluate('The\n&foo=blue (dog | dog)', ctx = {})).eq('The');
-      expect(ctx['&foo']).eq('blue (dog | dog)');
+      expect(RiTa.evaluate('The\n$$foo=blue (dog | dog)', ctx = {})).eq('The');
+      expect(ctx['$$foo']).eq('blue (dog | dog)');
     });
 
     it('Should handle nested context', () => {
       let ctx = { bar: { color: "blue" } };
-      let res = RiTa.evaluate("&foo=$bar.color\n$foo", ctx);
+      let res = RiTa.evaluate("$$foo=$bar.color\n$foo", ctx);
       expect(res).eq("blue");
 
-      res = RiTa.evaluate("&foo=$bar.color\n$foo", ctx); // dyn
+      res = RiTa.evaluate("$$foo=$bar.color\n$foo", ctx); // dyn
       expect(res).eq("blue");
     });
   });
@@ -631,34 +635,34 @@ describe('RiTa.RiScript', () => {
       let rs, ctx, matches, count = 5; // may need to be higher
       const matching = ['Dave is called Dave.', 'Jack is called Jack.', 'Mary is called Mary.'];
 
-      // &: need at least one to not match
+      // $$: need at least one to not match
       matches = 0;
-      for (let i = 0; i < count; i++) { // &: should not always match
-        rs = RiTa.evaluate('(&name=(Dave | Jack | Mary)) is called $name.', ctx = {});
-        expect(ctx['&name']).eq('(Dave | Jack | Mary)');
+      for (let i = 0; i < count; i++) { // $$: should not always match
+        rs = RiTa.evaluate('($$name=(Dave | Jack | Mary)) is called $name.', ctx = {});
+        expect(ctx['$$name']).eq('(Dave | Jack | Mary)');
         expect(/^(Dave|Jack|Mary) is called (Dave|Jack|Mary)\.$/.test(rs)).eq(true);
         if (!matching.includes(rs)) break;
         matches++;
       }
       expect(matches < count).eq(true);
 
-      // &: need at least one to not match
+      // $$: need at least one to not match
       matches = 0;
-      for (let i = 0; i < count; i++) { // &: should not always match
-        rs = RiTa.evaluate('(&name=(dave | jack | mary).ucf()) is called $name.', ctx = {});
+      for (let i = 0; i < count; i++) { // $$: should not always match
+        rs = RiTa.evaluate('($$name=(dave | jack | mary).ucf()) is called $name.', ctx = {});
         //console.log(i+") "+rs);
-        expect(ctx['&name']).eq('(dave | jack | mary).ucf()');
+        expect(ctx['$$name']).eq('(dave | jack | mary).ucf()');
         expect(/^(Dave|Jack|Mary) is called (Dave|Jack|Mary)\.$/.test(rs)).eq(true);
         if (!matching.includes(rs)) break;
         matches++;
       }
       expect(matches < count).eq(true);
 
-      // &: need at least one to not match
+      // $$: need at least one to not match
       matches = 0;
-      for (let i = 0; i < count; i++) { // &: should not always match
-        rs = RiTa.evaluate('(&name=(dave | jack | mary)).ucf() is called $name.', ctx = {});
-        expect(ctx['&name']).eq('(dave | jack | mary)');
+      for (let i = 0; i < count; i++) { // $$: should not always match
+        rs = RiTa.evaluate('($$name=(dave | jack | mary)).ucf() is called $name.', ctx = {});
+        expect(ctx['$$name']).eq('(dave | jack | mary)');
         expect(/^(Dave|Jack|Mary) is called (dave|jack|mary)\./.test(rs)).eq(true);
         if (!matching.includes(rs)) break;
         matches++;
@@ -694,12 +698,12 @@ describe('RiTa.RiScript', () => {
       // $: need all to match
       expect(RiTa.evaluate('A ($stored=($animal | $animal)) is a mammal', { animal: 'dog' })).eq('A dog is a mammal');
 
-      // &: need at least one to not match
+      // $$: need at least one to not match
       let matches = 0, count = 5, ctx = {};
-      ctx['&name'] = '(Dave | Jack | Mary)'; // dynamic in context
+      ctx['$$name'] = '(Dave | Jack | Mary)'; // dynamic in context
       for (let i = 0; i < count; i++) {
         rs = RiTa.evaluate('$name is called $name.', ctx);
-        expect(ctx['&name']).eq('(Dave | Jack | Mary)');
+        expect(ctx['$$name']).eq('(Dave | Jack | Mary)');
         expect(/^(Dave|Jack|Mary) is called (Dave|Jack|Mary)\./.test(rs)).eq(true, "Got: " + rs);
         if (!matching.includes(rs)) break;
         matches++;

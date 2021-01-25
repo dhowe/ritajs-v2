@@ -58,31 +58,31 @@ describe('RiTa.RiGrammar', () => {
 
     it("should call static expand", () => {
         let rg = new RiGrammar();
-        rg.addRule("$start", "pet");
+        rg.addRule("start", "pet");
         eq(rg.expand(), "pet");
         rg = new RiGrammar();
-        rg.addRule("$start", "$pet");
-        rg.addRule("$pet", "dog");
+        rg.addRule("start", "$pet");
+        rg.addRule("pet", "dog");
         eq(rg.expand(), "dog");
     });
 
     it("should call static expandFrom", () => {
         let rg = new RiGrammar();
-        rg.addRule("$start", "$pet");
-        rg.addRule("$pet", "($bird | $mammal)");
-        rg.addRule("$bird", "(hawk | crow)");
-        rg.addRule("$mammal", "dog");
-        eq(rg.expand("$mammal"), "dog");
+        rg.addRule("start", "$pet");
+        rg.addRule("pet", "($bird | $mammal)");
+        rg.addRule("bird", "(hawk | crow)");
+        rg.addRule("mammal", "dog");
+        eq(rg.expand("mammal"), "dog");
         for (let i = 0; i < 30; i++) {
-            let res = rg.expand("$bird");
+            let res = rg.expand("bird");
             ok(res === "hawk" || res === 'crow');
         }
     });
 
 
-    it('should handle phrase transforms', () => {
+    it('Should handle phrase transforms', () => {
         let g = {
-            "start": "(&x=$y b).ucf()",
+            "start": "($$x=$y b).ucf()",
             "y": "(a | a)",
         };
         expect(new RiGrammar(g).expand()).eq("A b");
@@ -183,22 +183,22 @@ describe('RiTa.RiGrammar', () => {
 
         let rg = new RiGrammar();
         ok(typeof rg.rules !== 'undefined');
-        ok(typeof rg.rules['&start'] === 'undefined');
-        ok(typeof rg.rules['&noun_phrase'] === 'undefined');
+        ok(typeof rg.rules['$start'] === 'undefined');
+        ok(typeof rg.rules['$noun_phrase'] === 'undefined');
 
         grammars.forEach(g => { // as JS objects
             rg.addRules(g);
             ok(typeof rg.rules !== 'undefined');
-            ok(typeof rg.rules['&start'] !== 'undefined');
-            ok(typeof rg.rules['&noun_phrase'] !== 'undefined');
+            ok(typeof rg.rules['$start'] !== 'undefined');
+            ok(typeof rg.rules['$noun_phrase'] !== 'undefined');
             ok(rg.expand().length > 0);
         });
 
         grammars.forEach(g => { // as JSON strings
             rg = RiGrammar.fromJSON(JSON.stringify(g));
             ok(typeof rg.rules !== 'undefined');
-            ok(typeof rg.rules['&start'] !== 'undefined');
-            ok(typeof rg.rules['&noun_phrase'] !== 'undefined');
+            ok(typeof rg.rules['$start'] !== 'undefined');
+            ok(typeof rg.rules['$noun_phrase'] !== 'undefined');
             ok(rg.expand().length > 0);
         });
     });
@@ -206,23 +206,23 @@ describe('RiTa.RiGrammar', () => {
     it("should call addRule", () => {
         let rg = new RiGrammar();
         rg.addRule("start", "$pet");
-        ok(typeof rg.rules["&start"] !== 'undefined');
+        ok(typeof rg.rules["$start"] !== 'undefined');
         rg.addRule("start", "$dog", .3);
-        ok(typeof rg.rules["&start"] !== 'undefined');
+        ok(typeof rg.rules["$start"] !== 'undefined');
     });
 
     it("should call removeRule", () => {
 
         grammars.forEach(g => {
             let rg1 = new RiGrammar(g);
-            def(rg1.rules['&start']);
-            def(rg1.rules['&noun_phrase']);
+            def(rg1.rules['$start']);
+            def(rg1.rules['$noun_phrase']);
 
             rg1.removeRule('noun_phrase');
-            def(!rg1.rules['&noun_phrase']);
+            def(!rg1.rules['$noun_phrase']);
 
             rg1.removeRule('start');
-            def(!rg1.rules['&start']);
+            def(!rg1.rules['$start']);
 
             rg1.removeRule('');
             rg1.removeRule('bad-name');
@@ -235,11 +235,11 @@ describe('RiTa.RiGrammar', () => {
 
         let rg = new RiGrammar();
         rg.addRule("start", "$pet");
-        rg.addRule("$pet", "($bird | $mammal)");
-        rg.addRule("$bird", "(hawk | crow)");
+        rg.addRule("pet", "($bird | $mammal)");
+        rg.addRule("bird", "(hawk | crow)");
         rg.addRule("mammal", "dog");
 
-        def(rg.rules['&start']);
+        def(rg.rules['$$start']);
         def(rg.rules['pet']);
         def(rg.rules['bird']);
 
@@ -249,10 +249,10 @@ describe('RiTa.RiGrammar', () => {
         rg.removeRule('bird');
         def(!rg.rules['bird']);
 
-        rg.removeRule('&start');
-        def(!rg.rules['&start']);
+        rg.removeRule('$$start');
+        def(!rg.rules['$$start']);
 
-        def(rg.rules['&mammal']);
+        def(rg.rules['$$mammal']);
     });
 
     it("should throw on missing rules", () => {
@@ -386,9 +386,9 @@ describe('RiTa.RiGrammar', () => {
 
     it("should call static addRule", () => {
         let rg = RiTa.grammar();
-        rg.addRule("$start", "$pet");
+        rg.addRule("start", "$pet");
         ok(typeof rg.rules["start"] !== 'undefined');
-        rg.addRule("$start", "$dog", .3);
+        rg.addRule("start", "$dog", .3);
         ok(typeof rg.rules["start"] !== 'undefined');
     });
 
@@ -446,20 +446,20 @@ describe('RiTa.RiGrammar', () => {
 
     it("should handle transforms on statics", () => {
         let rg = RiTa.grammar();
-        rg.addRule("$start", "$pet.toUpperCase()");
-        rg.addRule("$pet", "dog");
+        rg.addRule("start", "$pet.toUpperCase()");
+        rg.addRule("pet", "dog");
         eq(rg.expand(), "DOG");
 
         rg = RiTa.grammar();
-        rg.addRule("$start", "($pet | $animal)");
-        rg.addRule("$animal", "$pet");
-        rg.addRule("$pet", "(dog).toUpperCase()");
+        rg.addRule("start", "($pet | $animal)");
+        rg.addRule("animal", "$pet");
+        rg.addRule("pet", "(dog).toUpperCase()");
         eq(rg.expand(), "DOG");
 
         rg = RiTa.grammar();
-        rg.addRule("$start", "($pet | $animal)");
-        rg.addRule("$animal", "$pet");
-        rg.addRule("$pet", "(ant).articlize()");
+        rg.addRule("start", "($pet | $animal)");
+        rg.addRule("animal", "$pet");
+        rg.addRule("pet", "(ant).articlize()");
         eq(rg.expand(), "an ant");
 
         rg = RiTa.grammar();
@@ -467,15 +467,15 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.expand(), "A");
 
         rg = RiTa.grammar();
-        rg.addRule("$start", "($pet | $animal).articlize().ucf()");
-        rg.addRule("$animal", "$pet");
-        rg.addRule("$pet", "ant");
+        rg.addRule("start", "($pet | $animal).articlize().ucf()");
+        rg.addRule("animal", "$pet");
+        rg.addRule("pet", "ant");
         eq(rg.expand(), "An ant");
 
         rg = RiTa.grammar();
-        rg.addRule("$start", "($animal $animal).ucf()");
-        rg.addRule("$animal", "ant | eater");
-        rg.addRule("$pet", "ant");
+        rg.addRule("start", "($animal $animal).ucf()");
+        rg.addRule("animal", "ant | eater");
+        rg.addRule("pet", "ant");
         for (let i = 0; i < 10; i++) {
             expect(rg.expand()).to.be.oneOf(["Ant ant", "Eater eater"]);
         }
@@ -499,7 +499,7 @@ describe('RiTa.RiGrammar', () => {
         expect(rg.expand(ctx)).to.be.oneOf(['job job','mob mob']);
 
         ctx = {};
-        ctx['&rule'] = '(job | mob)'; // dynamic
+        ctx['$$rule'] = '(job | mob)'; // dynamic
         rg = RiTa.grammar({ $start: "$rule $rule" });
         expect(/^[jm]ob [jm]ob$/.test(rg.expand(ctx))).eq(true);
     });

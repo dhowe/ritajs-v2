@@ -158,9 +158,7 @@ class RiScript {
   }
 
   isParseable(s) {
-    let found = PRS_RE.test(s);
-    //console.log("FOUND: " + s + ": " + found);
-    return found;
+    return PRS_RE.test(s);
   }
 
   static addTransform(name, func) {
@@ -238,11 +236,11 @@ RiScript.transforms = {
 const VOW_RE = /[aeiou]/;
 const ENT_RE = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 
-const PP59_RE = /[$&]/;
-const PPA_RE = /^[$&{]/;
-const PPB_RE = /[()$&|{}]/;
-const PRS_RE = /([()]|[$&][A-Za-z_0-9]+)/;
-const SYM_RE = /[$&][A-Za-z_0-9]+/;
+const PP59_RE = /$/;
+const PPA_RE = /^[${]/;
+const PPB_RE = /[()$|{}]/;
+const PRS_RE = /([(){}|]|(\${1,2}\w+))/;
+const SYM_RE = /\${1,2}\w+/;
 
 // Dynamic-options: ~ @ & % #, or only $ _ $$
 
