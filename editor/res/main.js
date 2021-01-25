@@ -27,38 +27,7 @@ $(document).ready(function () {
     let consoleContents = [];
 
     // rewrite console funtions to get the content
-    let _console;
-    if (console) {
-        _console = {
-            log: console.log,
-            info: console.info,
-            debug: console.debug,
-            warn: console.warn,
-            error: console.error,
-        };
-    } else {
-        consoleContents.push('** console not available **');
-    }
-    console.log = function () {
-        consoleContents.push({ type: 'log', content: [].slice.call(arguments).join('') });
-        _console.log.apply(console, arguments);
-    };
-    console.info = function () {
-        consoleContents.push({ type: 'info', content: [].slice.call(arguments).join('') });
-        _console.info.apply(console, arguments);
-    };
-    console.debug = function () {
-        consoleContents.push({ type: 'debug', content: [].slice.call(arguments).join('') });
-        _console.debug.apply(console, arguments);
-    };
-    console.warn = function () {
-        consoleContents.push({ type: 'warn', content: [].slice.call(arguments).join('') });
-        _console.warn.apply(console, arguments);
-    };
-    console.error = function () {
-        consoleContents.push({ type: 'error', content: [].slice.call(arguments).join('') });
-        _console.error.apply(console, arguments);
-    };
+    let _console = reassignConsole();
 
     let defaultValue = "\n$mammal=(dog | child | ox)\n\n$verb=(watching | listening)\n\nThe $mammal.pluralize() were $verb.\n";
 
