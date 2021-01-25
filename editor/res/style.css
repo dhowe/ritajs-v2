@@ -23,6 +23,39 @@ h2 {
     font-family: sans-serif;
 }
 
+.dark {
+    background-color: #1c1c1c;
+    color: #ffffff;
+}
+
+.output-wrapperl.dark {
+    background-color: #1c1c1c;
+
+}
+
+.output-header.dark {
+    background-color: #464646;
+}
+
+.codeArea.dark {
+    border: #464646 !important;
+}
+
+.output-header-text.dark {
+    background-color: #464646;
+    color: #ffffff !important;
+}
+
+#output.dark {
+    background-color: #1c1c1c !important;
+
+}
+
+#console.dark {
+    background-color: #1c1c1c !important;
+
+}
+
 .highLightedError {
     background-color: rgb(255, 226, 226);
 }
