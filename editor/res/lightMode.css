@@ -1,0 +1,28 @@
+/*
+lightMode theme for rs editor
+*/
+
+.CodeMirror.cm-s-lightMode { background: #ffffff; color: #363636; }
+
+.cm-s-lightMode .div.CodeMirror-selected { background: #264f78; }
+.cm-s-lightMode .CodeMirror-gutters { border-right: 1px solid #ddd; background-color: #f7f7f7; white-space: nowrap; }
+.cm-s-lightMode .CodeMirror-linenumbers {}
+.cm-s-lightMode .CodeMirror-linenumber { padding: 0 3px 0 5px; min-width: 20px; text-align: right; color: #6998ac; white-space: nowrap; }
+
+.cm-s-lightMode .CodeMirror-cursor { border-left: 1px solid #1e1e1e; }
+
+/* color for vars (e.g $foo) */
+.cm-s-lightMode span.cm-vars { color: #3d409b; }
+
+/* color for choice (e.g (a|b)) */
+.cm-s-lightMode span.cm-choice { color: #b66661; }
+
+/* color for transforms (e.g $foo.pluralize()) */
+.cm-s-lightMode span.cm-trans { color: #867959; }
+
+/* color for comment */
+.cm-s-lightMode span.cm-comment { color: #669851; }
+
+
+.cm-s-lightMode .CodeMirror-activeline-background { background: #2F2F2F; }
+.cm-s-lightMode .CodeMirror-matchingbracket { text-decoration: underline; color: white !important; }
