@@ -163,21 +163,23 @@ describe('RiTa.RiGrammar', () => {
         let rg, rs;
 
         rg = new RiGrammar({
-            "$start": "$1line talks too much.",
-            "$1line": "Dave | Jill | Pete"
+            "start": "$1line talks too much.",
+            "1line": "Dave | Jill | Pete"
         });
         rs = rg.expand({ trace: 0 });
         expect(rs).to.be.oneOf(["Dave talks too much.", "Jill talks too much.", "Pete talks too much."]);
 
         rg = new RiGrammar({
-            "$1line": "Dave | Jill | Pete"
+            "1line": "Dave | Jill | Pete"
         });
-        rs = rg.expand("$1line", { trace: 0 });
+        rs = rg.expand("1line", { trace: 0 });
         expect(rs).to.be.oneOf(["Dave", "Jill", "Pete"]);
 
         rs = rg.expand("1line", { trace: 0 });
         expect(rs).to.be.oneOf(["Dave", "Jill", "Pete"]);
     });
+
+    // NEXT: WORKING HERE, GO DOWN, ONE BY ONE
 
     it("should call addRules", () => {
 
