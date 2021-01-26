@@ -194,6 +194,7 @@ class Lexicon {
         // and it is also may no longer be in the dictionary
         if (word !== words[i]) data = dict[word];
       }
+
       if (regex) {
         if (opts.type === 'stresses') {
           let phones = data ? data[0] : this.rawPhones(word);

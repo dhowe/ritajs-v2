@@ -909,7 +909,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('the $dog^1 was a footnote.', { dog: 'terrier' })).eq('the terrier^1 was a footnote.');
     })
 
-    it('Should repeat choices with randomSeed', () => {
+    it('Should repeat choices with randomSeed', () => { // SYNC:
       let seed = Math.random() * Number.MAX_SAFE_INTEGER;
       let script = "$a=(1|2|3|4|5|6)\n$a";
       RiTa.randomSeed(seed);

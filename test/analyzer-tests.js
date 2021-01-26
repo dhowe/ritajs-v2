@@ -44,6 +44,14 @@ describe('RiTa.Analyzer', () => {
     expect(feats.pos).eq("nn");
     expect(feats.tokens).eq("yoyo");
     expect(feats.syllables).eq("y-ow/y-ow");
+
+		feats = RiTa.analyze("abandon");
+		//console.log(feats);
+		eq(feats["pos"], "vb");
+    eq(feats["phones"], 'ah-b-ae-n-d-ah-n');
+		eq(feats["tokens"], "abandon");
+    eq(feats["stresses"], "0/1/0");
+		eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
   });
 
   it('Should call stresses', () => {
