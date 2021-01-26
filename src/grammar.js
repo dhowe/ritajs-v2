@@ -18,7 +18,7 @@ class RiGrammar {
   }
 
   static fromJSON(json, context) {
-    let rg = new RiGrammar(null, context);
+    let rg = new RiGrammar(0, context);
     parseJSON(rg, json);
     return rg;
   }
@@ -44,8 +44,8 @@ class RiGrammar {
   }
 
   addRule(name, rule) {
-    let rname = checkRuleName(name);
-    //console.log('addRule: '+name +' -> '+rname);
+    let rname = validateRuleName(name);
+    if (!rule) throw Error('<undefined> rule');
     if (Array.isArray(rule)) rule = joinChoice(rule);
     if (rule.includes('|') && !(IN_PARENS_RE.test(rule))) {
       rule = '(' + rule + ')';
@@ -62,9 +62,10 @@ class RiGrammar {
     let ctx = deepMerge(this.context, this.rules); // ?
     if (opts) ctx = deepMerge(ctx, opts);
 
-    rule = checkRuleName(rule);
+    rule = validateRuleName(rule);
     if (!ctx.hasOwnProperty(rule)) {
-      rule = rule.substring(1); // check for non-dynamic version
+      if (!rule.startsWith(DYN)) throw Error("Bad rule (post-validation): " + rule);
+      rule = rule.substring(2); // check for non-dynamic version
       if (!ctx.hasOwnProperty(rule)) {
         throw Error('Rule ' + rule + ' not found');
       }
@@ -75,14 +76,13 @@ class RiGrammar {
   }
 
   toString(lb) {
-    //let rules = removeAmp(this.rules);
     let str = JSON.stringify(this.rules, null, 2);
     return lb ? str.replace(/\n/g, lb) : str;
   }
 
   removeRule(name) {
     if (name) {
-      name = checkRuleName(name);
+      name = validateRuleName(name);
       delete this.rules[name];
     }
     return this;
@@ -93,30 +93,38 @@ class RiGrammar {
   getTransforms() { return RiScript.getTransforms(); }
 }
 
-function checkRuleName(name) {
-  if (!name || !name.length) {
-    throw Error('expected [string] name');
+function validateRuleName(name) {
+  if (!name.length) throw Error('expected [string] name');
+
+  if (name.startsWith(DYN)) {
+    name = name.substring(2);
+    throw Error('Grammar rules are dynamic by default;'
+      + ' if you need a non-dynamic rule, use \'$'
+      + name + '\', otherwise just use \'' + name + '\'.');
   }
-  if (SYM_RE.test(SYM)) { // override dynamic default
+
+  if (SYM_RE.test(name)) {
+    // override dynamic default, context -> 'barevar'
     name = name.substring(1);
   }
-  else { // use dynamic default
+  else { // dynamic default, context -> '$$dynvar'
     if (!name.startsWith(DYN)) name = DYN + name;
   }
   return name;
 }
 
 function parseJSON(grammar, json) {
+  if (typeof json !== 'string') throw Error('expected [string] json')
+  let rules;
   try {
-    let rules = JSON.parse(json);
-    Object.keys(rules).forEach(r => {
-      grammar.addRule(r, rules[r]);
-    });
+    rules = JSON.parse(json);
   } catch (e) {
     throw Error('RiGrammar appears to be invalid JSON,'
-      + ' please check it at http://jsonlint.com/'
-      + '\n' + JSON.stringify(json, null, 2));
+      + ' please check it at http://jsonlint.com/\n' + json);
   }
+  Object.keys(rules).forEach(r => { // remove $$
+    grammar.addRule(r.startsWith(DYN) ? r.substring(2) : r, rules[r]);
+  });
 }
 
 function joinChoice(arr) {
@@ -129,7 +137,7 @@ function joinChoice(arr) {
 }
 
 const SYM = '$', DYN = '$$';
-const SYM_RE = /\${1,2}\w+/;
+const SYM_RE = /^\$[^$]/;
 const IN_PARENS_RE = /^\([^()]*\)$/;
 
 module && (module.exports = RiGrammar);

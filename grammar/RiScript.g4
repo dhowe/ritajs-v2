@@ -2,7 +2,7 @@ grammar RiScript;
 
 // --------- NOTE: changing this file requires a re-compile: use $ yarn watch.grammar --------- 
 
-script: (expr | cexpr | NL)+ EOF;
+script: (expr | cexpr | NL)* EOF;
 expr: (symbol | choice | assign | chars)+;
 cexpr: WS* LCB cond+ RCB WS* expr;
 cond: symbol WS* op WS* chars WS* COM?;
@@ -16,10 +16,15 @@ chars: (
 		| INT
 	)+;
 dynamic: DYN transform*;
-symbol: SYM transform* | transform+; // handle empty-string transforms
+symbol:
+	SYM transform*
+	| transform+; // handle empty-string transforms
 wexpr: expr? weight?;
 transform: TF;
 op: OP | (LT | GT | EQ);
+
+LCOMM: '/*' .*? '*/'             -> channel(HIDDEN);
+BCOMM: '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 
 GT: '>';
 LT: '<';

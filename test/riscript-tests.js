@@ -6,6 +6,15 @@ describe('RiTa.RiScript', () => {
 
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
 
+  describe('Comments', () => {
+
+    it('Should ignore line comments ', () => {
+        expect(RiTa.evaluate("// $foo=a")).eq("");
+    });
+    it('Should ignore block comments ', () => {
+      expect(RiTa.evaluate("/* hello */")).eq("");
+    })
+  });
 
   SKIP_FOR_NOW || describe('Sequences', () => { // on-hold
 

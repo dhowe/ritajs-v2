@@ -111,9 +111,9 @@ class RiScript {
 
   preParse(input, opts = {}) {
     let parse = input || '', pre = '', post = '';
-    let skipPre = PP59_RE.test(parse); // see issue:rita#59
-
-    if (!opts.skipPreParse && !PPA_RE.test(parse)) {
+    let skipPre = parse.includes('$'); // see issue:rita#59
+    let skipAll = parse.includes('\*') || opts.skipPreParse;
+    if (!skipAll && !PPA_RE.test(parse)) {
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
 
@@ -236,7 +236,6 @@ RiScript.transforms = {
 const VOW_RE = /[aeiou]/;
 const ENT_RE = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 
-const PP59_RE = /$/;
 const PPA_RE = /^[${]/;
 const PPB_RE = /[()$|{}]/;
 const PRS_RE = /([(){}|]|(\${1,2}\w+))/;
