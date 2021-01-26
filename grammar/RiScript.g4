@@ -1,6 +1,6 @@
 grammar RiScript;
 
-// --------- NOTE: changing this file requires a re-compile: use $ yarn watch.grammar --------- 
+// NOTE: changing this file requires a re-compile: use $ yarn watch.grammar 
 
 script: (expr | cexpr | NL)* EOF;
 expr: (symbol | choice | assign | chars)+;
@@ -10,7 +10,7 @@ weight: WS* LB INT RB WS*;
 choice: (LP (wexpr OR)* wexpr RP) transform*;
 assign: (dynamic | symbol) EQ expr;
 chars: (
-		(DOT | WS | EXC | AST | GT | LT | DOL | HAT | COM)
+		(DOT | WS | EXC | AST | GT | LT | DOL | HAT | COM | FS)
 		| CHR
 		| ENT
 		| INT
@@ -23,7 +23,7 @@ wexpr: expr? weight?;
 transform: TF;
 op: OP | (LT | GT | EQ);
 
-LCOMM: '/*' .*? '*/'             -> channel(HIDDEN);
+LCOMM: '/*' .*? '*/' -> channel(HIDDEN);
 BCOMM: '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 
 GT: '>';
@@ -36,6 +36,7 @@ LCB: '{';
 RCB: '}';
 DOT: '.';
 WS: [ \t];
+FS: '/';
 EXC: '!';
 AST: '*';
 HAT: '^';
@@ -55,6 +56,7 @@ CHR:
 	~(
 		'.'
 		| '>'
+		| '/'
 		| '<'
 		| '^'
 		| '*'

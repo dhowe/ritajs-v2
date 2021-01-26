@@ -130,12 +130,11 @@ class Lexicon {
 
     for (let k = 0; k < words.length; k++) {
       let j = (ran + k) % words.length;
-      let rdata = dict[words[j]];
+      let word = words[j], rdata = dict[word];
+      if (!this.checkCriteria(word, rdata, opts)) continue;
+      if (!opts.targetPos) return word // done if no pos to match
 
-      if (!this.checkCriteria(words[j], rdata, opts)) continue;
-      if (!opts.targetPos) return words[j]; // done if no pos to match
-
-      let result = this.matchPos(words[j], rdata, opts, true);
+      let result = this.matchPos(word, rdata, opts, true);
       if (result) return result;
     }
 
@@ -158,33 +157,36 @@ class Lexicon {
       : this.similarByType(word, opts);
   }
 
-  search(regex, opts = {}) {
+  search(regex, opts = {}) {  // SYNC:
 
     let dict = this._dict(true);
     let words = Object.keys(dict);
 
-    // TODO: what about all words with specified pos?
-    if (typeof regex === 'undefined') return words;
-
     if (typeof regex === 'string') {
-      // if we have a stress string without slashes, add them
       if (opts.type === 'stresses' && /^[01]+$/.test(regex)) {
-        regex = regex.split('').join('/');
+        /* if we have a stress string without slashes, add them
+           010 -> 0/1/0, ^010$ -> ^0/1/0$, etc. */
+        regex = regex.replace(/(?<=[01])([01])/g, "/$1");
+        //console.log(regex);
       }
       regex = new RegExp(regex);
     }
+    else if (typeof regex === 'object' && (!(regex instanceof RegExp))) {
+      opts = regex;  //single argument which is opts
+      regex = undefined;
+    }
+    // else it is a regex object
 
     this.parseArgs(opts);
 
-    let _silent = opts.silent;
+    let result = [], _silent = opts.silent;
     opts.silent = true;
 
-    let result = [];
-    //let analyzer = this.RiTa.analyzer();
     for (let i = 0; i < words.length; i++) {
-      let word = words[i];
-      let data = dict[word];
+
+      let word = words[i], data = dict[word];
       if (!this.checkCriteria(word, data, opts)) continue;
+
       if (opts.targetPos) {
         word = this.matchPos(word, data, opts);
         if (!word) continue;
@@ -192,27 +194,31 @@ class Lexicon {
         // and it is also may no longer be in the dictionary
         if (word !== words[i]) data = dict[word];
       }
-
-      // TODO: use data here if possible
-      if (opts.type === 'stresses') { // slow
-        let stresses = this.analyzer.analyzeWord(word, opts).stresses;
-        if (regex.test(stresses)) result.push(word);
-      }
-      else if (opts.type === 'phones') {
-        //let phones = this.analyzer.analyzeWord(word, opts).phones;
-        let phones = (data ? data[0] : this.rawPhones(word))
-          .replace(/1/g, '').replace(/ /g, '-') + ' ';
-        if (regex.test(phones)) result.push(word);
+      if (regex) {
+        if (opts.type === 'stresses') {
+          let phones = data ? data[0] : this.rawPhones(word);
+          let stresses = this.analyzer.phonesToStress(phones);
+          if (regex.test(stresses)) {
+            result.push(word);
+          }
+        }
+        else if (opts.type === 'phones') { // TODO: Test *****
+          let phones = data ? data[0] : this.rawPhones(word);
+          phones = phones.replace(/1/g, '').replace(/ /g, '-');// + ' ';
+          if (regex.test(phones)) result.push(word);
+        }
+        else {
+          if (regex.test(word)) result.push(word);
+        }
       }
       else {
-        if (regex.test(word)) result.push(word);
+        result.push(word);
       }
 
       if (result.length === opts.limit) break;
     }
 
     opts.silent = _silent; // reset
-
     return result;
   }
 
@@ -301,14 +307,17 @@ class Lexicon {
     let posArr = rdata[1].split(' ');
 
     // check the pos here (based on strict flag)
-    if ((strict && opts.targetPos !== posArr[0]) ||
-      (!posArr.includes(opts.targetPos))) return;
+    if (!posArr.includes(opts.targetPos) || (strict && opts.targetPos !== posArr[0])) {
+      return;
+    }
 
     // we've matched our pos, pluralize or inflect if needed
     let result = word;
-    if (opts.pluralize) {
+    if (opts.pluralize) { // looking for an 'nns'
       if (word.endsWith("ness") || word.endsWith("ism")) return;
+
       result = this.RiTa.pluralize(word);
+      if (!RiTa.isNoun(result)) return; // make sure its still a noun
     }
     else if (opts.conjugate) { // inflect
       result = this.reconjugate(word, opts.pos);
@@ -327,7 +336,7 @@ class Lexicon {
       }
       // reject if length no longer matches
       if (result.length < opts.minLength || result.length > opts.maxLength) {
-        return
+        return;
       }
     }
 
@@ -528,7 +537,7 @@ class Lexicon {
   _dict(fatal) {
     if (!this.data) {
       if (fatal) throw Error('This function requires a lexicon, make sure you are using'
-        + ' the full version of rita.js (see ' + this.RiTa.CDN+')');
+        + ' the full version of rita.js (see ' + this.RiTa.CDN + ')');
       if (!this.lexWarned) {
         console.warn('[WARN] no lexicon was loaded; feature-analysis and POS-tagging may be incorrect.');
         this.lexWarned = true;

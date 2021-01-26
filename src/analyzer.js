@@ -33,11 +33,23 @@ class Analyzer {
     return features;
   }
 
-	computePhones(word) {
+  computePhones(word) {
     const LetterToSound = require("./rita_lts");
-		if (!this.lts) this.lts = new LetterToSound(this.RiTa);
-		return this.lts.buildPhones(word);
-	}
+    if (!this.lts) this.lts = new LetterToSound(this.RiTa);
+    return this.lts.buildPhones(word);
+  }
+
+  phonesToStress(phones) {
+    if (!phones) return;
+    let stress = '';
+    let syls = phones.split(' ');
+    for (let j = 0; j < syls.length; j++) {
+      if (!syls[j].length) continue;
+      stress += syls[j].includes('1') ? '1' : '0';
+      if (j < syls.length - 1) stress += '/';
+    }
+    return stress;
+  }
 
   analyzeWord(word, opts = {}) {
 
@@ -78,23 +90,13 @@ class Analyzer {
       }
 
       // compute phones and syllables
-      let stresses = '';
       let sp = rawPhones.replace(/1/g, '').replace(/ /g, delim) + ' ';
       let phones = (sp === 'dh ') ? 'dh-ah ' : sp; // special case
       let ss = rawPhones.replace(/ /g, slash).replace(/1/g, '') + ' ';
       let syllables = (ss === 'dh ') ? 'dh-ah ' : ss;
 
       // compute stresses if needed
-      if (!useRaw) {
-        let stressyls = rawPhones.split(' ');
-        for (let j = 0; j < stressyls.length; j++) {
-          if (!stressyls[j].length) continue;
-          stresses += stressyls[j].includes(RiTa.STRESS) ? RiTa.STRESS : RiTa.NOSTRESS;
-          if (j < stressyls.length - 1) stresses += slash;
-        }
-      } else {
-        stresses += word;
-      }
+      let stresses = useRaw ? word : this.phonesToStress(rawPhones);
       if (!stresses.endsWith(' ')) stresses += ' ';
 
       result = { phones, stresses, syllables };

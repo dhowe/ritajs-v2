@@ -112,7 +112,7 @@ class RiScript {
   preParse(input, opts = {}) {
     let parse = input || '', pre = '', post = '';
     let skipPre = parse.includes('$'); // see issue:rita#59
-    let skipAll = parse.includes('\*') || opts.skipPreParse;
+    let skipAll = parse.includes('\/') || opts.skipPreParse; // comments
     if (!skipAll && !PPA_RE.test(parse)) {
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;

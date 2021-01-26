@@ -119,8 +119,40 @@ describe('RiTa.Lexicon', function () {
     expect(num === 5, result + ": " + syllables).to.be.true; // "5 syllables: "
   });
 
-  it('Should call search without opts', () => {
-    expect(RiTa.search().length > 20000, "fail").to.be.true;
+  it('Should call search without regex', () => { // SYNC:
+    expect(RiTa.search().length).eq(10);
+    expect(RiTa.search({ limit: 11 }).length).eq(11);
+    expect(RiTa.search({ pos: "n" })).eql([
+      'abalone', 'abandonment',
+      'abbey', 'abbot',
+      'abbreviation', 'abdomen',
+      'abduction', 'aberration',
+      'ability', 'abnormality'
+    ]);
+
+    expect(RiTa.search({ numSyllables: 2 })).eql([
+      'abashed', 'abate',
+      'abbey', 'abbot',
+      'abet', 'abhor',
+      'abide', 'abject',
+      'ablaze', 'able'
+    ]);
+
+    expect(RiTa.search({ numSyllables: 2, pos: 'n' })).eql([
+      'abbey', 'abbot',
+      'abode', 'abscess',
+      'absence', 'abstract',
+      'abuse', 'abyss',
+      'accent', 'access'
+    ]);
+    //console.log(RiTa.search({ numSyllables: 1, pos: 'n' }));
+    expect(RiTa.search({ numSyllables: 1, pos: 'n' })).eql([
+      'ace', 'ache',
+      'act', 'age',
+      'aid', 'aide',
+      'aim', 'air',
+      'aisle', 'ale'
+    ]);
   });
 
   it('Should call search with letters', () => {
@@ -168,13 +200,17 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should call search with pos, limit', () => {
+  it('Should call search with pos, feature, limit', () => { // SYNC:
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }))
-      .eql(['abalone', 'abandonment', 'abatement', 'abbreviation', 'abdomen']);
+      .eql(['abalone', 'abandonment', 'abbreviation', 'abdomen', 'abduction']);
+
+
+    expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }))
+      .eql(['abalone', 'abandonment', 'abbreviation', 'abdomen', 'abduction']);
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n', numSyllables: 3 }))
-      .eql(['abatement', 'abdomen', "abduction", "abeyance", "abortion"]);
+      .eql(['abdomen', 'abduction', 'abortion', 'abruptness', 'absorber']);
 
     expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'n', limit: 3 }))
       .eql(['elephant', 'infant', 'infantry']);
@@ -186,10 +222,26 @@ describe('RiTa.Lexicon', function () {
       .eql(["fantasize"]);
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'nns' }))
-      .eql(['abalone', 'abandonments', 'abatements', 'abbreviations', 'abdomens']);
+      .eql(['abalone',
+        'abandonments',
+        'abbreviations',
+        'abductions',
+        'abilities']);
+
+    expect(RiTa.search(/0\/1\/0/, { type: 'stresses', limit: 5, pos: 'nns' }))
+      .eql(['abalone',
+        'abandonments',
+        'abbreviations',
+        'abductions',
+        'abilities']);
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'nns', numSyllables: 3 }))
-      .eql(['abatements', 'abdomens', "abductions", "abeyances", "abortions"]);
+      .eql(['abductions',
+        'abortions',
+        'absorbers',
+        'abstentions',
+        'abstractions']);
+
 
     expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'nns', limit: 3 }))
       .eql(['elephants', 'infants', 'infantries']);
@@ -198,25 +250,8 @@ describe('RiTa.Lexicon', function () {
       .eql(["fantasize"]);
   });
 
+  it('Should call search with stresses, limit', () => { // SYNC:
 
-  /* omitting no limit tests as they are a bit slow
-  it('Should call search with stresses', () => {
-    expect(RiTa.search('0/1/0/0/0/0/0', { type: 'stresses' })).eql([
-      "environmentalism"
-    ]);
-    expect(RiTa.search('0100000', { type: 'stresses' })).eql([
-      "environmentalism"
-    ]);
-  });*/
-
-  it('Should call search with stresses, limit', () => {
-    expect(RiTa.search('0/1/0/0/0/0', { type: 'stresses', limit: 5 })).eql([
-      'accountability',
-      'anticipatory',
-      'appreciatively',
-      'authoritarianism',
-      'colonialism'
-    ]);
     expect(RiTa.search('010000', { type: 'stresses', limit: 5 })).eql([
       'accountability',
       'anticipatory',
@@ -235,6 +270,20 @@ describe('RiTa.Lexicon', function () {
       'appreciatively',
       'authoritarianism',
       "conciliatory"
+    ]);
+    expect(RiTa.search('0/1/0/0/0/0', { type: 'stresses', limit: 5 })).eql([
+      'accountability',
+      'anticipatory',
+      'appreciatively',
+      'authoritarianism',
+      'colonialism'
+    ]);
+    expect(RiTa.search(/0\/1\/0\/0\/0\/0/, { type: 'stresses', limit: 5 })).eql([
+      'accountability',
+      'anticipatory',
+      'appreciatively',
+      'authoritarianism',
+      'colonialism'
     ]);
   });
 
@@ -485,8 +534,8 @@ describe('RiTa.Lexicon', function () {
     eql(result, [
       'ace', 'dice',
       'iced', 'icy',
-      'ire', 'lice', 
-      'nice', 'rice', 
+      'ire', 'lice',
+      'nice', 'rice',
       'vice'
     ]);
 

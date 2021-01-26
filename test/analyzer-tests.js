@@ -59,8 +59,6 @@ describe('RiTa.Analyzer', () => {
     eq(RiTa.stresses("The emperor had no clothes on."), "0 1/0/0 1 1 1 1 .");
     eq(RiTa.stresses("The emperor had no clothes on. The King is fat."), "0 1/0/0 1 1 1 1 . 0 1 1 1 .");
 
-    eq(RiTa.stresses("abatements"), "0/1/0", "abatements");
-
     word = "to present, to export, to decide, to begin";
     result = RiTa.stresses(word);
     answer = hasLex ? "1 1/0 , 1 1/0 , 1 0/1 , 1 0/1" : '1 1/1 , 1 0/1 , 1 0/1 , 1 1/1';
