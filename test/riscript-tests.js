@@ -1,3 +1,5 @@
+const { expect } = require('chai');
+
 describe('RiTa.RiScript', () => {
 
   const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 }, TLP = { trace: 1, traceLex: 1 };
@@ -9,7 +11,7 @@ describe('RiTa.RiScript', () => {
   describe('Comments', () => {
 
     it('Should ignore line comments ', () => {
-        expect(RiTa.evaluate("// $foo=a")).eq("");
+      expect(RiTa.evaluate("// $foo=a")).eq("");
     });
     it('Should ignore block comments ', () => {
       expect(RiTa.evaluate("/* hello */")).eq("");
@@ -22,7 +24,7 @@ describe('RiTa.RiScript', () => {
 
       let opts = ['a', 'b', 'c', 'd'];
       let rule = '&rule=(' + opts.join('|') + ').seq()';
-      let res = RiTa.evaluate(rule+'\n$rule $rule $rule $rule',{}, TT);
+      let res = RiTa.evaluate(rule + '\n$rule $rule $rule $rule', {}, TT);
       expect(res).eq(opts.join(' '));
 
       /*  for (let i = 0; i < opts.length; i++) {
@@ -245,7 +247,7 @@ describe('RiTa.RiScript', () => {
 
       let passed = false;
       for (let i = 0; i < 10; i++) { // $$: must not always match
-        let res = RiTa.evaluate('$$foo=(a|b|c|d)\n$foo $foo $foo',{});
+        let res = RiTa.evaluate('$$foo=(a|b|c|d)\n$foo $foo $foo', {});
         //console.log(i+") "+res);
         let pts = res.split(' ');
         expect(pts.length).eq(3);
@@ -576,7 +578,7 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve across assignment types', () => {
       let ctx; // see issue:rita#59
-      expect(RiTa.evaluate('The $foo=blue (dog | dog)', ctx = {})).eq('The blue dog'); 
+      expect(RiTa.evaluate('The $foo=blue (dog | dog)', ctx = {})).eq('The blue dog');
       expect(ctx.foo).eq('blue dog');
 
       expect(RiTa.evaluate('The ($foo=blue) (dog | dog)', ctx = {})).eq('The blue dog');
@@ -880,6 +882,31 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('The $a.capitalize() dog.', {}, ST)).eq('The $a.capitalize() dog.');
     });
 
+    it('Should ignore no-op symbols in context', () => {
+      expect(RiTa.evaluate('$foo', {}, ST)).eq('$foo'); // no-op
+      expect(RiTa.evaluate('a $foo dog', {}, ST)).eq('a $foo dog'); // no-op
+
+      expect(RiTa.evaluate('$100 is a lot of $dog.', { dog: 'terrier' }, ST)).eq('$100 is a lot of terrier.');
+      expect(RiTa.evaluate('the $dog cost $100', { dog: 'terrier' }, ST)).eq('the terrier cost $100');
+      expect(RiTa.evaluate('the $dog cost $100!', { dog: 'terrier' }, ST)).eq('the terrier cost $100!');
+      expect(RiTa.evaluate('the $dog cost ***lots***', { dog: 'terrier' })).eq('the terrier cost ***lots***');
+      expect(RiTa.evaluate('the $dog^1 was a footnote.', { dog: 'terrier' })).eq('the terrier^1 was a footnote.');
+    })
+
+    it('Should repeat choices with randomSeed', () => {
+      let seed = Math.random() * Number.MAX_SAFE_INTEGER;
+      let script = "$a=(1|2|3|4|5|6)\n$a";
+      RiTa.randomSeed(seed);
+      let a = RiTa.evaluate(script);
+      for (let i = 0; i < 10; i++) {
+        RiTa.randomSeed(seed);
+        b = RiTa.evaluate("$a=(1|2|3|4|5|6)\n$a");
+        console.log(i+') '+a,b);
+        expect(a).eq(b);
+        a = b;
+      }
+    });
+
     it('Should resolve symbols in context', () => {
 
       expect(RiTa.evaluate("$a", { a: 1 })).eq("1");
@@ -888,27 +915,17 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('the $dog ate', { dog: 'terrier' })).eq('the terrier ate');
       expect(RiTa.evaluate('the $dog $verb', { dog: 'terrier', verb: 'ate' })).eq('the terrier ate');
 
-      expect(RiTa.evaluate('$foo', {}, ST)).eq('$foo'); // no-op
-      expect(RiTa.evaluate('a $foo dog', {}, ST)).eq('a $foo dog'); // no-op
       expect(RiTa.evaluate('$foo', { foo: 'bar' })).eq('bar');
       expect(RiTa.evaluate('a $dog', { dog: 'terrier' })).eq('a terrier');
       expect(RiTa.evaluate('I ate the $dog', { dog: 'beagle' })).eq('I ate the beagle');
       expect(RiTa.evaluate('The $dog today.', { dog: 'lab' })).eq('The lab today.');
       expect(RiTa.evaluate('I ate the $dog.', { dog: 'lab' })).eq('I ate the lab.');
 
-      expect(RiTa.evaluate('$foo\n', {}, ST)).eq('$foo'); // no-op
-      expect(RiTa.evaluate('a $foo\ndog', {}, ST)).eq('a $foo dog'); // no-op
       expect(RiTa.evaluate('$foo\n', { foo: 'bar' })).eq('bar');
       expect(RiTa.evaluate('a $dog', { dog: 'terrier' })).eq('a terrier');
       expect(RiTa.evaluate('I ate\nthe $dog', { dog: 'beagle' })).eq('I ate the beagle');
       expect(RiTa.evaluate('The $dog\ntoday.', { dog: 'lab' })).eq('The lab today.');
       expect(RiTa.evaluate('I ate the\n$dog.', { dog: 'lab' })).eq('I ate the lab.');
-
-      expect(RiTa.evaluate('$100 is a lot of $dog.', { dog: 'terrier' })).eq('$100 is a lot of terrier.');
-      expect(RiTa.evaluate('the $dog cost $100', { dog: 'terrier' })).eq('the terrier cost $100');
-      expect(RiTa.evaluate('the $dog cost $100!', { dog: 'terrier' })).eq('the terrier cost $100!');
-      expect(RiTa.evaluate('the $dog cost ***lots***', { dog: 'terrier' })).eq('the terrier cost ***lots***');
-      expect(RiTa.evaluate('the $dog^1 was a footnote.', { dog: 'terrier' })).eq('the terrier^1 was a footnote.');
 
       let ctx = { user: { name: 'jen' } }
       expect(RiTa.evaluate("Was $user.name.ucf() (ok | ok) today?", ctx)).eq('Was Jen ok today?');
