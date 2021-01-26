@@ -24,8 +24,8 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("/* hello */")).eq("");
       expect(RiTa.evaluate("/* $foo=a */")).eq("");
       expect(RiTa.evaluate("a /* $foo=a */b",0)).eq("a b");
-      expect(RiTa.evaluate("a/* $foo=a */ b",0,TLP)).eq("a b");
-      expect(RiTa.evaluate("a/* $foo=a */b",0,TLP)).eq("ab");
+      expect(RiTa.evaluate("a/* $foo=a */ b")).eq("a b");
+      expect(RiTa.evaluate("a/* $foo=a */b")).eq("ab");
     })
   });
 
