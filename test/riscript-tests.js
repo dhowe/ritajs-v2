@@ -8,7 +8,7 @@ describe('RiTa.RiScript', () => {
 
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
 
-  describe('Comments', () => { // SYNC:
+  describe('Comments', () => { //:
 
     it('Should ignore line comments ', () => {
       expect(RiTa.evaluate("// $foo=a")).eq("");
@@ -898,7 +898,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('The $a.capitalize() dog.', {}, ST)).eq('The $a.capitalize() dog.');
     });
 
-    it('Should ignore no-op symbols in context', () => { // SYNC:
+    it('Should ignore no-op symbols in context', () => { 
       expect(RiTa.evaluate('$foo', {}, ST)).eq('$foo'); 
       expect(RiTa.evaluate('a $foo dog', {}, ST)).eq('a $foo dog');
 
@@ -909,7 +909,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('the $dog^1 was a footnote.', { dog: 'terrier' })).eq('the terrier^1 was a footnote.');
     })
 
-    it('Should repeat choices with randomSeed', () => { // SYNC:
+    it('Should repeat choices with randomSeed', () => { 
       let seed = Math.random() * Number.MAX_SAFE_INTEGER;
       let script = "$a=(1|2|3|4|5|6)\n$a";
       RiTa.randomSeed(seed);
@@ -923,7 +923,7 @@ describe('RiTa.RiScript', () => {
       }
     });
 
-    it('Should resolve symbols in context', () => { // SYNC:
+    it('Should resolve symbols in context', () => { //:
 
       expect(RiTa.evaluate("$a", { a: 1 })).eq("1");
 
