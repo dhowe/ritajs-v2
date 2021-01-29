@@ -29,15 +29,6 @@ RiScriptParserListener.prototype.exitExpr = function(ctx) {
 };
 
 
-// Enter a parse tree produced by RiScriptParser#link.
-RiScriptParserListener.prototype.enterLink = function(ctx) {
-};
-
-// Exit a parse tree produced by RiScriptParser#link.
-RiScriptParserListener.prototype.exitLink = function(ctx) {
-};
-
-
 // Enter a parse tree produced by RiScriptParser#cexpr.
 RiScriptParserListener.prototype.enterCexpr = function(ctx) {
 };
@@ -62,15 +53,6 @@ RiScriptParserListener.prototype.enterWeight = function(ctx) {
 
 // Exit a parse tree produced by RiScriptParser#weight.
 RiScriptParserListener.prototype.exitWeight = function(ctx) {
-};
-
-
-// Enter a parse tree produced by RiScriptParser#url.
-RiScriptParserListener.prototype.enterUrl = function(ctx) {
-};
-
-// Exit a parse tree produced by RiScriptParser#url.
-RiScriptParserListener.prototype.exitUrl = function(ctx) {
 };
 
 

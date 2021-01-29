@@ -1,4 +1,4 @@
-// Generated from grammar/RiScript.g4 by ANTLR 4.8
+// Generated from grammar/RiScriptLexer.g4 by ANTLR 4.8
 // jshint ignore: start
 var antlr4 = require('antlr4/index');
 
@@ -223,7 +223,7 @@ RiScriptLexer.prototype.ruleNames = [ "LCOMM", "BCOMM", "GT", "LT", "LP",
                                       "TF", "ENT", "INT", "OP", "CHR", "IDENT", 
                                       "NIDENT" ];
 
-RiScriptLexer.prototype.grammarFileName = "RiScript.g4";
+RiScriptLexer.prototype.grammarFileName = "RiScriptLexer.g4";
 
 
 exports.RiScriptLexer = RiScriptLexer;

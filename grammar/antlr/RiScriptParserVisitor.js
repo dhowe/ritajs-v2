@@ -24,12 +24,6 @@ RiScriptParserVisitor.prototype.visitExpr = function(ctx) {
 };
 
 
-// Visit a parse tree produced by RiScriptParser#link.
-RiScriptParserVisitor.prototype.visitLink = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
 // Visit a parse tree produced by RiScriptParser#cexpr.
 RiScriptParserVisitor.prototype.visitCexpr = function(ctx) {
   return this.visitChildren(ctx);
@@ -44,12 +38,6 @@ RiScriptParserVisitor.prototype.visitCond = function(ctx) {
 
 // Visit a parse tree produced by RiScriptParser#weight.
 RiScriptParserVisitor.prototype.visitWeight = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by RiScriptParser#url.
-RiScriptParserVisitor.prototype.visitUrl = function(ctx) {
   return this.visitChildren(ctx);
 };
 

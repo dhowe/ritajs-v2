@@ -1,10 +1,10 @@
-// Generated from grammar/RiScript.g4 by ANTLR 4.8
+// Generated from grammar/RiScriptParser.g4 by ANTLR 4.8
 // jshint ignore: start
 var antlr4 = require('antlr4/index');
-var RiScriptListener = require('./RiScriptListener').RiScriptListener;
-var RiScriptVisitor = require('./RiScriptVisitor').RiScriptVisitor;
+var RiScriptParserListener = require('./RiScriptParserListener').RiScriptParserListener;
+var RiScriptParserVisitor = require('./RiScriptParserVisitor').RiScriptParserVisitor;
 
-var grammarFileName = "RiScript.g4";
+var grammarFileName = "RiScriptParser.g4";
 
 
 var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
@@ -255,19 +255,19 @@ ScriptContext.prototype.NL = function(i) {
 
 
 ScriptContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterScript(this);
 	}
 };
 
 ScriptContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitScript(this);
 	}
 };
 
 ScriptContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitScript(this);
     } else {
         return visitor.visitChildren(this);
@@ -392,19 +392,19 @@ ExprContext.prototype.chars = function(i) {
 };
 
 ExprContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterExpr(this);
 	}
 };
 
 ExprContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitExpr(this);
 	}
 };
 
 ExprContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitExpr(this);
     } else {
         return visitor.visitChildren(this);
@@ -528,19 +528,19 @@ CexprContext.prototype.cond = function(i) {
 };
 
 CexprContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterCexpr(this);
 	}
 };
 
 CexprContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitCexpr(this);
 	}
 };
 
 CexprContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitCexpr(this);
     } else {
         return visitor.visitChildren(this);
@@ -658,19 +658,19 @@ CondContext.prototype.COM = function() {
 };
 
 CondContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterCond(this);
 	}
 };
 
 CondContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitCond(this);
 	}
 };
 
 CondContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitCond(this);
     } else {
         return visitor.visitChildren(this);
@@ -792,19 +792,19 @@ WeightContext.prototype.WS = function(i) {
 
 
 WeightContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterWeight(this);
 	}
 };
 
 WeightContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitWeight(this);
 	}
 };
 
 WeightContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitWeight(this);
     } else {
         return visitor.visitChildren(this);
@@ -923,19 +923,19 @@ ChoiceContext.prototype.OR = function(i) {
 
 
 ChoiceContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterChoice(this);
 	}
 };
 
 ChoiceContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitChoice(this);
 	}
 };
 
 ChoiceContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitChoice(this);
     } else {
         return visitor.visitChildren(this);
@@ -1035,19 +1035,19 @@ AssignContext.prototype.symbol = function() {
 };
 
 AssignContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterAssign(this);
 	}
 };
 
 AssignContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitAssign(this);
 	}
 };
 
 AssignContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitAssign(this);
     } else {
         return visitor.visitChildren(this);
@@ -1272,19 +1272,19 @@ CharsContext.prototype.FS = function(i) {
 
 
 CharsContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterChars(this);
 	}
 };
 
 CharsContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitChars(this);
 	}
 };
 
 CharsContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitChars(this);
     } else {
         return visitor.visitChildren(this);
@@ -1402,19 +1402,19 @@ DynamicContext.prototype.transform = function(i) {
 };
 
 DynamicContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterDynamic(this);
 	}
 };
 
 DynamicContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitDynamic(this);
 	}
 };
 
 DynamicContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitDynamic(this);
     } else {
         return visitor.visitChildren(this);
@@ -1492,19 +1492,19 @@ SymbolContext.prototype.transform = function(i) {
 };
 
 SymbolContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterSymbol(this);
 	}
 };
 
 SymbolContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitSymbol(this);
 	}
 };
 
 SymbolContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitSymbol(this);
     } else {
         return visitor.visitChildren(this);
@@ -1604,19 +1604,19 @@ WexprContext.prototype.weight = function() {
 };
 
 WexprContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterWexpr(this);
 	}
 };
 
 WexprContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitWexpr(this);
 	}
 };
 
 WexprContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitWexpr(this);
     } else {
         return visitor.visitChildren(this);
@@ -1687,19 +1687,19 @@ TransformContext.prototype.TF = function() {
 };
 
 TransformContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterTransform(this);
 	}
 };
 
 TransformContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitTransform(this);
 	}
 };
 
 TransformContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitTransform(this);
     } else {
         return visitor.visitChildren(this);
@@ -1767,19 +1767,19 @@ OpContext.prototype.EQ = function() {
 };
 
 OpContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.enterOp(this);
 	}
 };
 
 OpContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptListener ) {
+    if(listener instanceof RiScriptParserListener ) {
         listener.exitOp(this);
 	}
 };
 
 OpContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptVisitor ) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
         return visitor.visitOp(this);
     } else {
         return visitor.visitChildren(this);
