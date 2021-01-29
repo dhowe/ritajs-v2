@@ -9,7 +9,7 @@ class Inflector {
   adjustNumber(word, type, dbug) {
 
     if (!word || !word.length) return '';
-    
+
     word = word.trim();
 
     let check = word.toLowerCase();

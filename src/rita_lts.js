@@ -55,20 +55,21 @@ class LetterToSound {
     }
   }
 
-  buildPhones(word) {
+  buildPhones(word, opts) { // SYNC:
 
     const RiTa = this.RiTa;
 
-    let dig, phoneList = [], windowSize = 4,
+    if (!word || !word.length || RiTa.isPunct(word)) return;
+
+    let dig, phoneList = [], windowSize = 4, 
       full_buff, tmp, currentState, startIndex, stateIndex, c;
 
-    if (!word || !word.length || RiTa.isPunct(word)) return null;
-
+    let silent = RiTa.SILENT || RiTa.SILENCE_LTS || (opts && opts.silent);
     if (!LetterToSound.RULES) {
       if (!this.warnedForNoLTS) {
         this.warnedForNoLTS = true;
-        console.warn("[WARN] No LTS-rules found: for word features "
-          + "outside the lexicon, use a larger version of RiTa");
+        if (!silent) console.warn("[WARN] No LTS-rules: for "
+          + "words not in lexicon, use a full version of RiTa");
       }
       return null;
     }
@@ -78,8 +79,6 @@ class LetterToSound {
       word = (word.length > 1) ? word.split('') : [word];
       for (let k = 0; k < word.length; k++) {
         dig = parseInt(word[k]);
-        if (dig < 0 || dig > 9) throw Error
-          ("Attempt to pass multi-digit number to LTS: '" + word + "'");
         phoneList.push(Util.Phones.digits[dig]);
       }
       return phoneList;
@@ -101,7 +100,7 @@ class LetterToSound {
 
       // must check for null here, not 0 (and not ===)
       if (isNaN(parseFloat(startIndex)) || !isFinite(startIndex)) { // isNum
-        if (!RiTa.SILENT && !RiTa.SILENCE_LTS) {
+        if (!silent) {
           console.warn("Unable to generate LTS for '" + word + "', no index for '" +
             c + "', isDigit=" + Util.isNum(c) + ", isPunct=" + RiTa.isPunct(c));
         }

@@ -8,7 +8,19 @@ describe('RiTa.RiScript', () => {
 
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
 
+<<<<<<< HEAD
   describe('Comments', () => {
+=======
+  false && describe('Links', () => { // SYNC:
+    it('Should parse md-style links ', () => {
+      let res = RiTa.evaluate("(some text)[https://somelink]", 0, TLP);
+      console.log(res);
+      expect(res).eq("balk");
+    });
+  });
+
+  describe('Comments', () => { // SYNC:
+>>>>>>> 622fb525f24146fb703cbbe88f6aad54757959d0
 
     it('Should ignore line comments ', () => {
       expect(RiTa.evaluate("// $foo=a")).eq("");
@@ -23,7 +35,7 @@ describe('RiTa.RiScript', () => {
     it('Should ignore block comments ', () => {
       expect(RiTa.evaluate("/* hello */")).eq("");
       expect(RiTa.evaluate("/* $foo=a */")).eq("");
-      expect(RiTa.evaluate("a /* $foo=a */b",0)).eq("a b");
+      expect(RiTa.evaluate("a /* $foo=a */b", 0)).eq("a b");
       expect(RiTa.evaluate("a/* $foo=a */ b")).eq("a b");
       expect(RiTa.evaluate("a/* $foo=a */b")).eq("ab");
     })
@@ -232,8 +244,13 @@ describe('RiTa.RiScript', () => {
       expect(rs.isParseable("&&b")).eq(false);
     });
 
+<<<<<<< HEAD
     it('Should resolve simple expressions', () => {
       
+=======
+    it('Should resolve simple expressions', () => { // SYNC:
+
+>>>>>>> 622fb525f24146fb703cbbe88f6aad54757959d0
       expect(RiTa.evaluate('foo', {})).eq('foo');
       expect(RiTa.evaluate('foo!', {})).eq('foo!');
       expect(RiTa.evaluate('!foo', {})).eq('!foo');
@@ -246,14 +263,19 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {})).eq('baz bar');
       expect(RiTa.evaluate('$foo=(a|b|c)\n$foo is $foo')).to.be.oneOf(['a is a', 'b is b', 'c is c']);;
       expect(RiTa.evaluate('<em>foo</em>', {})).eq('<em>foo</em>');
-     // expect(RiTa.evaluate('[foo](http://blah.com)', {})).eq('[foo](http://blah.com)');
+      // expect(RiTa.evaluate('[foo](http://blah.com)', {})).eq('[foo](http://blah.com)');
       expect(RiTa.evaluate('(a|a)', { a: 'a', b: 'b' })).eq('a');
 
       //expect(RiTa.evaluate('foo.bar', {}, {trace:0})).eq('foo.bar'); // KNOWN ISSUE
     });
 
+<<<<<<< HEAD
     it('Should resolve simple dynamics', () => { 
  
+=======
+    it('Should resolve simple dynamics', () => { // SYNC:
+
+>>>>>>> 622fb525f24146fb703cbbe88f6aad54757959d0
       expect(RiTa.evaluate('$$foo=bar\nbaz', {})).eq('baz');
       expect(RiTa.evaluate('($$foo=bar)\nbaz', {})).eq('bar baz');
       expect(RiTa.evaluate('$$foo=bar\nbaz$foo', {})).eq('bazbar');
@@ -562,7 +584,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('a');
     });
 
-    it('Should pluralize phrases', () => {
+    it('Should pluralize phrases', () => { // SYNC:
       expect(RiTa.evaluate('These (bad feeling).pluralize().')).eq('These bad feelings.');
       expect(RiTa.evaluate('She (pluralize).pluralize().')).eq('She pluralizes.');
       expect(RiTa.evaluate('These ($state feeling).pluralize().', { state: 'bad' })).eq('These bad feelings.');
@@ -570,16 +592,19 @@ describe('RiTa.RiScript', () => {
 
       expect(RiTa.evaluate('$$state=(bad | bad)\nThese ($state feeling).pluralize().', {})).eq('These bad feelings.');
 
-      //expect(RiTa.evaluate('These ($state feeling).pluralize().',  TODO: SEE KNOWN ISSUES
-      //{ state: '(bad | bad)' }, TT)).eq('These bad feelings.');
+      expect(RiTa.evaluate('These ($state feeling).pluralize().', { state: '(bad | bad)' })).eq('These bad feelings.');
+
+      expect(RiTa.evaluate('These (off-site).pluralize().', { state: '(bad | bad)' })).eq('These off-sites.');
     })
 
-    it('Should resolve transforms on literals', () => {
+    it('Should resolve transforms on literals', () => { // SYNC:
       expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many “teeth” do you have?');
       expect(RiTa.evaluate('That is (ant).articlize().', 0)).eq('That is an ant.');
+      expect(RiTa.evaluate('That is ().articlize().', 0)).eq('That is .');
       expect(RiTa.evaluate('That is an (ant).capitalize().')).eq('That is an Ant.');
       expect(RiTa.evaluate('(ant).articlize().capitalize()', 0)).eq('An ant');
       expect(RiTa.evaluate('(ant).capitalize().articlize()', 0)).eq('an Ant');
+      expect(RiTa.evaluate('(deeply-nested expression).art()')).eq('a deeply-nested expression');
     });
 
     it('Should resolve transforms on phrases', () => {
@@ -898,8 +923,13 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('The $a.capitalize() dog.', {}, ST)).eq('The $a.capitalize() dog.');
     });
 
+<<<<<<< HEAD
     it('Should ignore no-op symbols in context', () => { 
       expect(RiTa.evaluate('$foo', {}, ST)).eq('$foo'); 
+=======
+    it('Should ignore no-op symbols in context', () => { // SYNC:
+      expect(RiTa.evaluate('$foo', {}, ST)).eq('$foo');
+>>>>>>> 622fb525f24146fb703cbbe88f6aad54757959d0
       expect(RiTa.evaluate('a $foo dog', {}, ST)).eq('a $foo dog');
 
       expect(RiTa.evaluate('$100 is a lot of $dog.', { dog: 'terrier' }, ST)).eq('$100 is a lot of terrier.');
