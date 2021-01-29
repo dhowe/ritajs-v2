@@ -166,10 +166,12 @@ class RiScript {
     return RiScript.transforms;
   }
 
-  static articlize(s) {
+  static articlize(s) { // SYNC:
     if (!s || !s.length) return '';
-    let phones = RiTa().phones(s, { silent: true });
-    return (phones && phones.length
+    let first = s.split(/\s+/)[0];
+    let phones = RiTa().phones(first, { silent: true });
+    // could still be original word if no phones found
+    return (phones && phones.length 
       && VOW_RE.test(phones[0]) ? 'an ' : 'a ') + s;
   }
 

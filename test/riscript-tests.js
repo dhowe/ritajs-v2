@@ -574,12 +574,14 @@ describe('RiTa.RiScript', () => {
       //{ state: '(bad | bad)' }, TT)).eq('These bad feelings.');
     })
 
-    it('Should resolve transforms on literals', () => {
+    it('Should resolve transforms on literals', () => { // SYNC:
       expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many “teeth” do you have?');
       expect(RiTa.evaluate('That is (ant).articlize().', 0)).eq('That is an ant.');
+      expect(RiTa.evaluate('That is ().articlize().', 0)).eq('That is .');
       expect(RiTa.evaluate('That is an (ant).capitalize().')).eq('That is an Ant.');
       expect(RiTa.evaluate('(ant).articlize().capitalize()', 0)).eq('An ant');
       expect(RiTa.evaluate('(ant).capitalize().articlize()', 0)).eq('an Ant');
+      expect(RiTa.evaluate('(deeply-nested expression).art()')).eq('a deeply-nested expression');
     });
 
     it('Should resolve transforms on phrases', () => {

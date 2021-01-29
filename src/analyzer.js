@@ -33,10 +33,10 @@ class Analyzer {
     return features;
   }
 
-  computePhones(word) {
+  computePhones(word, opts) {
     const LetterToSound = require("./rita_lts");
     if (!this.lts) this.lts = new LetterToSound(this.RiTa);
-    return this.lts.buildPhones(word);
+    return this.lts.buildPhones(word, opts);
   }
 
   phonesToStress(phones) {
@@ -54,7 +54,6 @@ class Analyzer {
   analyzeWord(word, opts = {}) {
 
     let RiTa = this.RiTa;
-    let silentLts = opts && opts.silent;
 
     // check the cache first
     let result = RiTa.CACHING && this.cache[word];
@@ -73,12 +72,13 @@ class Analyzer {
         rawPhones && (rawPhones += '-z'); // add 's' phone
       }
 
+      let silent = RiTa.SILENT || RiTa.SILENCE_LTS || (opts && opts.silent);
+
       // if no phones yet, try the lts-engine
       if (!rawPhones) {
-        let ltsPhones = this.computePhones(word);
+        let ltsPhones = this.computePhones(word, opts);
         if (ltsPhones && ltsPhones.length > 0) {
-          if (!RiTa.SILENT && !RiTa.SILENCE_LTS && !silentLts
-            && lex.size() && word.match(HAS_LETTER_RE)) {
+          if (!silent && lex.size() && word.match(HAS_LETTER_RE)) {
             console.log("[RiTa] Used LTS-rules for '" + word + "'");
           }
           rawPhones = Util.syllablesFromPhones(ltsPhones);

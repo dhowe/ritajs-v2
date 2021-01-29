@@ -54,6 +54,25 @@ describe('RiTa.Analyzer', () => {
 		eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
   });
 
+  false && it('TODO', () => {
+
+		let feats = RiTa.analyze("off-site");
+		console.log(feats);
+		eq(feats["pos"], "jj");
+    eq(feats["phones"], 'ah-b-ae-n-d-ah-n');
+		eq(feats["tokens"], "abandon");
+    eq(feats["stresses"], "0/1/0");
+		eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
+
+		feats = RiTa.analyze("oft-cited");
+		console.log(feats);
+		eq(feats["pos"], "jj");
+    eq(feats["phones"], 'ah-b-ae-n-d-ah-n');
+		eq(feats["tokens"], "abandon");
+    eq(feats["stresses"], "0/1/0");
+		eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
+  });
+
   it('Should call stresses', () => {
 
     let result, answer, word;

@@ -537,10 +537,11 @@ class Lexicon {
 
   _dict(fatal) {
     if (!this.data) {
-      if (fatal) throw Error('This function requires a lexicon, make sure you are using'
-        + ' the full version of rita.js (see ' + this.RiTa.CDN + ')');
+      if (fatal) throw Error('This function requires a lexicon, make sure you'
+        + ' are using the full version of rita (see ' + this.RiTa.CDN + ')');
       if (!this.lexWarned) {
-        console.warn('[WARN] no lexicon was loaded; feature-analysis and POS-tagging may be incorrect.');
+        console.warn('[WARN] no lexicon was loaded, feature-analysis'
+          + ' and POS-tagging may be incorrect.');
         this.lexWarned = true;
       }
     }
