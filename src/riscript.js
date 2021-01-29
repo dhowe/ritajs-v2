@@ -78,7 +78,7 @@ class RiScript {
         .replace(/\r/g, "\\r").replace(/\t/g, "\\t");
     }
     let type = (t.type > -1 ? this.lexer.symbolicNames[t.type] : 'EOF');
-    return "[" + t.line + "." + t.column + ": '" + txt + "' -> " + type + "]";
+    return "[ " + t.line + "." + t.column + ": '" + txt + "' -> " + type + " ]";
   }
 
   parse(tokens, input, opts) {
@@ -111,13 +111,12 @@ class RiScript {
 
   preParse(input, opts = {}) {
     let parse = input || '', pre = '', post = '';
-    let skipPre = parse.includes('$'); // see issue:rita#59
-    let skipAll = parse.includes('\/') || opts.skipPreParse; // comments
-    if (!skipAll && !PPA_RE.test(parse)) {
+/*     let skipPre = parse.includes('$'); // see issue:rita#59
+    let skipAll = parse.includes('\/') || opts.skipPreParse; // comments */
+    if (!PPA_RE.test(parse)) {
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
-
-      while (!skipPre && preIdx < words.length) {
+      while (preIdx < words.length) {
         if (PPB_RE.test(words[preIdx])) break;
         preIdx++;
       }
@@ -239,8 +238,8 @@ RiScript.transforms = {
 const VOW_RE = /[aeiou]/;
 const ENT_RE = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 
-const PPA_RE = /^[${]/;
-const PPB_RE = /[()$|{}]/;
+const PPA_RE = /(^[{]|[/$])/;
+const PPB_RE = /[()$|{}\[\]]/;
 const PRS_RE = /([(){}|]|(\${1,2}\w+))/;
 const SYM_RE = /\${1,2}\w+/;
 

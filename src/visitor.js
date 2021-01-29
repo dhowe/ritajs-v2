@@ -112,6 +112,11 @@ class Visitor extends RiScriptVisitor {
     return result;
   }
 
+  visitLink(ctx) {
+      return "<a href=\""+ ctx.url().getText()+"\">" + this.visit(ctx.expr()) + "</a>";
+      //this.trace && console.log("visitLink: " + this.visit(ctx.expr());  
+  }
+
   visitSymbol(ctx) {
 
     let txs = ctx.transform(), result = ctx.getText(), tn = ctx.SYM();
