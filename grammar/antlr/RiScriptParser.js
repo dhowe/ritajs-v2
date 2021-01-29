@@ -8,114 +8,129 @@ var grammarFileName = "RiScriptParser.g4";
 
 
 var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
-    "\u0003\u001e\u00ad\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004\u0004",
-    "\t\u0004\u0004\u0005\t\u0005\u0004\u0006\t\u0006\u0004\u0007\t\u0007",
-    "\u0004\b\t\b\u0004\t\t\t\u0004\n\t\n\u0004\u000b\t\u000b\u0004\f\t\f",
-    "\u0004\r\t\r\u0004\u000e\t\u000e\u0003\u0002\u0003\u0002\u0003\u0002",
-    "\u0007\u0002 \n\u0002\f\u0002\u000e\u0002#\u000b\u0002\u0003\u0002\u0003",
-    "\u0002\u0003\u0003\u0003\u0003\u0003\u0003\u0003\u0003\u0006\u0003+",
-    "\n\u0003\r\u0003\u000e\u0003,\u0003\u0004\u0007\u00040\n\u0004\f\u0004",
-    "\u000e\u00043\u000b\u0004\u0003\u0004\u0003\u0004\u0006\u00047\n\u0004",
-    "\r\u0004\u000e\u00048\u0003\u0004\u0003\u0004\u0007\u0004=\n\u0004\f",
-    "\u0004\u000e\u0004@\u000b\u0004\u0003\u0004\u0003\u0004\u0003\u0005",
-    "\u0003\u0005\u0007\u0005F\n\u0005\f\u0005\u000e\u0005I\u000b\u0005\u0003",
-    "\u0005\u0003\u0005\u0007\u0005M\n\u0005\f\u0005\u000e\u0005P\u000b\u0005",
-    "\u0003\u0005\u0003\u0005\u0007\u0005T\n\u0005\f\u0005\u000e\u0005W\u000b",
-    "\u0005\u0003\u0005\u0005\u0005Z\n\u0005\u0003\u0006\u0007\u0006]\n\u0006",
-    "\f\u0006\u000e\u0006`\u000b\u0006\u0003\u0006\u0003\u0006\u0003\u0006",
-    "\u0003\u0006\u0007\u0006f\n\u0006\f\u0006\u000e\u0006i\u000b\u0006\u0003",
-    "\u0007\u0003\u0007\u0003\u0007\u0003\u0007\u0007\u0007o\n\u0007\f\u0007",
-    "\u000e\u0007r\u000b\u0007\u0003\u0007\u0003\u0007\u0003\u0007\u0003",
-    "\u0007\u0007\u0007x\n\u0007\f\u0007\u000e\u0007{\u000b\u0007\u0003\b",
-    "\u0003\b\u0005\b\u007f\n\b\u0003\b\u0003\b\u0003\b\u0003\t\u0003\t\u0003",
-    "\t\u0003\t\u0006\t\u0088\n\t\r\t\u000e\t\u0089\u0003\n\u0003\n\u0007",
-    "\n\u008e\n\n\f\n\u000e\n\u0091\u000b\n\u0003\u000b\u0003\u000b\u0007",
-    "\u000b\u0095\n\u000b\f\u000b\u000e\u000b\u0098\u000b\u000b\u0003\u000b",
-    "\u0006\u000b\u009b\n\u000b\r\u000b\u000e\u000b\u009c\u0005\u000b\u009f",
-    "\n\u000b\u0003\f\u0005\f\u00a2\n\f\u0003\f\u0005\f\u00a5\n\f\u0003\r",
-    "\u0003\r\u0003\u000e\u0003\u000e\u0005\u000e\u00ab\n\u000e\u0003\u000e",
-    "\u0002\u0002\u000f\u0002\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0016",
-    "\u0018\u001a\u0002\u0004\u0004\u0002\u0005\u0006\r\u0014\u0004\u0002",
-    "\u0005\u0006\u0019\u0019\u0002\u00bd\u0002!\u0003\u0002\u0002\u0002",
-    "\u0004*\u0003\u0002\u0002\u0002\u00061\u0003\u0002\u0002\u0002\bC\u0003",
-    "\u0002\u0002\u0002\n^\u0003\u0002\u0002\u0002\fj\u0003\u0002\u0002\u0002",
-    "\u000e~\u0003\u0002\u0002\u0002\u0010\u0087\u0003\u0002\u0002\u0002",
-    "\u0012\u008b\u0003\u0002\u0002\u0002\u0014\u009e\u0003\u0002\u0002\u0002",
-    "\u0016\u00a1\u0003\u0002\u0002\u0002\u0018\u00a6\u0003\u0002\u0002\u0002",
-    "\u001a\u00aa\u0003\u0002\u0002\u0002\u001c \u0005\u0004\u0003\u0002",
-    "\u001d \u0005\u0006\u0004\u0002\u001e \u0007\u0015\u0002\u0002\u001f",
-    "\u001c\u0003\u0002\u0002\u0002\u001f\u001d\u0003\u0002\u0002\u0002\u001f",
-    "\u001e\u0003\u0002\u0002\u0002 #\u0003\u0002\u0002\u0002!\u001f\u0003",
-    "\u0002\u0002\u0002!\"\u0003\u0002\u0002\u0002\"$\u0003\u0002\u0002\u0002",
-    "#!\u0003\u0002\u0002\u0002$%\u0007\u0002\u0002\u0003%\u0003\u0003\u0002",
-    "\u0002\u0002&+\u0005\u0014\u000b\u0002\'+\u0005\f\u0007\u0002(+\u0005",
-    "\u000e\b\u0002)+\u0005\u0010\t\u0002*&\u0003\u0002\u0002\u0002*\'\u0003",
-    "\u0002\u0002\u0002*(\u0003\u0002\u0002\u0002*)\u0003\u0002\u0002\u0002",
-    "+,\u0003\u0002\u0002\u0002,*\u0003\u0002\u0002\u0002,-\u0003\u0002\u0002",
-    "\u0002-\u0005\u0003\u0002\u0002\u0002.0\u0007\u000e\u0002\u0002/.\u0003",
-    "\u0002\u0002\u000203\u0003\u0002\u0002\u00021/\u0003\u0002\u0002\u0002",
-    "12\u0003\u0002\u0002\u000224\u0003\u0002\u0002\u000231\u0003\u0002\u0002",
-    "\u000246\u0007\u000b\u0002\u000257\u0005\b\u0005\u000265\u0003\u0002",
-    "\u0002\u000278\u0003\u0002\u0002\u000286\u0003\u0002\u0002\u000289\u0003",
-    "\u0002\u0002\u00029:\u0003\u0002\u0002\u0002:>\u0007\f\u0002\u0002;",
-    "=\u0007\u000e\u0002\u0002<;\u0003\u0002\u0002\u0002=@\u0003\u0002\u0002",
-    "\u0002><\u0003\u0002\u0002\u0002>?\u0003\u0002\u0002\u0002?A\u0003\u0002",
-    "\u0002\u0002@>\u0003\u0002\u0002\u0002AB\u0005\u0004\u0003\u0002B\u0007",
-    "\u0003\u0002\u0002\u0002CG\u0005\u0014\u000b\u0002DF\u0007\u000e\u0002",
-    "\u0002ED\u0003\u0002\u0002\u0002FI\u0003\u0002\u0002\u0002GE\u0003\u0002",
-    "\u0002\u0002GH\u0003\u0002\u0002\u0002HJ\u0003\u0002\u0002\u0002IG\u0003",
-    "\u0002\u0002\u0002JN\u0005\u001a\u000e\u0002KM\u0007\u000e\u0002\u0002",
-    "LK\u0003\u0002\u0002\u0002MP\u0003\u0002\u0002\u0002NL\u0003\u0002\u0002",
-    "\u0002NO\u0003\u0002\u0002\u0002OQ\u0003\u0002\u0002\u0002PN\u0003\u0002",
-    "\u0002\u0002QU\u0005\u0010\t\u0002RT\u0007\u000e\u0002\u0002SR\u0003",
-    "\u0002\u0002\u0002TW\u0003\u0002\u0002\u0002US\u0003\u0002\u0002\u0002",
-    "UV\u0003\u0002\u0002\u0002VY\u0003\u0002\u0002\u0002WU\u0003\u0002\u0002",
-    "\u0002XZ\u0007\u0014\u0002\u0002YX\u0003\u0002\u0002\u0002YZ\u0003\u0002",
-    "\u0002\u0002Z\t\u0003\u0002\u0002\u0002[]\u0007\u000e\u0002\u0002\\",
-    "[\u0003\u0002\u0002\u0002]`\u0003\u0002\u0002\u0002^\\\u0003\u0002\u0002",
-    "\u0002^_\u0003\u0002\u0002\u0002_a\u0003\u0002\u0002\u0002`^\u0003\u0002",
-    "\u0002\u0002ab\u0007\t\u0002\u0002bc\u0007\u001c\u0002\u0002cg\u0007",
-    "\n\u0002\u0002df\u0007\u000e\u0002\u0002ed\u0003\u0002\u0002\u0002f",
-    "i\u0003\u0002\u0002\u0002ge\u0003\u0002\u0002\u0002gh\u0003\u0002\u0002",
-    "\u0002h\u000b\u0003\u0002\u0002\u0002ig\u0003\u0002\u0002\u0002jp\u0007",
-    "\u0007\u0002\u0002kl\u0005\u0016\f\u0002lm\u0007\u0018\u0002\u0002m",
-    "o\u0003\u0002\u0002\u0002nk\u0003\u0002\u0002\u0002or\u0003\u0002\u0002",
-    "\u0002pn\u0003\u0002\u0002\u0002pq\u0003\u0002\u0002\u0002qs\u0003\u0002",
-    "\u0002\u0002rp\u0003\u0002\u0002\u0002st\u0005\u0016\f\u0002tu\u0007",
-    "\b\u0002\u0002uy\u0003\u0002\u0002\u0002vx\u0005\u0018\r\u0002wv\u0003",
-    "\u0002\u0002\u0002x{\u0003\u0002\u0002\u0002yw\u0003\u0002\u0002\u0002",
-    "yz\u0003\u0002\u0002\u0002z\r\u0003\u0002\u0002\u0002{y\u0003\u0002",
-    "\u0002\u0002|\u007f\u0005\u0012\n\u0002}\u007f\u0005\u0014\u000b\u0002",
-    "~|\u0003\u0002\u0002\u0002~}\u0003\u0002\u0002\u0002\u007f\u0080\u0003",
-    "\u0002\u0002\u0002\u0080\u0081\u0007\u0019\u0002\u0002\u0081\u0082\u0005",
-    "\u0004\u0003\u0002\u0082\u000f\u0003\u0002\u0002\u0002\u0083\u0088\t",
-    "\u0002\u0002\u0002\u0084\u0088\u0007\u001e\u0002\u0002\u0085\u0088\u0007",
-    "\u001b\u0002\u0002\u0086\u0088\u0007\u001c\u0002\u0002\u0087\u0083\u0003",
-    "\u0002\u0002\u0002\u0087\u0084\u0003\u0002\u0002\u0002\u0087\u0085\u0003",
-    "\u0002\u0002\u0002\u0087\u0086\u0003\u0002\u0002\u0002\u0088\u0089\u0003",
-    "\u0002\u0002\u0002\u0089\u0087\u0003\u0002\u0002\u0002\u0089\u008a\u0003",
-    "\u0002\u0002\u0002\u008a\u0011\u0003\u0002\u0002\u0002\u008b\u008f\u0007",
-    "\u0016\u0002\u0002\u008c\u008e\u0005\u0018\r\u0002\u008d\u008c\u0003",
-    "\u0002\u0002\u0002\u008e\u0091\u0003\u0002\u0002\u0002\u008f\u008d\u0003",
-    "\u0002\u0002\u0002\u008f\u0090\u0003\u0002\u0002\u0002\u0090\u0013\u0003",
-    "\u0002\u0002\u0002\u0091\u008f\u0003\u0002\u0002\u0002\u0092\u0096\u0007",
-    "\u0017\u0002\u0002\u0093\u0095\u0005\u0018\r\u0002\u0094\u0093\u0003",
-    "\u0002\u0002\u0002\u0095\u0098\u0003\u0002\u0002\u0002\u0096\u0094\u0003",
-    "\u0002\u0002\u0002\u0096\u0097\u0003\u0002\u0002\u0002\u0097\u009f\u0003",
-    "\u0002\u0002\u0002\u0098\u0096\u0003\u0002\u0002\u0002\u0099\u009b\u0005",
-    "\u0018\r\u0002\u009a\u0099\u0003\u0002\u0002\u0002\u009b\u009c\u0003",
-    "\u0002\u0002\u0002\u009c\u009a\u0003\u0002\u0002\u0002\u009c\u009d\u0003",
-    "\u0002\u0002\u0002\u009d\u009f\u0003\u0002\u0002\u0002\u009e\u0092\u0003",
-    "\u0002\u0002\u0002\u009e\u009a\u0003\u0002\u0002\u0002\u009f\u0015\u0003",
-    "\u0002\u0002\u0002\u00a0\u00a2\u0005\u0004\u0003\u0002\u00a1\u00a0\u0003",
-    "\u0002\u0002\u0002\u00a1\u00a2\u0003\u0002\u0002\u0002\u00a2\u00a4\u0003",
-    "\u0002\u0002\u0002\u00a3\u00a5\u0005\n\u0006\u0002\u00a4\u00a3\u0003",
-    "\u0002\u0002\u0002\u00a4\u00a5\u0003\u0002\u0002\u0002\u00a5\u0017\u0003",
-    "\u0002\u0002\u0002\u00a6\u00a7\u0007\u001a\u0002\u0002\u00a7\u0019\u0003",
-    "\u0002\u0002\u0002\u00a8\u00ab\u0007\u001d\u0002\u0002\u00a9\u00ab\t",
-    "\u0003\u0002\u0002\u00aa\u00a8\u0003\u0002\u0002\u0002\u00aa\u00a9\u0003",
-    "\u0002\u0002\u0002\u00ab\u001b\u0003\u0002\u0002\u0002\u001b\u001f!",
-    "*,18>GNUY^gpy~\u0087\u0089\u008f\u0096\u009c\u009e\u00a1\u00a4\u00aa"].join("");
+    "\u0003!\u00c3\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004\u0004\t",
+    "\u0004\u0004\u0005\t\u0005\u0004\u0006\t\u0006\u0004\u0007\t\u0007\u0004",
+    "\b\t\b\u0004\t\t\t\u0004\n\t\n\u0004\u000b\t\u000b\u0004\f\t\f\u0004",
+    "\r\t\r\u0004\u000e\t\u000e\u0004\u000f\t\u000f\u0004\u0010\t\u0010\u0003",
+    "\u0002\u0003\u0002\u0003\u0002\u0003\u0002\u0007\u0002%\n\u0002\f\u0002",
+    "\u000e\u0002(\u000b\u0002\u0003\u0002\u0003\u0002\u0003\u0003\u0003",
+    "\u0003\u0003\u0003\u0003\u0003\u0006\u00030\n\u0003\r\u0003\u000e\u0003",
+    "1\u0003\u0004\u0007\u00045\n\u0004\f\u0004\u000e\u00048\u000b\u0004",
+    "\u0003\u0004\u0003\u0004\u0006\u0004<\n\u0004\r\u0004\u000e\u0004=\u0003",
+    "\u0004\u0003\u0004\u0007\u0004B\n\u0004\f\u0004\u000e\u0004E\u000b\u0004",
+    "\u0003\u0004\u0003\u0004\u0003\u0005\u0003\u0005\u0007\u0005K\n\u0005",
+    "\f\u0005\u000e\u0005N\u000b\u0005\u0003\u0005\u0003\u0005\u0007\u0005",
+    "R\n\u0005\f\u0005\u000e\u0005U\u000b\u0005\u0003\u0005\u0003\u0005\u0007",
+    "\u0005Y\n\u0005\f\u0005\u000e\u0005\\\u000b\u0005\u0003\u0005\u0005",
+    "\u0005_\n\u0005\u0003\u0006\u0007\u0006b\n\u0006\f\u0006\u000e\u0006",
+    "e\u000b\u0006\u0003\u0006\u0003\u0006\u0003\u0006\u0003\u0006\u0007",
+    "\u0006k\n\u0006\f\u0006\u000e\u0006n\u000b\u0006\u0003\u0007\u0003\u0007",
+    "\u0003\u0007\u0003\u0007\u0007\u0007t\n\u0007\f\u0007\u000e\u0007w\u000b",
+    "\u0007\u0003\u0007\u0003\u0007\u0003\u0007\u0003\u0007\u0007\u0007}",
+    "\n\u0007\f\u0007\u000e\u0007\u0080\u000b\u0007\u0003\b\u0003\b\u0005",
+    "\b\u0084\n\b\u0003\b\u0003\b\u0003\b\u0003\t\u0003\t\u0003\t\u0003\t",
+    "\u0006\t\u008d\n\t\r\t\u000e\t\u008e\u0003\n\u0003\n\u0007\n\u0093\n",
+    "\n\f\n\u000e\n\u0096\u000b\n\u0003\u000b\u0003\u000b\u0007\u000b\u009a",
+    "\n\u000b\f\u000b\u000e\u000b\u009d\u000b\u000b\u0003\u000b\u0006\u000b",
+    "\u00a0\n\u000b\r\u000b\u000e\u000b\u00a1\u0005\u000b\u00a4\n\u000b\u0003",
+    "\f\u0005\f\u00a7\n\f\u0003\f\u0005\f\u00aa\n\f\u0003\r\u0003\r\u0003",
+    "\r\u0003\r\u0003\r\u0003\r\u0003\r\u0007\r\u00b3\n\r\f\r\u000e\r\u00b6",
+    "\u000b\r\u0003\u000e\u0006\u000e\u00b9\n\u000e\r\u000e\u000e\u000e\u00ba",
+    "\u0003\u000f\u0003\u000f\u0003\u0010\u0003\u0010\u0005\u0010\u00c1\n",
+    "\u0010\u0003\u0010\u0002\u0002\u0011\u0002\u0004\u0006\b\n\f\u000e\u0010",
+    "\u0012\u0014\u0016\u0018\u001a\u001c\u001e\u0002\u0004\u0004\u0002\u0005",
+    "\u0006\u000e\u0015\u0004\u0002\u0005\u0006\u001a\u001a\u0002\u00d4\u0002",
+    "&\u0003\u0002\u0002\u0002\u0004/\u0003\u0002\u0002\u0002\u00066\u0003",
+    "\u0002\u0002\u0002\bH\u0003\u0002\u0002\u0002\nc\u0003\u0002\u0002\u0002",
+    "\fo\u0003\u0002\u0002\u0002\u000e\u0083\u0003\u0002\u0002\u0002\u0010",
+    "\u008c\u0003\u0002\u0002\u0002\u0012\u0090\u0003\u0002\u0002\u0002\u0014",
+    "\u00a3\u0003\u0002\u0002\u0002\u0016\u00a6\u0003\u0002\u0002\u0002\u0018",
+    "\u00ab\u0003\u0002\u0002\u0002\u001a\u00b8\u0003\u0002\u0002\u0002\u001c",
+    "\u00bc\u0003\u0002\u0002\u0002\u001e\u00c0\u0003\u0002\u0002\u0002 ",
+    "%\u0005\u0004\u0003\u0002!%\u0005\u0006\u0004\u0002\"%\u0005\u0018\r",
+    "\u0002#%\u0007\u0016\u0002\u0002$ \u0003\u0002\u0002\u0002$!\u0003\u0002",
+    "\u0002\u0002$\"\u0003\u0002\u0002\u0002$#\u0003\u0002\u0002\u0002%(",
+    "\u0003\u0002\u0002\u0002&$\u0003\u0002\u0002\u0002&\'\u0003\u0002\u0002",
+    "\u0002\')\u0003\u0002\u0002\u0002(&\u0003\u0002\u0002\u0002)*\u0007",
+    "\u0002\u0002\u0003*\u0003\u0003\u0002\u0002\u0002+0\u0005\u0014\u000b",
+    "\u0002,0\u0005\f\u0007\u0002-0\u0005\u000e\b\u0002.0\u0005\u0010\t\u0002",
+    "/+\u0003\u0002\u0002\u0002/,\u0003\u0002\u0002\u0002/-\u0003\u0002\u0002",
+    "\u0002/.\u0003\u0002\u0002\u000201\u0003\u0002\u0002\u00021/\u0003\u0002",
+    "\u0002\u000212\u0003\u0002\u0002\u00022\u0005\u0003\u0002\u0002\u0002",
+    "35\u0007\u000f\u0002\u000243\u0003\u0002\u0002\u000258\u0003\u0002\u0002",
+    "\u000264\u0003\u0002\u0002\u000267\u0003\u0002\u0002\u000279\u0003\u0002",
+    "\u0002\u000286\u0003\u0002\u0002\u00029;\u0007\f\u0002\u0002:<\u0005",
+    "\b\u0005\u0002;:\u0003\u0002\u0002\u0002<=\u0003\u0002\u0002\u0002=",
+    ";\u0003\u0002\u0002\u0002=>\u0003\u0002\u0002\u0002>?\u0003\u0002\u0002",
+    "\u0002?C\u0007\r\u0002\u0002@B\u0007\u000f\u0002\u0002A@\u0003\u0002",
+    "\u0002\u0002BE\u0003\u0002\u0002\u0002CA\u0003\u0002\u0002\u0002CD\u0003",
+    "\u0002\u0002\u0002DF\u0003\u0002\u0002\u0002EC\u0003\u0002\u0002\u0002",
+    "FG\u0005\u0004\u0003\u0002G\u0007\u0003\u0002\u0002\u0002HL\u0005\u0014",
+    "\u000b\u0002IK\u0007\u000f\u0002\u0002JI\u0003\u0002\u0002\u0002KN\u0003",
+    "\u0002\u0002\u0002LJ\u0003\u0002\u0002\u0002LM\u0003\u0002\u0002\u0002",
+    "MO\u0003\u0002\u0002\u0002NL\u0003\u0002\u0002\u0002OS\u0005\u001e\u0010",
+    "\u0002PR\u0007\u000f\u0002\u0002QP\u0003\u0002\u0002\u0002RU\u0003\u0002",
+    "\u0002\u0002SQ\u0003\u0002\u0002\u0002ST\u0003\u0002\u0002\u0002TV\u0003",
+    "\u0002\u0002\u0002US\u0003\u0002\u0002\u0002VZ\u0005\u0010\t\u0002W",
+    "Y\u0007\u000f\u0002\u0002XW\u0003\u0002\u0002\u0002Y\\\u0003\u0002\u0002",
+    "\u0002ZX\u0003\u0002\u0002\u0002Z[\u0003\u0002\u0002\u0002[^\u0003\u0002",
+    "\u0002\u0002\\Z\u0003\u0002\u0002\u0002]_\u0007\u0015\u0002\u0002^]",
+    "\u0003\u0002\u0002\u0002^_\u0003\u0002\u0002\u0002_\t\u0003\u0002\u0002",
+    "\u0002`b\u0007\u000f\u0002\u0002a`\u0003\u0002\u0002\u0002be\u0003\u0002",
+    "\u0002\u0002ca\u0003\u0002\u0002\u0002cd\u0003\u0002\u0002\u0002df\u0003",
+    "\u0002\u0002\u0002ec\u0003\u0002\u0002\u0002fg\u0007\n\u0002\u0002g",
+    "h\u0007\u001d\u0002\u0002hl\u0007\u000b\u0002\u0002ik\u0007\u000f\u0002",
+    "\u0002ji\u0003\u0002\u0002\u0002kn\u0003\u0002\u0002\u0002lj\u0003\u0002",
+    "\u0002\u0002lm\u0003\u0002\u0002\u0002m\u000b\u0003\u0002\u0002\u0002",
+    "nl\u0003\u0002\u0002\u0002ou\u0007\b\u0002\u0002pq\u0005\u0016\f\u0002",
+    "qr\u0007\u0019\u0002\u0002rt\u0003\u0002\u0002\u0002sp\u0003\u0002\u0002",
+    "\u0002tw\u0003\u0002\u0002\u0002us\u0003\u0002\u0002\u0002uv\u0003\u0002",
+    "\u0002\u0002vx\u0003\u0002\u0002\u0002wu\u0003\u0002\u0002\u0002xy\u0005",
+    "\u0016\f\u0002yz\u0007\t\u0002\u0002z~\u0003\u0002\u0002\u0002{}\u0005",
+    "\u001c\u000f\u0002|{\u0003\u0002\u0002\u0002}\u0080\u0003\u0002\u0002",
+    "\u0002~|\u0003\u0002\u0002\u0002~\u007f\u0003\u0002\u0002\u0002\u007f",
+    "\r\u0003\u0002\u0002\u0002\u0080~\u0003\u0002\u0002\u0002\u0081\u0084",
+    "\u0005\u0012\n\u0002\u0082\u0084\u0005\u0014\u000b\u0002\u0083\u0081",
+    "\u0003\u0002\u0002\u0002\u0083\u0082\u0003\u0002\u0002\u0002\u0084\u0085",
+    "\u0003\u0002\u0002\u0002\u0085\u0086\u0007\u001a\u0002\u0002\u0086\u0087",
+    "\u0005\u0004\u0003\u0002\u0087\u000f\u0003\u0002\u0002\u0002\u0088\u008d",
+    "\t\u0002\u0002\u0002\u0089\u008d\u0007\u001f\u0002\u0002\u008a\u008d",
+    "\u0007\u001c\u0002\u0002\u008b\u008d\u0007\u001d\u0002\u0002\u008c\u0088",
+    "\u0003\u0002\u0002\u0002\u008c\u0089\u0003\u0002\u0002\u0002\u008c\u008a",
+    "\u0003\u0002\u0002\u0002\u008c\u008b\u0003\u0002\u0002\u0002\u008d\u008e",
+    "\u0003\u0002\u0002\u0002\u008e\u008c\u0003\u0002\u0002\u0002\u008e\u008f",
+    "\u0003\u0002\u0002\u0002\u008f\u0011\u0003\u0002\u0002\u0002\u0090\u0094",
+    "\u0007\u0017\u0002\u0002\u0091\u0093\u0005\u001c\u000f\u0002\u0092\u0091",
+    "\u0003\u0002\u0002\u0002\u0093\u0096\u0003\u0002\u0002\u0002\u0094\u0092",
+    "\u0003\u0002\u0002\u0002\u0094\u0095\u0003\u0002\u0002\u0002\u0095\u0013",
+    "\u0003\u0002\u0002\u0002\u0096\u0094\u0003\u0002\u0002\u0002\u0097\u009b",
+    "\u0007\u0018\u0002\u0002\u0098\u009a\u0005\u001c\u000f\u0002\u0099\u0098",
+    "\u0003\u0002\u0002\u0002\u009a\u009d\u0003\u0002\u0002\u0002\u009b\u0099",
+    "\u0003\u0002\u0002\u0002\u009b\u009c\u0003\u0002\u0002\u0002\u009c\u00a4",
+    "\u0003\u0002\u0002\u0002\u009d\u009b\u0003\u0002\u0002\u0002\u009e\u00a0",
+    "\u0005\u001c\u000f\u0002\u009f\u009e\u0003\u0002\u0002\u0002\u00a0\u00a1",
+    "\u0003\u0002\u0002\u0002\u00a1\u009f\u0003\u0002\u0002\u0002\u00a1\u00a2",
+    "\u0003\u0002\u0002\u0002\u00a2\u00a4\u0003\u0002\u0002\u0002\u00a3\u0097",
+    "\u0003\u0002\u0002\u0002\u00a3\u009f\u0003\u0002\u0002\u0002\u00a4\u0015",
+    "\u0003\u0002\u0002\u0002\u00a5\u00a7\u0005\u0004\u0003\u0002\u00a6\u00a5",
+    "\u0003\u0002\u0002\u0002\u00a6\u00a7\u0003\u0002\u0002\u0002\u00a7\u00a9",
+    "\u0003\u0002\u0002\u0002\u00a8\u00aa\u0005\n\u0006\u0002\u00a9\u00a8",
+    "\u0003\u0002\u0002\u0002\u00a9\u00aa\u0003\u0002\u0002\u0002\u00aa\u0017",
+    "\u0003\u0002\u0002\u0002\u00ab\u00ac\u0007\n\u0002\u0002\u00ac\u00ad",
+    "\u0005\u0004\u0003\u0002\u00ad\u00ae\u0007\u000b\u0002\u0002\u00ae\u00af",
+    "\u0007\u0007\u0002\u0002\u00af\u00b0\u0005\u001a\u000e\u0002\u00b0\u00b4",
+    "\u0007!\u0002\u0002\u00b1\u00b3\u0007\u000f\u0002\u0002\u00b2\u00b1",
+    "\u0003\u0002\u0002\u0002\u00b3\u00b6\u0003\u0002\u0002\u0002\u00b4\u00b2",
+    "\u0003\u0002\u0002\u0002\u00b4\u00b5\u0003\u0002\u0002\u0002\u00b5\u0019",
+    "\u0003\u0002\u0002\u0002\u00b6\u00b4\u0003\u0002\u0002\u0002\u00b7\u00b9",
+    "\u0007 \u0002\u0002\u00b8\u00b7\u0003\u0002\u0002\u0002\u00b9\u00ba",
+    "\u0003\u0002\u0002\u0002\u00ba\u00b8\u0003\u0002\u0002\u0002\u00ba\u00bb",
+    "\u0003\u0002\u0002\u0002\u00bb\u001b\u0003\u0002\u0002\u0002\u00bc\u00bd",
+    "\u0007\u001b\u0002\u0002\u00bd\u001d\u0003\u0002\u0002\u0002\u00be\u00c1",
+    "\u0007\u001e\u0002\u0002\u00bf\u00c1\t\u0003\u0002\u0002\u00c0\u00be",
+    "\u0003\u0002\u0002\u0002\u00c0\u00bf\u0003\u0002\u0002\u0002\u00c1\u001f",
+    "\u0003\u0002\u0002\u0002\u001d$&/16=CLSZ^clu~\u0083\u008c\u008e\u0094",
+    "\u009b\u00a1\u00a3\u00a6\u00a9\u00b4\u00ba\u00c0"].join("");
 
 
 var atn = new antlr4.atn.ATNDeserializer().deserialize(serializedATN);
@@ -124,18 +139,18 @@ var decisionsToDFA = atn.decisionToState.map( function(ds, index) { return new a
 
 var sharedContextCache = new antlr4.PredictionContextCache();
 
-var literalNames = [ null, null, null, "'>'", "'<'", "'('", "')'", "'['", 
-                     "']'", "'{'", "'}'", "'.'", null, "'/'", "'!'", "'*'", 
-                     "'^'", "'$'", "','" ];
+var literalNames = [ null, null, null, "'>'", "'<'", null, "'('", null, 
+                     "'['", "']'", "'{'", "'}'", "'.'", null, "'/'", "'!'", 
+                     "'*'", "'^'", "'$'", "','" ];
 
-var symbolicNames = [ null, "LCOMM", "BCOMM", "GT", "LT", "LP", "RP", "LB", 
-                      "RB", "LCB", "RCB", "DOT", "WS", "FS", "EXC", "AST", 
-                      "HAT", "DOL", "COM", "NL", "DYN", "SYM", "OR", "EQ", 
-                      "TF", "ENT", "INT", "OP", "CHR" ];
+var symbolicNames = [ null, "LCOMM", "BCOMM", "GT", "LT", "MDS", "LP", "RP", 
+                      "LB", "RB", "LCB", "RCB", "DOT", "WS", "FS", "EXC", 
+                      "AST", "HAT", "DOL", "COM", "NL", "DYN", "SYM", "OR", 
+                      "EQ", "TF", "ENT", "INT", "OP", "CHR", "MDT", "MDE" ];
 
 var ruleNames =  [ "script", "expr", "cexpr", "cond", "weight", "choice", 
-                   "assign", "chars", "dynamic", "symbol", "wexpr", "transform", 
-                   "op" ];
+                   "assign", "chars", "dynamic", "symbol", "wexpr", "link", 
+                   "url", "transform", "op" ];
 
 function RiScriptParser (input) {
 	antlr4.Parser.call(this, input);
@@ -160,30 +175,33 @@ RiScriptParser.LCOMM = 1;
 RiScriptParser.BCOMM = 2;
 RiScriptParser.GT = 3;
 RiScriptParser.LT = 4;
-RiScriptParser.LP = 5;
-RiScriptParser.RP = 6;
-RiScriptParser.LB = 7;
-RiScriptParser.RB = 8;
-RiScriptParser.LCB = 9;
-RiScriptParser.RCB = 10;
-RiScriptParser.DOT = 11;
-RiScriptParser.WS = 12;
-RiScriptParser.FS = 13;
-RiScriptParser.EXC = 14;
-RiScriptParser.AST = 15;
-RiScriptParser.HAT = 16;
-RiScriptParser.DOL = 17;
-RiScriptParser.COM = 18;
-RiScriptParser.NL = 19;
-RiScriptParser.DYN = 20;
-RiScriptParser.SYM = 21;
-RiScriptParser.OR = 22;
-RiScriptParser.EQ = 23;
-RiScriptParser.TF = 24;
-RiScriptParser.ENT = 25;
-RiScriptParser.INT = 26;
-RiScriptParser.OP = 27;
-RiScriptParser.CHR = 28;
+RiScriptParser.MDS = 5;
+RiScriptParser.LP = 6;
+RiScriptParser.RP = 7;
+RiScriptParser.LB = 8;
+RiScriptParser.RB = 9;
+RiScriptParser.LCB = 10;
+RiScriptParser.RCB = 11;
+RiScriptParser.DOT = 12;
+RiScriptParser.WS = 13;
+RiScriptParser.FS = 14;
+RiScriptParser.EXC = 15;
+RiScriptParser.AST = 16;
+RiScriptParser.HAT = 17;
+RiScriptParser.DOL = 18;
+RiScriptParser.COM = 19;
+RiScriptParser.NL = 20;
+RiScriptParser.DYN = 21;
+RiScriptParser.SYM = 22;
+RiScriptParser.OR = 23;
+RiScriptParser.EQ = 24;
+RiScriptParser.TF = 25;
+RiScriptParser.ENT = 26;
+RiScriptParser.INT = 27;
+RiScriptParser.OP = 28;
+RiScriptParser.CHR = 29;
+RiScriptParser.MDT = 30;
+RiScriptParser.MDE = 31;
 
 RiScriptParser.RULE_script = 0;
 RiScriptParser.RULE_expr = 1;
@@ -196,8 +214,10 @@ RiScriptParser.RULE_chars = 7;
 RiScriptParser.RULE_dynamic = 8;
 RiScriptParser.RULE_symbol = 9;
 RiScriptParser.RULE_wexpr = 10;
-RiScriptParser.RULE_transform = 11;
-RiScriptParser.RULE_op = 12;
+RiScriptParser.RULE_link = 11;
+RiScriptParser.RULE_url = 12;
+RiScriptParser.RULE_transform = 13;
+RiScriptParser.RULE_op = 14;
 
 
 function ScriptContext(parser, parent, invokingState) {
@@ -239,6 +259,17 @@ ScriptContext.prototype.cexpr = function(i) {
         return this.getTypedRuleContexts(CexprContext);
     } else {
         return this.getTypedRuleContext(CexprContext,i);
+    }
+};
+
+ScriptContext.prototype.link = function(i) {
+    if(i===undefined) {
+        i = null;
+    }
+    if(i===null) {
+        return this.getTypedRuleContexts(LinkContext);
+    } else {
+        return this.getTypedRuleContext(LinkContext,i);
     }
 };
 
@@ -286,35 +317,40 @@ RiScriptParser.prototype.script = function() {
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 31;
+        this.state = 36;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
-        while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << RiScriptParser.GT) | (1 << RiScriptParser.LT) | (1 << RiScriptParser.LP) | (1 << RiScriptParser.LCB) | (1 << RiScriptParser.DOT) | (1 << RiScriptParser.WS) | (1 << RiScriptParser.FS) | (1 << RiScriptParser.EXC) | (1 << RiScriptParser.AST) | (1 << RiScriptParser.HAT) | (1 << RiScriptParser.DOL) | (1 << RiScriptParser.COM) | (1 << RiScriptParser.NL) | (1 << RiScriptParser.DYN) | (1 << RiScriptParser.SYM) | (1 << RiScriptParser.TF) | (1 << RiScriptParser.ENT) | (1 << RiScriptParser.INT) | (1 << RiScriptParser.CHR))) !== 0)) {
-            this.state = 29;
+        while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << RiScriptParser.GT) | (1 << RiScriptParser.LT) | (1 << RiScriptParser.LP) | (1 << RiScriptParser.LB) | (1 << RiScriptParser.LCB) | (1 << RiScriptParser.DOT) | (1 << RiScriptParser.WS) | (1 << RiScriptParser.FS) | (1 << RiScriptParser.EXC) | (1 << RiScriptParser.AST) | (1 << RiScriptParser.HAT) | (1 << RiScriptParser.DOL) | (1 << RiScriptParser.COM) | (1 << RiScriptParser.NL) | (1 << RiScriptParser.DYN) | (1 << RiScriptParser.SYM) | (1 << RiScriptParser.TF) | (1 << RiScriptParser.ENT) | (1 << RiScriptParser.INT) | (1 << RiScriptParser.CHR))) !== 0)) {
+            this.state = 34;
             this._errHandler.sync(this);
             var la_ = this._interp.adaptivePredict(this._input,0,this._ctx);
             switch(la_) {
             case 1:
-                this.state = 26;
+                this.state = 30;
                 this.expr();
                 break;
 
             case 2:
-                this.state = 27;
+                this.state = 31;
                 this.cexpr();
                 break;
 
             case 3:
-                this.state = 28;
+                this.state = 32;
+                this.link();
+                break;
+
+            case 4:
+                this.state = 33;
                 this.match(RiScriptParser.NL);
                 break;
 
             }
-            this.state = 33;
+            this.state = 38;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
         }
-        this.state = 34;
+        this.state = 39;
         this.match(RiScriptParser.EOF);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
@@ -422,33 +458,33 @@ RiScriptParser.prototype.expr = function() {
     this.enterRule(localctx, 2, RiScriptParser.RULE_expr);
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 40; 
+        this.state = 45; 
         this._errHandler.sync(this);
         var _alt = 1;
         do {
         	switch (_alt) {
         	case 1:
-        		this.state = 40;
+        		this.state = 45;
         		this._errHandler.sync(this);
         		var la_ = this._interp.adaptivePredict(this._input,2,this._ctx);
         		switch(la_) {
         		case 1:
-        		    this.state = 36;
+        		    this.state = 41;
         		    this.symbol();
         		    break;
 
         		case 2:
-        		    this.state = 37;
+        		    this.state = 42;
         		    this.choice();
         		    break;
 
         		case 3:
-        		    this.state = 38;
+        		    this.state = 43;
         		    this.assign();
         		    break;
 
         		case 4:
-        		    this.state = 39;
+        		    this.state = 44;
         		    this.chars();
         		    break;
 
@@ -457,7 +493,7 @@ RiScriptParser.prototype.expr = function() {
         	default:
         		throw new antlr4.error.NoViableAltException(this);
         	}
-        	this.state = 42; 
+        	this.state = 47; 
         	this._errHandler.sync(this);
         	_alt = this._interp.adaptivePredict(this._input,3, this._ctx);
         } while ( _alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER );
@@ -559,44 +595,44 @@ RiScriptParser.prototype.cexpr = function() {
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 47;
+        this.state = 52;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
         while(_la===RiScriptParser.WS) {
-            this.state = 44;
-            this.match(RiScriptParser.WS);
             this.state = 49;
+            this.match(RiScriptParser.WS);
+            this.state = 54;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
         }
-        this.state = 50;
+        this.state = 55;
         this.match(RiScriptParser.LCB);
-        this.state = 52; 
+        this.state = 57; 
         this._errHandler.sync(this);
         _la = this._input.LA(1);
         do {
-            this.state = 51;
+            this.state = 56;
             this.cond();
-            this.state = 54; 
+            this.state = 59; 
             this._errHandler.sync(this);
             _la = this._input.LA(1);
         } while(_la===RiScriptParser.SYM || _la===RiScriptParser.TF);
-        this.state = 56;
+        this.state = 61;
         this.match(RiScriptParser.RCB);
-        this.state = 60;
+        this.state = 65;
         this._errHandler.sync(this);
         var _alt = this._interp.adaptivePredict(this._input,6,this._ctx)
         while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
             if(_alt===1) {
-                this.state = 57;
+                this.state = 62;
                 this.match(RiScriptParser.WS); 
             }
-            this.state = 62;
+            this.state = 67;
             this._errHandler.sync(this);
             _alt = this._interp.adaptivePredict(this._input,6,this._ctx);
         }
 
-        this.state = 63;
+        this.state = 68;
         this.expr();
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
@@ -689,50 +725,50 @@ RiScriptParser.prototype.cond = function() {
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 65;
+        this.state = 70;
         this.symbol();
-        this.state = 69;
+        this.state = 74;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
         while(_la===RiScriptParser.WS) {
-            this.state = 66;
-            this.match(RiScriptParser.WS);
             this.state = 71;
+            this.match(RiScriptParser.WS);
+            this.state = 76;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
         }
-        this.state = 72;
+        this.state = 77;
         this.op();
-        this.state = 76;
+        this.state = 81;
         this._errHandler.sync(this);
         var _alt = this._interp.adaptivePredict(this._input,8,this._ctx)
         while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
             if(_alt===1) {
-                this.state = 73;
+                this.state = 78;
                 this.match(RiScriptParser.WS); 
             }
-            this.state = 78;
+            this.state = 83;
             this._errHandler.sync(this);
             _alt = this._interp.adaptivePredict(this._input,8,this._ctx);
         }
 
-        this.state = 79;
+        this.state = 84;
         this.chars();
-        this.state = 83;
+        this.state = 88;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
         while(_la===RiScriptParser.WS) {
-            this.state = 80;
-            this.match(RiScriptParser.WS);
             this.state = 85;
+            this.match(RiScriptParser.WS);
+            this.state = 90;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
         }
-        this.state = 87;
+        this.state = 92;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
         if(_la===RiScriptParser.COM) {
-            this.state = 86;
+            this.state = 91;
             this.match(RiScriptParser.COM);
         }
 
@@ -823,29 +859,29 @@ RiScriptParser.prototype.weight = function() {
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 92;
+        this.state = 97;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
         while(_la===RiScriptParser.WS) {
-            this.state = 89;
-            this.match(RiScriptParser.WS);
             this.state = 94;
+            this.match(RiScriptParser.WS);
+            this.state = 99;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
         }
-        this.state = 95;
+        this.state = 100;
         this.match(RiScriptParser.LB);
-        this.state = 96;
-        this.match(RiScriptParser.INT);
-        this.state = 97;
-        this.match(RiScriptParser.RB);
         this.state = 101;
+        this.match(RiScriptParser.INT);
+        this.state = 102;
+        this.match(RiScriptParser.RB);
+        this.state = 106;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
         while(_la===RiScriptParser.WS) {
-            this.state = 98;
-            this.match(RiScriptParser.WS);
             this.state = 103;
+            this.match(RiScriptParser.WS);
+            this.state = 108;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
         }
@@ -953,36 +989,36 @@ RiScriptParser.prototype.choice = function() {
     this.enterRule(localctx, 10, RiScriptParser.RULE_choice);
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 104;
+        this.state = 109;
         this.match(RiScriptParser.LP);
-        this.state = 110;
+        this.state = 115;
         this._errHandler.sync(this);
         var _alt = this._interp.adaptivePredict(this._input,13,this._ctx)
         while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
             if(_alt===1) {
-                this.state = 105;
+                this.state = 110;
                 this.wexpr();
-                this.state = 106;
+                this.state = 111;
                 this.match(RiScriptParser.OR); 
             }
-            this.state = 112;
+            this.state = 117;
             this._errHandler.sync(this);
             _alt = this._interp.adaptivePredict(this._input,13,this._ctx);
         }
 
-        this.state = 113;
+        this.state = 118;
         this.wexpr();
-        this.state = 114;
-        this.match(RiScriptParser.RP);
         this.state = 119;
+        this.match(RiScriptParser.RP);
+        this.state = 124;
         this._errHandler.sync(this);
         var _alt = this._interp.adaptivePredict(this._input,14,this._ctx)
         while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
             if(_alt===1) {
-                this.state = 116;
+                this.state = 121;
                 this.transform(); 
             }
-            this.state = 121;
+            this.state = 126;
             this._errHandler.sync(this);
             _alt = this._interp.adaptivePredict(this._input,14,this._ctx);
         }
@@ -1065,24 +1101,24 @@ RiScriptParser.prototype.assign = function() {
     this.enterRule(localctx, 12, RiScriptParser.RULE_assign);
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 124;
+        this.state = 129;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
         case RiScriptParser.DYN:
-            this.state = 122;
+            this.state = 127;
             this.dynamic();
             break;
         case RiScriptParser.SYM:
         case RiScriptParser.TF:
-            this.state = 123;
+            this.state = 128;
             this.symbol();
             break;
         default:
             throw new antlr4.error.NoViableAltException(this);
         }
-        this.state = 126;
+        this.state = 131;
         this.match(RiScriptParser.EQ);
-        this.state = 127;
+        this.state = 132;
         this.expr();
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
@@ -1303,13 +1339,13 @@ RiScriptParser.prototype.chars = function() {
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 133; 
+        this.state = 138; 
         this._errHandler.sync(this);
         var _alt = 1;
         do {
         	switch (_alt) {
         	case 1:
-        		this.state = 133;
+        		this.state = 138;
         		this._errHandler.sync(this);
         		switch(this._input.LA(1)) {
         		case RiScriptParser.GT:
@@ -1322,7 +1358,7 @@ RiScriptParser.prototype.chars = function() {
         		case RiScriptParser.HAT:
         		case RiScriptParser.DOL:
         		case RiScriptParser.COM:
-        		    this.state = 129;
+        		    this.state = 134;
         		    _la = this._input.LA(1);
         		    if(!((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << RiScriptParser.GT) | (1 << RiScriptParser.LT) | (1 << RiScriptParser.DOT) | (1 << RiScriptParser.WS) | (1 << RiScriptParser.FS) | (1 << RiScriptParser.EXC) | (1 << RiScriptParser.AST) | (1 << RiScriptParser.HAT) | (1 << RiScriptParser.DOL) | (1 << RiScriptParser.COM))) !== 0))) {
         		    this._errHandler.recoverInline(this);
@@ -1333,15 +1369,15 @@ RiScriptParser.prototype.chars = function() {
         		    }
         		    break;
         		case RiScriptParser.CHR:
-        		    this.state = 130;
+        		    this.state = 135;
         		    this.match(RiScriptParser.CHR);
         		    break;
         		case RiScriptParser.ENT:
-        		    this.state = 131;
+        		    this.state = 136;
         		    this.match(RiScriptParser.ENT);
         		    break;
         		case RiScriptParser.INT:
-        		    this.state = 132;
+        		    this.state = 137;
         		    this.match(RiScriptParser.INT);
         		    break;
         		default:
@@ -1351,7 +1387,7 @@ RiScriptParser.prototype.chars = function() {
         	default:
         		throw new antlr4.error.NoViableAltException(this);
         	}
-        	this.state = 135; 
+        	this.state = 140; 
         	this._errHandler.sync(this);
         	_alt = this._interp.adaptivePredict(this._input,17, this._ctx);
         } while ( _alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER );
@@ -1433,15 +1469,15 @@ RiScriptParser.prototype.dynamic = function() {
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 137;
+        this.state = 142;
         this.match(RiScriptParser.DYN);
-        this.state = 141;
+        this.state = 146;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
         while(_la===RiScriptParser.TF) {
-            this.state = 138;
-            this.transform();
             this.state = 143;
+            this.transform();
+            this.state = 148;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
         }
@@ -1521,22 +1557,22 @@ RiScriptParser.prototype.symbol = function() {
     var localctx = new SymbolContext(this, this._ctx, this.state);
     this.enterRule(localctx, 18, RiScriptParser.RULE_symbol);
     try {
-        this.state = 156;
+        this.state = 161;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
         case RiScriptParser.SYM:
             this.enterOuterAlt(localctx, 1);
-            this.state = 144;
+            this.state = 149;
             this.match(RiScriptParser.SYM);
-            this.state = 148;
+            this.state = 153;
             this._errHandler.sync(this);
             var _alt = this._interp.adaptivePredict(this._input,19,this._ctx)
             while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
                 if(_alt===1) {
-                    this.state = 145;
+                    this.state = 150;
                     this.transform(); 
                 }
-                this.state = 150;
+                this.state = 155;
                 this._errHandler.sync(this);
                 _alt = this._interp.adaptivePredict(this._input,19,this._ctx);
             }
@@ -1544,19 +1580,19 @@ RiScriptParser.prototype.symbol = function() {
             break;
         case RiScriptParser.TF:
             this.enterOuterAlt(localctx, 2);
-            this.state = 152; 
+            this.state = 157; 
             this._errHandler.sync(this);
             var _alt = 1;
             do {
             	switch (_alt) {
             	case 1:
-            		this.state = 151;
+            		this.state = 156;
             		this.transform();
             		break;
             	default:
             		throw new antlr4.error.NoViableAltException(this);
             	}
-            	this.state = 154; 
+            	this.state = 159; 
             	this._errHandler.sync(this);
             	_alt = this._interp.adaptivePredict(this._input,20, this._ctx);
             } while ( _alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER );
@@ -1635,22 +1671,230 @@ RiScriptParser.prototype.wexpr = function() {
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 159;
+        this.state = 164;
         this._errHandler.sync(this);
         var la_ = this._interp.adaptivePredict(this._input,22,this._ctx);
         if(la_===1) {
-            this.state = 158;
+            this.state = 163;
             this.expr();
 
         }
-        this.state = 162;
+        this.state = 167;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
         if(_la===RiScriptParser.LB || _la===RiScriptParser.WS) {
-            this.state = 161;
+            this.state = 166;
             this.weight();
         }
 
+    } catch (re) {
+    	if(re instanceof antlr4.error.RecognitionException) {
+	        localctx.exception = re;
+	        this._errHandler.reportError(this, re);
+	        this._errHandler.recover(this, re);
+	    } else {
+	    	throw re;
+	    }
+    } finally {
+        this.exitRule();
+    }
+    return localctx;
+};
+
+
+function LinkContext(parser, parent, invokingState) {
+	if(parent===undefined) {
+	    parent = null;
+	}
+	if(invokingState===undefined || invokingState===null) {
+		invokingState = -1;
+	}
+	antlr4.ParserRuleContext.call(this, parent, invokingState);
+    this.parser = parser;
+    this.ruleIndex = RiScriptParser.RULE_link;
+    return this;
+}
+
+LinkContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
+LinkContext.prototype.constructor = LinkContext;
+
+LinkContext.prototype.LB = function() {
+    return this.getToken(RiScriptParser.LB, 0);
+};
+
+LinkContext.prototype.expr = function() {
+    return this.getTypedRuleContext(ExprContext,0);
+};
+
+LinkContext.prototype.RB = function() {
+    return this.getToken(RiScriptParser.RB, 0);
+};
+
+LinkContext.prototype.MDS = function() {
+    return this.getToken(RiScriptParser.MDS, 0);
+};
+
+LinkContext.prototype.url = function() {
+    return this.getTypedRuleContext(UrlContext,0);
+};
+
+LinkContext.prototype.MDE = function() {
+    return this.getToken(RiScriptParser.MDE, 0);
+};
+
+LinkContext.prototype.WS = function(i) {
+	if(i===undefined) {
+		i = null;
+	}
+    if(i===null) {
+        return this.getTokens(RiScriptParser.WS);
+    } else {
+        return this.getToken(RiScriptParser.WS, i);
+    }
+};
+
+
+LinkContext.prototype.enterRule = function(listener) {
+    if(listener instanceof RiScriptParserListener ) {
+        listener.enterLink(this);
+	}
+};
+
+LinkContext.prototype.exitRule = function(listener) {
+    if(listener instanceof RiScriptParserListener ) {
+        listener.exitLink(this);
+	}
+};
+
+LinkContext.prototype.accept = function(visitor) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
+        return visitor.visitLink(this);
+    } else {
+        return visitor.visitChildren(this);
+    }
+};
+
+
+
+
+RiScriptParser.LinkContext = LinkContext;
+
+RiScriptParser.prototype.link = function() {
+
+    var localctx = new LinkContext(this, this._ctx, this.state);
+    this.enterRule(localctx, 22, RiScriptParser.RULE_link);
+    try {
+        this.enterOuterAlt(localctx, 1);
+        this.state = 169;
+        this.match(RiScriptParser.LB);
+        this.state = 170;
+        this.expr();
+        this.state = 171;
+        this.match(RiScriptParser.RB);
+        this.state = 172;
+        this.match(RiScriptParser.MDS);
+        this.state = 173;
+        this.url();
+        this.state = 174;
+        this.match(RiScriptParser.MDE);
+        this.state = 178;
+        this._errHandler.sync(this);
+        var _alt = this._interp.adaptivePredict(this._input,24,this._ctx)
+        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
+            if(_alt===1) {
+                this.state = 175;
+                this.match(RiScriptParser.WS); 
+            }
+            this.state = 180;
+            this._errHandler.sync(this);
+            _alt = this._interp.adaptivePredict(this._input,24,this._ctx);
+        }
+
+    } catch (re) {
+    	if(re instanceof antlr4.error.RecognitionException) {
+	        localctx.exception = re;
+	        this._errHandler.reportError(this, re);
+	        this._errHandler.recover(this, re);
+	    } else {
+	    	throw re;
+	    }
+    } finally {
+        this.exitRule();
+    }
+    return localctx;
+};
+
+
+function UrlContext(parser, parent, invokingState) {
+	if(parent===undefined) {
+	    parent = null;
+	}
+	if(invokingState===undefined || invokingState===null) {
+		invokingState = -1;
+	}
+	antlr4.ParserRuleContext.call(this, parent, invokingState);
+    this.parser = parser;
+    this.ruleIndex = RiScriptParser.RULE_url;
+    return this;
+}
+
+UrlContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
+UrlContext.prototype.constructor = UrlContext;
+
+UrlContext.prototype.MDT = function(i) {
+	if(i===undefined) {
+		i = null;
+	}
+    if(i===null) {
+        return this.getTokens(RiScriptParser.MDT);
+    } else {
+        return this.getToken(RiScriptParser.MDT, i);
+    }
+};
+
+
+UrlContext.prototype.enterRule = function(listener) {
+    if(listener instanceof RiScriptParserListener ) {
+        listener.enterUrl(this);
+	}
+};
+
+UrlContext.prototype.exitRule = function(listener) {
+    if(listener instanceof RiScriptParserListener ) {
+        listener.exitUrl(this);
+	}
+};
+
+UrlContext.prototype.accept = function(visitor) {
+    if ( visitor instanceof RiScriptParserVisitor ) {
+        return visitor.visitUrl(this);
+    } else {
+        return visitor.visitChildren(this);
+    }
+};
+
+
+
+
+RiScriptParser.UrlContext = UrlContext;
+
+RiScriptParser.prototype.url = function() {
+
+    var localctx = new UrlContext(this, this._ctx, this.state);
+    this.enterRule(localctx, 24, RiScriptParser.RULE_url);
+    var _la = 0; // Token type
+    try {
+        this.enterOuterAlt(localctx, 1);
+        this.state = 182; 
+        this._errHandler.sync(this);
+        _la = this._input.LA(1);
+        do {
+            this.state = 181;
+            this.match(RiScriptParser.MDT);
+            this.state = 184; 
+            this._errHandler.sync(this);
+            _la = this._input.LA(1);
+        } while(_la===RiScriptParser.MDT);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -1714,10 +1958,10 @@ RiScriptParser.TransformContext = TransformContext;
 RiScriptParser.prototype.transform = function() {
 
     var localctx = new TransformContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 22, RiScriptParser.RULE_transform);
+    this.enterRule(localctx, 26, RiScriptParser.RULE_transform);
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 164;
+        this.state = 186;
         this.match(RiScriptParser.TF);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
@@ -1794,22 +2038,22 @@ RiScriptParser.OpContext = OpContext;
 RiScriptParser.prototype.op = function() {
 
     var localctx = new OpContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 24, RiScriptParser.RULE_op);
+    this.enterRule(localctx, 28, RiScriptParser.RULE_op);
     var _la = 0; // Token type
     try {
-        this.state = 168;
+        this.state = 190;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
         case RiScriptParser.OP:
             this.enterOuterAlt(localctx, 1);
-            this.state = 166;
+            this.state = 188;
             this.match(RiScriptParser.OP);
             break;
         case RiScriptParser.GT:
         case RiScriptParser.LT:
         case RiScriptParser.EQ:
             this.enterOuterAlt(localctx, 2);
-            this.state = 167;
+            this.state = 189;
             _la = this._input.LA(1);
             if(!((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << RiScriptParser.GT) | (1 << RiScriptParser.LT) | (1 << RiScriptParser.EQ))) !== 0))) {
             this._errHandler.recoverInline(this);

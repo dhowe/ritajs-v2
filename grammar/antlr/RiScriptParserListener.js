@@ -110,6 +110,24 @@ RiScriptParserListener.prototype.exitWexpr = function(ctx) {
 };
 
 
+// Enter a parse tree produced by RiScriptParser#link.
+RiScriptParserListener.prototype.enterLink = function(ctx) {
+};
+
+// Exit a parse tree produced by RiScriptParser#link.
+RiScriptParserListener.prototype.exitLink = function(ctx) {
+};
+
+
+// Enter a parse tree produced by RiScriptParser#url.
+RiScriptParserListener.prototype.enterUrl = function(ctx) {
+};
+
+// Exit a parse tree produced by RiScriptParser#url.
+RiScriptParserListener.prototype.exitUrl = function(ctx) {
+};
+
+
 // Enter a parse tree produced by RiScriptParser#transform.
 RiScriptParserListener.prototype.enterTransform = function(ctx) {
 };

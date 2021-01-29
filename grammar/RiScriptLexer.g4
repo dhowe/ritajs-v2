@@ -11,10 +11,11 @@ lexer grammar RiScriptLexer;
 LCOMM: '/*' .*? '*/' -> channel(HIDDEN);
 BCOMM: '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 
-//SL: {this._input.LA(-1)!=')'}? '[' -> pushMode(MD) ;
+//SMD: {this._input.LA(-1)==")".charCodeAt(0)}? '[' -> pushMode(MD) ;
 GT: '>';
 LT: '<';
-LP: '(';
+MDS: {this._input.LA(-1)=="]".charCodeAt(0)}? '('  -> pushMode(MD) ;
+LP:'(';
 RP: ')';
 LB: '[';
 RB: ']';
@@ -63,7 +64,6 @@ CHR:
 fragment IDENT: [A-Za-z_] [A-Za-z_0-9-]*;
 fragment NIDENT: [A-Za-z_0-9] [A-Za-z_0-9-]*;
 
-/* mode MD;
-
-TEXT               : ~(']'); 
-CLOSE               : ']' -> popMode ;  */
+mode MD;
+MDT              : ~(')'); 
+MDE               : ')' -> popMode ;

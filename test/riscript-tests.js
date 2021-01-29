@@ -1,18 +1,75 @@
 const { expect } = require('chai');
+const { html } = require('nanohtml');
 
 describe('RiTa.RiScript', () => {
 
-  const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 }, TLP = { trace: 1, traceLex: 1 };
+  const ST = { silent: 1 }, TP = { trace: 1 }, TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
 
   if (typeof module !== 'undefined') require('./before');
 
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
 
-  false && describe('Links', () => { // SYNC:
-    it('Should parse md-style links ', () => {
-      let res = RiTa.evaluate("(some text)[https://somelink]", 0, TLP);
-      console.log(res);
-      expect(res).eq("balk");
+  describe('Markdown', () => { // JSONLY
+
+    it('Should allow simple links', () => {
+      expect(RiTa.evaluate("[(a)](linktext)", 0)).eq("[a](linktext)");
+      expect(RiTa.evaluate("[(a|a[2])](linktext)", 0)).eq("[a](linktext)");
+      expect(RiTa.evaluate("[(a|a[2])](linktext)", 0)).eq("[a](linktext)");
+    });
+
+    it('Should allow use as a tagged template', () => {
+
+      const rs = RiTa.template(), md = require('marli')();//{ linkify: true });
+
+      function expectHtml(code) {
+        return expect(md`${rs([code])}`);
+      }
+
+      expect(rs`(a | a)`).eq("a");
+      expect(rs`**(a | a)**`).eq("**a**");
+
+      expectHtml('**(a | a)**').eq("<p><strong>a</strong></p>\n");
+      expectHtml('# (a | a)').eq("<h1>a</h1>\n");
+      expectHtml('# (a | a)// $foo=a').eq("<h1>a</h1>\n");
+
+      let url = 'https://somelink.com';  // WORKING HERE ON LINKS
+      //console.log(md`[link](${url})`);
+      expectHtml("[(a | a)](" + url + ")")
+        .eq("<p><a href=\"https://somelink.com\">a</a></p>\n");
+    });
+
+    it('Should allow minimal styling', () => {
+      expect(RiTa.evaluate("(a | a)", 0)).eq("a");
+      expect(RiTa.evaluate("a(b | b)c", 0)).eq("abc");
+      expect(RiTa.evaluate("*(a | a)*", 0)).eq("*a*");
+      expect(RiTa.evaluate("**(a | a)**", 0)).eq("**a**");
+      expect(RiTa.evaluate("_(a | a)_", 0)).eq("_a_");
+      expect(RiTa.evaluate("__(a | a)__", 0)).eq("__a__");
+      expect(RiTa.evaluate("#(a | a)", 0)).eq("#a");
+      expect(RiTa.evaluate("##(a | a)", 0)).eq("##a");
+      expect(RiTa.evaluate("###(a | a)", 0)).eq("###a");
+      expect(RiTa.evaluate("~~(a | a)~~", 0)).eq("~~a~~");
+      //expect(RiTa.evaluate("===========(a | a)", 0)).eq("===========a");
+      expect(RiTa.evaluate("-----------(a | a)", 0)).eq("-----------a");
+    })
+
+    it('Should allow links', () => {
+      let url;
+
+      url = 'https://somelinkcom';
+      expect(RiTa.evaluate("[(a | a)](" + url + ")", 0)).eq("[a](" + url + ")");
+
+      url = 'http://somelink.com?a=b&c=12';
+      expect(RiTa.evaluate("[(a | a)](" + url + ")", 0)).eq("[a](" + url + ")");
+
+      url = './somelink/dir/?a=b&c=12';
+      expect(RiTa.evaluate("[(a | a)](" + url + ")", 0)).eq("[a](" + url + ")");
+
+      url = '@rita/p5';
+      expect(RiTa.evaluate("[(a | a)](" + url + ")", 0)).eq("[a](" + url + ")");
+
+      url = 'https://somelink.com';
+      expect(RiTa.evaluate("[(a | a).uc()](" + url + ")", 0)).eq("[A](" + url + ")");
     });
   });
 
@@ -43,7 +100,7 @@ describe('RiTa.RiScript', () => {
 
       let opts = ['a', 'b', 'c', 'd'];
       let rule = '&rule=(' + opts.join('|') + ').seq()';
-      let res = RiTa.evaluate(rule + '\n$rule $rule $rule $rule', {}, TT);
+      let res = RiTa.evaluate(rule + '\n$rule $rule $rule $rule', {}, TP);
       expect(res).eq(opts.join(' '));
 
       /*  for (let i = 0; i < opts.length; i++) {
@@ -856,7 +913,7 @@ describe('RiTa.RiScript', () => {
 
     false && it('KI: FAILING', () => {
       for (let i = 0, rs; i < 10; i++) {
-        rs = RiTa.evaluate('($chosen=$person) talks to $chosen.', { person: '(Dave | Jill | Pete)' }, TT);
+        rs = RiTa.evaluate('($chosen=$person) talks to $chosen.', { person: '(Dave | Jill | Pete)' }, TP);
         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
       }
     });

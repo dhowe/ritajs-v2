@@ -184,6 +184,14 @@ class RiTa {
     return RiTa.analyzer.analyze(...arguments).syllables;
   }
 
+  static template() {
+    return (strs, ...vals) => {
+      // provides tagged template processing
+      let script = strs.reduce((a, s, i) => s + (vals[i] || ''), '');
+      return RiScript.eval(script);
+    };
+  }
+
   static tokenize() {
     return RiTa.tokenizer.tokenize(...arguments);
   }

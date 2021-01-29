@@ -78,6 +78,18 @@ RiScriptParserVisitor.prototype.visitWexpr = function(ctx) {
 };
 
 
+// Visit a parse tree produced by RiScriptParser#link.
+RiScriptParserVisitor.prototype.visitLink = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
+// Visit a parse tree produced by RiScriptParser#url.
+RiScriptParserVisitor.prototype.visitUrl = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
 // Visit a parse tree produced by RiScriptParser#transform.
 RiScriptParserVisitor.prototype.visitTransform = function(ctx) {
   return this.visitChildren(ctx);
