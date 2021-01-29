@@ -56,7 +56,7 @@ describe('RiTa.RiGrammar', () => {
         ok(gr2.toString() === gr3.toString(), 'FAIL\n' + gr1 + '\n' + gr2 + '\n');
     });
 
-    it("should call static expand", () => { // SYNC:
+    it("should call static expand", () => { 
         let rg = new RiGrammar();
         rg.addRule("start", "pet");
         eq(rg.expand(), "pet");
@@ -66,7 +66,7 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.expand(), "dog");
     });
 
-    it("should call static expandFrom", () => { // SYNC:
+    it("should call static expandFrom", () => { 
         let rg = new RiGrammar();
         rg.addRule("start", "$pet");
         rg.addRule("pet", "($bird | $mammal)");
@@ -80,7 +80,7 @@ describe('RiTa.RiGrammar', () => {
     });
 
 
-    it('Should handle phrase transforms', () => { // SYNC:
+    it('Should handle phrase transforms', () => { 
         let g = {
             "start": "($x=$y b).ucf()",
             "y": "(a | a)",
