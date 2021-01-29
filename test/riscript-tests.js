@@ -8,7 +8,7 @@ describe('RiTa.RiScript', () => {
 
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
 
-  describe('Comments', () => { //:
+  describe('Comments', () => {
 
     it('Should ignore line comments ', () => {
       expect(RiTa.evaluate("// $foo=a")).eq("");
@@ -215,7 +215,7 @@ describe('RiTa.RiScript', () => {
 
   describe('Evaluation', () => {
 
-    it('Should correctly call isParseable', () => { // SYNC:
+    it('Should correctly call isParseable', () => { 
       let rs = new RiScript();
       expect(rs.isParseable("(")).eq(true);
       expect(rs.isParseable("(A | B)")).eq(true);
@@ -232,7 +232,7 @@ describe('RiTa.RiScript', () => {
       expect(rs.isParseable("&&b")).eq(false);
     });
 
-    it('Should resolve simple expressions', () => { // SYNC:
+    it('Should resolve simple expressions', () => {
       
       expect(RiTa.evaluate('foo', {})).eq('foo');
       expect(RiTa.evaluate('foo!', {})).eq('foo!');
@@ -252,7 +252,7 @@ describe('RiTa.RiScript', () => {
       //expect(RiTa.evaluate('foo.bar', {}, {trace:0})).eq('foo.bar'); // KNOWN ISSUE
     });
 
-    it('Should resolve simple dynamics', () => { // SYNC:
+    it('Should resolve simple dynamics', () => { 
  
       expect(RiTa.evaluate('$$foo=bar\nbaz', {})).eq('baz');
       expect(RiTa.evaluate('($$foo=bar)\nbaz', {})).eq('bar baz');
@@ -297,7 +297,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$s', ctx)).eq('c');
     });
 
-    it('Should resolve recursive dynamics', () => { // SYNC:
+    it('Should resolve recursive dynamics', () => {
       let ctx, expr;
 
       ctx = { a: '$b', b: '(c | c)' };
@@ -379,7 +379,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('The boy walked his dog');
     });
 
-    it('Should parse dynamic assignments', () => { // SYNC:
+    it('Should parse dynamic assignments', () => { 
       let ctx = {};
       expect(RiTa.evaluate('$$foo=a', ctx)).eq('');
       expect(ctx['$$foo']).eq('a');
@@ -490,7 +490,7 @@ describe('RiTa.RiScript', () => {
       expect(res).eq('I sat.');
     });
 
-    it('Should resolve dynamic sentences', () => { // SYNC:
+    it('Should resolve dynamic sentences', () => { 
       let res, ctx;
 
       expect(RiTa.evaluate('.', null)).eq('.');
@@ -610,7 +610,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('blue dog');
     });
 
-    it('Should resolve dynamics across assignment types', () => { // SYNC:
+    it('Should resolve dynamics across assignment types', () => { 
       let ctx;
       expect(RiTa.evaluate('The $$foo=blue (dog | dog)', ctx = {})).eq('The blue dog');
       expect(ctx['$$foo']).eq('blue (dog | dog)');
@@ -657,7 +657,7 @@ describe('RiTa.RiScript', () => {
       expect(rs).eq("Dave is called Dave");
     });
 
-    it('Should handle inline dynamics', () => { // SYNC:
+    it('Should handle inline dynamics', () => {
 
       let rs, ctx, matches, count = 5; // may need to be higher
       const matching = ['Dave is called Dave.', 'Jack is called Jack.', 'Mary is called Mary.'];
@@ -697,7 +697,7 @@ describe('RiTa.RiScript', () => {
       expect(matches < count).eq(true);
     });
 
-    it('Should handle inline non-dynamics', () => { // SYNC:
+    it('Should handle inline non-dynamics', () => {
 
       let rs, ctx;
       const names = ['Dave', 'Jack', 'Mary'];
@@ -719,7 +719,7 @@ describe('RiTa.RiScript', () => {
       expect(rs).to.be.oneOf(['Dave is called dave.', 'Jack is called jack.', 'Mary is called mary.']);
     });
 
-    it('Should handle dynamics in context', () => { // SYNC:
+    it('Should handle dynamics in context', () => { 
       const matching = ['Dave is called Dave.', 'Jack is called Jack.', 'Mary is called Mary.'];
 
       // $: need all to match
@@ -772,7 +772,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.a).eq('a')
     });
 
-    it('Should distinguish inline with parens', () => { // SYNC:
+    it('Should distinguish inline with parens', () => { 
       let ctx;
       expect(RiTa.evaluate('$a=a', ctx = {})).eq('');
       expect(ctx.a).eq('a');
@@ -892,7 +892,7 @@ describe('RiTa.RiScript', () => {
       expect(res).eq('I said hello to her');
     });
 
-    it('Should output the input for undefined symbol', () => { // SYNC:
+    it('Should output the input for undefined symbol', () => {
       expect(RiTa.evaluate('$a', {}, ST)).eq('$a');
       expect(RiTa.evaluate('$a.capitalize()', {}, ST)).eq('$a.capitalize()');
       expect(RiTa.evaluate('The $a.capitalize() dog.', {}, ST)).eq('The $a.capitalize() dog.');
