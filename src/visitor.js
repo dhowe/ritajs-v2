@@ -150,7 +150,7 @@ class Visitor extends RiScriptVisitor {
       this.pendingSymbols.push(ident);
       result = Visitor.LP + Visitor.SYM + ident 
         + Visitor.EQ + resolved + Visitor.RP + flattenTx(txs);
-      this.trace && console.log("resolveSymbol[P]: $" + ident + " -> " + tmp);
+      this.trace && console.log("resolveSymbol[P]: $" + ident + " -> " + result);
       return result;
     }
 

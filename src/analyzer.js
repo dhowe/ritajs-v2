@@ -41,8 +41,7 @@ class Analyzer {
 
   phonesToStress(phones) {
     if (!phones) return;
-    let stress = '';
-    let syls = phones.split(' ');
+    let stress = '', syls = phones.split(' ');
     for (let j = 0; j < syls.length; j++) {
       if (!syls[j].length) continue;
       stress += syls[j].includes('1') ? '1' : '0';

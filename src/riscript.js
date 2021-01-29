@@ -210,6 +210,7 @@ function quotify(s) {
 /// Pluralizes the word according to english regular/irregular rules.
 /// </summary>
 function pluralize(s) {
+  
   return RiTa().pluralize(s);
 }
 

@@ -562,7 +562,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('a');
     });
 
-    it('Should pluralize phrases', () => {
+    it('Should pluralize phrases', () => { // SYNC:
       expect(RiTa.evaluate('These (bad feeling).pluralize().')).eq('These bad feelings.');
       expect(RiTa.evaluate('She (pluralize).pluralize().')).eq('She pluralizes.');
       expect(RiTa.evaluate('These ($state feeling).pluralize().', { state: 'bad' })).eq('These bad feelings.');
@@ -570,8 +570,9 @@ describe('RiTa.RiScript', () => {
 
       expect(RiTa.evaluate('$$state=(bad | bad)\nThese ($state feeling).pluralize().', {})).eq('These bad feelings.');
 
-      //expect(RiTa.evaluate('These ($state feeling).pluralize().',  TODO: SEE KNOWN ISSUES
-      //{ state: '(bad | bad)' }, TT)).eq('These bad feelings.');
+      expect(RiTa.evaluate('These ($state feeling).pluralize().',  { state: '(bad | bad)' })).eq('These bad feelings.');
+    
+      expect(RiTa.evaluate('These (off-site).pluralize().',  { state: '(bad | bad)' })).eq('These off-sites.');
     })
 
     it('Should resolve transforms on literals', () => { // SYNC:

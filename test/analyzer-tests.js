@@ -15,7 +15,7 @@ describe('RiTa.Analyzer', () => {
   });
 
   it('Should call syllables.lts', () => {
-    let result = RiTa.syllables('The Laggin', {silent:1});
+    let result = RiTa.syllables('The Laggin', { silent: 1 });
     expect(result).eq('dh-ah l-ae/g-ih-n', 'got \'' + result + "'");
   });
 
@@ -35,7 +35,7 @@ describe('RiTa.Analyzer', () => {
 
     if (!hasLex) return; // NOTE: below currently fail without lexicon
 
-    feats = RiTa.analyze("the clothes"); 
+    feats = RiTa.analyze("the clothes");
     expect(feats.pos).eq("dt nns");
     expect(feats.tokens).eq("the clothes");
     expect(feats.syllables).eq("dh-ah k-l-ow-dh-z");
@@ -45,32 +45,32 @@ describe('RiTa.Analyzer', () => {
     expect(feats.tokens).eq("yoyo");
     expect(feats.syllables).eq("y-ow/y-ow");
 
-		feats = RiTa.analyze("abandon");
-		//console.log(feats);
-		eq(feats["pos"], "vb");
+    feats = RiTa.analyze("abandon");
+    //console.log(feats);
+    eq(feats["pos"], "vb");
     eq(feats["phones"], 'ah-b-ae-n-d-ah-n');
-		eq(feats["tokens"], "abandon");
+    eq(feats["tokens"], "abandon");
     eq(feats["stresses"], "0/1/0");
-		eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
+    eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
   });
 
-  false && it('TODO', () => {
+  false && it('TODO', () => { // SYNC:
 
-		let feats = RiTa.analyze("off-site");
-		console.log(feats);
-		eq(feats["pos"], "jj");
+    let feats = RiTa.analyze("off-site");
+    console.log(feats);
+    eq(feats["pos"], "jj");
     eq(feats["phones"], 'ah-b-ae-n-d-ah-n');
-		eq(feats["tokens"], "abandon");
+    eq(feats["tokens"], "abandon");
     eq(feats["stresses"], "0/1/0");
-		eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
+    eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
 
-		feats = RiTa.analyze("oft-cited");
-		console.log(feats);
-		eq(feats["pos"], "jj");
+    feats = RiTa.analyze("oft-cited");
+    console.log(feats);
+    eq(feats["pos"], "jj");
     eq(feats["phones"], 'ah-b-ae-n-d-ah-n');
-		eq(feats["tokens"], "abandon");
+    eq(feats["tokens"], "abandon");
     eq(feats["stresses"], "0/1/0");
-		eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
+    eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
   });
 
   it('Should call stresses', () => {
@@ -227,6 +227,18 @@ describe('RiTa.Analyzer', () => {
     input = 'The emperor had no clothes on.';
     expected = hasLex ? 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .' : 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z ah-n .';
     expect(RiTa.syllables(input)).eq(expected);
+  });
+
+  it('Should pluralize phrases', () => { // SYNC:
+    let input, expected;
+    input = "set of choice"; expected = "set of choices";
+    expect(RiTa.pluralize(input)).eq(expected);
+
+    input = "bag of chocolate"; expected = "bag of chocolates";
+    expect(RiTa.pluralize(input)).eq(expected);
+
+    input = "gaggle of goose"; expected = "gaggle of geese";
+    expect(RiTa.pluralize(input)).eq(expected);
   });
 
   it('Should handle number (singular/plural)', () => {
@@ -468,7 +480,7 @@ describe('RiTa.Analyzer', () => {
       "pinches", "pinch",
       "catharses", "catharsis",
       "hankies", "hanky",
-     // "pleae", "pleae", //fail, moved to knownIssue
+      // "pleae", "pleae", //fail, moved to knownIssue
       "whizzes", "whiz",
       "selves", "self",
       "bookshelves", "bookshelf",
@@ -523,7 +535,7 @@ describe('RiTa.Analyzer', () => {
       "men", "man",
       "mice", "mouse",
       "lice", "louse",
-//    "dice", "die", consider 'dice' as singular
+      //    "dice", "die", consider 'dice' as singular
       "rice", "rice",
       "women", "woman",
       "clothes", "clothes",
@@ -628,7 +640,7 @@ describe('RiTa.Analyzer', () => {
       "golf", "golf",
       "grief", "grief",
       "cakes", "cake",
-      "dogs", "dog", 
+      "dogs", "dog",
       "feet", "foot",
       "teeth", "tooth",
       "kisses", "kiss",
