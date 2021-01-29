@@ -8,9 +8,6 @@ describe('RiTa.RiScript', () => {
 
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
 
-<<<<<<< HEAD
-  describe('Comments', () => {
-=======
   false && describe('Links', () => { // SYNC:
     it('Should parse md-style links ', () => {
       let res = RiTa.evaluate("(some text)[https://somelink]", 0, TLP);
@@ -19,8 +16,7 @@ describe('RiTa.RiScript', () => {
     });
   });
 
-  describe('Comments', () => { // SYNC:
->>>>>>> 622fb525f24146fb703cbbe88f6aad54757959d0
+  describe('Comments', () => {
 
     it('Should ignore line comments ', () => {
       expect(RiTa.evaluate("// $foo=a")).eq("");
@@ -244,13 +240,8 @@ describe('RiTa.RiScript', () => {
       expect(rs.isParseable("&&b")).eq(false);
     });
 
-<<<<<<< HEAD
     it('Should resolve simple expressions', () => {
       
-=======
-    it('Should resolve simple expressions', () => { // SYNC:
-
->>>>>>> 622fb525f24146fb703cbbe88f6aad54757959d0
       expect(RiTa.evaluate('foo', {})).eq('foo');
       expect(RiTa.evaluate('foo!', {})).eq('foo!');
       expect(RiTa.evaluate('!foo', {})).eq('!foo');
@@ -269,13 +260,8 @@ describe('RiTa.RiScript', () => {
       //expect(RiTa.evaluate('foo.bar', {}, {trace:0})).eq('foo.bar'); // KNOWN ISSUE
     });
 
-<<<<<<< HEAD
     it('Should resolve simple dynamics', () => { 
  
-=======
-    it('Should resolve simple dynamics', () => { // SYNC:
-
->>>>>>> 622fb525f24146fb703cbbe88f6aad54757959d0
       expect(RiTa.evaluate('$$foo=bar\nbaz', {})).eq('baz');
       expect(RiTa.evaluate('($$foo=bar)\nbaz', {})).eq('bar baz');
       expect(RiTa.evaluate('$$foo=bar\nbaz$foo', {})).eq('bazbar');
@@ -923,13 +909,8 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('The $a.capitalize() dog.', {}, ST)).eq('The $a.capitalize() dog.');
     });
 
-<<<<<<< HEAD
     it('Should ignore no-op symbols in context', () => { 
       expect(RiTa.evaluate('$foo', {}, ST)).eq('$foo'); 
-=======
-    it('Should ignore no-op symbols in context', () => { // SYNC:
-      expect(RiTa.evaluate('$foo', {}, ST)).eq('$foo');
->>>>>>> 622fb525f24146fb703cbbe88f6aad54757959d0
       expect(RiTa.evaluate('a $foo dog', {}, ST)).eq('a $foo dog');
 
       expect(RiTa.evaluate('$100 is a lot of $dog.', { dog: 'terrier' }, ST)).eq('$100 is a lot of terrier.');
