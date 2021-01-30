@@ -7,6 +7,7 @@ const { LexerErrors, ParserErrors } = require('./errors');
 
 class RiScript {
 
+  // TODO: line continuation, quoted strings with spaces in choice or vars
   constructor() {
     this.visitor = new Visitor(this, RiTa());
     this.transforms = RiScript.transforms;
@@ -19,6 +20,8 @@ class RiScript {
   evaluate(input, ctx, opts = {}) {
 
     ctx = ctx || {};
+
+    //input = input.replace(/ /g,'_')
 
     let onepass = opts.singlePass; // TODO: doc
     let last, expr = input, trace = opts.trace;
@@ -35,7 +38,8 @@ class RiScript {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '" ');
     }
 
-    return this.resolveEntities(expr);
+    return this.resolveEntities(expr)  
+    //return this.resolveEntities(expr).res.replace(/_/g,' ');
   }
 
   passInfo(ctx, input, output, pass) {
@@ -109,10 +113,19 @@ class RiScript {
     return this.parse(tokens, input, opts);
   }
 
-  preParse(input, opts = {}) {
+  /*preParse(input, opts = {}) {
+    let parse = input || '', pre = '', post = '';
+    let lines = parse.split(/\r?\n/);
+    let needs = [];
+    lines.forEach((l,i) => {
+      if (PPB_RE.test(l)) needs.push(i);
+    });
+  };
+
+  preParseORig(input, opts = {}) {
     let parse = input || '', pre = '', post = '';
 /*     let skipPre = parse.includes('$'); // see issue:rita#59
-    let skipAll = parse.includes('\/') || opts.skipPreParse; // comments */
+    let skipAll = parse.includes('\/') || opts.skipPreParse; // comments 
     if (!PPA_RE.test(parse)) {
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
@@ -131,9 +144,15 @@ class RiScript {
       post = words.slice(postIdx + 1).join(' ');
     }
     return { pre, parse, post };
-  }
+  }*/
 
   lexParseVisit(input, context, opts) {
+    if (!input || !input.length) return '';
+    let tree = this.lexParse(input, opts);
+    return this.visitor.init(context, opts).start(tree);
+  }
+
+  lexParseVisitWithPre(input, context, opts) {
 
     let { pre, parse, post } = this.preParse(input, opts);
     opts.trace && (pre.length || post.length) 
@@ -152,7 +171,7 @@ class RiScript {
 
   resolveEntities(result) { // &#10; for line break DOC:
     if (typeof result === 'undefined') return '';
-    return decode(result.replace(/ +/g, ' '))
+    return decode(result)//.replace(/ +/g, ' '))
       .replace(ENT_RE, ' ');
   }
 
@@ -236,7 +255,7 @@ RiScript.transforms = {
 };
 
 const VOW_RE = /[aeiou]/;
-const ENT_RE = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
+const ENT_RE = /[\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 
 const PPA_RE = /(^[{]|[/$])/;
 const PPB_RE = /[()$|{}\[\]]/;

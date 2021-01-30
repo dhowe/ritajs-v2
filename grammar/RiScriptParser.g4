@@ -4,7 +4,8 @@ parser grammar RiScriptParser;
 
 options { tokenVocab=RiScriptLexer; }
 
-script: (expr | cexpr |  link |  NL)* EOF;
+script: line (NL line)* EOF;
+line: (expr | cexpr | link)*;
 expr: (symbol | choice | assign | chars)+;
 cexpr: WS* LCB cond+ RCB WS* expr;
 cond: symbol WS* op WS* chars WS* COM?;

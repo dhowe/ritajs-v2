@@ -22,24 +22,35 @@ class Visitor extends RiScriptParserVisitor {
     this.context = context || {};
     this.trace = opts && opts.trace;
     this.silent = opts && opts.silent;
+    this.preparse = opts && opts.preparse;
     return this;
   }
 
   // Entry point for tree visiting
   start(ctx) {
     this.indexer = 0;
-    if (this.trace) console.log("start: '" + ctx.getText()
-      .replace(/\r?\n/g, "\\n") + "'");
-    let result = this.visitScript(ctx).trim();
-    return result;
+    let text = ctx.getText();
+    let lastBreak = /\n$/.test(text);
+    this.trace && console.log("start: '"
+      + text.replace(/\r?\n/g, "\\n") + "'");
+    let result = this.visitScript(ctx)
+    return lastBreak ? result : result.replace(/\r?\n$/, '');
+  }
+
+  visitLine(ctx) {
+    let line = ctx.getText();
+    if (!this.preparse || line.startsWith('{') || /[()$|\[\]]/.test(line)) {
+      line = this.visitChildren(ctx)
+    } 
+    else console.log('skip-parse: '+line);
+    return line.length ? line + '\n' : '';
   }
 
   visitLink(ctx) {
-    this.trace && console.log("visitLink: '" + ctx.getText()
-      + "' link=" + ctx.url().getText() + "");
-    //return "<a href=\"" + ctx.url().getText() + "\">" + this.visit(ctx.expr()) + "</a>";
-    return '[' + this.visit(ctx.expr()) + ']' 
-     + '&lpar;'  + ctx.url().getText() + '&rpar;';
+    this.trace && console.log("visitLink: '"
+      + ctx.getText() + "' link=" + ctx.url().getText());
+    return '[' + this.visit(ctx.expr()) + ']'
+      + '&lpar;' + ctx.url().getText() + '&rpar;';
   }
 
   visitChoice(ctx) {
@@ -63,7 +74,7 @@ class Visitor extends RiScriptParserVisitor {
       + "' [" + this.ruleName(tok) + "]");
 
     // now visit the token 
-    let visited = this.visit(tok);
+    let visited = this.visit(tok).trim(); // trim inside choices
 
     // now apply any transforms
     if (!txs.length) return visited;
@@ -73,7 +84,7 @@ class Visitor extends RiScriptParserVisitor {
 
     if (this.trace) console.log("resolveChoice: '" + result + "'");
 
-    return result;
+    return result.trim();
   }
 
   visitChoiceWithChoiceState(ctx) { // not used (save)
@@ -110,15 +121,6 @@ class Visitor extends RiScriptParserVisitor {
   /* visitDynamic(ctx) {
       throw Error("[PARSER] the & (dynamic) modifier can only be used in an assignment:\n  "+ctx.getText());
   } */
-
-  resolveDynamic(ident, resolved, txs) {
-    if (!/^\([^()]*\)$/.test(resolved)) {  // add parens if needed
-      resolved = Visitor.LP + resolved + Visitor.RP;
-    }
-    let result = resolved + flattenTx(txs);
-    this.trace && console.log("resolveDynamic[1]: &" + ident + " -> '" + result + "'");
-    return result;
-  }
 
   visitSymbol(ctx) {
 
@@ -256,7 +258,7 @@ class Visitor extends RiScriptParserVisitor {
 
   visitTerminal(tn) {
     let text = tn.getText();
-    if (text === '\n') return ' '; // need
+    //if (text === '\n') return ' '; // need
     if (this.trace && text !== Visitor.EOF) {
       console.log("visitTerminal: '" + text + "'");
     }
@@ -267,7 +269,17 @@ class Visitor extends RiScriptParserVisitor {
     throw Error("[ERROR] visitTransform: '" + ctx.getText() + "'");
   }
 
-  //////////////////////////////////////////////////////
+  ///////////////////////////// helpers ///////////////////////////////
+
+  resolveDynamic(ident, resolved, txs) {
+    if (!/^\([^()]*\)$/.test(resolved)) {  // add parens if needed
+      resolved = Visitor.LP + resolved + Visitor.RP;
+    }
+    let result = resolved + flattenTx(txs);
+    this.trace && console.log("resolveDynamic[1]: &" + ident + " -> '" + result + "'");
+    return result;
+  }
+
   applyTransforms(term, tfs) {
     if (typeof term === 'undefined' || !tfs || !tfs.length) {
       return;
