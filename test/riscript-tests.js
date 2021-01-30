@@ -16,6 +16,10 @@ describe('RiTa.RiScript', () => {
         return expect(md`${rs([code])}`);
       }
 
+    it('Should optimize pstrings', () => {
+      expect(RiTa.evaluate("(a)", 0)).eq("a");
+    });
+
     it('Should preserve whitespace', () => {
       expect(RiTa.evaluate("a   b", 0)).eq("a   b");
       expect(RiTa.evaluate("a\tb", 0)).eq("a\tb");
@@ -24,22 +28,26 @@ describe('RiTa.RiScript', () => {
       expect(rs`(a | a)`).eq("a");
     });
 
-    it('Should handle blockquotes', () => {
+    it('Should handle blocks,lists,images', () => {
       let input = ">## Blockquoted header\n>\n"
         + ">This is blockquoted text.\n>\n"
         + ">This is a second paragraph";
       expectHtml(input).eq(md`${input}`);
-    });
-
-    it('Should handle code blocks', () => {
-      let input = "If you want to mark something as code, indent it by 4 spaces.\n"
+      input = "If you want to mark something as code, indent it by 4 spaces.\n"
         + "    <p>This has been indented 4 spaces.</p>"
+      expectHtml(input).eq(md`${input}`);
+      expectHtml("1. first\n2. second\n3. third")
+        .eq(md`1. first\n2. second\n3. third`);
+      input = "![alt text](http://path/to/img.jpg \"Title\")";
       expectHtml(input).eq(md`${input}`);
     });
 
-    it('Should handle lists', () => {
-      expectHtml("1. first\n2. second\n3. third")
-        .eq(md`1. first\n2. second\n3. third`);
+    it('Should resolve js variables', () => {
+      let dog = 'terrier';
+      expect(rs`The ${dog} was wet.`).eq('The terrier was wet.');
+      expect(md`${rs`The ${dog} was wet.`}`).eq(md`The ${dog} was wet.`);
+      dog = '(terrier | terrier)'
+      expect(md`${rs`The ${dog} was wet.`}`).eq(md`The terrier was wet.`);
     });
 
     it('Should allow minimal styling', () => {
@@ -63,7 +71,7 @@ describe('RiTa.RiScript', () => {
       expectHtml('**(a | a)**').eq("<p><strong>a</strong></p>\n");
       expectHtml('# (a | a)').eq("<h1>a</h1>\n");
       expectHtml('# (a | a)// $foo=a').eq("<h1>a</h1>\n");
-      expectHtml(input='This is *emphasized* _text_.').eq(md`${input}`);
+      expectHtml(input = 'This is *emphasized* _text_.').eq(md`${input}`);
     })
 
     it('Should allow links', () => {
@@ -96,7 +104,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("[(a | a)](" + url + ")", 0)).eq("[a](" + url + ")");
 
       url = 'https://somelink.com';
-      expect(RiTa.evaluate("[(a | a).uc()](" + url + ")", 0)).eq("[A](" + url + ")");
+      expect(RiTa.evaluate("[(a | a).uc()](" + url + ")", 0, TP)).eq("[A](" + url + ")");
     });
   });
 

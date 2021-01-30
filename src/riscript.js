@@ -7,7 +7,7 @@ const { LexerErrors, ParserErrors } = require('./errors');
 
 class RiScript {
 
-  // TODO: line continuation, quoted strings with spaces in choice or vars
+  // TODO: quoted strings with spaces in choices or symbols, weighted-empty-string in choice 
   constructor() {
     this.visitor = new Visitor(this, RiTa());
     this.transforms = RiScript.transforms;
@@ -21,14 +21,12 @@ class RiScript {
 
     ctx = ctx || {};
 
-    //input = input.replace(/ /g,'_')
-
     let onepass = opts.singlePass; // TODO: doc
     let last, expr = input, trace = opts.trace;
 
     for (let i = 0; expr !== last && i < RiScript.MAX_TRIES; i++) {
       last = expr;
-      if (trace) console.log("--------------------- Pass#" + i + " ----------------------");
+      trace && console.log('-'.repeat(20) + ' Pass#' + i + ' ' + '-'.repeat(20));
       expr = this.lexParseVisit(expr, ctx, opts);
       if (trace) this.passInfo(ctx, last, expr, i);
       if (onepass || !this.isParseable(expr)) break;
@@ -38,8 +36,7 @@ class RiScript {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '" ');
     }
 
-    return this.resolveEntities(expr)  
-    //return this.resolveEntities(expr).res.replace(/_/g,' ');
+    return this.resolveEntities(expr)
   }
 
   passInfo(ctx, input, output, pass) {
@@ -155,7 +152,7 @@ class RiScript {
   lexParseVisitWithPre(input, context, opts) {
 
     let { pre, parse, post } = this.preParse(input, opts);
-    opts.trace && (pre.length || post.length) 
+    opts.trace && (pre.length || post.length)
       && console.log('preParse("' + pre + '", "' + post + '");');
     let tree = parse.length && this.lexParse(parse, opts);
     let result = parse.length ? this.visitor.init(context, opts).start(tree) : '';
@@ -189,7 +186,7 @@ class RiScript {
     let first = s.split(/\s+/)[0];
     let phones = RiTa().phones(first, { silent: true });
     // could still be original word if no phones found
-    return (phones && phones.length 
+    return (phones && phones.length
       && VOW_RE.test(phones[0]) ? 'an ' : 'a ') + s;
   }
 
@@ -228,7 +225,7 @@ function quotify(s) {
 /// Pluralizes the word according to english regular/irregular rules.
 /// </summary>
 function pluralize(s) {
-  
+
   return RiTa().pluralize(s);
 }
 
@@ -251,17 +248,15 @@ RiScript.transforms = {
   ucf: capitalize,
   uc: uppercase,
   qq: quotify,
-  s: pluralize   
+  s: pluralize
 };
 
 const VOW_RE = /[aeiou]/;
 const ENT_RE = /[\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 
-const PPA_RE = /(^[{]|[/$])/;
-const PPB_RE = /[()$|{}\[\]]/;
+/* const PPA_RE = /(^[{]|[/$])/;
+const PPB_RE = /[()$|{}\[\]]/; */
 const PRS_RE = /([(){}|]|(\${1,2}\w+))/;
 const SYM_RE = /\${1,2}\w+/;
-
-// Dynamic-options: ~ @ & % #, or only $ _ $$
 
 module && (module.exports = RiScript);

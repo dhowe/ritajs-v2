@@ -52,8 +52,8 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "&\u0005\u0004\u0003\u0002%#\u0003\u0002\u0002\u0002&)\u0003\u0002\u0002",
     "\u0002\'%\u0003\u0002\u0002\u0002\'(\u0003\u0002\u0002\u0002(*\u0003",
     "\u0002\u0002\u0002)\'\u0003\u0002\u0002\u0002*+\u0007\u0002\u0002\u0003",
-    "+\u0003\u0003\u0002\u0002\u0002,0\u0005\u0006\u0004\u0002-0\u0005\b",
-    "\u0005\u0002.0\u0005\u001a\u000e\u0002/,\u0003\u0002\u0002\u0002/-\u0003",
+    "+\u0003\u0003\u0002\u0002\u0002,0\u0005\u001a\u000e\u0002-0\u0005\u0006",
+    "\u0004\u0002.0\u0005\b\u0005\u0002/,\u0003\u0002\u0002\u0002/-\u0003",
     "\u0002\u0002\u0002/.\u0003\u0002\u0002\u000203\u0003\u0002\u0002\u0002",
     "1/\u0003\u0002\u0002\u000212\u0003\u0002\u0002\u00022\u0005\u0003\u0002",
     "\u0002\u000231\u0003\u0002\u0002\u000249\u0005\u0016\f\u000259\u0005",
@@ -351,6 +351,17 @@ function LineContext(parser, parent, invokingState) {
 LineContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
 LineContext.prototype.constructor = LineContext;
 
+LineContext.prototype.link = function(i) {
+    if(i===undefined) {
+        i = null;
+    }
+    if(i===null) {
+        return this.getTypedRuleContexts(LinkContext);
+    } else {
+        return this.getTypedRuleContext(LinkContext,i);
+    }
+};
+
 LineContext.prototype.expr = function(i) {
     if(i===undefined) {
         i = null;
@@ -370,17 +381,6 @@ LineContext.prototype.cexpr = function(i) {
         return this.getTypedRuleContexts(CexprContext);
     } else {
         return this.getTypedRuleContext(CexprContext,i);
-    }
-};
-
-LineContext.prototype.link = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(LinkContext);
-    } else {
-        return this.getTypedRuleContext(LinkContext,i);
     }
 };
 
@@ -426,17 +426,17 @@ RiScriptParser.prototype.line = function() {
             switch(la_) {
             case 1:
                 this.state = 42;
-                this.expr();
+                this.link();
                 break;
 
             case 2:
                 this.state = 43;
-                this.cexpr();
+                this.expr();
                 break;
 
             case 3:
                 this.state = 44;
-                this.link();
+                this.cexpr();
                 break;
 
             }

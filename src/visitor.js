@@ -46,6 +46,12 @@ class Visitor extends RiScriptParserVisitor {
     return line.length ? line + '\n' : '';
   }
 
+  visitPstr(ctx) {
+    let txt = ctx.getText();
+    this.trace && console.log("visitPstr: '"+ txt + "'");
+    return txt.substring(1, txt.length-1);
+  }
+
   visitLink(ctx) {
     this.trace && console.log("visitLink: '"
       + ctx.getText() + "' link=" + ctx.url().getText());
