@@ -20,6 +20,15 @@ RiScriptParserListener.prototype.exitScript = function(ctx) {
 };
 
 
+// Enter a parse tree produced by RiScriptParser#line.
+RiScriptParserListener.prototype.enterLine = function(ctx) {
+};
+
+// Exit a parse tree produced by RiScriptParser#line.
+RiScriptParserListener.prototype.exitLine = function(ctx) {
+};
+
+
 // Enter a parse tree produced by RiScriptParser#expr.
 RiScriptParserListener.prototype.enterExpr = function(ctx) {
 };

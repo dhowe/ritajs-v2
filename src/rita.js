@@ -185,11 +185,8 @@ class RiTa {
   }
 
   static template() {
-    return (strs, ...vals) => {
-      // provides tagged template processing
-      let script = strs.reduce((a, s, i) => s + (vals[i] || ''), '');
-      return RiScript.eval(script);
-    };
+    return (strs, ...vals) => RiScript.eval(
+      strs.reduce((a, s, i) => a + s + (vals[i] || ''), ''));
   }
 
   static tokenize() {

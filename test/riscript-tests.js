@@ -1,12 +1,12 @@
 const { expect } = require('chai');
 const { html } = require('nanohtml');
+const RiTa = require('../src/rita');
 
 describe('RiTa.RiScript', () => {
 
-  const ST = { silent: 1 }, TP = { trace: 1 }, TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
-
   if (typeof module !== 'undefined') require('./before');
 
+  const ST = { silent: 1 }, TP = { trace: 1 }, TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
 
   describe('Markdown', () => { // JSONLY
@@ -17,42 +17,48 @@ describe('RiTa.RiScript', () => {
         return expect(md`${rs([code])}`);
       }
 
-    it('Should allow simple links', () => {
-      expect(RiTa.evaluate("[(a)](linktext)", 0)).eq("[a](linktext)");
-      expect(RiTa.evaluate("[(a|a[2])](linktext)", 0)).eq("[a](linktext)");
-      expect(RiTa.evaluate("[(a|a[2])](linktext)", 0)).eq("[a](linktext)");
+    it('Should optimize pstrings', () => {
+      expect(RiTa.evaluate("(a)", 0)).eq("a");
     });
 
-    it('Should output html with md template', () => {
-
-
-
+    it('Should preserve whitespace', () => {
+      expect(RiTa.evaluate("a   b", 0)).eq("a   b");
+      expect(RiTa.evaluate("a\tb", 0)).eq("a\tb");
+      expect(rs`a   b`).eq("a   b");
+      expect(rs`a\tb`, 0).eq("a\tb");
       expect(rs`(a | a)`).eq("a");
-      expect(rs`**(a | a)**`).eq("**a**");
+      expect(rs` (a | a)
+              ok
+            `).eq(" a\n              ok\n            ");
+      expect(rs`Now in one year
+     A book published
+          And plumbing —`).eq("Now in one year\n     A book published\n          And plumbing —");
+    });
 
-      expectHtml('**(a | a)**').eq("<p><strong>a</strong></p>\n");
-      expectHtml('# (a | a)').eq("<h1>a</h1>\n");
-      expectHtml('# (a | a)// $foo=a').eq("<h1>a</h1>\n");
+    it('Should handle blocks,lists,images', () => {
+      let input = ">## Blockquoted header\n>\n"
+        + ">This is blockquoted text.\n>\n"
+        + ">This is a second paragraph";
+      expectHtml(input).eq(md`${input}`);
+      input = "If you want to mark something as code, indent it by 4 spaces.\n"
+        + "    <p>This has been indented 4 spaces.</p>"
+      expectHtml(input).eq(md`${input}`);
+      expectHtml("1. first\n2. second\n3. third")
+        .eq(md`1. first\n2. second\n3. third`);
+      input = "![alt text](http://path/to/img.jpg \"Title\")";
+      expectHtml(input).eq(md`${input}`);
+    });
 
-      /*     console.log(md`1. first\n2. second\n3. third`);
-          console.log(rs`1. first\n2. second\n3. third`);
-          expectHtml('1. first\n2. second\n3. third').eq(""); */
-
-      let url = 'https://somelink.com';
-      //console.log(md`[link](${url})`);
-      expectHtml("[(b | b)](" + url + ")")
-        .eq("<p><a href=\"https://somelink.com\">b</a></p>\n");
-
-      url = '@dhowe/rita';
-      expectHtml("[(b | b)](" + url + ")")
-        .eq("<p><a href=\"@dhowe/rita\">b</a></p>\n");
-
-      url = '@dhowe/rita?a=b&c=12';
-      expectHtml("[(b | b)](" + url + ")")
-        .eq("<p><a href=\"@dhowe/rita?a=b&amp;c=12\">b</a></p>\n");
+    it('Should resolve js variables', () => {
+      let dog = 'terrier';
+      expect(rs`The ${dog} was wet.`).eq('The terrier was wet.');
+      expect(md`${rs`The ${dog} was wet.`}`).eq(md`The ${dog} was wet.`);
+      dog = '(terrier | terrier)'
+      expect(md`${rs`The ${dog} was wet.`}`).eq(md`The terrier was wet.`);
     });
 
     it('Should allow minimal styling', () => {
+      let input;
       expect(RiTa.evaluate("(a | a)", 0)).eq("a");
       expect(RiTa.evaluate("a(b | b)c", 0)).eq("abc");
       expect(RiTa.evaluate("*(a | a)*", 0)).eq("*a*");
@@ -65,10 +71,32 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("~~(a | a)~~", 0)).eq("~~a~~");
       //expect(RiTa.evaluate("===========(a | a)", 0)).eq("===========a"); // fails
       expect(RiTa.evaluate("-----------(a | a)", 0)).eq("-----------a");
+
+      expect(rs`(a | a)`).eq("a");
+      expect(rs`**(a | a)**`).eq("**a**");
+
+      expectHtml('**(a | a)**').eq("<p><strong>a</strong></p>\n");
+      expectHtml('# (a | a)').eq("<h1>a</h1>\n");
+      expectHtml('# (a | a)// $foo=a').eq("<h1>a</h1>\n");
+      expectHtml(input = 'This is *emphasized* _text_.').eq(md`${input}`);
     })
 
     it('Should allow links', () => {
       let url;
+
+      url = 'https://somelink.com';
+      //console.log(md`[link](${url})`);
+      expectHtml("[(b | b)](" + url + ")")
+        .eq("<p><a href=\"https://somelink.com\">b</a></p>\n");
+
+      url = '@dhowe/rita';
+      expectHtml("[(b | b)](" + url + ")")
+        .eq("<p><a href=\"@dhowe/rita\">b</a></p>\n");
+
+      url = '@dhowe/rita?a=b&c=12';
+      expectHtml("[(b | b)](" + url + ")")
+        .eq("<p><a href=\"@dhowe/rita?a=b&amp;c=12\">b</a></p>\n");
+      expect(RiTa.evaluate("[(a|a[2])](linktext)", 0)).eq("[a](linktext)");
 
       url = 'https://somelinkcom';
       expect(RiTa.evaluate("[(a | a)](" + url + ")", 0)).eq("[a](" + url + ")");
@@ -108,7 +136,48 @@ describe('RiTa.RiScript', () => {
     })
   });
 
-  SKIP_FOR_NOW || describe('Sequences', () => { // on-hold
+  0&&describe('Sequences', () => { // on-hold
+/*
+"$rule=(a|b|c|d|e).nore()   
+"($rule=(a|b|c|d|e).nore()) $rule.nore()"
+
+"$$names=(jane | dave | rick | chung)"
+"This story is about $names and $names.nore()"
+
+"$$names=(jane | dave | rick | chung).nore()"
+"This story is about $names and $names.nore()"
+*/
+
+    it('Should support norexx transforms', () => {
+      let fail = false;
+      for (let i = 0; i < 1; i++) {
+        let parts = RiTa.evaluate("$$names=(a|b|c|d|e)\n$names $names.nore()", 0,TP).split(" ");
+        expect(parts.length).eq(2);
+        console.log(i + ") " + parts[0] + " :: " + parts[1]);
+        if (1 || parts[0] === parts[1]) {
+          fail = true;
+          break;
+        }
+      }
+      expect(fail).false;
+    });
+
+    0&&it('Should support inline nore transforms', () => {
+      let fail = false;
+      for (let i = 0; i < 10; i++) {
+        let parts = RiTa.evaluate("($rule=(a|b|c|d|e)).nore() $rule", 0/* ,TP */).split(" ");
+        expect(parts.length).eq(2);
+        console.log(i + ") " + parts[0] + " " + parts[1]);
+        if (parts[0] === parts[1]) {
+          fail = true;
+          break;
+        }
+      }
+      expect(fail).false;
+    });
+  });
+
+  /*describe('Sequences', () => { // on-hold
 
     it('Should resolve seq transforms', () => {
 
@@ -117,7 +186,7 @@ describe('RiTa.RiScript', () => {
       let res = RiTa.evaluate(rule + '\n$rule $rule $rule $rule', {}, TP);
       expect(res).eq(opts.join(' '));
 
-      /*  for (let i = 0; i < opts.length; i++) {
+      for (let i = 0; i < opts.length; i++) {
         let res = rs.evaluate(rule, {});
         //console.log('got', i, ':', res);
         expect(res).eq(opts[i]);
@@ -127,7 +196,7 @@ describe('RiTa.RiScript', () => {
         let res = rs.evaluate(rule2);
         //console.log(i, ':', res);
         expect(res).eq(opts[i].toUpperCase());
-      } */
+      } 
     });
 
     it('Should resolve rseq transforms', () => {
@@ -289,7 +358,7 @@ describe('RiTa.RiScript', () => {
         last = res;
       }
     });
-  });
+  });*/
 
 
   describe('Evaluation', () => {
@@ -313,20 +382,21 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve simple expressions', () => { // SYNC:
 
+      expect(RiTa.evaluate('foo\nbar', {})).eq('foo\nbar');
+
       expect(RiTa.evaluate('foo', {})).eq('foo');
       expect(RiTa.evaluate('foo!', {})).eq('foo!');
       expect(RiTa.evaluate('!foo', {})).eq('!foo');
       expect(RiTa.evaluate('foo.', {})).eq('foo.');
       expect(RiTa.evaluate('"foo"', {})).eq('"foo"');
       expect(RiTa.evaluate("'foo'", {})).eq("'foo'");
-      expect(RiTa.evaluate('foo\nbar', {})).eq('foo bar');
-      expect(RiTa.evaluate('foo&#10;bar', {})).eq('foo\nbar');
       expect(RiTa.evaluate('$foo=bar\nbaz', {})).eq('baz');
-      expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {})).eq('baz bar');
+      expect(RiTa.evaluate('$foo=bar\nbaz\n$foo', {})).eq('baz\nbar');
       expect(RiTa.evaluate('$foo=(a|b|c)\n$foo is $foo')).to.be.oneOf(['a is a', 'b is b', 'c is c']);;
       expect(RiTa.evaluate('<em>foo</em>', {})).eq('<em>foo</em>');
       // expect(RiTa.evaluate('[foo](http://blah.com)', {})).eq('[foo](http://blah.com)');
       expect(RiTa.evaluate('(a|a)', { a: 'a', b: 'b' })).eq('a');
+
 
       //expect(RiTa.evaluate('foo.bar', {}, {trace:0})).eq('foo.bar'); // KNOWN ISSUE
     });
@@ -334,11 +404,11 @@ describe('RiTa.RiScript', () => {
     it('Should resolve simple dynamics', () => { // SYNC:
 
       expect(RiTa.evaluate('$$foo=bar\nbaz', {})).eq('baz');
-      expect(RiTa.evaluate('($$foo=bar)\nbaz', {})).eq('bar baz');
+      expect(RiTa.evaluate('($$foo=bar)\nbaz', {})).eq('bar\nbaz');
       expect(RiTa.evaluate('$$foo=bar\nbaz$foo', {})).eq('bazbar');
       expect(RiTa.evaluate('$$foo=bar\n($foo)baz', {})).eq('barbaz');
       expect(RiTa.evaluate('$$foo=bar\n$foo baz $foo', {})).eq('bar baz bar');
-      expect(RiTa.evaluate('$$foo=bar\nbaz\n$foo $foo', {})).eq('baz bar bar');
+      expect(RiTa.evaluate('$$foo=bar\nbaz\n$foo $foo', {})).eq('baz\nbar bar');
 
       let passed = false;
       for (let i = 0; i < 10; i++) { // $$: must not always match
@@ -610,6 +680,9 @@ describe('RiTa.RiScript', () => {
       expect(ctx['$$noun']).eq('I');
       expect(ctx['$$verb']).eq('sat');
       expect(res).eq('I sat.');
+
+      let inp = "$$mammal=(dog | dog | dog)\nMost $mammal.pluralize() are unruly.";
+      expect(RiTa.evaluate(inp)).eq("Most dogs are unruly.");
     });
 
 
@@ -662,6 +735,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(ant).articlize().capitalize()', 0)).eq('An ant');
       expect(RiTa.evaluate('(ant).capitalize().articlize()', 0)).eq('an Ant');
       expect(RiTa.evaluate('(deeply-nested expression).art()')).eq('a deeply-nested expression');
+      expect(RiTa.evaluate('(deeply-nested $art).art()', { art: 'emotion' })).eq('a deeply-nested emotion');
     });
 
     it('Should resolve transforms on phrases', () => {
@@ -868,7 +942,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('hello\n$a=a', ctx = {})).eq('hello');
       expect(ctx.a).eq('a');
 
-      expect(RiTa.evaluate('hello \n($a=A)', ctx = {})).eq('hello A');
+      expect(RiTa.evaluate('hello \n($a=A)', ctx = {})).eq('hello \nA');
       expect(ctx.a).eq('A');
 
       expect(RiTa.evaluate('x($a=a)', ctx = {})).eq('xa');
@@ -950,12 +1024,11 @@ describe('RiTa.RiScript', () => {
       let inp = 'Once there was a girl called ($hero=(Jane | Jane)).';
       inp += '\n$hero lived in ($home=(Neverland | Neverland)).';
       inp += '\n$hero liked living in $home.';
-      let out = 'Once there was a girl called Jane. Jane lived in Neverland. Jane liked living in Neverland.';
+      let out = 'Once there was a girl called Jane.\nJane lived in Neverland.\nJane liked living in Neverland.';
       expect(RiTa.evaluate(inp, ctx)).eq(out);
 
       ctx = {};
       inp = 'Once there was a girl called ($hero=(Jane | Jane)).\n$hero lived in ($home=(Neverland | Neverland)).\n$hero liked living in $home.';
-      out = 'Once there was a girl called Jane. Jane lived in Neverland. Jane liked living in Neverland.';
       expect(RiTa.evaluate(inp, ctx)).eq(out);
     });
   });
@@ -966,7 +1039,7 @@ describe('RiTa.RiScript', () => {
     it('Should resolve linebreak defined variables', () => {
       let inp = "a.\n$b.";
       let out = RiTa.evaluate(inp, { b: "c" });
-      expect(out).eq("a. c.");
+      expect(out).eq("a.\nc.");
       let res;
       res = RiTa.evaluate('$foo=hello\n$start=I said $foo to her\n$start', {});
       expect(res).eq('I said hello to her');
@@ -1021,9 +1094,9 @@ describe('RiTa.RiScript', () => {
 
       expect(RiTa.evaluate('$foo\n', { foo: 'bar' })).eq('bar');
       expect(RiTa.evaluate('a $dog', { dog: 'terrier' })).eq('a terrier');
-      expect(RiTa.evaluate('I ate\nthe $dog', { dog: 'beagle' })).eq('I ate the beagle');
-      expect(RiTa.evaluate('The $dog\ntoday.', { dog: 'lab' })).eq('The lab today.');
-      expect(RiTa.evaluate('I ate the\n$dog.', { dog: 'lab' })).eq('I ate the lab.');
+      expect(RiTa.evaluate('I ate\nthe $dog', { dog: 'beagle' })).eq('I ate\nthe beagle');
+      expect(RiTa.evaluate('The $dog\ntoday.', { dog: 'lab' })).eq('The lab\ntoday.');
+      expect(RiTa.evaluate('I ate the\n$dog.', { dog: 'lab' })).eq('I ate the\nlab.');
 
       let ctx = { user: { name: 'jen' } }
       expect(RiTa.evaluate("Was $user.name.ucf() (ok | ok) today?", ctx)).eq('Was Jen ok today?');
@@ -1051,8 +1124,8 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$dog=beagle\nI ate the $dog', {})).eq('I ate the beagle');
       expect(RiTa.evaluate('$dog=lab\nThe $dog today.', {})).eq('The lab today.');
       expect(RiTa.evaluate('$dog=lab\nI ate the $dog.', {})).eq('I ate the lab.');
-      expect(RiTa.evaluate('$dog=lab\nThe $dog\ntoday.', {})).eq('The lab today.');
-      expect(RiTa.evaluate('$dog=lab\nI ate the\n$dog.', {})).eq('I ate the lab.');
+      expect(RiTa.evaluate('$dog=lab\nThe $dog\ntoday.', {})).eq('The lab\ntoday.');
+      expect(RiTa.evaluate('$dog=lab\nI ate the\n$dog.', {})).eq('I ate the\nlab.');
       expect(RiTa.evaluate('$foo=baz\n$bar=$foo\n$bar', {})).eq('baz');
 
       // from known-issues
@@ -1112,7 +1185,7 @@ describe('RiTa.RiScript', () => {
       expect(() => RiTa.evaluate('(a | b) | c', 0, ST)).to.throw();
     });
 
-    it('Should resolve choices', () => {
+    it('Should resolve choices', () => { //SYNC:
       expect(RiTa.evaluate('(|)')).eq('');
       expect(RiTa.evaluate('(a)')).eq('a');
       expect(RiTa.evaluate('(a | a)', 0)).eq('a');
@@ -1120,9 +1193,11 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(a | b)')).to.be.oneOf(['a', 'b']);
       expect(RiTa.evaluate('(a | b | c)'), {}).to.be.oneOf(['a', 'b', 'c']);
       expect(RiTa.evaluate('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
+      expect(/[abcde] [abcde]/.test(RiTa.evaluate("$$names=(a|b|c|d|e)\n$names $names",0))).true;
+
     });
 
-    it('Should resolve choices via scripting', () => {
+    /*it('Should resolve choices via scripting', () => {
       let rs = RiTa.scripting();
       expect(rs.evaluate('(|)')).eq('');
       expect(rs.evaluate('(a)')).eq('a');
@@ -1131,7 +1206,7 @@ describe('RiTa.RiScript', () => {
       expect(rs.evaluate('(a | b)')).to.be.oneOf(['a', 'b']);
       expect(rs.evaluate('(a | b | c)'), {}).to.be.oneOf(['a', 'b', 'c']);
       expect(rs.evaluate('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
-    });
+    });*/
 
     it('Should resolve multiword choices', () => {
       let silent = RiTa.SILENCE_LTS;
@@ -1160,6 +1235,7 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve weighted choices', () => {
 
+      // TODO: FAILING
       expect(RiTa.evaluate('( a [2] |a [3] )', {})).eq('a');
 
       let result = { b: 0, a: 0 };
@@ -1185,7 +1261,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("$a=b\n$a.toUpperCase()", ctx)).eq("B");
       expect(RiTa.evaluate("($b=((a | a)|a)).toUpperCase() dog.", ctx)).eq("A dog.");
       expect(RiTa.evaluate("((a)).toUpperCase()", ctx)).eq("A");
-      expect(RiTa.evaluate("$a.toUpperCase()\n($a=b)", ctx)).eq("B b");
+      expect(RiTa.evaluate("$a.toUpperCase()\n($a=b)", ctx)).eq("B\nb");
 
       ctx = { dog: "terrier" };
       expect(RiTa.evaluate("$dog.ucf()", ctx)).eq("Terrier");
@@ -1357,6 +1433,15 @@ describe('RiTa.RiScript', () => {
     });
   });
 
+  describe('Continuations', () => {
+    it('Should recognize continuations', () => {
+      expect(RiTa.evaluate('aa\\\nbb', {})).eq('aabb');
+      expect(RiTa.evaluate('aa\\\n bb', {})).eq('aa bb');
+      expect(RiTa.evaluate('aa \\\nbb', {})).eq('aa bb');
+      expect(RiTa.evaluate('aa \\\n bb', {})).eq('aa  bb');
+    });
+  });
+
   describe('Grammaresque', () => {
 
     it('Should evaluate post defined symbols', () => {
@@ -1365,7 +1450,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$foo=$bar.toLowerCase().ucf()\n$bar=baz\n$foo', {})).eq('Baz');
     });
 
-    it('Should optimise via preparsing', () => { // TODO: improve tests (not clear if preparsing or not)
+    false && it('Should optimise via preparsing', () => { // TODO: improve tests (not clear if preparsing or not)
       let ctx, input, rs;
       ctx = { nothing: 'NOTHING', hang: 'HANG' };
       input = "Eve near Vancouver, Washington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
@@ -1459,9 +1544,10 @@ describe('RiTa.RiScript', () => {
     it('Should allow basic punctuation', () => {
       expect(RiTa.evaluate("The -;:.!?'`", {})).eq("The -;:.!?'`");
       expect(RiTa.evaluate('The -;:.!?"`', {})).eq('The -;:.!?"`');
-      expect(RiTa.evaluate(",.;:\\'?!-_`“”’‘…‐–—―^*", {})).eq(",.;:\\'?!-_`“”’‘…‐–—―^*");
-      expect(RiTa.evaluate(',.;:\\"?!-_`“”’‘…‐–—―^*', {})).eq(',.;:\\"?!-_`“”’‘…‐–—―^*');
+      expect(RiTa.evaluate(",.;:'?!-_`“”’‘…‐–—―^*", {})).eq(",.;:'?!-_`“”’‘…‐–—―^*");
+      expect(RiTa.evaluate(',.;:"?!-_`“”’‘…‐–—―^*', {})).eq(',.;:"?!-_`“”’‘…‐–—―^*');
       expect(RiTa.evaluate("/&%©@*")).eq("/&%©@*");
+      expect(RiTa.evaluate("/&%©\n@*")).eq("/&%©\n@*");
     });
 
     it('Should allow spaces for formatting', () => {
@@ -1595,7 +1681,7 @@ describe('RiTa.RiScript', () => {
       });
     }
   })
-  describe('Conditionals', () => {
+  false && describe('Conditionals', () => {
 
     it('Should throw on bad conditionals', () => {
       //expect(() => RiTa.evaluate('{$a<hello} foo', { a: 2 })).to.throw();

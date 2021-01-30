@@ -18,6 +18,12 @@ RiScriptParserVisitor.prototype.visitScript = function(ctx) {
 };
 
 
+// Visit a parse tree produced by RiScriptParser#line.
+RiScriptParserVisitor.prototype.visitLine = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
 // Visit a parse tree produced by RiScriptParser#expr.
 RiScriptParserVisitor.prototype.visitExpr = function(ctx) {
   return this.visitChildren(ctx);
