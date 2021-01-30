@@ -11,19 +11,21 @@ describe('RiTa.RiScript', () => {
 
   describe('Markdown', () => { // JSONLY
 
+    const rs = RiTa.template(),
+      md = require('marli')(),
+      expectHtml = function (code) {
+        return expect(md`${rs([code])}`);
+      }
+
     it('Should allow simple links', () => {
       expect(RiTa.evaluate("[(a)](linktext)", 0)).eq("[a](linktext)");
       expect(RiTa.evaluate("[(a|a[2])](linktext)", 0)).eq("[a](linktext)");
       expect(RiTa.evaluate("[(a|a[2])](linktext)", 0)).eq("[a](linktext)");
     });
 
-    it('Should allow use as a tagged template', () => {
+    it('Should output html with md template', () => {
 
-      const rs = RiTa.template(), md = require('marli')();//{ linkify: true });
 
-      function expectHtml(code) {
-        return expect(md`${rs([code])}`);
-      }
 
       expect(rs`(a | a)`).eq("a");
       expect(rs`**(a | a)**`).eq("**a**");
@@ -32,10 +34,22 @@ describe('RiTa.RiScript', () => {
       expectHtml('# (a | a)').eq("<h1>a</h1>\n");
       expectHtml('# (a | a)// $foo=a').eq("<h1>a</h1>\n");
 
-      let url = 'https://somelink.com';  // WORKING HERE ON LINKS
+      /*     console.log(md`1. first\n2. second\n3. third`);
+          console.log(rs`1. first\n2. second\n3. third`);
+          expectHtml('1. first\n2. second\n3. third').eq(""); */
+
+      let url = 'https://somelink.com';
       //console.log(md`[link](${url})`);
-      expectHtml("[(a | a)](" + url + ")")
-        .eq("<p><a href=\"https://somelink.com\">a</a></p>\n");
+      expectHtml("[(b | b)](" + url + ")")
+        .eq("<p><a href=\"https://somelink.com\">b</a></p>\n");
+
+      url = '@dhowe/rita';
+      expectHtml("[(b | b)](" + url + ")")
+        .eq("<p><a href=\"@dhowe/rita\">b</a></p>\n");
+
+      url = '@dhowe/rita?a=b&c=12';
+      expectHtml("[(b | b)](" + url + ")")
+        .eq("<p><a href=\"@dhowe/rita?a=b&amp;c=12\">b</a></p>\n");
     });
 
     it('Should allow minimal styling', () => {
@@ -49,7 +63,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("##(a | a)", 0)).eq("##a");
       expect(RiTa.evaluate("###(a | a)", 0)).eq("###a");
       expect(RiTa.evaluate("~~(a | a)~~", 0)).eq("~~a~~");
-      //expect(RiTa.evaluate("===========(a | a)", 0)).eq("===========a");
+      //expect(RiTa.evaluate("===========(a | a)", 0)).eq("===========a"); // fails
       expect(RiTa.evaluate("-----------(a | a)", 0)).eq("-----------a");
     })
 
@@ -1431,6 +1445,7 @@ describe('RiTa.RiScript', () => {
 
   describe('Entities', () => { // using 'he' lib for now
     it('Should decode HTML entities', () => {
+      expect(RiTa.evaluate('The &#010; line break entity')).eq('The \n line break entity'); // ?
       expect(RiTa.evaluate('The &num; symbol')).eq('The # symbol');
       expect(RiTa.evaluate('The &#x00023; symbol')).eq('The # symbol');
       expect(RiTa.evaluate('The &#35; symbol')).eq('The # symbol');
