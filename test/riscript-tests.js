@@ -38,6 +38,9 @@ describe('RiTa.RiScript', () => {
         .eq("<p><a href=\"https://somelink.com\">a</a></p>\n");
     });
 
+    it('Should maintain line breaks', () => {  
+      // WORKING HERE (pub one first?)
+    });
     it('Should allow minimal styling', () => {
       expect(RiTa.evaluate("(a | a)", 0)).eq("a");
       expect(RiTa.evaluate("a(b | b)c", 0)).eq("abc");
