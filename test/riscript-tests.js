@@ -3,10 +3,9 @@ const { html } = require('nanohtml');
 
 describe('RiTa.RiScript', () => {
 
-  const ST = { silent: 1 }, TP = { trace: 1 }, TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
-
   if (typeof module !== 'undefined') require('./before');
 
+  const ST = { silent: 1 }, TP = { trace: 1 }, TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
 
   describe('Markdown', () => { // JSONLY
@@ -22,47 +21,29 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("a\tb", 0)).eq("a\tb");
       expect(rs`a   b`).eq("a   b");
       expect(rs`a\tb`, 0).eq("a\tb");
-    });
-
-    it('Should allow simple links', () => {
-      expect(RiTa.evaluate("[(a)](linktext)", 0)).eq("[a](linktext)");
-      expect(RiTa.evaluate("[(a|a[2])](linktext)", 0)).eq("[a](linktext)");
-      expect(RiTa.evaluate("[(a|a[2])](linktext)", 0)).eq("[a](linktext)");
-    });
-
-    it('Should handles lines and spaces', () => {
       expect(rs`(a | a)`).eq("a");
     });
 
-    it('Should output html with md template', () => {
+    it('Should handle blockquotes', () => {
+      let input = ">## Blockquoted header\n>\n"
+        + ">This is blockquoted text.\n>\n"
+        + ">This is a second paragraph";
+      expectHtml(input).eq(md`${input}`);
+    });
 
-      expect(rs`(a | a)`).eq("a");
-      expect(rs`**(a | a)**`).eq("**a**");
+    it('Should handle code blocks', () => {
+      let input = "If you want to mark something as code, indent it by 4 spaces.\n"
+        + "    <p>This has been indented 4 spaces.</p>"
+      expectHtml(input).eq(md`${input}`);
+    });
 
-      expectHtml('**(a | a)**').eq("<p><strong>a</strong></p>\n");
-      expectHtml('# (a | a)').eq("<h1>a</h1>\n");
-      expectHtml('# (a | a)// $foo=a').eq("<h1>a</h1>\n");
-
+    it('Should handle lists', () => {
       expectHtml("1. first\n2. second\n3. third")
         .eq(md`1. first\n2. second\n3. third`);
-      expectHtml('1. first\n2. second\n3. third')
-        .eq('<ol>\n<li>first</li>\n<li>second</li>\n<li>third</li>\n</ol>\n');
-
-      let url = 'https://somelink.com';
-      //console.log(md`[link](${url})`);
-      expectHtml("[(b | b)](" + url + ")")
-        .eq("<p><a href=\"https://somelink.com\">b</a></p>\n");
-
-      url = '@dhowe/rita';
-      expectHtml("[(b | b)](" + url + ")")
-        .eq("<p><a href=\"@dhowe/rita\">b</a></p>\n");
-
-      url = '@dhowe/rita?a=b&c=12';
-      expectHtml("[(b | b)](" + url + ")")
-        .eq("<p><a href=\"@dhowe/rita?a=b&amp;c=12\">b</a></p>\n");
     });
 
     it('Should allow minimal styling', () => {
+      let input;
       expect(RiTa.evaluate("(a | a)", 0)).eq("a");
       expect(RiTa.evaluate("a(b | b)c", 0)).eq("abc");
       expect(RiTa.evaluate("*(a | a)*", 0)).eq("*a*");
@@ -75,10 +56,32 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("~~(a | a)~~", 0)).eq("~~a~~");
       //expect(RiTa.evaluate("===========(a | a)", 0)).eq("===========a"); // fails
       expect(RiTa.evaluate("-----------(a | a)", 0)).eq("-----------a");
+
+      expect(rs`(a | a)`).eq("a");
+      expect(rs`**(a | a)**`).eq("**a**");
+
+      expectHtml('**(a | a)**').eq("<p><strong>a</strong></p>\n");
+      expectHtml('# (a | a)').eq("<h1>a</h1>\n");
+      expectHtml('# (a | a)// $foo=a').eq("<h1>a</h1>\n");
+      expectHtml(input='This is *emphasized* _text_.').eq(md`${input}`);
     })
 
     it('Should allow links', () => {
       let url;
+
+      url = 'https://somelink.com';
+      //console.log(md`[link](${url})`);
+      expectHtml("[(b | b)](" + url + ")")
+        .eq("<p><a href=\"https://somelink.com\">b</a></p>\n");
+
+      url = '@dhowe/rita';
+      expectHtml("[(b | b)](" + url + ")")
+        .eq("<p><a href=\"@dhowe/rita\">b</a></p>\n");
+
+      url = '@dhowe/rita?a=b&c=12';
+      expectHtml("[(b | b)](" + url + ")")
+        .eq("<p><a href=\"@dhowe/rita?a=b&amp;c=12\">b</a></p>\n");
+      expect(RiTa.evaluate("[(a|a[2])](linktext)", 0)).eq("[a](linktext)");
 
       url = 'https://somelinkcom';
       expect(RiTa.evaluate("[(a | a)](" + url + ")", 0)).eq("[a](" + url + ")");
