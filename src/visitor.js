@@ -11,8 +11,7 @@ class Visitor extends RiScriptParserVisitor {
 
   constructor(parent, RiTa) {
     super();
-    this.sequences = {};
-    this.dynamic = {};
+    this.choices = {};
     this.parent = parent; // RiScript
     this.RiTa = RiTa;
   }
@@ -28,7 +27,7 @@ class Visitor extends RiScriptParserVisitor {
 
   // Entry point for tree visiting
   start(ctx) {
-    this.indexer = 0;
+    //this.indexer = 0;
     let text = ctx.getText();
     let lastBreak = /\n$/.test(text);
     this.trace && console.log("start: '"
@@ -59,7 +58,7 @@ class Visitor extends RiScriptParserVisitor {
       + '&lpar;' + ctx.url().getText() + '&rpar;';
   }
 
-  visitChoice(ctx) {
+  visitChoiceNoObj(ctx) {
 
     let options = [], rand = this.RiTa.randomizer;
 
@@ -93,31 +92,33 @@ class Visitor extends RiScriptParserVisitor {
     return result.trim();
   }
 
-  visitChoiceWithChoiceState(ctx) { // not used (save)
+  visitChoice(ctx) { // not used (save)
 
-    let choice = this.sequences[++this.indexer];
+    let etext = ctx.getText().replace(TX_RE, ''); //tmp
+    let choice = this.choices[etext];
     if (!choice) {
       choice = new ChoiceState(this, ctx);
-      if (choice.type) this.sequences[choice.id] = choice;
+      //console.log('created Choice: ' + etext);
+      this.choices[etext] = choice;
     }
 
-    let txs = ctx.transform();
+    let txs = ctx.transform(), tstr = flattenTx(txs);
     this.trace && console.log("visitChoice: '" + ctx.getText()
-      + "' options=[" + choice.optionStr() + "] tfs=" + flattenTx(txs));
+      + "' options=[" + choice.optionStr() + "] tfs=" + tstr);
 
     // make the selection
-    let tok = choice.select();
+    let tok = choice.select(tstr);
     if (this.trace) console.log("  select: '" + tok.getText()
       + "' [" + this.ruleName(tok) + "]");
 
     // now visit the token 
-    let visited = this.visit(tok);
+    let visited = this.visit(tok).trim();
 
     // now apply any transforms
     if (!txs.length) return visited;
     let applied = this.applyTransforms(visited, txs);
     let result = typeof applied !== 'undefined' ? applied
-      : '(' + visited + ')' + flattenTx(txs);
+      : '(' + visited + ')' + tstr;
 
     if (this.trace) console.log("resolveChoice: '" + result + "'");
 
@@ -266,7 +267,7 @@ class Visitor extends RiScriptParserVisitor {
     let text = tn.getText();
     //if (text === '\n') return ' '; // need
     if (this.trace && text !== Visitor.EOF) {
-      console.log("visitTerminal: '" + text + "'");
+      console.log("visitTerminal: '" + text.replace(/\r?\n/, "\\n") + "'");
     }
     return null;
   }
@@ -310,12 +311,6 @@ class Visitor extends RiScriptParserVisitor {
     return result;
   }
 
-  applyNoRepeat(target, tx) {
-    if (this.trace); console.log
-      ("applyNoRepeat: '" + target + "' tf=" + tx);
-    return target + Visitor.DOT + tx + '()';
-  }
-
   // Attempts to apply transform, returns null on failure
   applyTransform(target, tx) {
 
@@ -335,9 +330,7 @@ class Visitor extends RiScriptParserVisitor {
       }
       // function in transforms
       else if (typeof this.parent.transforms[tx] === 'function') {
-
-        result = tx === 'nore' ? this.applyNoRepeat(target, tx)
-          : this.parent.transforms[tx](target);
+        result = this.parent.transforms[tx](target);
       }
       // member functions (usually on String)
       else if (typeof target[tx] === 'function') {
@@ -421,7 +414,7 @@ class ChoiceState { // unused at moment (for sequences)
     this.type = 0
     this.index = 0;
     this.options = []
-    this.id = parent.indexer;
+    //this.id = parent.indexer;
     this.rand = parent.RiTa.randomizer;
 
     ctx.wexpr().map((w, k) => {
@@ -430,40 +423,37 @@ class ChoiceState { // unused at moment (for sequences)
       let expr = w.expr() || Visitor.EC;
       for (let i = 0; i < weight; i++) this.options.push(expr);
     });
-
-    let txs = ctx.transform();
-    if (txs.length) {
-      let tf = txs[0].getText();
-      TYPES.forEach(s => tf.includes('.' + s) && (this.type = s));
-    }
-
-    if (this.type === RSEQUENCE) this.options =
-      this.rand.randomOrdering(this.options);
-    //if (parent.trace) console.log('  new ChoiceState#' + this.id + '('
-    //+ this.options.map(o => o.getText()) + ", type=" + this.type + ")");
+    /*     let txs = ctx.transform();
+        if (txs.length) {
+          let tf = txs[0].getText();
+          TYPES.forEach(s => tf.includes('.' + s) && (this.type = s));
+        } */ 
   }
 
   optionStr() {
     return this.options.map(o => o.getText());
   }
 
-  select() {
-    if (this.options.length == 0) return null;
-    if (this.options.length == 1) return this.options[0];
-    if (this.type == SEQUENCE) return this.selectSequence();
-    if (this.type == RSEQUENCE) return this.selectRandSequence();
-    if (this.type == NOREPEAT) return this.selectNoRepeat();
-    if (this.type == "norep") return this.selectNoRepeat(); // TODO: remove
-    return this.rand.random(this.options); // SIMPLE
+  select(txStr) {
+    if (!this.options.length) throw Error('no options')
+    let res;
+    /*  if (this.type == SEQUENCE) res = this.selectSequence();
+        if (this.type == RSEQUENCE) res = this.selectRandSequence(); */
+    if (txStr.includes('.' + NOREPEAT[0]) || txStr.includes('.' + NOREPEAT[1])) {
+      res = this.selectNoRepeat();
+    }
+    else {
+      res = this.rand.random(this.options); // SIMPLE
+    }
+    return (this.last = res);
   }
 
   selectNoRepeat() {
     let cand;
     do {
       cand = this.rand.random(this.options);
-    } while (cand == this.last);
-
-    return (this.last = cand);
+    } while (cand === this.last);
+    return cand;
   }
 
   selectSequence() {
@@ -509,7 +499,9 @@ Visitor.ASSIGN = '[]';
 Visitor.FUNC = '()';
 Visitor.EC = new RiScriptParser.ExprContext();
 
-const RSEQUENCE = 'rseq', SEQUENCE = 'seq', NOREPEAT = 'nore';
-const TYPES = [RSEQUENCE, SEQUENCE, NOREPEAT];
+const NOREPEAT = ['norepeat', 'nr'];
+//const RSEQUENCE = 'rseq', SEQUENCE = 'seq', 
+//const TYPES = [RSEQUENCE, SEQUENCE, NOREPEAT];
+const TX_RE = /\.[A-Za-z_0-9][A-Za-z_0-9]*(\(\))?/;
 
 module.exports = Visitor;

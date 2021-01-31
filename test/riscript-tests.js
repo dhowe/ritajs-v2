@@ -136,25 +136,27 @@ describe('RiTa.RiScript', () => {
     })
   });
 
-  0&&describe('Sequences', () => { // on-hold
-/*
-"$rule=(a|b|c|d|e).nore()   
-"($rule=(a|b|c|d|e).nore()) $rule.nore()"
+  describe('Sequences', () => { // SYNC:
+    /*
+    1. "$$names=(jane | dave | rick | chung)\n"
+       "This story is about $names and $names.nr()"
+    
+    2. "$$names=(jane | dave | rick | chung).nr()\n"
+       "This story is about $names and $names"
 
-"$$names=(jane | dave | rick | chung)"
-"This story is about $names and $names.nore()"
-
-"$$names=(jane | dave | rick | chung).nore()"
-"This story is about $names and $names.nore()"
-*/
-
-    it('Should support norexx transforms', () => {
+    3. "($$names=(jane | dave | rick | chung).nr()" 
+       "This story is about $names and $names" [one-line]
+    */
+    let count = 5;
+    it('Should support norepeat choice transforms', () => {
       let fail = false;
-      for (let i = 0; i < 1; i++) {
-        let parts = RiTa.evaluate("$$names=(a|b|c|d|e)\n$names $names.nore()", 0,TP).split(" ");
+      for (let i = 0; i < count; i++) {
+        let res = RiTa.evaluate("$$names=(a|b|c|d|e)\n$names $names.norepeat()", 0);
+        expect(/^[a-e] [a-e]$/.test(res)).true;
+        let parts = res.split(' ');
         expect(parts.length).eq(2);
-        console.log(i + ") " + parts[0] + " :: " + parts[1]);
-        if (1 || parts[0] === parts[1]) {
+        //console.log(i + ") " + parts[0] + " :: " + parts[1]);
+        if (parts[0] === parts[1]) {
           fail = true;
           break;
         }
@@ -162,12 +164,47 @@ describe('RiTa.RiScript', () => {
       expect(fail).false;
     });
 
-    0&&it('Should support inline nore transforms', () => {
+
+    it('Should support norepeat symbol transforms', () => {
       let fail = false;
-      for (let i = 0; i < 10; i++) {
-        let parts = RiTa.evaluate("($rule=(a|b|c|d|e)).nore() $rule", 0/* ,TP */).split(" ");
+      for (let i = 0; i < count; i++) {
+        let res = RiTa.evaluate("$$rule=(a|b|c|d|e).norepeat()\n$rule $rule");
+        expect(/^[a-e] [a-e]$/.test(res)).true;
+        let parts = res.split(' ');
         expect(parts.length).eq(2);
-        console.log(i + ") " + parts[0] + " " + parts[1]);
+        //console.log(i + ") " + parts[0] + " " + parts[1]);
+        if (parts[0] === parts[1]) {
+          fail = true;
+          break;
+        }
+      }
+      expect(fail).false;
+    });
+
+    it('Should support norepeat inline transforms', () => {
+      let fail = false;
+      for (let i = 0; i < count; i++) {
+        let res = RiTa.evaluate("($$rule=(a|b|c|d|e).norepeat()) $rule");
+        expect(/^[a-e] [a-e]$/.test(res)).true;
+        let parts = res.split(' ');
+        expect(parts.length).eq(2);
+        //console.log(i + ") " + parts[0] + " " + parts[1]);
+        if (parts[0] === parts[1]) {
+          fail = true;
+          break;
+        }
+      }
+      expect(fail).false;
+    });
+
+    it('Should support aliased inline transforms', () => {
+      let fail = false;
+      for (let i = 0; i < count; i++) {
+        let res = RiTa.evaluate("($$rule=(a|b|c|d|e).nr()) $rule");
+        expect(/^[a-e] [a-e]$/.test(res)).true;
+        let parts = res.split(' ');
+        expect(parts.length).eq(2);
+        //console.log(i + ") " + parts[0] + " " + parts[1]);
         if (parts[0] === parts[1]) {
           fail = true;
           break;
@@ -176,190 +213,6 @@ describe('RiTa.RiScript', () => {
       expect(fail).false;
     });
   });
-
-  /*describe('Sequences', () => { // on-hold
-
-    it('Should resolve seq transforms', () => {
-
-      let opts = ['a', 'b', 'c', 'd'];
-      let rule = '&rule=(' + opts.join('|') + ').seq()';
-      let res = RiTa.evaluate(rule + '\n$rule $rule $rule $rule', {}, TP);
-      expect(res).eq(opts.join(' '));
-
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule, {});
-        //console.log('got', i, ':', res);
-        expect(res).eq(opts[i]);
-      }
-      let rule2 = '(' + opts.join('|') + ').seq().capitalize()';
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule2);
-        //console.log(i, ':', res);
-        expect(res).eq(opts[i].toUpperCase());
-      } 
-    });
-
-    it('Should resolve rseq transforms', () => {
-      let opts = ['a', 'b', 'c', 'd'], result = [];
-      let rule = '(' + opts.join('|') + ').rseq()';
-      let rs = new RiScript();
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule);
-        //console.log(i, ':', res);
-        result.push(res);
-      }
-      expect(result).to.have.members(opts);
-
-      let rule2 = '(' + opts.join('|') + ').rseq().capitalize()';
-      result = [];
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule2);
-        //console.log(i, ':', res);
-        result.push(res);
-      }
-      expect(result).to.have.members(opts.map(o => o.toUpperCase()));
-
-      let last;
-      for (let i = 0; i < opts.length * 10; i++) {
-        let res = rs.evaluate(rule2);
-        //console.log(i, ':', res);
-        expect(res).not.eq(last);
-        last = res;
-      }
-
-    });
-
-    it('Should resolve interleaved seq transforms', () => {
-      let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').seq() (' + opts.join(' | ') + ').seq()';
-      let rs = new RiScript();
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule);
-        //console.log(i, ':', res);
-        expect(res).eq(opts[i] + " " + opts[i]);
-      }
-    });
-
-    it('Should resolve interleaved rseq transforms', () => {
-      let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').rseq() (' + opts.join(' | ') + ').rseq()';
-      let rs = new RiScript();
-      let res1 = [], res2 = [];
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule);
-        let parts = res.split(' ');
-        //console.log(i, ':', res);
-        res1.push(parts[0])
-        res2.push(parts[1]);
-      }
-      expect(res1).to.have.members(opts);
-      expect(res2).to.have.members(opts);
-    });
-
-    it('Should resolve nore transforms', () => {
-      let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').nore()';
-      let rs = new RiScript();
-      let last;
-      for (let i = 0; i < 10; i++) {
-        let res = rs.evaluate(rule);
-        //console.log('got', i, ':', res);
-        expect(res != last).is.true;
-        last = res;
-      }
-    });
-  });
-
-  SKIP_FOR_NOW || describe('Sequences-original', () => {
-
-    it('Should resolve seq transforms original', () => {
-      let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').seq()';
-      let rs = new RiScript();
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule, {});
-        //console.log('got', i, ':', res);
-        expect(res).eq(opts[i]);
-      }
-      let rule2 = '(' + opts.join('|') + ').seq().capitalize()';
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule2);
-        //console.log(i, ':', res);
-        expect(res).eq(opts[i].toUpperCase());
-      }
-    });
-
-    it('Should resolve rseq transforms original', () => {
-      let opts = ['a', 'b', 'c', 'd'], result = [];
-      let rule = '(' + opts.join('|') + ').rseq()';
-      let rs = new RiScript();
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule);
-        //console.log(i, ':', res);
-        result.push(res);
-      }
-      expect(result).to.have.members(opts);
-
-      let rule2 = '(' + opts.join('|') + ').rseq().capitalize()';
-      result = [];
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule2);
-        //console.log(i, ':', res);
-        result.push(res);
-      }
-      expect(result).to.have.members(opts.map(o => o.toUpperCase()));
-
-      let last;
-      for (let i = 0; i < opts.length * 10; i++) {
-        let res = rs.evaluate(rule2);
-        //console.log(i, ':', res);
-        expect(res).not.eq(last);
-        last = res;
-      }
-
-    });
-
-    it('Should resolve interleaved seq transforms original', () => {
-      let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').seq() (' + opts.join(' | ') + ').seq()';
-      let rs = new RiScript();
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule);
-        //console.log(i, ':', res);
-        expect(res).eq(opts[i] + " " + opts[i]);
-      }
-    });
-
-    it('Should resolve interleaved rseq transforms original', () => {
-      let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').rseq() (' + opts.join(' | ') + ').rseq()';
-      let rs = new RiScript();
-      let res1 = [], res2 = [];
-      for (let i = 0; i < opts.length; i++) {
-        let res = rs.evaluate(rule);
-        let parts = res.split(' ');
-        //console.log(i, ':', res);
-        res1.push(parts[0])
-        res2.push(parts[1]);
-      }
-      expect(res1).to.have.members(opts);
-      expect(res2).to.have.members(opts);
-    });
-
-    it('Should resolve nore transforms original', () => {
-      let opts = ['a', 'b', 'c', 'd'];
-      let rule = '(' + opts.join('|') + ').nore()';
-      let rs = new RiScript();
-      let last;
-      for (let i = 0; i < 10; i++) {
-        let res = rs.evaluate(rule);
-        //console.log('got', i, ':', res);
-        expect(res != last).is.true;
-        last = res;
-      }
-    });
-  });*/
-
 
   describe('Evaluation', () => {
 
@@ -1189,7 +1042,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(a | b)')).to.be.oneOf(['a', 'b']);
       expect(RiTa.evaluate('(a | b | c)'), {}).to.be.oneOf(['a', 'b', 'c']);
       expect(RiTa.evaluate('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
-      expect(/[abcde] [abcde]/.test(RiTa.evaluate("$$names=(a|b|c|d|e)\n$names $names",0))).true;
+      expect(/[abcde] [abcde]/.test(RiTa.evaluate("$$names=(a|b|c|d|e)\n$names $names", 0))).true;
 
     });
 

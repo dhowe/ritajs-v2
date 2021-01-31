@@ -98,8 +98,7 @@ class RiScript {
     try {
       tree = this.parser.script();
     } catch (e) {
-      if (!silent) console.error(//require('colors').red
-        ("PARSER: '" + input + '\'\n' + e.message + '\n'));
+      silent || console.error("PARSER: '" + input + "'\n" + e.message + '\n');
       throw e;
     }
     trace && console.log('\n' + tree.toStringTree(this.parser.ruleNames) + '\n');
@@ -111,19 +110,9 @@ class RiScript {
     return this.parse(tokens, input, opts);
   }
 
-  /*preParse(input, opts = {}) {
+  /*
+  preParse(input, opts = {}) {
     let parse = input || '', pre = '', post = '';
-    let lines = parse.split(/\r?\n/);
-    let needs = [];
-    lines.forEach((l,i) => {
-      if (PPB_RE.test(l)) needs.push(i);
-    });
-  };
-
-  preParseORig(input, opts = {}) {
-    let parse = input || '', pre = '', post = '';
-/*     let skipPre = parse.includes('$'); // see issue:rita#59
-    let skipAll = parse.includes('\/') || opts.skipPreParse; // comments 
     if (!PPA_RE.test(parse)) {
       const words = input.split(/ +/);
       let preIdx = 0, postIdx = words.length - 1;
@@ -239,16 +228,17 @@ RiScript.transforms = {
   articlize: RiScript.articlize,
 
   // sequences
-  seq: RiScript.identity,
-  rseq: RiScript.identity,
-  norep: RiScript.identity, // TODO: remove
-  nore: RiScript.identity,
+  //seq: RiScript.identity,
+  //rseq: RiScript.identity,
+  //norep: RiScript.identity, // TODO: remove
+  norepeat: RiScript.identity,
 
   // aliases
   art: RiScript.articlize,
+  nr: RiScript.identity,
   ucf: capitalize,
   uc: uppercase,
-  qq: quotify,
+  qq: quotify,  
   s: pluralize
 };
 
