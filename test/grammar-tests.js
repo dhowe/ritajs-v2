@@ -4,7 +4,8 @@ describe('RiTa.RiGrammar', () => {
     if (typeof module !== 'undefined') require('./before');
 
     const ST = { silent: 1 }, TP = { trace: 1 }, SP = { singlePass: 1 }, TLP = { trace: 1, traceLex: 1 };
-    const RiGrammar = RiTa.RiGrammar, SKIP_FOR_NOW = true;
+    const RiGrammar = RiTa.RiGrammar, SKIP_FOR_NOW = true,  SEQ_COUNT = 5;
+
 
     let sentences1 = {
         "start": "$noun_phrase $verb_phrase.",
@@ -39,21 +40,11 @@ describe('RiTa.RiGrammar', () => {
         ok(typeof new RiGrammar() !== 'undefined');
     });
 
-    /*
-    1. "$$names=(jane | dave | rick | chung)\n"
-       "This story is about $names and $names.nr()"
-    
-    2. "$$names=(jane | dave | rick | chung).nr()\n"
-       "This story is about $names and $names"
-
-    3. "This story is about ($$names=(jane | dave | rick | chung).nr() and $names"
-    */
-    const count = 5;
-    it('Should support norepeat rules', () => {
+    it('Should support norepeat rules', () => {  // SYNC:
         let fail = false, names = "a|b|c|d|e";
         let g = { start: "$names $names.norepeat()", names };
-        console.log(g);
-        for (let i = 0; i < count; i++) {
+        //console.log(g);
+        for (let i = 0; i < SEQ_COUNT; i++) {
             let res = RiTa.grammar(g).expand();
             expect(/^[a-e] [a-e]$/.test(res)).true;
             let parts = res.split(' ');
@@ -67,10 +58,10 @@ describe('RiTa.RiGrammar', () => {
         expect(fail).false;
     });
 
-    it('Should support norepeat symbol rules', () => {
+    it('Should support norepeat symbol rules', () => {  // SYNC:
         let fail = false, names = "(a|b|c|d|e).nr()";
         let g = { start: "$names $names", names };
-        for (let i = 0; i < count; i++) {
+        for (let i = 0; i < SEQ_COUNT; i++) {
             let res = RiTa.grammar(g).expand();
             expect(/^[a-e] [a-e]$/.test(res)).true;
             let parts = res.split(' ');
@@ -84,11 +75,11 @@ describe('RiTa.RiGrammar', () => {
         expect(fail).false;
     });
 
-    it('Should support norepeat inline rules', () => {
+    it('Should support norepeat inline rules', () => { // SYNC:
         let fail = false;
         let g = { start: "($$names=(a | b | c | d|e).nr()) $names" };
-        for (let i = 0; i < count; i++) {
-            let res = RiTa.grammar(g).expand(TP);
+        for (let i = 0; i < SEQ_COUNT; i++) {
+            let res = RiTa.grammar(g).expand();
             expect(/^[a-e] [a-e]$/.test(res)).true;
             let parts = res.split(' ');
             expect(parts.length).eq(2);
@@ -101,7 +92,7 @@ describe('RiTa.RiGrammar', () => {
         expect(fail).false;
     });
 
-    0 && it('Should throw on norepeat statics', () => {  // TODO: (problematic)
+    (!SKIP_FOR_NOW) && it('Should throw on norepeat statics', () => {  // TODO: (problematic)
         let g = { start: "$names", "$names": "(a|b|c|d|e).nr()" };
         expect(() => RiTa.grammar(g).expand(TP)).to.throw();
     });

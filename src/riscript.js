@@ -106,6 +106,7 @@ class RiScript {
   }
 
   lexParse(input, opts) {
+    // TODO: split into lines, only parse those with script
     let tokens = this.lex(input, opts);
     return this.parse(tokens, input, opts);
   }

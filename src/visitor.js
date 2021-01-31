@@ -21,27 +21,28 @@ class Visitor extends RiScriptParserVisitor {
     this.context = context || {};
     this.trace = opts && opts.trace;
     this.silent = opts && opts.silent;
-    this.preparse = opts && opts.preparse;
+    //this.preparse = opts && opts.preparse;
     return this;
   }
 
   // Entry point for tree visiting
   start(ctx) {
-    //this.indexer = 0;
     let text = ctx.getText();
     let lastBreak = /\n$/.test(text);
     this.trace && console.log("start: '"
       + text.replace(/\r?\n/g, "\\n") + "'");
-    let result = this.visitScript(ctx)
+    let result = this.visitChildren(ctx);
     return lastBreak ? result : result.replace(/\r?\n$/, '');
   }
 
   visitLine(ctx) {
-    let line = ctx.getText();
+/*     let line = ctx.getText();
+    //console.log("LINE: '"+line.replace(/\r?\n$/, '')+"'");
     if (!this.preparse || line.startsWith('{') || /[()$|\[\]]/.test(line)) {
-      line = this.visitChildren(ctx)
+      line = this.visitChildren(ctx);
     }
-    else console.log('skip: ' + line);
+    else console.log('skip: ' + line); */
+    let line = this.visitChildren(ctx);
     return line.length ? line + '\n' : '';
   }
 

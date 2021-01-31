@@ -11,11 +11,11 @@ describe('RiTa.RiScript', () => {
 
   describe('Markdown', () => { // JSONLY
 
-    const rs = RiTa.template(),
-      md = require('marli')(),
-      expectHtml = function (code) {
-        return expect(md`${rs([code])}`);
-      }
+    const rs = RiTa.template();
+    const md = require('marli')();
+    const expectHtml = function (code) {
+      return expect(md`${rs([code])}`);
+    };
 
     it('Should optimize pstrings', () => {
       expect(RiTa.evaluate("(a)", 0)).eq("a");
@@ -24,9 +24,7 @@ describe('RiTa.RiScript', () => {
     it('Should preserve whitespace', () => {
       expect(RiTa.evaluate("a   b", 0)).eq("a   b");
       expect(RiTa.evaluate("a\tb", 0)).eq("a\tb");
-      expect(rs`a   b`).eq("a   b");
       expect(rs`a\tb`, 0).eq("a\tb");
-      expect(rs`(a | a)`).eq("a");
       expect(rs` (a | a)
               ok
             `).eq(" a\n              ok\n            ");
@@ -35,16 +33,35 @@ describe('RiTa.RiScript', () => {
           And plumbing —`).eq("Now in one year\n     A book published\n          And plumbing —");
     });
 
-    it('Should handle blocks,lists,images', () => {
+    it('Should handle blockquotes', () => {
       let input = ">## Blockquoted header\n>\n"
         + ">This is blockquoted text.\n>\n"
         + ">This is a second paragraph";
       expectHtml(input).eq(md`${input}`);
-      input = "If you want to mark something as code, indent it by 4 spaces.\n"
+    });
+
+    it('Should handle code blocks', () => {
+
+      let input = "If you want to mark something as code, indent it by 4 spaces.\n"
         + "    <p>This has been indented 4 spaces.</p>"
       expectHtml(input).eq(md`${input}`);
-      expectHtml("1. first\n2. second\n3. third")
-        .eq(md`1. first\n2. second\n3. third`);
+    });
+
+    it('Should handle numbered lists', () => {
+
+      let input = "1. first\n2. second\n3. third";
+      expectHtml(input).eq(md`${input}`);
+    });
+
+
+    it('Should handle bulleted lists', () => {
+
+      let input = "- first\n- second\n3- third";
+      expectHtml(input).eq(md`${input}`);
+    });
+
+    it('Should handle images', () => {
+
       input = "![alt text](http://path/to/img.jpg \"Title\")";
       expectHtml(input).eq(md`${input}`);
     });
@@ -140,10 +157,8 @@ describe('RiTa.RiScript', () => {
     /*
     1. "$$names=(jane | dave | rick | chung)\n"
        "This story is about $names and $names.nr()"
-    
     2. "$$names=(jane | dave | rick | chung).nr()\n"
        "This story is about $names and $names"
-
     3. "($$names=(jane | dave | rick | chung).nr()" 
        "This story is about $names and $names" [one-line]
     */
@@ -198,7 +213,7 @@ describe('RiTa.RiScript', () => {
     });
 
 
-    0 && it('Should throw on norepeat statics', () => { // TODO: (problematic)
+    (!SKIP_FOR_NOW) && it('Should throw on norepeat statics', () => { // TODO: (problematic)
       console.log(RiTa.evaluate("$a=(a|b).nr()\n$a $a", 0, TP));
       expect(() => RiTa.evaluate("$a=(a|b).nr()\n$a $a")).to.throw();
     });
@@ -240,6 +255,8 @@ describe('RiTa.RiScript', () => {
       // expect(RiTa.evaluate('[foo](http://blah.com)', {})).eq('[foo](http://blah.com)');
       expect(RiTa.evaluate('(a|a)', { a: 'a', b: 'b' })).eq('a');
 
+      //let str = "Now in one year\n     A book published\n          And plumbing —";
+      //expect(RiTa.evaluate(str,0,TP)).eq(str); // needs profiling
 
       //expect(RiTa.evaluate('foo.bar', {}, {trace:0})).eq('foo.bar'); // KNOWN ISSUE
     });
@@ -725,7 +742,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('A ($stored=($animal | $animal)) is a mammal', { animal: 'dog' })).eq('A dog is a mammal');
 
       // $$: need at least one to not match
-      let matches = 0, count = 5, ctx = {};
+      let matches = 0, count = 10, ctx = {};
       ctx['$$name'] = '(Dave | Jack | Mary)'; // dynamic in context
       for (let i = 0; i < count; i++) {
         rs = RiTa.evaluate('$name is called $name.', ctx);
@@ -842,7 +859,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.a).eq(result);
     });
 
-    false && it('KI: FAILING', () => {
+    (!SKIP_FOR_NOW) && it('KI: FAILING', () => {
       for (let i = 0, rs; i < 10; i++) {
         rs = RiTa.evaluate('($chosen=$person) talks to $chosen.', { person: '(Dave | Jill | Pete)' }, TP);
         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
@@ -1289,7 +1306,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$foo=$bar.toLowerCase().ucf()\n$bar=baz\n$foo', {})).eq('Baz');
     });
 
-    false && it('Should optimise via preparsing', () => { // TODO: improve tests (not clear if preparsing or not)
+    (!SKIP_FOR_NOW) && it('Should optimise via preparsing', () => { // TODO: improve tests (not clear if preparsing or not)
       let ctx, input, rs;
       ctx = { nothing: 'NOTHING', hang: 'HANG' };
       input = "Eve near Vancouver, Washington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
@@ -1520,7 +1537,8 @@ describe('RiTa.RiScript', () => {
       });
     }
   })
-  false && describe('Conditionals', () => {
+
+  describe('Conditionals', () => {
 
     it('Should throw on bad conditionals', () => {
       //expect(() => RiTa.evaluate('{$a<hello} foo', { a: 2 })).to.throw();
