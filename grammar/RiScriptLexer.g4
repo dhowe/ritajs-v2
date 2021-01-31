@@ -69,5 +69,5 @@ fragment IDENT: [A-Za-z_] [A-Za-z_0-9-]*;
 fragment NIDENT: [A-Za-z_0-9] [A-Za-z_0-9-]*;
 
 mode MD;
-MDT              : ~(')'); 
+MDT              : ~(')')+; 
 MDE               : ')' -> popMode ;

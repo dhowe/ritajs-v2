@@ -41,15 +41,15 @@ class Visitor extends RiScriptParserVisitor {
     let line = ctx.getText();
     if (!this.preparse || line.startsWith('{') || /[()$|\[\]]/.test(line)) {
       line = this.visitChildren(ctx)
-    } 
-    else console.log('skip-parse: '+line);
+    }
+    else console.log('skip: ' + line);
     return line.length ? line + '\n' : '';
   }
 
   visitPstr(ctx) {
     let txt = ctx.getText();
-    this.trace && console.log("visitPstr: '"+ txt + "'");
-    return txt.substring(1, txt.length-1);
+    this.trace && console.log("visitPstr: '" + txt + "'");
+    return txt.substring(1, txt.length - 1);
   }
 
   visitLink(ctx) {
@@ -282,15 +282,13 @@ class Visitor extends RiScriptParserVisitor {
       resolved = Visitor.LP + resolved + Visitor.RP;
     }
     let result = resolved + flattenTx(txs);
-    this.trace && console.log("resolveDynamic[1]: &" + ident + " -> '" + result + "'");
+    this.trace && console.log("resolveDynamic[1]: $$" + ident + " -> '" + result + "'");
     return result;
   }
 
   applyTransforms(term, tfs) {
-    if (typeof term === 'undefined' || !tfs || !tfs.length) {
-      return;
-    }
-    if (tfs.length > 1) throw Error("Invalid # Transforms: " + tfs.length);
+
+    if (typeof term === 'undefined' || !tfs || !tfs.length) return;
 
     let result = term;
 
@@ -312,6 +310,12 @@ class Visitor extends RiScriptParserVisitor {
     return result;
   }
 
+  applyNoRepeat(target, tx) {
+    if (this.trace); console.log
+      ("applyNoRepeat: '" + target + "' tf=" + tx);
+    return target + Visitor.DOT + tx + '()';
+  }
+
   // Attempts to apply transform, returns null on failure
   applyTransform(target, tx) {
 
@@ -331,7 +335,9 @@ class Visitor extends RiScriptParserVisitor {
       }
       // function in transforms
       else if (typeof this.parent.transforms[tx] === 'function') {
-        result = this.parent.transforms[tx](target);
+
+        result = tx === 'nore' ? this.applyNoRepeat(target, tx)
+          : this.parent.transforms[tx](target);
       }
       // member functions (usually on String)
       else if (typeof target[tx] === 'function') {

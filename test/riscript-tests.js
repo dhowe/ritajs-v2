@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const { html } = require('nanohtml');
+const RiTa = require('../src/rita');
 
 describe('RiTa.RiScript', () => {
 
@@ -26,6 +27,12 @@ describe('RiTa.RiScript', () => {
       expect(rs`a   b`).eq("a   b");
       expect(rs`a\tb`, 0).eq("a\tb");
       expect(rs`(a | a)`).eq("a");
+      expect(rs` (a | a)
+              ok
+            `).eq(" a\n              ok\n            ");
+      expect(rs`Now in one year
+     A book published
+          And plumbing —`).eq("Now in one year\n     A book published\n          And plumbing —");
     });
 
     it('Should handle blocks,lists,images', () => {
@@ -104,7 +111,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate("[(a | a)](" + url + ")", 0)).eq("[a](" + url + ")");
 
       url = 'https://somelink.com';
-      expect(RiTa.evaluate("[(a | a).uc()](" + url + ")", 0, TP)).eq("[A](" + url + ")");
+      expect(RiTa.evaluate("[(a | a).uc()](" + url + ")", 0)).eq("[A](" + url + ")");
     });
   });
 
@@ -129,7 +136,48 @@ describe('RiTa.RiScript', () => {
     })
   });
 
-  SKIP_FOR_NOW || describe('Sequences', () => { // on-hold
+  0&&describe('Sequences', () => { // on-hold
+/*
+"$rule=(a|b|c|d|e).nore()   
+"($rule=(a|b|c|d|e).nore()) $rule.nore()"
+
+"$$names=(jane | dave | rick | chung)"
+"This story is about $names and $names.nore()"
+
+"$$names=(jane | dave | rick | chung).nore()"
+"This story is about $names and $names.nore()"
+*/
+
+    it('Should support norexx transforms', () => {
+      let fail = false;
+      for (let i = 0; i < 1; i++) {
+        let parts = RiTa.evaluate("$$names=(a|b|c|d|e)\n$names $names.nore()", 0,TP).split(" ");
+        expect(parts.length).eq(2);
+        console.log(i + ") " + parts[0] + " :: " + parts[1]);
+        if (1 || parts[0] === parts[1]) {
+          fail = true;
+          break;
+        }
+      }
+      expect(fail).false;
+    });
+
+    0&&it('Should support inline nore transforms', () => {
+      let fail = false;
+      for (let i = 0; i < 10; i++) {
+        let parts = RiTa.evaluate("($rule=(a|b|c|d|e)).nore() $rule", 0/* ,TP */).split(" ");
+        expect(parts.length).eq(2);
+        console.log(i + ") " + parts[0] + " " + parts[1]);
+        if (parts[0] === parts[1]) {
+          fail = true;
+          break;
+        }
+      }
+      expect(fail).false;
+    });
+  });
+
+  /*describe('Sequences', () => { // on-hold
 
     it('Should resolve seq transforms', () => {
 
@@ -138,7 +186,7 @@ describe('RiTa.RiScript', () => {
       let res = RiTa.evaluate(rule + '\n$rule $rule $rule $rule', {}, TP);
       expect(res).eq(opts.join(' '));
 
-      /*  for (let i = 0; i < opts.length; i++) {
+      for (let i = 0; i < opts.length; i++) {
         let res = rs.evaluate(rule, {});
         //console.log('got', i, ':', res);
         expect(res).eq(opts[i]);
@@ -148,7 +196,7 @@ describe('RiTa.RiScript', () => {
         let res = rs.evaluate(rule2);
         //console.log(i, ':', res);
         expect(res).eq(opts[i].toUpperCase());
-      } */
+      } 
     });
 
     it('Should resolve rseq transforms', () => {
@@ -310,7 +358,7 @@ describe('RiTa.RiScript', () => {
         last = res;
       }
     });
-  });
+  });*/
 
 
   describe('Evaluation', () => {
@@ -632,6 +680,9 @@ describe('RiTa.RiScript', () => {
       expect(ctx['$$noun']).eq('I');
       expect(ctx['$$verb']).eq('sat');
       expect(res).eq('I sat.');
+
+      let inp = "$$mammal=(dog | dog | dog)\nMost $mammal.pluralize() are unruly.";
+      expect(RiTa.evaluate(inp)).eq("Most dogs are unruly.");
     });
 
 
@@ -684,6 +735,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(ant).articlize().capitalize()', 0)).eq('An ant');
       expect(RiTa.evaluate('(ant).capitalize().articlize()', 0)).eq('an Ant');
       expect(RiTa.evaluate('(deeply-nested expression).art()')).eq('a deeply-nested expression');
+      expect(RiTa.evaluate('(deeply-nested $art).art()', { art: 'emotion' })).eq('a deeply-nested emotion');
     });
 
     it('Should resolve transforms on phrases', () => {
@@ -1133,7 +1185,7 @@ describe('RiTa.RiScript', () => {
       expect(() => RiTa.evaluate('(a | b) | c', 0, ST)).to.throw();
     });
 
-    it('Should resolve choices', () => {
+    it('Should resolve choices', () => { //SYNC:
       expect(RiTa.evaluate('(|)')).eq('');
       expect(RiTa.evaluate('(a)')).eq('a');
       expect(RiTa.evaluate('(a | a)', 0)).eq('a');
@@ -1141,9 +1193,11 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('(a | b)')).to.be.oneOf(['a', 'b']);
       expect(RiTa.evaluate('(a | b | c)'), {}).to.be.oneOf(['a', 'b', 'c']);
       expect(RiTa.evaluate('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
+      expect(/[abcde] [abcde]/.test(RiTa.evaluate("$$names=(a|b|c|d|e)\n$names $names",0))).true;
+
     });
 
-    it('Should resolve choices via scripting', () => {
+    /*it('Should resolve choices via scripting', () => {
       let rs = RiTa.scripting();
       expect(rs.evaluate('(|)')).eq('');
       expect(rs.evaluate('(a)')).eq('a');
@@ -1152,7 +1206,7 @@ describe('RiTa.RiScript', () => {
       expect(rs.evaluate('(a | b)')).to.be.oneOf(['a', 'b']);
       expect(rs.evaluate('(a | b | c)'), {}).to.be.oneOf(['a', 'b', 'c']);
       expect(rs.evaluate('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
-    });
+    });*/
 
     it('Should resolve multiword choices', () => {
       let silent = RiTa.SILENCE_LTS;

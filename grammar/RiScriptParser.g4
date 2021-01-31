@@ -20,7 +20,7 @@ chars: (
 		| INT
 	)+;
 dynamic: DYN transform*;
-symbol: SYM transform* | transform+/* handle empty-string transforms */ ;
+symbol: SYM transform* | transform+ /* handle empty-string transforms */ ;
 wexpr: expr? weight?; // ??
 link:  LB expr RB MDS url MDE WS*;
 url: MDT+;

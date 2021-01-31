@@ -8,6 +8,7 @@ const { LexerErrors, ParserErrors } = require('./errors');
 class RiScript {
 
   // TODO: quoted strings with spaces in choices or symbols, weighted-empty-string in choice 
+  //       notebook -> context, variable transforms (useless with js/tt)
   constructor() {
     this.visitor = new Visitor(this, RiTa());
     this.transforms = RiScript.transforms;
