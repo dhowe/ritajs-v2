@@ -58,7 +58,7 @@ class Visitor extends RiScriptParserVisitor {
       + '&lpar;' + ctx.url().getText() + '&rpar;';
   }
 
-  visitChoiceNoObj(ctx) {
+  visitChoiceNoObj(ctx) {// not used (save)
 
     let options = [], rand = this.RiTa.randomizer;
 
@@ -92,7 +92,7 @@ class Visitor extends RiScriptParserVisitor {
     return result.trim();
   }
 
-  visitChoice(ctx) { // not used (save)
+  visitChoice(ctx) { 
 
     let etext = ctx.getText().replace(TX_RE, ''); //tmp
     let choice = this.choices[etext];

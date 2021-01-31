@@ -197,20 +197,10 @@ describe('RiTa.RiScript', () => {
       expect(fail).false;
     });
 
-    it('Should support aliased inline transforms', () => {
-      let fail = false;
-      for (let i = 0; i < count; i++) {
-        let res = RiTa.evaluate("($$rule=(a|b|c|d|e).nr()) $rule");
-        expect(/^[a-e] [a-e]$/.test(res)).true;
-        let parts = res.split(' ');
-        expect(parts.length).eq(2);
-        //console.log(i + ") " + parts[0] + " " + parts[1]);
-        if (parts[0] === parts[1]) {
-          fail = true;
-          break;
-        }
-      }
-      expect(fail).false;
+
+    0 && it('Should throw on norepeat statics', () => { // TODO: (problematic)
+      console.log(RiTa.evaluate("$a=(a|b).nr()\n$a $a", 0, TP));
+      expect(() => RiTa.evaluate("$a=(a|b).nr()\n$a $a")).to.throw();
     });
   });
 
