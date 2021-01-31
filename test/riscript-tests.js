@@ -815,7 +815,7 @@ describe('RiTa.RiScript', () => {
 
     it('Should handle inline dynamics', () => { // SYNC:
 
-      let rs, ctx, matches, count = 5; // may need to be higher
+      let rs, ctx, matches, count = 10; // may need to be higher
       const matching = ['Dave is called Dave.', 'Jack is called Jack.', 'Mary is called Mary.'];
 
       // $$: need at least one to not match
@@ -1054,13 +1054,9 @@ describe('RiTa.RiScript', () => {
     });
 
     it('Should ignore no-op symbols in context', () => { // SYNC:
-      expect(RiTa.evaluate('$foo', {}, ST)).eq('$foo');
       expect(RiTa.evaluate('a $foo dog', {}, ST)).eq('a $foo dog');
-
       expect(RiTa.evaluate('$100 is a lot of $dog.', { dog: 'terrier' }, ST)).eq('$100 is a lot of terrier.');
-      expect(RiTa.evaluate('the $dog cost $100', { dog: 'terrier' }, ST)).eq('the terrier cost $100');
       expect(RiTa.evaluate('the $dog cost $100!', { dog: 'terrier' }, ST)).eq('the terrier cost $100!');
-      expect(RiTa.evaluate('the $dog cost ***lots***', { dog: 'terrier' })).eq('the terrier cost ***lots***');
       expect(RiTa.evaluate('the $dog^1 was a footnote.', { dog: 'terrier' })).eq('the terrier^1 was a footnote.');
     })
 
