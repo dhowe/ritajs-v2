@@ -126,10 +126,6 @@ class Visitor extends RiScriptParserVisitor {
     return result;
   }
 
-  /* visitDynamic(ctx) {
-      throw Error("[PARSER] the & (dynamic) modifier can only be used in an assignment:\n  "+ctx.getText());
-  } */
-
   visitSymbol(ctx) {
 
     let txs = ctx.transform(), result = ctx.getText(), tn = ctx.SYM();
@@ -227,6 +223,7 @@ class Visitor extends RiScriptParserVisitor {
     let conds = ctx.cond();
     this.trace && console.log('visitCexpr:' + ctx.expr().getText() + "'",
       'cond={' + conds.map(c => c.getText().replace(',', '')) + '}');
+
     for (let i = 0; i < conds.length; i++) {
       let id = symbolName(conds[i].symbol().getText());
       let op = Operator.fromString(conds[i].op().getText());
@@ -266,7 +263,6 @@ class Visitor extends RiScriptParserVisitor {
 
   visitTerminal(tn) {
     let text = tn.getText();
-    //if (text === '\n') return ' '; // need
     if (this.trace && text !== Visitor.EOF) {
       console.log("visitTerminal: '" + text.replace(/\r?\n/, "\\n") + "'");
     }

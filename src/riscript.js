@@ -36,7 +36,6 @@ class RiScript {
     if (!opts.silent && !RiScript.parent.SILENT && SYM_RE.test(expr)) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '" ');
     }
-
     return this.resolveEntities(expr)
   }
 
@@ -48,6 +47,7 @@ class RiScript {
   }
 
   lex(input, opts) {
+
     // create the lexer
     let stream = new antlr4.InputStream(input);
     this.lexer = new Lexer.RiScriptLexer(stream);
@@ -106,48 +106,28 @@ class RiScript {
   }
 
   lexParse(input, opts) {
-    // TODO: split into lines, only parse those with script
     let tokens = this.lex(input, opts);
     return this.parse(tokens, input, opts);
   }
 
-  /*
-  preParse(input, opts = {}) {
-    let parse = input || '', pre = '', post = '';
-    if (!PPA_RE.test(parse)) {
-      const words = input.split(/ +/);
-      let preIdx = 0, postIdx = words.length - 1;
-      while (preIdx < words.length) {
-        if (PPB_RE.test(words[preIdx])) break;
-        preIdx++;
-      }
-      if (preIdx < words.length) {
-        while (postIdx >= 0) {
-          if (PPB_RE.test(words[postIdx])) break;
-          postIdx--;
-        }
-      }
-      pre = words.slice(0, preIdx).join(' ');
-      parse = words.slice(preIdx, postIdx + 1).join(' ');
-      post = words.slice(postIdx + 1).join(' ');
-    }
-    return { pre, parse, post };
-  }*/
-
-  lexParseVisit(input, context, opts) {
+  lexParseVisitNoPre(input, context, opts) {
     if (!input || !input.length) return '';
     let tree = this.lexParse(input, opts);
     return this.visitor.init(context, opts).start(tree);
   }
 
-  lexParseVisitWithPre(input, context, opts) {
+  lexParseVisit(input, context, opts) {
 
-    let { pre, parse, post } = this.preParse(input, opts);
-    opts.trace && (pre.length || post.length)
-      && console.log('preParse("' + pre + '", "' + post + '");');
+    let { pre, parse, post } = this.preparse(input, opts);
+
+    opts.trace && (pre.length || post.length) &&
+       console.log('preParse("' + pre + '", "' + post + '");');
+
     let tree = parse.length && this.lexParse(parse, opts);
-    let result = parse.length ? this.visitor.init(context, opts).start(tree) : '';
-    return (this.normalize(pre) + ' ' + result + ' ' + this.normalize(post)).trim();
+    let parsed = parse.length ? this.visitor.init(context, opts).start(tree) : '';
+    let result = (pre.length && parsed.length) ? pre + '\n' + parsed : pre + parsed;
+
+    return (result.length && post.length) ? result + '\n' + post : result + post;
   }
 
   normalize(s) {
@@ -157,14 +137,57 @@ class RiScript {
         .replace(/\n/g, ' ') : '';
   }
 
-  resolveEntities(result) { // &#10; for line break DOC:
-    if (typeof result === 'undefined') return '';
-    return decode(result)//.replace(/ +/g, ' '))
-      .replace(ENT_RE, ' ');
+  resolveEntities(result) {
+    return (typeof result === 'undefined')
+      ? '' : decode(result).replace(ENT_RE, ' ');
   }
 
   isParseable(s) {
     return PRS_RE.test(s);
+  }
+
+  preparse(input, opts = {}) {
+    let res = { pre: '', parse: input, post: '' };
+    input = input.replace(CONT_RE, '');
+    if (!opts.nopre) { // DOC:
+      let lines = (input || '').split(/\r?\n/g);
+      let parse = [], pre = [], post = [], mode = 0;
+      let dynamic = l => l.startsWith('{') || PARSE_RE.test(l);
+      lines.forEach(line => {
+        if (mode === 0) {      // pre
+          if (dynamic(line)) {
+            parse.push(line);
+            mode = 1;
+          }
+          else {
+            pre.push(line);
+          }
+        }
+        else if (mode === 1) { // parse
+          if (dynamic(line)) {
+            parse.push(line);
+          }
+          else {
+            post.push(line);
+            mode = 2;
+          }
+        }
+        else if (mode === 2) { // post
+          if (dynamic(line)) {
+            parse.push(...post, line);
+            post.length = 0;
+            mode = 1;
+          }
+          else {
+            post.push(line);
+          }
+        }
+      });
+      res.pre = pre.length ? pre.join('\n') : '';
+      res.parse = parse.length ? parse.join('\n') : '';
+      res.post = post.length ? post.join('\n') : '';
+    }
+    return res;
   }
 
   static addTransform(name, func) {
@@ -231,7 +254,7 @@ RiScript.transforms = {
   // sequences
   //seq: RiScript.identity,
   //rseq: RiScript.identity,
-  //norep: RiScript.identity, // TODO: remove
+  //norep: RiScript.identity,
   norepeat: RiScript.identity,
 
   // aliases
@@ -239,16 +262,15 @@ RiScript.transforms = {
   nr: RiScript.identity,
   ucf: capitalize,
   uc: uppercase,
-  qq: quotify,  
+  qq: quotify,
   s: pluralize
 };
 
 const VOW_RE = /[aeiou]/;
 const ENT_RE = /[\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
-
-/* const PPA_RE = /(^[{]|[/$])/;
-const PPB_RE = /[()$|{}\[\]]/; */
 const PRS_RE = /([(){}|]|(\${1,2}\w+))/;
 const SYM_RE = /\${1,2}\w+/;
+const CONT_RE = /\\\n/;
+const PARSE_RE = /([\/()\$|\[\]])/;
 
 module && (module.exports = RiScript);

@@ -13,6 +13,7 @@ lexer grammar RiScriptLexer;
 LCOMM: '/*' .*? '*/' -> channel(HIDDEN);
 BCOMM: '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 
+Q: {this._input.LA(-1)=="}".charCodeAt(0)}? '?';
 GT: '>';
 LT: '<';
 MDS: {this._input.LA(-1)=="]".charCodeAt(0)}? '('  -> pushMode(MD) ;

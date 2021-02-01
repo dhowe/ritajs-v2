@@ -6,9 +6,8 @@ options { tokenVocab=RiScriptLexer; }
 
 script: line (NL line)* EOF;
 line: (link | expr | cexpr)*;
-//pstr: LP CHR+ RP;
 expr: (symbol | choice | assign | chars)+;
-cexpr: WS* LCB cond+ RCB WS* expr;
+cexpr: WS* LCB cond+ RCB Q WS* expr;
 cond: symbol WS* op WS* chars WS* COM?;
 weight: WS* LB INT RB WS*;
 choice: (LP (wexpr OR)* wexpr RP) transform*;
@@ -20,8 +19,8 @@ chars: (
 		| INT
 	)+;
 dynamic: DYN transform*;
-symbol: SYM transform* | transform+ /* handle empty-string transforms */ ;
-wexpr: expr? weight?; // ??
+symbol: SYM transform* | transform+;
+wexpr: expr? weight?;
 link:  LB expr RB MDS url MDE WS*;
 url: MDT+;
 transform: TF;
