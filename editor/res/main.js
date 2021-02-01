@@ -34,12 +34,14 @@ $(document).ready(function () {
     CodeMirror.defineSimpleMode("RiScript", {
         start: [
             //RiScript
-            { regex: /\$\w+/g, token: "vars" },
-            //vars
             { regex: /\(([^)]*\|)+[^)]*\)/g, token: "choice" },
             //choices
             { regex: /(\.[\w]+\(\))/g, token: "trans" },
             //transforms 
+            { regex: /\$\w+/g, token: "vars" },
+            //vars
+            { regex: /\$\$\w+/g, token: "dynamicVar" },
+            //dynamic vars
             { regex: /\/\/.*/g, token: "comment" },
             //single line comment
             { regex: /\/\*/, token: "comment", next: "comment" },
