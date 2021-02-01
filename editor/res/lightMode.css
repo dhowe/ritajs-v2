@@ -23,6 +23,9 @@ lightMode theme for rs editor
 /* color for comment */
 .cm-s-lightMode span.cm-comment { color: #669851; }
 
+/* color ffor $$sth */
+.cm-s-lightMode span.cm-dynamicVar { color: #2e2bf9; }
+
 
 .cm-s-lightMode .CodeMirror-activeline-background { background: #2F2F2F; }
 .cm-s-lightMode .CodeMirror-matchingbracket { text-decoration: underline; color: white !important; }
