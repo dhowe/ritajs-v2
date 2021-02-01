@@ -40,7 +40,7 @@ describe('RiTa.RiGrammar', () => {
         ok(typeof new RiGrammar() !== 'undefined');
     });
 
-    it('Should support norepeat rules', () => {  // SYNC:
+    it('Should support norepeat rules', () => { 
         let fail = false, names = "a|b|c|d|e";
         let g = { start: "$names $names.norepeat()", names };
         //console.log(g);
@@ -58,7 +58,7 @@ describe('RiTa.RiGrammar', () => {
         expect(fail).false;
     });
 
-    it('Should support norepeat symbol rules', () => {  // SYNC:
+    it('Should support norepeat symbol rules', () => { 
         let fail = false, names = "(a|b|c|d|e).nr()";
         let g = { start: "$names $names", names };
         for (let i = 0; i < SEQ_COUNT; i++) {
@@ -75,7 +75,7 @@ describe('RiTa.RiGrammar', () => {
         expect(fail).false;
     });
 
-    it('Should support norepeat inline rules', () => { // SYNC:
+    it('Should support norepeat inline rules', () => {
         let fail = false;
         let g = { start: "($$names=(a | b | c | d|e).nr()) $names" };
         for (let i = 0; i < SEQ_COUNT; i++) {
@@ -482,7 +482,7 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.expand(), "An ant");
     });
 
-    it("should handle transforms on statics", () => { // SYNC:
+    it("should handle transforms on statics", () => { 
         let rg = RiTa.grammar();
         rg.addRule("$start", "$pet.toUpperCase()");
         rg.addRule("$pet", "dog");
@@ -519,7 +519,7 @@ describe('RiTa.RiGrammar', () => {
         }
     });
 
-    it("should allow context in expand on statics", () => { // SYNC:
+    it("should allow context in expand on statics", () => { 
         let ctx, rg;
         ctx = { randomPosition: () => 'job type' };
         rg = RiTa.grammar({ $start: "My .randomPosition()." });
@@ -530,7 +530,7 @@ describe('RiTa.RiGrammar', () => {
         expect(rg.expand('stat', ctx)).eq("My job type.");
     });
 
-    it("should resolve rules in context", () => { // SYNC:
+    it("should resolve rules in context", () => { 
         let ctx, rg;
         ctx = { rule: '(job | mob)' };
         rg = RiTa.grammar({ start: "$rule $rule" });
@@ -542,7 +542,7 @@ describe('RiTa.RiGrammar', () => {
         expect(/^[jm]ob [jm]ob$/.test(rg.expand(ctx))).eq(true);
     });
 
-    it("should handle custom transforms on statics", () => { // SYNC:
+    it("should handle custom transforms on statics", () => { 
         let context = { randomPosition: () => 'job type' };
         let rg = RiTa.grammar({ $start: "My .randomPosition()." }, context);
         expect(rg.expand()).eq("My job type.");
@@ -586,7 +586,7 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.expand({ trace: 0 }), "mice");
     });
 
-    it("should handle symbol transforms on statics", () => { // SYNC:
+    it("should handle symbol transforms on statics", () => { 
         let rg;
         rg = new RiGrammar({
             $start: "$tmpl",
@@ -650,7 +650,7 @@ describe('RiTa.RiGrammar', () => {
         }
     });
 
-    it("should handle special characters with statics", () => { // SYNC:
+    it("should handle special characters with statics", () => { 
         let rg, res, s;
 
         s = "{ \"$start\": \"hello &#124; name\" }";
@@ -735,7 +735,7 @@ describe('RiTa.RiGrammar', () => {
         eql(res, "bad feelings");
     });
 
-    it('Should correctly pluralize static phrases', () => { // SYNC:
+    it('Should correctly pluralize static phrases', () => { 
         let json = { $start: "($state feeling).pluralize()", $state: "(bad | bad)" };
         let rg = new RiGrammar(json);
         let res = rg.expand();
