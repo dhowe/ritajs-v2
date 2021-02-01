@@ -468,6 +468,12 @@ describe('RiTa.RiGrammar', () => {
         rg = RiTa.grammar();
         rg.addRule("start", "($pet | $animal)");
         rg.addRule("animal", "$pet");
+        rg.addRule("pet", "(dog).uc"); // no parens
+        eq(rg.expand(), "DOG")
+
+        rg = RiTa.grammar();
+        rg.addRule("start", "($pet | $animal)");
+        rg.addRule("animal", "$pet");
         rg.addRule("pet", "(ant).articlize()");
         eq(rg.expand(), "an ant");
 
@@ -501,6 +507,12 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.expand(), "an ant");
 
         rg = RiTa.grammar();
+        rg.addRule("$start", "($pet | $animal)");
+        rg.addRule("$animal", "$pet");
+        rg.addRule("$pet", "(ant).art"); // no parens
+        eq(rg.expand(), "an ant");
+
+        rg = RiTa.grammar();
         rg.addRule("$start", "(a | a).uc()");
         eq(rg.expand(), "A");
 
@@ -522,24 +534,26 @@ describe('RiTa.RiGrammar', () => {
     it("should allow context in expand on statics", () => { // SYNC:
         let ctx, rg;
         ctx = { randomPosition: () => 'job type' };
-        rg = RiTa.grammar({ $start: "My .randomPosition()." });
-        expect(rg.expand(ctx)).eq("My job type.");
+        rg = RiTa.grammar({ $start: "My .randomPosition()." }, ctx);
+        expect(rg.expand()).eq("My job type.");
 
-        ctx = { randomPosition: () => 'job type' };
-        rg = RiTa.grammar({ $stat: "My .randomPosition()." });
-        expect(rg.expand('stat', ctx)).eq("My job type.");
+        rg = RiTa.grammar({ $start: "My .randomPosition." }, ctx);
+        expect(rg.expand()).eq("My job type."); // no parens
+
+        rg = RiTa.grammar({ $stat: "My .randomPosition()." }, ctx);
+        expect(rg.expand('stat')).eq("My job type.");
     });
 
     it("should resolve rules in context", () => { // SYNC:
         let ctx, rg;
         ctx = { rule: '(job | mob)' };
-        rg = RiTa.grammar({ start: "$rule $rule" });
-        expect(rg.expand(ctx)).to.be.oneOf(['job job', 'mob mob']);
+        rg = RiTa.grammar({ start: "$rule $rule" }, ctx);
+        expect(rg.expand()).to.be.oneOf(['job job', 'mob mob']);
 
         ctx = {};
         ctx['$$rule'] = '(job | mob)'; // dynamic var in context
-        rg = RiTa.grammar({ start: "$rule $rule" });
-        expect(/^[jm]ob [jm]ob$/.test(rg.expand(ctx))).eq(true);
+        rg = RiTa.grammar({ start: "$rule $rule" }, ctx);
+        expect(/^[jm]ob [jm]ob$/.test(rg.expand())).eq(true);
     });
 
     it("should handle custom transforms on statics", () => { // SYNC:
@@ -548,7 +562,7 @@ describe('RiTa.RiGrammar', () => {
         expect(rg.expand()).eq("My job type.");
     });
 
-    it("should allow context in expand", () => {
+/*     it("should allow context in expand", () => {
         let ctx, rg;
         ctx = { randomPosition: () => 'job type' };
         rg = RiTa.grammar({ start: "My .randomPosition()." });
@@ -557,7 +571,7 @@ describe('RiTa.RiGrammar', () => {
         ctx = { randomPosition: () => 'job type' };
         rg = RiTa.grammar({ stat: "My .randomPosition()." });
         expect(rg.expand('stat', ctx)).eq("My job type.");
-    });
+    }); */
 
     it("should handle custom transforms", () => {
         let context = { randomPosition: () => 'job type' };

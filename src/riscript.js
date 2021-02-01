@@ -271,6 +271,6 @@ const ENT_RE = /[\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 const PRS_RE = /([(){}|]|(\${1,2}\w+))/;
 const SYM_RE = /\${1,2}\w+/;
 const CONT_RE = /\\\n/;
-const PARSE_RE = /([\/()\$|\[\]])/;
+const PARSE_RE = /([\/()\$|\[\]])|\.\S/;
 
 module && (module.exports = RiScript);

@@ -55,12 +55,13 @@ class RiGrammar {
   }
 
   expand(rule = 'start', opts = {}) {
-    if (arguments.length && typeof arguments[0] !== 'string') {
+    if (arguments.length && typeof rule !== 'string') {
       opts = rule;
       rule = 'start';
     }
+    
     let ctx = deepMerge(this.context, this.rules); // ?
-    if (opts) ctx = deepMerge(ctx, opts);
+    //if (opts) ctx = deepMerge(ctx, opts);
 
     rule = validateRuleName(rule);
     if (!ctx.hasOwnProperty(rule)) {
@@ -71,7 +72,7 @@ class RiGrammar {
       }
     }
 
-    // a bit strange here as opts entries are included in ctx
+    // a bit strange here as opts entries get included in ctx
     return this.compiler.evaluate(ctx[rule], ctx, opts);
   }
 

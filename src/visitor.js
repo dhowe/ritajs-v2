@@ -36,12 +36,12 @@ class Visitor extends RiScriptParserVisitor {
   }
 
   visitLine(ctx) {
-/*     let line = ctx.getText();
-    //console.log("LINE: '"+line.replace(/\r?\n$/, '')+"'");
-    if (!this.preparse || line.startsWith('{') || /[()$|\[\]]/.test(line)) {
-      line = this.visitChildren(ctx);
-    }
-    else console.log('skip: ' + line); */
+    /*     let line = ctx.getText();
+        //console.log("LINE: '"+line.replace(/\r?\n$/, '')+"'");
+        if (!this.preparse || line.startsWith('{') || /[()$|\[\]]/.test(line)) {
+          line = this.visitChildren(ctx);
+        }
+        else console.log('skip: ' + line); */
     let line = this.visitChildren(ctx);
     return line.length ? line + '\n' : '';
   }
@@ -93,7 +93,7 @@ class Visitor extends RiScriptParserVisitor {
     return result.trim();
   }
 
-  visitChoice(ctx) { 
+  visitChoice(ctx) {
 
     let etext = ctx.getText().replace(TX_RE, ''); //tmp
     let choice = this.choices[etext];
@@ -316,35 +316,25 @@ class Visitor extends RiScriptParserVisitor {
       ("applyTransform: '" + target + "' tf=" + tx);
 
     // check for function
-    if (tx.endsWith(Visitor.FUNC)) {
+    if (tx.endsWith(Visitor.FUNC)) tx = tx.substring(0, tx.length - 2); // strip parens
 
-      // strip parens
-      tx = tx.substring(0, tx.length - 2);
-
-      // function in context
-      if (typeof this.context[tx] === 'function') {
-        result = this.context[tx](target);
-      }
-      // function in transforms
-      else if (typeof this.parent.transforms[tx] === 'function') {
-        result = this.parent.transforms[tx](target);
-      }
-      // member functions (usually on String)
-      else if (typeof target[tx] === 'function') {
-        result = target[tx]();
-        if (target === '' && result === '') {
-          if (!this.silent && !this.RiTa.SILENT) console.warn
-            ("[WARN] Unresolved transform[0]: " + raw);
-        }
-      }
-      else { // function doesn't exist
-        result = raw;
+    // function in context
+    if (typeof this.context[tx] === 'function') {
+      result = this.context[tx](target);
+    }
+    // function in transforms
+    else if (typeof this.parent.transforms[tx] === 'function') {
+      result = this.parent.transforms[tx](target);
+    }
+    // member functions (usually on String)
+    else if (typeof target[tx] === 'function') {
+      result = target[tx]();
+      if (target === '' && result === '') {
         if (!this.silent && !this.RiTa.SILENT) console.warn
-          ("[WARN] Unresolved transform[1]: " + result);
+          ("[WARN] Unresolved transform[0]: " + raw);
       }
     }
-    // check for property
-    else {
+    else {    // check for property
 
       if (target.hasOwnProperty(tx)) {
         result = target[tx];
@@ -352,7 +342,7 @@ class Visitor extends RiScriptParserVisitor {
       else {
         result = raw;
         if (!this.silent && !this.RiTa.SILENT) console.warn
-          ("[WARN] Unresolved transform[2]: " + result);
+          ("[WARN] Unresolved transform: " + result);
       }
     }
 
@@ -424,7 +414,7 @@ class ChoiceState { // unused at moment (for sequences)
         if (txs.length) {
           let tf = txs[0].getText();
           TYPES.forEach(s => tf.includes('.' + s) && (this.type = s));
-        } */ 
+        } */
   }
 
   optionStr() {
