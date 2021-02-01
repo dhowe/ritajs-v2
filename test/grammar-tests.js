@@ -40,7 +40,7 @@ describe('RiTa.RiGrammar', () => {
         ok(typeof new RiGrammar() !== 'undefined');
     });
 
-    it('Should support norepeat rules', () => {  // SYNC:
+    it('Should support norepeat rules', () => { 
         let fail = false, names = "a|b|c|d|e";
         let g = { start: "$names $names.norepeat()", names };
         //console.log(g);
@@ -58,7 +58,7 @@ describe('RiTa.RiGrammar', () => {
         expect(fail).false;
     });
 
-    it('Should support norepeat symbol rules', () => {  // SYNC:
+    it('Should support norepeat symbol rules', () => { 
         let fail = false, names = "(a|b|c|d|e).nr()";
         let g = { start: "$names $names", names };
         for (let i = 0; i < SEQ_COUNT; i++) {
@@ -75,7 +75,7 @@ describe('RiTa.RiGrammar', () => {
         expect(fail).false;
     });
 
-    it('Should support norepeat inline rules', () => { // SYNC:
+    it('Should support norepeat inline rules', () => {
         let fail = false;
         let g = { start: "($$names=(a | b | c | d|e).nr()) $names" };
         for (let i = 0; i < SEQ_COUNT; i++) {
@@ -114,7 +114,7 @@ describe('RiTa.RiGrammar', () => {
         ok(gr2.toString() === gr3.toString(), 'FAIL\n' + gr1 + '\n' + gr2 + '\n');
     });
 
-    it("should call static expand", () => { // SYNC:
+    it("should call static expand", () => { 
         let rg = new RiGrammar();
         rg.addRule("start", "pet");
         eq(rg.expand(), "pet");
@@ -124,7 +124,7 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.expand(), "dog");
     });
 
-    it("should call static expandFrom", () => { // SYNC:
+    it("should call static expandFrom", () => { 
         let rg = new RiGrammar();
         rg.addRule("start", "$pet");
         rg.addRule("pet", "($bird | $mammal)");
@@ -138,7 +138,7 @@ describe('RiTa.RiGrammar', () => {
     });
 
 
-    it('Should handle phrase transforms', () => { // SYNC:
+    it('Should handle phrase transforms', () => { 
         let g = {
             "start": "($x=$y b).ucf()",
             "y": "(a | a)",
@@ -178,7 +178,7 @@ describe('RiTa.RiGrammar', () => {
         expect(rs).to.be.oneOf(["Dave", "Jill", "Pete"]);
     });
 
-    it('Should allow static rules starting with numbers', () => { // SYNC:
+    it('Should allow static rules starting with numbers', () => { 
         let rg, rs;
 
         rg = new RiGrammar({
@@ -200,7 +200,7 @@ describe('RiTa.RiGrammar', () => {
 
     // NEXT: WORKING HERE, GO DOWN, ONE BY ONE
 
-    it("should call addRules", () => { // SYNC:
+    it("should call addRules", () => {
 
         let rg = new RiGrammar();
         ok(typeof rg.rules !== 'undefined');
@@ -224,7 +224,7 @@ describe('RiTa.RiGrammar', () => {
         });
     });
 
-    it("should call removeRule", () => { // SYNC:
+    it("should call removeRule", () => { 
 
         grammars.forEach(g => {
             let rg1 = new RiGrammar(g);
@@ -246,7 +246,7 @@ describe('RiTa.RiGrammar', () => {
         });
     });
 
-    it("should call static removeRule", () => { // SYNC:
+    it("should call static removeRule", () => {
 
         let rg = new RiGrammar();
         rg.addRule("start", "$pet");
@@ -294,8 +294,8 @@ describe('RiTa.RiGrammar', () => {
         }
     });
 
-    it('Should throw on bad grammars', () => { // SYNC:
-        expect(() => RiTa.grammar({ "": "pet" })).to.throw();
+    it('Should throw on bad grammars', () => {
+        expect(() => RiTa.grammar({ "": "pet" })).to.throw(); 
         expect(() => RiTa.grammar({ "$$start": "pet" })).to.throw();
         expect(() => RiTa.grammar('"{$$start": "pet" }')).to.throw();
         expect(() => RiTa.grammar().addRule("$$rule", "pet")).to.throw();
@@ -312,7 +312,7 @@ describe('RiTa.RiGrammar', () => {
         expect(() => RiGrammar.fromJSON('{ "$$start": "pet" }')).not.to.throw(); // remove in fromJSON
     });
 
-    it("should call toString", () => { // SYNC:
+    it("should call toString", () => {
         let rg = new RiGrammar({ "start": "pet" });
         eq(rg.toString(), '{\n  "$$start": "pet"\n}');
         rg = new RiGrammar({ "start": "$pet", "pet": "dog" });
@@ -326,7 +326,7 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.toString(), '{\n  "$$start": "$pet.articlize()",\n  "$$pet": "(dog | cat)"\n}');
     });
 
-    it("should call toString with arg", () => { // SYNC:
+    it("should call toString with arg", () => { 
         let lb = '<br/>';
         let rg = RiTa.grammar({ "start": "pet" });
         eq(rg.toString(lb), '{<br/>  "$$start": "pet"<br/>}');
@@ -351,7 +351,7 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.expand(), "dog");
     });
 
-    it("should override dynamic default", () => { // SYNC:
+    it("should override dynamic default", () => {
         let count = 4;
 
         // here is the normal (dynamic) behavior
@@ -430,7 +430,7 @@ describe('RiTa.RiGrammar', () => {
         ok(typeof rg.rules["start"] !== 'undefined');
     });
 
-    it("should call expandFrom.weights.static", () => { // SYNC:
+    it("should call expandFrom.weights.static", () => { 
 
         let rg = RiTa.grammar();
         rg.addRule("start", "$pet $pet");
@@ -488,7 +488,7 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.expand(), "An ant");
     });
 
-    it("should handle transforms on statics", () => { // SYNC:
+    it("should handle transforms on statics", () => { 
         let rg = RiTa.grammar();
         rg.addRule("$start", "$pet.toUpperCase()");
         rg.addRule("$pet", "dog");
@@ -531,7 +531,7 @@ describe('RiTa.RiGrammar', () => {
         }
     });
 
-    it("should allow context in expand on statics", () => { // SYNC:
+    it("should allow context in expand on statics", () => { 
         let ctx, rg;
         ctx = { randomPosition: () => 'job type' };
         rg = RiTa.grammar({ $start: "My .randomPosition()." }, ctx);
@@ -544,7 +544,7 @@ describe('RiTa.RiGrammar', () => {
         expect(rg.expand('stat')).eq("My job type.");
     });
 
-    it("should resolve rules in context", () => { // SYNC:
+    it("should resolve rules in context", () => { 
         let ctx, rg;
         ctx = { rule: '(job | mob)' };
         rg = RiTa.grammar({ start: "$rule $rule" }, ctx);
@@ -556,7 +556,7 @@ describe('RiTa.RiGrammar', () => {
         expect(/^[jm]ob [jm]ob$/.test(rg.expand())).eq(true);
     });
 
-    it("should handle custom transforms on statics", () => { // SYNC:
+    it("should handle custom transforms on statics", () => { 
         let context = { randomPosition: () => 'job type' };
         let rg = RiTa.grammar({ $start: "My .randomPosition()." }, context);
         expect(rg.expand()).eq("My job type.");
@@ -600,7 +600,7 @@ describe('RiTa.RiGrammar', () => {
         eq(rg.expand({ trace: 0 }), "mice");
     });
 
-    it("should handle symbol transforms on statics", () => { // SYNC:
+    it("should handle symbol transforms on statics", () => { 
         let rg;
         rg = new RiGrammar({
             $start: "$tmpl",
@@ -664,7 +664,7 @@ describe('RiTa.RiGrammar', () => {
         }
     });
 
-    it("should handle special characters with statics", () => { // SYNC:
+    it("should handle special characters with statics", () => { 
         let rg, res, s;
 
         s = "{ \"$start\": \"hello &#124; name\" }";
@@ -749,7 +749,7 @@ describe('RiTa.RiGrammar', () => {
         eql(res, "bad feelings");
     });
 
-    it('Should correctly pluralize static phrases', () => { // SYNC:
+    it('Should correctly pluralize static phrases', () => { 
         let json = { $start: "($state feeling).pluralize()", $state: "(bad | bad)" };
         let rg = new RiGrammar(json);
         let res = rg.expand();
