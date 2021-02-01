@@ -1,14 +1,6 @@
 lexer grammar RiScriptLexer;
 
-// NOTE: changing this file requires a re-compile: use $ yarn watch.grammar 
-
-/*     
-    Rule Priority
-		----------------------------------------------------------------------------
-		First, select the lexer rule which matches the longest input
-    If the text matches an implicitly defined token (like '{'), use the implicit rule
-    If several lexer rules match the same input length, choose the first one, based on definition order
- */
+// changing this file requires a re-compile: use $ yarn watch.grammar 
 
 LCOMM: '/*' .*? '*/' -> channel(HIDDEN);
 BCOMM: '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
@@ -72,3 +64,11 @@ fragment NIDENT: [A-Za-z_0-9] [A-Za-z_0-9-]*;
 mode MD;
 MDT              : ~(')')+; 
 MDE               : ')' -> popMode ;
+
+/*     
+    Rule Priority
+    ----------------------------------------------------------------------------
+    First, select the lexer rule which matches the longest input
+    If the text matches an implicitly defined token (like '{'), use the implicit rule
+    If several lexer rules match the same input length, choose the first one, based on definition order
+ */
