@@ -36,7 +36,7 @@ $(document).ready(function () {
             //RiScript
             { regex: /\$\w+/g, token: "vars" },
             //vars
-            { regex: /\((.*\|)+.*\)/g, token: "choice" },
+            { regex: /\(([^)]*\|)+[^)]*\)/g, token: "choice" },
             //choices
             { regex: /(\.[\w]+\(\))/g, token: "trans" },
             //transforms 
