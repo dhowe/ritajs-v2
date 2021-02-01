@@ -7,6 +7,8 @@ const { LexerErrors, ParserErrors } = require('./errors');
 
 class RiScript {
 
+  // TODO: quoted strings with spaces in choices or symbols, weighted-empty-string in choice 
+  //       notebook -> context, variable transforms (useless with js/tt)
   constructor() {
     this.visitor = new Visitor(this, RiTa());
     this.transforms = RiScript.transforms;
@@ -25,7 +27,7 @@ class RiScript {
 
     for (let i = 0; expr !== last && i < RiScript.MAX_TRIES; i++) {
       last = expr;
-      if (trace) console.log("--------------------- Pass#" + i + " ----------------------");
+      trace && console.log('-'.repeat(20) + ' Pass#' + i + ' ' + '-'.repeat(20));
       expr = this.lexParseVisit(expr, ctx, opts);
       if (trace) this.passInfo(ctx, last, expr, i);
       if (onepass || !this.isParseable(expr)) break;
@@ -34,8 +36,7 @@ class RiScript {
     if (!opts.silent && !RiScript.parent.SILENT && SYM_RE.test(expr)) {
       console.warn('[WARN] Unresolved symbol(s) in "' + expr + '" ');
     }
-
-    return this.resolveEntities(expr);
+    return this.resolveEntities(expr)
   }
 
   passInfo(ctx, input, output, pass) {
@@ -46,6 +47,7 @@ class RiScript {
   }
 
   lex(input, opts) {
+
     // create the lexer
     let stream = new antlr4.InputStream(input);
     this.lexer = new Lexer.RiScriptLexer(stream);
@@ -96,8 +98,7 @@ class RiScript {
     try {
       tree = this.parser.script();
     } catch (e) {
-      if (!silent) console.error(//require('colors').red
-        ("PARSER: '" + input + '\'\n' + e.message + '\n'));
+      silent || console.error("PARSER: '" + input + "'\n" + e.message + '\n');
       throw e;
     }
     trace && console.log('\n' + tree.toStringTree(this.parser.ruleNames) + '\n');
@@ -109,38 +110,24 @@ class RiScript {
     return this.parse(tokens, input, opts);
   }
 
-  preParse(input, opts = {}) {
-    let parse = input || '', pre = '', post = '';
-/*     let skipPre = parse.includes('$'); // see issue:rita#59
-    let skipAll = parse.includes('\/') || opts.skipPreParse; // comments */
-    if (!PPA_RE.test(parse)) {
-      const words = input.split(/ +/);
-      let preIdx = 0, postIdx = words.length - 1;
-      while (preIdx < words.length) {
-        if (PPB_RE.test(words[preIdx])) break;
-        preIdx++;
-      }
-      if (preIdx < words.length) {
-        while (postIdx >= 0) {
-          if (PPB_RE.test(words[postIdx])) break;
-          postIdx--;
-        }
-      }
-      pre = words.slice(0, preIdx).join(' ');
-      parse = words.slice(preIdx, postIdx + 1).join(' ');
-      post = words.slice(postIdx + 1).join(' ');
-    }
-    return { pre, parse, post };
+  lexParseVisitNoPre(input, context, opts) {
+    if (!input || !input.length) return '';
+    let tree = this.lexParse(input, opts);
+    return this.visitor.init(context, opts).start(tree);
   }
 
   lexParseVisit(input, context, opts) {
 
-    let { pre, parse, post } = this.preParse(input, opts);
-    opts.trace && (pre.length || post.length) 
-      && console.log('preParse("' + pre + '", "' + post + '");');
+    let { pre, parse, post } = this.preparse(input, opts);
+
+    opts.trace && (pre.length || post.length) &&
+       console.log('preParse("' + pre + '", "' + post + '");');
+
     let tree = parse.length && this.lexParse(parse, opts);
-    let result = parse.length ? this.visitor.init(context, opts).start(tree) : '';
-    return (this.normalize(pre) + ' ' + result + ' ' + this.normalize(post)).trim();
+    let parsed = parse.length ? this.visitor.init(context, opts).start(tree) : '';
+    let result = (pre.length && parsed.length) ? pre + '\n' + parsed : pre + parsed;
+
+    return (result.length && post.length) ? result + '\n' + post : result + post;
   }
 
   normalize(s) {
@@ -150,14 +137,57 @@ class RiScript {
         .replace(/\n/g, ' ') : '';
   }
 
-  resolveEntities(result) { // &#10; for line break DOC:
-    if (typeof result === 'undefined') return '';
-    return decode(result.replace(/ +/g, ' '))
-      .replace(ENT_RE, ' ');
+  resolveEntities(result) {
+    return (typeof result === 'undefined')
+      ? '' : decode(result).replace(ENT_RE, ' ');
   }
 
   isParseable(s) {
     return PRS_RE.test(s);
+  }
+
+  preparse(input, opts = {}) {
+    let res = { pre: '', parse: input, post: '' };
+    input = input.replace(CONT_RE, '');
+    if (!opts.nopre) { // DOC:
+      let lines = (input || '').split(/\r?\n/g);
+      let parse = [], pre = [], post = [], mode = 0;
+      let dynamic = l => l.startsWith('{') || PARSE_RE.test(l);
+      lines.forEach(line => {
+        if (mode === 0) {      // pre
+          if (dynamic(line)) {
+            parse.push(line);
+            mode = 1;
+          }
+          else {
+            pre.push(line);
+          }
+        }
+        else if (mode === 1) { // parse
+          if (dynamic(line)) {
+            parse.push(line);
+          }
+          else {
+            post.push(line);
+            mode = 2;
+          }
+        }
+        else if (mode === 2) { // post
+          if (dynamic(line)) {
+            parse.push(...post, line);
+            post.length = 0;
+            mode = 1;
+          }
+          else {
+            post.push(line);
+          }
+        }
+      });
+      res.pre = pre.length ? pre.join('\n') : '';
+      res.parse = parse.length ? parse.join('\n') : '';
+      res.post = post.length ? post.join('\n') : '';
+    }
+    return res;
   }
 
   static addTransform(name, func) {
@@ -170,7 +200,7 @@ class RiScript {
     let first = s.split(/\s+/)[0];
     let phones = RiTa().phones(first, { silent: true });
     // could still be original word if no phones found
-    return (phones && phones.length 
+    return (phones && phones.length
       && VOW_RE.test(phones[0]) ? 'an ' : 'a ') + s;
   }
 
@@ -209,7 +239,7 @@ function quotify(s) {
 /// Pluralizes the word according to english regular/irregular rules.
 /// </summary>
 function pluralize(s) {
-  
+
   return RiTa().pluralize(s);
 }
 
@@ -222,27 +252,25 @@ RiScript.transforms = {
   articlize: RiScript.articlize,
 
   // sequences
-  seq: RiScript.identity,
-  rseq: RiScript.identity,
-  norep: RiScript.identity, // TODO: remove
-  nore: RiScript.identity,
+  //seq: RiScript.identity,
+  //rseq: RiScript.identity,
+  //norep: RiScript.identity,
+  norepeat: RiScript.identity,
 
   // aliases
   art: RiScript.articlize,
+  nr: RiScript.identity,
   ucf: capitalize,
   uc: uppercase,
   qq: quotify,
-  s: pluralize   
+  s: pluralize
 };
 
 const VOW_RE = /[aeiou]/;
-const ENT_RE = /[\t\v\f\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
-
-const PPA_RE = /(^[{]|[/$])/;
-const PPB_RE = /[()$|{}\[\]]/;
+const ENT_RE = /[\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 const PRS_RE = /([(){}|]|(\${1,2}\w+))/;
 const SYM_RE = /\${1,2}\w+/;
-
-// Dynamic-options: ~ @ & % #, or only $ _ $$
+const CONT_RE = /\\\n/;
+const PARSE_RE = /([\/()\$|\[\]])/;
 
 module && (module.exports = RiScript);

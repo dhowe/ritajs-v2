@@ -3,8 +3,9 @@ describe('RiTa.RiGrammar', () => {
 
     if (typeof module !== 'undefined') require('./before');
 
-    const ST = { silent: 1 }, TT = { trace: 1 }, SP = { singlePass: 1 }, TLP = { trace: 1, traceLex: 1 };
-    const RiGrammar = RiTa.RiGrammar, SKIP_FOR_NOW = true;
+    const ST = { silent: 1 }, TP = { trace: 1 }, SP = { singlePass: 1 }, TLP = { trace: 1, traceLex: 1 };
+    const RiGrammar = RiTa.RiGrammar, SKIP_FOR_NOW = true,  SEQ_COUNT = 5;
+
 
     let sentences1 = {
         "start": "$noun_phrase $verb_phrase.",
@@ -37,6 +38,63 @@ describe('RiTa.RiGrammar', () => {
 
     it('should call constructor', () => {
         ok(typeof new RiGrammar() !== 'undefined');
+    });
+
+    it('Should support norepeat rules', () => {  // SYNC:
+        let fail = false, names = "a|b|c|d|e";
+        let g = { start: "$names $names.norepeat()", names };
+        //console.log(g);
+        for (let i = 0; i < SEQ_COUNT; i++) {
+            let res = RiTa.grammar(g).expand();
+            expect(/^[a-e] [a-e]$/.test(res)).true;
+            let parts = res.split(' ');
+            expect(parts.length).eq(2);
+            //console.log(i + ") " + parts[0] + " :: " + parts[1]);
+            if (parts[0] === parts[1]) {
+                fail = true;
+                break;
+            }
+        }
+        expect(fail).false;
+    });
+
+    it('Should support norepeat symbol rules', () => {  // SYNC:
+        let fail = false, names = "(a|b|c|d|e).nr()";
+        let g = { start: "$names $names", names };
+        for (let i = 0; i < SEQ_COUNT; i++) {
+            let res = RiTa.grammar(g).expand();
+            expect(/^[a-e] [a-e]$/.test(res)).true;
+            let parts = res.split(' ');
+            expect(parts.length).eq(2);
+            //console.log(i + ") " + parts[0] + " " + parts[1]);
+            if (parts[0] === parts[1]) {
+                fail = true;
+                break;
+            }
+        }
+        expect(fail).false;
+    });
+
+    it('Should support norepeat inline rules', () => { // SYNC:
+        let fail = false;
+        let g = { start: "($$names=(a | b | c | d|e).nr()) $names" };
+        for (let i = 0; i < SEQ_COUNT; i++) {
+            let res = RiTa.grammar(g).expand();
+            expect(/^[a-e] [a-e]$/.test(res)).true;
+            let parts = res.split(' ');
+            expect(parts.length).eq(2);
+            //console.log(i + ") " + parts[0] + " " + parts[1]);
+            if (parts[0] === parts[1]) {
+                fail = true;
+                break;
+            }
+        }
+        expect(fail).false;
+    });
+
+    (!SKIP_FOR_NOW) && it('Should throw on norepeat statics', () => {  // TODO: (problematic)
+        let g = { start: "$names", "$names": "(a|b|c|d|e).nr()" };
+        expect(() => RiTa.grammar(g).expand(TP)).to.throw();
     });
 
     it('should call constructorJSON', () => {
@@ -101,47 +159,6 @@ describe('RiTa.RiGrammar', () => {
             results[res] = results[res] + 1 || 1;
         }
         expect(Object.keys(results).length).eq(2);
-    });
-
-    SKIP_FOR_NOW || it('Should support seq() transforms', () => {
-        let opts = ['a', 'b', 'c', 'd'];
-        let rule = '(' + opts.join('|') + ').seq()';
-        let rs = new RiGrammar({ start: rule });
-        for (let i = 0; i < opts.length; i++) {
-            let res = rs.expand();
-            //console.log(i, ':', res);
-            expect(res).eq(opts[i]);
-        }
-
-        rule = '(' + opts.join('|') + ').seq().capitalize()';
-        rs = new RiGrammar({ start: rule });
-        for (let i = 0; i < opts.length; i++) {
-            let res = rs.expand();
-            //console.log(i, ':', res);
-            expect(res).eq(opts[i].toUpperCase());
-        }
-    });
-
-    SKIP_FOR_NOW || it('Should support rseq() transforms', () => {
-        let opts = ['a', 'b', 'c', 'd'], result = [];
-        let rule = '(' + opts.join('|') + ').rseq()';
-        let rs = new RiGrammar({ start: rule });
-        for (let i = 0; i < opts.length; i++) {
-            let res = rs.expand();
-            //console.log(i, ':', res);
-            result.push(res);
-        }
-        expect(result).to.have.members(opts);
-
-        rule = '(' + opts.join('|') + ').rseq().capitalize()';
-        rs = new RiGrammar({ start: rule });
-        result = [];
-        for (let i = 0; i < opts.length; i++) {
-            let res = rs.expand();
-            //console.log(i, ':', res);
-            result.push(res);
-        }
-        expect(result).to.have.members(opts.map(o => o.toUpperCase()));
     });
 
     it('Should allow rules starting with numbers', () => {
@@ -633,7 +650,7 @@ describe('RiTa.RiGrammar', () => {
         }
     });
 
-     it("should handle special characters with statics", () => { // SYNC:
+    it("should handle special characters with statics", () => { // SYNC:
         let rg, res, s;
 
         s = "{ \"$start\": \"hello &#124; name\" }";
@@ -676,7 +693,7 @@ describe('RiTa.RiGrammar', () => {
     });
 
     it("should call to/from JSON", () => {
-        let json, rg, rg2, generatedJSON; 
+        let json, rg, rg2, generatedJSON;
 
         json = '{ "$start": "$pet $iphone", "$pet": "(dog | cat)", "$iphone": "(iphoneSE | iphone12)" }';
         rg = new RiGrammar(json);
