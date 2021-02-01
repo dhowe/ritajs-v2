@@ -184,9 +184,10 @@ class RiTa {
     return RiTa.analyzer.analyze(...arguments).syllables;
   }
 
-  static template() {
-    return (strs, ...vals) => RiScript.eval(
+  static template(md) {
+    let fun = (strs, ...vals) => RiScript.eval(
       strs.reduce((a, s, i) => a + s + (vals[i] || ''), ''));
+     return md ? (s,...v) => md`${fun(s,v)}` : fun;
   }
 
   static tokenize() {

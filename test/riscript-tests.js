@@ -1,5 +1,4 @@
 const { expect } = require('chai');
-const { html } = require('nanohtml');
 const RiTa = require('../src/rita');
 
 describe('RiTa.RiScript', () => {
@@ -19,6 +18,11 @@ describe('RiTa.RiScript', () => {
 
     it('Should optimize pstrings', () => {
       expect(RiTa.evaluate("(a)", 0)).eq("a");
+    });
+
+    it('Should allow template to accept tagged template', () => {
+      let rsd = RiTa.template(md);
+      expect(rsd`# (a | a)\n(b|b)`).eq(md`# a\nb`);
     });
 
     it('Should preserve whitespace', () => {
