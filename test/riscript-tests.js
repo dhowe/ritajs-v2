@@ -12,13 +12,11 @@ describe('RiTa.RiScript', () => {
 
     const rs = RiTa.template();
     const md = require('marli')();
+    /* const beldown = require('beldown');
+    const md = (s,...v) => beldown(s,v).toString(); */
     const expectHtml = function (code) {
       return expect(md`${rs([code])}`);
     };
-
-    it('Should optimize pstrings', () => {
-      expect(RiTa.evaluate("(a)", 0)).eq("a");
-    });
 
     it('Should allow template to accept tagged template', () => {
       let rsd = RiTa.template(md);
