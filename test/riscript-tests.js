@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const RiTa = require('../src/rita');
 
-describe('RiTa.RiScript', () => {
+describe('RiTa.RiScript', function() {
 
   if (typeof module !== 'undefined') require('./before');
 
@@ -9,12 +9,16 @@ describe('RiTa.RiScript', () => {
   const ORS_DIV = "<div style=\"white-space: break-spaces;\">", CRS_DIV = "</div>";
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
 
-  describe('Markdown', () => { // JSONLY
+  this.slow(100);
+
+  describe('Markdown', function() { // JSONLY
 
     const md = require('marli')();
     const rs = RiTa.template(md, { raw: true });
     const rsm = RiTa.template(md);
     const rsp = RiTa.template();
+
+    this.slow(150);
 
     /* const beldown = require('beldown');
     const md = (s,...v) => beldown(s,v).toString(); */
@@ -688,7 +692,7 @@ describe('RiTa.RiScript', () => {
 
     it('Should handle inline dynamics', () => {
 
-      let rs, ctx, matches, count = 10; // may need to be higher
+      let rs, ctx, matches, count = 10;
       const matching = ['Dave is called Dave.', 'Jack is called Jack.', 'Mary is called Mary.'];
 
       // $$: need at least one to not match

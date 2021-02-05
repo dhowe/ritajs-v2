@@ -1,6 +1,7 @@
 describe('RiTa.Lexicon', function () {
 
   this.timeout(5000);
+  this.slow(700);
 
   if (typeof module !== 'undefined') require('./before');
 
@@ -510,21 +511,11 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call spellsLike', () => {
-    let result;
-
-    result = RiTa.spellsLike("banana", { minLength: 6, maxLength: 6 });
-    eql(result, ["cabana"]);
 
     result = RiTa.spellsLike("");
     eql(result, []);
 
     result = RiTa.spellsLike("banana");
-    eql(result, ["banal", "bonanza", "cabana", "manna"]);
-
-    result = RiTa.spellsLike("banana", { minLength: 6, maxLength: 6 });
-    eql(result, ["cabana"]);
-
-    result = RiTa.spellsLike("banana", { minDistance: 1 });
     eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
     result = RiTa.spellsLike("tornado");
@@ -538,6 +529,22 @@ describe('RiTa.Lexicon', function () {
       'nice', 'rice',
       'vice'
     ]);
+
+
+  });
+
+  it('Should call spellsLike.options', () => { // SYNC:
+
+    let result;
+
+    result = RiTa.spellsLike("banana", { minLength: 6, maxLength: 6 });
+    eql(result, ["cabana"]);
+
+    result = RiTa.spellsLike("banana", { minLength: 6, maxLength: 6 });
+    eql(result, ["cabana"]);
+
+    result = RiTa.spellsLike("banana", { minDistance: 1 });
+    eql(result, ["banal", "bonanza", "cabana", "manna"]);
 
     result = RiTa.spellsLike("ice", { maxLength: 3 });
     eql(result, ['ace', 'icy', 'ire']);
@@ -587,7 +594,7 @@ describe('RiTa.Lexicon', function () {
     expect(result.includes("condensed")).to.be.false;
   });
 
-  it('Should call soundsLike', () => {
+  it('Should call soundsLike', function () {
 
     eql(RiTa.soundsLike("tornado", { type: 'sound' }), ["torpedo"]);
 
@@ -634,6 +641,7 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call soundsLike().matchSpelling', () => {
+
     let result;
     result = RiTa.soundsLike("try", { matchSpelling: true });
     eql(result, ['cry', 'dry', 'fry', 'pry', 'tray']);
