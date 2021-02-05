@@ -166,7 +166,7 @@ describe('RiTa.RiScript', function() {
     })
   });
 
-  describe('Sequences', () => { // SYNC:
+  describe('Sequences', () => { 
     /*
     1. "$$names=(jane | dave | rick | chung)\n"
        "This story is about $names and $names.nr()"
@@ -251,7 +251,7 @@ describe('RiTa.RiScript', function() {
       expect(rs.isParseable("&&b")).eq(false);
     });
 
-    it('Should resolve simple expressions', () => { // SYNC:
+    it('Should resolve simple expressions', () => { 
 
       expect(RiTa.evaluate('foo', {})).eq('foo');
       expect(RiTa.evaluate('foo!', {})).eq('foo!');
@@ -591,7 +591,7 @@ describe('RiTa.RiScript', function() {
       expect(ctx.foo).eq('a');
     });
 
-    it('Should pluralize phrases', () => { // SYNC:
+    it('Should pluralize phrases', () => { 
       expect(RiTa.evaluate('These (bad feeling).pluralize().')).eq('These bad feelings.');
       expect(RiTa.evaluate('She (pluralize).pluralize().')).eq('She pluralizes.');
       expect(RiTa.evaluate('These ($state feeling).pluralize().', { state: 'bad' })).eq('These bad feelings.');
@@ -604,7 +604,7 @@ describe('RiTa.RiScript', function() {
       expect(RiTa.evaluate('These (off-site).pluralize().', { state: '(bad | bad)' })).eq('These off-sites.');
     })
 
-    it('Should resolve transforms on literals', () => { // SYNC:
+    it('Should resolve transforms on literals', () => { 
       expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many “teeth” do you have?');
       expect(RiTa.evaluate('That is (ant).articlize().', 0)).eq('That is an ant.');
       expect(RiTa.evaluate('That is ().articlize().', 0)).eq('That is .');
@@ -930,7 +930,7 @@ describe('RiTa.RiScript', function() {
       expect(RiTa.evaluate('The $a.capitalize() dog.', {}, ST)).eq('The $a.capitalize() dog.');
     });
 
-    it('Should ignore no-op symbols in context', () => { // SYNC:
+    it('Should ignore no-op symbols in context', () => { 
       expect(RiTa.evaluate('a $foo dog', {}, ST)).eq('a $foo dog');
       expect(RiTa.evaluate('$100 is a lot of $dog.', { dog: 'terrier' }, ST)).eq('$100 is a lot of terrier.');
       expect(RiTa.evaluate('the $dog cost $100!', { dog: 'terrier' }, ST)).eq('the terrier cost $100!');
@@ -1068,7 +1068,7 @@ describe('RiTa.RiScript', function() {
       expect(() => RiTa.evaluate('(a | b) | c', 0, ST)).to.throw();
     });
 
-    it('Should resolve choices', () => { //SYNC:
+    it('Should resolve choices', () => { 
       expect(RiTa.evaluate('(|)')).eq('');
       expect(RiTa.evaluate('(a)')).eq('a');
       expect(RiTa.evaluate('(a | a)', 0)).eq('a');
