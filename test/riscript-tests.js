@@ -18,7 +18,7 @@ describe('RiTa.RiScript', () => {
       return expect(md`${rs([code])}`);
     };
 
-    it('Should allow template to accept tagged template', () => {
+    it('Should support nested tagged template', () => {
       let rsd = RiTa.template(md);
       expect(rsd`# (a | a)\n(b|b)`).eq(md`# a\nb`);
     });
@@ -217,7 +217,7 @@ describe('RiTa.RiScript', () => {
 
 
     (!SKIP_FOR_NOW) && it('Should throw on norepeat statics', () => { // TODO: (problematic)
-      console.log(RiTa.evaluate("$a=(a|b).nr()\n$a $a", 0, TP));
+      console.log(RiTa.evaluate("$a=(a|b).nr()\n$a $a", 0)); // non-dynamic
       expect(() => RiTa.evaluate("$a=(a|b).nr()\n$a $a")).to.throw();
     });
   });
@@ -868,7 +868,7 @@ describe('RiTa.RiScript', () => {
 
     (!SKIP_FOR_NOW) && it('KI: FAILING', () => {
       for (let i = 0, rs; i < 10; i++) {
-        rs = RiTa.evaluate('($chosen=$person) talks to $chosen.', { person: '(Dave | Jill | Pete)' }, TP);
+        rs = RiTa.evaluate('($chosen=$person) talks to $chosen.', { person: '(Dave | Jill | Pete)' });
         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
       }
     });
@@ -998,6 +998,16 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('$start=$foo\n$foo=hello\n$start')).eq('hello');
       expect(RiTa.evaluate('$start = $noun\n$noun = hello\n$start')).eq('hello');
     });
+
+    it('Should resolve pending symbols with transforms', () => {
+      let rs, ctx = { bar: '(orange|orange)' };
+      
+      rs = RiTa.evaluate('$bar is $bar.art color', ctx);
+      expect(rs).eq('orange is an orange color');
+
+      rs = RiTa.evaluate('$bar.cap is $bar.art color', ctx);
+      expect(rs).eq('Orange is an orange color');
+    })
 
     it('Should resolve symbols with property transforms', () => {
       let ctx = { bar: { color: 'blue' } };
@@ -1374,6 +1384,11 @@ describe('RiTa.RiScript', () => {
       ctx = { bar: { result: 'result' } }; // property transform
       rs = RiTa.evaluate('$foo=$bar.result\n$foo', ctx); // no parens
       expect(rs).eq('result');
+
+      ctx = { mammal: "(ox | ox)" };  // SYNC:
+      rs = RiTa.evaluate('The big $mammal ate the smaller $mammal.s.', ctx); 
+      // no parens, alias, resolved from pending symbols
+      expect(rs).eq('The big ox ate the smaller oxen.');
     });
 
     /*

@@ -147,7 +147,8 @@ class RiScript {
   }
 
   preparse(input, opts = {}) {
-    let res = { pre: '', parse: input, post: '' };
+    let res = { pre: '', parse: input || '', post: '' };
+    if (!input || !input.length) return res;
     input = input.replace(CONT_RE, '');
     if (!opts.nopre) { // DOC:
       let lines = (input || '').split(/\r?\n/g);
@@ -260,7 +261,8 @@ RiScript.transforms = {
   // aliases
   art: RiScript.articlize,
   nr: RiScript.identity,
-  ucf: capitalize,
+  cap: capitalize,
+  ucf: capitalize, // deprecated
   uc: uppercase,
   qq: quotify,
   s: pluralize

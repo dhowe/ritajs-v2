@@ -144,7 +144,7 @@ class Visitor extends RiScriptParserVisitor {
     // if the symbol is pending just return it
     if (this.pendingSymbols.includes(ident)) {
       this.trace && console.log("resolveSymbol[0]: (pending) $" + ident);
-      return result + flattenTx(txs);
+      return result;// + flattenTx(txs); // transform should be stored
     }
 
     let resolved = this.context[ident];  // try the context

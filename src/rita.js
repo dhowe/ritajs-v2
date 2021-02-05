@@ -185,9 +185,17 @@ class RiTa {
   }
 
   static template(md) {
-    let fun = (strs, ...vals) => RiScript.eval(
-      strs.reduce((a, s, i) => a + s + (vals[i] || ''), ''));
-     return md ? (s,...v) => md`${fun(s,v)}` : fun;
+    let fun = (strs, ...vals) => {
+      try {
+        return RiScript.eval(strs.reduce
+          ((a, s, i) => a + s + (vals[i] || ''), ''));
+      }
+      catch (e) {
+        console.error('[RiScript] ' + e.message);
+        return '[RiScript] ' + e.message;
+      }
+    }
+    return md ? (s, ...v) => md`${fun(s, v)}` : fun;
   }
 
   static tokenize() {
