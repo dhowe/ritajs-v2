@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const RiTa = require('../src/rita');
 
-describe('RiTa.RiScript', function() {
+describe('RiTa.RiScript', function () {
 
   if (typeof module !== 'undefined') require('./before');
 
@@ -11,7 +11,7 @@ describe('RiTa.RiScript', function() {
 
   this.slow(100);
 
-  describe('Markdown', function() { // JSONLY
+  describe('Markdown', function () { // JSONLY
 
     const md = require('marli')();
     const rs = RiTa.template(md, { raw: true });
@@ -29,6 +29,10 @@ describe('RiTa.RiScript', function() {
     it('Should support nested tagged template', () => {
       expect(rs`# (a | a)\n(b|b)`).eq(md`# a\nb`);
       expect(rsm`# (a | a)\n(b|b)`).eq(md`${ORS_DIV}# a\nb${CRS_DIV}`);
+
+      expect(rs`some ~~link~~ code`).eq(md`some ~~link~~ code`);
+      expect(RiTa.evaluate('some [RiScript](link) code')).eq("some [RiScript](link) code");
+      expect(rs`some [RiScript](link) code`).eq(md`some [RiScript](link) code`);
 
       expect(rs`#  (a | a)
         (b|b) `).eq(md`# a\n        b `);

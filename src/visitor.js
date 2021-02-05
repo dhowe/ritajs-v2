@@ -36,27 +36,15 @@ class Visitor extends RiScriptParserVisitor {
   }
 
   visitLine(ctx) {
-    /*     let line = ctx.getText();
-        //console.log("LINE: '"+line.replace(/\r?\n$/, '')+"'");
-        if (!this.preparse || line.startsWith('{') || /[()$|\[\]]/.test(line)) {
-          line = this.visitChildren(ctx);
-        }
-        else console.log('skip: ' + line); */
     let line = this.visitChildren(ctx);
     return line.length ? line + '\n' : '';
-  }
-
-  visitPstr(ctx) {
-    let txt = ctx.getText();
-    this.trace && console.log("visitPstr: '" + txt + "'");
-    return txt.substring(1, txt.length - 1);
   }
 
   visitLink(ctx) {
     this.trace && console.log("visitLink: '"
       + ctx.getText() + "' link=" + ctx.url().getText());
     return '[' + this.visit(ctx.expr()) + ']'
-      + '&lpar;' + ctx.url().getText() + '&rpar;';
+      + '&lpar;' + ctx.url().getText() + '&rpar;' + ctx.WS();
   }
 
   visitChoiceNoObj(ctx) {// not used (save)
