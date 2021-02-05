@@ -184,9 +184,10 @@ class RiTa {
     return RiTa.analyzer.analyze(...arguments).syllables;
   }
 
-  static template(md) {
+  static template(md, opts = {}) {
     let fun = (strs, ...vals) => {
       try {
+
         return RiScript.eval(strs.reduce
           ((a, s, i) => a + s + (vals[i] || ''), ''));
       }
@@ -195,7 +196,9 @@ class RiTa {
         return '[RiScript] ' + e.message;
       }
     }
-    return md ? (s, ...v) => md`${fun(s, v)}` : fun;
+    let op = opts.raw ? '' : ORS_DIV;
+    let cl = opts.raw ? '' : CRS_DIV;
+    return md ? (s, ...v) => md`${ op + fun(s, v) + cl }` : fun;
   }
 
   static tokenize() {
@@ -304,5 +307,7 @@ RiTa.CACHING = true;
 
 const ONLY_PUNCT = /^[^\w\s]*$/;
 const IS_LETTER = /^[a-z\u00C0-\u00ff]+$/;
+const ORS_DIV = "<div style=\"white-space: break-spaces;\">"
+const CRS_DIV = "</div>"
 
 module && (module.exports = RiTa);

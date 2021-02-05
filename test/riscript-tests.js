@@ -6,34 +6,40 @@ describe('RiTa.RiScript', () => {
   if (typeof module !== 'undefined') require('./before');
 
   const ST = { silent: 1 }, TP = { trace: 1 }, TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
+  const ORS_DIV = "<div style=\"white-space: break-spaces;\">", CRS_DIV = "</div>";
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
 
   describe('Markdown', () => { // JSONLY
 
-    const rs = RiTa.template();
     const md = require('marli')();
+    const rs = RiTa.template(md, { raw: true });
+    const rsm = RiTa.template(md);
+    const rsp = RiTa.template();
+
     /* const beldown = require('beldown');
     const md = (s,...v) => beldown(s,v).toString(); */
     const expectHtml = function (code) {
-      return expect(md`${rs([code])}`);
+      return expect(md`${rsp([code])}`);
     };
 
     it('Should support nested tagged template', () => {
-      let rsd = RiTa.template(md);
-      expect(rsd`# (a | a)\n(b|b)`).eq(md`# a\nb`);
+      expect(rs`# (a | a)\n(b|b)`).eq(md`# a\nb`);
+      expect(rsm`# (a | a)\n(b|b)`).eq(md`${ORS_DIV}# a\nb${CRS_DIV}`);
+
+      expect(rs`#  (a | a)
+        (b|b) `).eq(md`# a\n        b `);
+      expect(rsm`#  (a | a)
+        (b|b) `).eq(md`${ORS_DIV}#  a\n        b ${CRS_DIV}`);
     });
 
     it('Should preserve whitespace', () => {
       expect(RiTa.evaluate("a   b", 0)).eq("a   b");
       expect(RiTa.evaluate("a\tb", 0)).eq("a\tb");
-      expect(rs`a\tb`, 0).eq("a\tb");
-      expect(rs`a\nb`, 0).eq("a\nb");
-      0 && expect(rs` (a | a)
+      expect(rsp`a\tb`, 0).eq("a\tb");
+      expect(rsp`a\nb`, 0).eq("a\nb");
+      expect(rsp` (a | a)
               ok
             `).eq(" a\n              ok\n            ");
-      expect(rs`Now in (one|one) year
-     A book published
-          And plumbing —`).eq("Now in one year\n     A book published\n          And plumbing —");
     });
 
     it('Should handle blockquotes', () => {
@@ -71,10 +77,10 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve js variables', () => {
       let dog = 'terrier';
-      expect(rs`The ${dog} was wet.`).eq('The terrier was wet.');
-      expect(md`${rs`The ${dog} was wet.`}`).eq(md`The ${dog} was wet.`);
+      expect(rsp`The ${dog} was wet.`).eq('The terrier was wet.');
+      expect(md`${rsp`The ${dog} was wet.`}`).eq(md`The ${dog} was wet.`);
       dog = '(terrier | terrier)'
-      expect(md`${rs`The ${dog} was wet.`}`).eq(md`The terrier was wet.`);
+      expect(md`${rsp`The ${dog} was wet.`}`).eq(md`The terrier was wet.`);
     });
 
     it('Should allow minimal styling', () => {
@@ -92,8 +98,8 @@ describe('RiTa.RiScript', () => {
       //expect(RiTa.evaluate("===========(a | a)", 0)).eq("===========a"); // fails
       expect(RiTa.evaluate("-----------(a | a)", 0)).eq("-----------a");
 
-      expect(rs`(a | a)`).eq("a");
-      expect(rs`**(a | a)**`).eq("**a**");
+      expect(rsp`(a | a)`).eq("a");
+      expect(rsp`**(a | a)**`).eq("**a**");
 
       expectHtml('**(a | a)**').eq("<p><strong>a</strong></p>\n");
       expectHtml('# (a | a)').eq("<h1>a</h1>\n");
@@ -224,7 +230,7 @@ describe('RiTa.RiScript', () => {
 
   describe('Evaluation', () => {
 
-    it('Should correctly call isParseable', () => { 
+    it('Should correctly call isParseable', () => {
       let rs = new RiScript();
       expect(rs.isParseable("(")).eq(true);
       expect(rs.isParseable("(A | B)")).eq(true);
@@ -262,8 +268,8 @@ describe('RiTa.RiScript', () => {
       //expect(RiTa.evaluate('foo.bar', {}, {trace:0})).eq('foo.bar'); // KNOWN ISSUE
     });
 
-    it('Should resolve simple dynamics', () => { 
- 
+    it('Should resolve simple dynamics', () => {
+
       expect(RiTa.evaluate('$$foo=bar\nbaz', {})).eq('baz');
       expect(RiTa.evaluate('($$foo=bar)\nbaz', {})).eq('bar\nbaz');
       expect(RiTa.evaluate('$$foo=bar\nbaz$foo', {})).eq('bazbar');
@@ -389,7 +395,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('The boy walked his dog');
     });
 
-    it('Should parse dynamic assignments', () => { 
+    it('Should parse dynamic assignments', () => {
       let ctx = {};
       expect(RiTa.evaluate('$$foo=a', ctx)).eq('');
       expect(ctx['$$foo']).eq('a');
@@ -500,7 +506,7 @@ describe('RiTa.RiScript', () => {
       expect(res).eq('I sat.');
     });
 
-    it('Should resolve dynamic sentences', () => { 
+    it('Should resolve dynamic sentences', () => {
       let res, ctx;
 
       expect(RiTa.evaluate('.', null)).eq('.');
@@ -633,7 +639,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.foo).eq('blue dog');
     });
 
-    it('Should resolve dynamics across assignment types', () => { 
+    it('Should resolve dynamics across assignment types', () => {
       let ctx;
       expect(RiTa.evaluate('The $$foo=blue (dog | dog)', ctx = {})).eq('The blue dog');
       expect(ctx['$$foo']).eq('blue (dog | dog)');
@@ -742,7 +748,7 @@ describe('RiTa.RiScript', () => {
       expect(rs).to.be.oneOf(['Dave is called dave.', 'Jack is called jack.', 'Mary is called mary.']);
     });
 
-    it('Should handle dynamics in context', () => { 
+    it('Should handle dynamics in context', () => {
       const matching = ['Dave is called Dave.', 'Jack is called Jack.', 'Mary is called Mary.'];
 
       // $: need all to match
@@ -795,7 +801,7 @@ describe('RiTa.RiScript', () => {
       expect(ctx.a).eq('a')
     });
 
-    it('Should distinguish inline with parens', () => { 
+    it('Should distinguish inline with parens', () => {
       let ctx;
       expect(RiTa.evaluate('$a=a', ctx = {})).eq('');
       expect(ctx.a).eq('a');
@@ -927,7 +933,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('the $dog^1 was a footnote.', { dog: 'terrier' })).eq('the terrier^1 was a footnote.');
     })
 
-    it('Should repeat choices with randomSeed', () => { 
+    it('Should repeat choices with randomSeed', () => {
       let seed = Math.random() * Number.MAX_SAFE_INTEGER;
       let script = "$a=(1|2|3|4|5|6)\n$a";
       RiTa.randomSeed(seed);
@@ -1001,7 +1007,7 @@ describe('RiTa.RiScript', () => {
 
     it('Should resolve pending symbols with transforms', () => {
       let rs, ctx = { bar: '(orange|orange)' };
-      
+
       rs = RiTa.evaluate('$bar is $bar.art color', ctx);
       expect(rs).eq('orange is an orange color');
 
@@ -1331,7 +1337,7 @@ describe('RiTa.RiScript', () => {
       expect(RiTa.evaluate('aa\\\n bb', {})).eq('aa bb');
       expect(RiTa.evaluate('aa \\\nbb', {})).eq('aa bb');
       expect(RiTa.evaluate('aa \\\n bb', {})).eq('aa  bb');
-      
+
     });
   });
 
@@ -1386,7 +1392,7 @@ describe('RiTa.RiScript', () => {
       expect(rs).eq('result');
 
       ctx = { mammal: "(ox | ox)" };  // SYNC:
-      rs = RiTa.evaluate('The big $mammal ate the smaller $mammal.s.', ctx); 
+      rs = RiTa.evaluate('The big $mammal ate the smaller $mammal.s.', ctx);
       // no parens, alias, resolved from pending symbols
       expect(rs).eq('The big ox ate the smaller oxen.');
     });
