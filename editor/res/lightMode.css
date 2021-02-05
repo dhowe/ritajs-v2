@@ -11,20 +11,20 @@ lightMode theme for rs editor
 
 .cm-s-lightMode .CodeMirror-cursor { border-left: 1px solid #1e1e1e; }
 
-/* color for vars (e.g $foo) */
-.cm-s-lightMode span.cm-vars { color: #3d409b; }
+/* color for symbol (e.g $foo) */
+.cm-s-lightMode span.cm-symbol { color: #3d409b; }
 
 /* color for choice (e.g (a|b)) */
 .cm-s-lightMode span.cm-choice { color: #b66661; }
 
 /* color for transforms (e.g $foo.pluralize()) */
-.cm-s-lightMode span.cm-trans { color: #867959; }
+.cm-s-lightMode span.cm-transform { color: #867959; }
 
 /* color for comment */
 .cm-s-lightMode span.cm-comment { color: #669851; }
 
-/* color ffor $$sth */
-.cm-s-lightMode span.cm-dynamicVar { color: #2e2bf9; }
+/* color ffor dynamic symbol */
+.cm-s-lightMode span.cm-dynamic { color: #2e2bf9; }
 
 
 .cm-s-lightMode .CodeMirror-activeline-background { background: #2F2F2F; }

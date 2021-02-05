@@ -29,19 +29,19 @@ $(document).ready(function () {
     // rewrite console funtions to get the content
     let _console = reassignConsole();
 
-    let defaultValue = "\n$mammal=(dog | child | ox)\n\n$verb=(watching | listening)\n\nThe $mammal.pluralize() were $verb.\n";
+    let defaultValue = "\n$mammal=(dog | child | ox)\n\n$verb=(watching | listening)\n\nThe $mammal.pluralize were $verb.\n";
 
     CodeMirror.defineSimpleMode("RiScript", {
         start: [
             //RiScript
             { regex: /\(([^)]*\|)+[^)]*\)/g, token: "choice" },
             //choices
-            { regex: /(\.[\w]+\(\))/g, token: "trans" },
+            { regex: /(\.[\w]+(\(\))?)/g, token: "trans" },
             //transforms 
-            { regex: /\$\w+/g, token: "vars" },
-            //vars
-            { regex: /\$\$\w+/g, token: "dynamicVar" },
-            //dynamic vars
+            { regex: /\$\w+/g, token: "symbol" },
+            //symbol
+            { regex: /\$\$\w+/g, token: "dynamic" },
+            //dynamic symbol
             { regex: /\/\/.*/g, token: "comment" },
             //single line comment
             { regex: /\/\*/, token: "comment", next: "comment" },

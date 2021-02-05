@@ -10,20 +10,20 @@ darkMode theme for rs editor
 
 .cm-s-darkMode .CodeMirror-cursor { border-left: 1px solid #c4c2bd; }
 
-/* color for vars (e.g $foo) */
-.cm-s-darkMode span.cm-vars { color: #9bdbff; }
+/* color for symbol (e.g $foo) */
+.cm-s-darkMode span.cm-symbol { color: #9bdbff; }
 
 /* color for choice (e.g (a|b)) */
 .cm-s-darkMode span.cm-choice { color: #7d6499; }
 
 /* color for transforms (e.g $foo.pluralize()) */
-.cm-s-darkMode span.cm-trans { color: #cdab53; }
+.cm-s-darkMode span.cm-transform { color: #cdab53; }
 
 /* color for comment */
 .cm-s-darkMode span.cm-comment { color: #669851; }
 
-/* color ffor $$sth */
-.cm-s-darkMode span.cm-dynamicVar { color: #4ebfff; }
+/* color for dynamic symbol  */
+.cm-s-darkMode span.cm-dynamic { color: #4ebfff; }
 
 
 
