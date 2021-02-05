@@ -1,0 +1,63 @@
+/* theme tmpl from https://codepen.io/Tibixx/pen/NLpNar*/
+
+/* TODOs default theme */
+:root {
+    --selection: rgba(224, 146, 58, 0.35);
+    --background: #242424;
+    --text: #ffffff;
+    --choice: #67b26d;
+    --transform: #e8a04e;
+    --dynamicVar: #9e4ee8;
+    --var: #e25158;
+    --c0: #e5b742;
+    --c1: #e0923a;
+    --c2: #508be5;
+    --comment: #7f7f7f;
+  }
+  
+  pre code {
+    display: block;
+    overflow-x: auto;
+    padding: 10px;
+    background: var(--background);
+    -webkit-text-size-adjust: none;
+  }
+  
+  pre code *::selection,
+  .hljs::selection {
+    background: var(--selection) !important;
+  }
+  
+  .hljs {
+    color: var(--text);
+    background-color: #242424;
+  }
+  
+  .hljs-rs-choice {
+    color: var(--choice);
+  }
+  
+  .hljs-rs-transform {
+    color: var(--transform) !important;
+  }
+  
+  .hljs-rs-dynamicVar {
+    color: var(--dynamicVar) !important;
+  }
+  
+  .hljs-rs-var {
+    color: var(--var) !important;
+  }
+  
+  .hljs-comment {
+    color: var(--comment);
+  }
+  
+  
+
+
+/* TODOs? darktheme */
+
+
+
+/* TODOs? lighttheme */
