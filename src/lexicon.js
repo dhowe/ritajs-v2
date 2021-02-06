@@ -50,7 +50,7 @@ class Lexicon {
         continue;
       }
       let data = dict[word];
-      if (opts.targetPos) {
+      if (opts.pos) {
         word = this.matchPos(word, data, opts);
         if (!word) continue;
         // Note: we may have changed the word here (e.g. via conjugation)
@@ -58,7 +58,7 @@ class Lexicon {
         if (word !== words[i]) data = dict[word];
       }
 
-      // TODO: use 'data' here unless we've changed 
+      // TODO: use 'data' here unless we've changed
       // to a new word not in dict
       let c2 = this._firstPhone(this._firstStressedSyl(word));
       if (phone === c2) result.push(word);
@@ -96,7 +96,7 @@ class Lexicon {
         continue;
       }
 
-      if (opts.targetPos) {
+      if (opts.pos) {
         word = this.matchPos(word, data, opts);
         if (!word) continue;
         // Note: we may have changed the word here (e.g. via conjugation)
@@ -132,7 +132,7 @@ class Lexicon {
       let j = (ran + k) % words.length;
       let word = words[j], rdata = dict[word];
       if (!this.checkCriteria(word, rdata, opts)) continue;
-      if (!opts.targetPos) return word // done if no pos to match
+      if (!opts.pos) return word // done if no pos to match
 
       let result = this.matchPos(word, rdata, opts, true);
       if (result) return result;
@@ -187,7 +187,7 @@ class Lexicon {
       let word = words[i], data = dict[word];
       if (!this.checkCriteria(word, data, opts)) continue;
 
-      if (opts.targetPos) {
+      if (opts.pos) {
         word = this.matchPos(word, data, opts);
         if (!word) continue;
         // Note: we may have changed the word here (e.g. via conjugation)
@@ -272,7 +272,7 @@ class Lexicon {
       if (!this.checkCriteria(word, data, opts)) continue;
       if (variations.includes(word)) continue;
 
-      if (opts.targetPos) {
+      if (opts.pos) {
         word = this.matchPos(word, data, opts);
         if (!word) continue;
         // Note: we may have changed the word here (e.g. via conjugation)
@@ -308,7 +308,7 @@ class Lexicon {
     let posArr = rdata[1].split(' ');
 
     // check the pos here (based on strict flag)
-    if (!posArr.includes(opts.targetPos) || (strict && opts.targetPos !== posArr[0])) {
+    if (!posArr.includes(opts.pos) || (strict && opts.pos !== posArr[0])) {
       return;
     }
 
@@ -359,7 +359,7 @@ class Lexicon {
   }
 
   // Handles: pos, limit, numSyllables, minLength, maxLength
-  // potentially appends pluralize, conjugate, targetPos
+  // potentially appends pluralize, conjugate, pos
   parseArgs(opts) {
 
     opts.minDistance = opts.minDistance || 1;
@@ -379,7 +379,7 @@ class Lexicon {
       else if (tpos === "a") tpos = "jj";
     }
 
-    opts.targetPos = tpos;
+    opts.pos = tpos;
   }
 
   reconjugate(word, pos) {
