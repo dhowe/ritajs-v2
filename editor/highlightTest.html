@@ -30,6 +30,8 @@
 
             $$dynamic = (a|b) and (b|c)
 
+            $$dynamic
+
             $symbol=assign
 
             $symbol=(assign|not)
@@ -40,9 +42,6 @@
 
             (a[8]|b[9])
 
-            (should|
-            this be alowed?)
-
             a   b\
             c 
 
@@ -51,6 +50,29 @@
 
             b  \
             c
+
+            {$a&lt;1}?
+            {$a>1}?
+            {$a=hello}?
+            {$a&lt;1.1}?
+            {$a>1.1}?
+            {$a=hello}?
+            {$a&lt;0.1}?
+            {$a>0.1}?
+            {$a&lt;=1.1}?
+            {$a>=1.1}?
+            {$a=1.1}?
+            {$a>.1}? 
+            {$a>1,$b&lt;1}?
+            {$a>1,$b&lt;1}?
+            {$a=ok,$b>=1}? 
+            {$a>1,$b>=1}? 
+
+            {$a!=ell}?
+            {$a*=ell}? 
+            {$a^=ell}? 
+            {$a$=ell}? 
+            {$a$=ell}?
 
             [2]
 

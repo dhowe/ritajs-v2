@@ -10,6 +10,7 @@
   --continuation_darkmode: #f8ff93;
   --weight_darkmode: #508be5;
   --entity_darkmode: #ff46ff;
+  --conditional_darkmode: #f8a0a0;
   --comment_darkmode: #609664;
 
   --selection_lightmode: rgba(47, 142, 252, 0.35);
@@ -17,13 +18,14 @@
   --text_lightmode: #363636;
   --choice_lightmode: #b66661; 
   --transform_lightmode: #867959;
-  --dynamic_lightmode: #2e2bf9;
-  --symbol_lightmode: #3d409b;
-  --assign_lightmode: #;
-  --continuation_lightmode: #;
-  --weight_lightmode: #;
-  --entity_lightmode: #;
-  --comment_lightmode: #669851;
+  --dynamic_lightmode: #508be5;
+  --symbol_lightmode: #3d42d4;
+  --assign_lightmode: #9395d4;
+  --continuation_lightmode: #77cc50;
+  --weight_lightmode: #b7ffa8;
+  --entity_lightmode: #d651d6;
+  --conditional_lightmode: #ad92cc;
+  --comment_lightmode: #a7a7a7;
 }
 
 /*----------------css for highlight.js-------------*/
@@ -84,6 +86,10 @@ pre code *::selection,
   color: var(--entity_darkmode);
 }
 
+.hljs-rs-conditional {
+  color: var(--conditional_darkmode);
+}
+
 /* TODOs? lighttheme */
 
 
@@ -100,7 +106,7 @@ darkMode theme for rs editor
 
 .cm-s-darkMode .CodeMirror-cursor { border-left: 1px solid #c4c2bd; }
 
-/* color for vars (e.g $foo) */
+/* color for symbol (e.g $foo) */
 .cm-s-darkMode span.cm-symbol { color: var(--symbol_darkmode); }
 
 /* color for choice (e.g (a|b)) */
@@ -112,8 +118,20 @@ darkMode theme for rs editor
 /* color for comment */
 .cm-s-darkMode span.cm-comment { color: var(--comment_darkmode); }
 
-/* color ffor $$sth */
+/* color for dynamic */
 .cm-s-darkMode span.cm-dynamic { color: var(--dynamic_darkmode); }
+
+/* color for assign */
+.cm-s-darkMode span.cm-assign { color: var(--assign_darkmode); }
+
+/* color for contiuation */
+.cm-s-darkMode span.cm-continuation { color: var(--continuation_darkmode); }
+
+/* color for entity */
+.cm-s-darkMode span.cm-entity { color: var(--entity_darkmode); }
+
+/* color for conditional */
+.cm-s-darkMode span.cm-conditional { color: var(--conditional_darkmode); }
 
 
 
@@ -134,7 +152,7 @@ lightMode theme for rs editor
 
 .cm-s-lightMode .CodeMirror-cursor { border-left: 1px solid #1e1e1e; }
 
-/* color for vars (e.g $foo) */
+/* color for symbol (e.g $foo) */
 .cm-s-lightMode span.cm-symbol { color: var(--symbol_lightmode); }
 
 /* color for choice (e.g (a|b)) */
@@ -146,8 +164,20 @@ lightMode theme for rs editor
 /* color for comment */
 .cm-s-lightMode span.cm-comment { color: var(--comment_lightmode); }
 
-/* color ffor $$sth */
+/* color for dynamic */
 .cm-s-lightMode span.cm-dynamic { color: var(--dynamic_lightmode); }
+
+/* color for assign */
+.cm-s-lightMode span.cm-assign { color: var(--assign_lightmode); }
+
+/* color for continuation */
+.cm-s-lightMode span.cm-continuation { color: var(--continuation_lightmode); }
+
+/* color for entity */
+.cm-s-lightMode span.cm-entity { color: var(--entity_lightmode); }
+
+/* color for conditional */
+.cm-s-lightMode span.cm-conditional { color: var(--conditional_lightmode); }
 
 
 .cm-s-lightMode .CodeMirror-activeline-background { background: #2F2F2F; }

@@ -34,14 +34,23 @@ $(document).ready(function () {
     CodeMirror.defineSimpleMode("RiScript", {
         start: [
             //RiScript
+            { regex: /[\w]+[\s]*\\$/g, token: "continuation" },
+            //continuation 
             { regex: /\(([^)]*\|)+[^)]*\)/g, token: "choice" },
             //choices
-            { regex: /(\.[\w]+\(\))/g, token: "transform" },
-            //transforms 
+            { regex: /\{(\$[\w]+([\!\*\^\$<>]\=|[\=<>])([\w]+|[0-9]?\.[0-9]+)\,)?(\$[\w]+([\!\*\^\$<>]\=|[\=<>])([\w]+|[0-9]?\.[0-9]+))\}\?/g, token: "conditional" },
+            //conditional
+            { regex: /&[a-z]+;|&#[0-9]+;|&#x[a-f0-9]+;/g, token: "entity" },
+            //entity
+            { regex: /\${1,2}[\w]+[\s]*\=/g, token: "assign" },
+            //assign 
             { regex: /\$\w+/g, token: "symbol" },
             //symbol
             { regex: /\$\$\w+/g, token: "dynamic" },
             //dynamic 
+            { regex: /(\.[\w]+\(\))/g, token: "transform" },
+            //transforms 
+            
             { regex: /\/\/.*/g, token: "comment" },
             //single line comment
             { regex: /\/\*/, token: "comment", next: "comment" },
