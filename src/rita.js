@@ -307,7 +307,7 @@ RiTa.CACHING = true;
 
 const ONLY_PUNCT = /^[^\w\s]*$/;
 const IS_LETTER = /^[a-z\u00C0-\u00ff]+$/;
-const ORS_DIV = "<div style=\"white-space: break-spaces;\">"
-const CRS_DIV = "</div>"
+const ORS_DIV = "<div style=\"white-space: break-spaces;\">\n"
+const CRS_DIV = "\n</div>"
 
 module && (module.exports = RiTa);

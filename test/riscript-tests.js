@@ -70,6 +70,22 @@ describe('RiTa.RiScript', function () {
       expectHtml(input).eq(md`${input}`);
     });
 
+    /*it('Should handle headers', () => { // IN PROGRESS
+ 
+      let output = rsm`## Header2`;
+      expect(output).eq(md`${ORS_DIV}## Header2${CRS_DIV}`);
+
+      output = rsm`### Header3`;
+      expect(output).eq(md`${ORS_DIV}### Header3${CRS_DIV}`);
+
+      let rst = RiTa.template(md);
+      output = rsm`### header
+        1. **bold**
+        1. *(riscript | riscript | riscript)*`;
+      expect(output).eq(md`${ORS_DIV}### header
+        1. **bold**
+        1. *riscript*${CRS_DIV}`);
+    });*/
 
     it('Should handle bulleted lists', () => {
 
