@@ -7,13 +7,13 @@
     <link rel="stylesheet" href="res/style.css">
     <link rel="stylesheet" href="res/darkMode.css">
     <link rel="stylesheet" href="res/lightMode.css">
-    <link rel="stylesheet" href="res/hightlight.css">
+    <link rel="stylesheet" href="res/highlight.css">
 
     <!--script src="res/main.js"></script-->
     <!-- highlight.js -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
     <script src="res/riscript.min.js"></script>
-    <script src="res/hightlight.js"></script>
+    <script src="res/highlight.js"></script>
     <!-- Code Mirror -->
     <!--script src="res/codemirror.js"></script>
     <link rel="stylesheet" href="res/codemirror.css">
@@ -30,10 +30,38 @@
 
             $$dynamic = (a|b) and (b|c)
 
+            $symbol=assign
+
+            $symbol=(assign|not)
+
+            $symbol=assign.transform()
+
+            ()
+
+            (a[8]|b[9])
+
+            (should|
+            this be alowed?)
+
+            a   b\
+            c 
+
+            a b   \
+            c
+
+            b  \
+            c
+
+            [2]
+
             //single-line comment
             /* block 
             comment */
         </code></pre>
+        <p>&lt;</p>
     </div>
-
+    <script>
+        let text = document.getElementsByTagName("code")[0].append("\n            &lt;\n            &#60;\n            &#x100;")
+        console.log(text)
+    </script>
 </body>

@@ -36,12 +36,12 @@ $(document).ready(function () {
             //RiScript
             { regex: /\(([^)]*\|)+[^)]*\)/g, token: "choice" },
             //choices
-            { regex: /(\.[\w]+\(\))/g, token: "trans" },
+            { regex: /(\.[\w]+\(\))/g, token: "transform" },
             //transforms 
-            { regex: /\$\w+/g, token: "vars" },
-            //vars
-            { regex: /\$\$\w+/g, token: "dynamicVar" },
-            //dynamic vars
+            { regex: /\$\w+/g, token: "symbol" },
+            //symbol
+            { regex: /\$\$\w+/g, token: "dynamic" },
+            //dynamic 
             { regex: /\/\/.*/g, token: "comment" },
             //single line comment
             { regex: /\/\*/, token: "comment", next: "comment" },
