@@ -1,49 +1,54 @@
 const { expect } = require('chai');
 const RiTa = require('../src/rita');
+const marked = require('marked');
+const { replace } = require('../src/rita_dict');
 
 describe('RiTa.RiScript', function () {
 
   if (typeof module !== 'undefined') require('./before');
 
   const ST = { silent: 1 }, TP = { trace: 1 }, TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
-  const ORS_DIV = "<div style=\"white-space: break-spaces;\">", CRS_DIV = "</div>";
-  const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
+  const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true, OMD = RiTa.OMD, CMD = RiTa.CMD;
+
+  const md = (strs, ...vals) => marked((strs.reduce((a, s, i) => a + s + (vals[i] || ''), '')));
+  const rs = RiTa.template(md), rsp = RiTa.template(), rsr = RiTa.template(md, { raw: true });
 
   this.slow(100);
 
-  describe('Markdown', function () { // JSONLY
-
-    const md = require('marli')();
-    const rs = RiTa.template(md, { raw: true });
-    const rsm = RiTa.template(md);
+  /*describe('Template', function () { // JSONLY
+    const rs = RiTa.template(md);
     const rsp = RiTa.template();
+    const fix = (s) => s.replace(/^<p>/, '<div style=\"white-space: break-spaces;\">\n').replace(/<\/p>\n$/, "</div>\n");
+    const fmd = (s) => fix(md([s]));
+
+    it('Should preserve whitespace', () => {  
+      expect(rs`# a   b`).eq(fmd`# a   b`);
+      expect(rs`a\tb`).eq(md`a\tb`);
+      expect(rs`a\nb`, 0).eq(md`a\nb`);
+      expect(rs` (a | a)
+              ok
+            `).eq(fix(md` a
+              ok
+            `));
+    });
+  });*/
+
+
+  describe('Markdown', function () { // JSONLY
 
     this.slow(150);
 
-    /* const beldown = require('beldown');
-    const md = (s,...v) => beldown(s,v).toString(); */
-    const expectHtml = function (code) {
-      return expect(md`${rsp([code])}`);
+    const expectHtml = function (code, exp) {
+      try {
+        expect(rs`${code}`).eq(OMD + md`${exp || code}` + CMD);
+      }
+      catch (e) {
+        throw e;
+      }
     };
 
-    it('Should support nested tagged template', () => {
-      expect(rs`# (a | a)\n(b|b)`).eq(md`# a\nb`);
-      // TODO: expect(rsm`# (a | a)\n(b|b)`).eq(md`${ORS_DIV}# a\nb${CRS_DIV}`);
-
-      expect(rs`some ~~link~~ code`).eq(md`some ~~link~~ code`);
-      expect(RiTa.evaluate('some [RiScript](link) code')).eq("some [RiScript](link) code");
-      expect(rs`some [RiScript](link) code`).eq(md`some [RiScript](link) code`);
-
-      expect(rs`#  (a | a)
-        (b|b) `).eq(md`# a\n        b `);
-      // TODO: expect(rsm`#  (a | a)
-        // TODO: (b|b) `).eq(md`${ORS_DIV}#  a\n        b ${CRS_DIV}`);
-    });
-
     it('Should preserve whitespace', () => {
-      expect(RiTa.evaluate("a   b", 0)).eq("a   b");
-      expect(RiTa.evaluate("a\tb", 0)).eq("a\tb");
-      expect(rsp`a\tb`, 0).eq("a\tb");
+      expect(rs`a\tb`, 0).eq(OMD + md`a\tb` + CMD);
       expect(rsp`a\nb`, 0).eq("a\nb");
       expect(rsp` (a | a)
               ok
@@ -54,114 +59,116 @@ describe('RiTa.RiScript', function () {
       let input = ">## Blockquoted header\n>\n"
         + ">This is blockquoted text.\n>\n"
         + ">This is a second paragraph";
-      expectHtml(input).eq(md`${input}`);
+      expectHtml(input);
     });
 
     it('Should handle code blocks', () => {
-
       let input = "If you want to mark something as code, indent it by 4 spaces.\n"
         + "    <p>This has been indented 4 spaces.</p>"
-      expectHtml(input).eq(md`${input}`);
+      expectHtml(input);
     });
 
     it('Should handle numbered lists', () => {
-
-      let input = "1. first\n2. second\n3. third";
-      expectHtml(input).eq(md`${input}`);
+      expectHtml("1. first\n2. second\n3. third");
     });
 
-    /*it('Should handle headers', () => { // IN PROGRESS // TODO: 
- 
-      let output = rsm`## Header2`;
-      expect(output).eq(md`${ORS_DIV}## Header2${CRS_DIV}`);
+    it('Should handle headers', () => {
 
-      output = rsm`### Header3`;
-      expect(output).eq(md`${ORS_DIV}### Header3${CRS_DIV}`);
+      let output = '# Header1';
+      expectHtml(output);
 
-      let rst = RiTa.template(md);
-      output = rsm`### header
+      output = '### Header  (a | a)';
+      expectHtml(output, '### Header  a');
+
+      output = `### header
         1. **bold**
         1. *(riscript | riscript | riscript)*`;
-      expect(output).eq(md`${ORS_DIV}### header
+      expectHtml(output, `### header
         1. **bold**
-        1. *riscript*${CRS_DIV}`);
-    });*/
+        1. *riscript*`)
+    });
 
     it('Should handle bulleted lists', () => {
 
       let input = "- first\n- second\n3- third";
-      expectHtml(input).eq(md`${input}`);
+      expectHtml(input);
+
+      input = "- first\n- second\n3- (third).uc";
+      expectHtml(input, '- first\n- second\n3- THIRD');
     });
 
     it('Should handle images', () => {
 
-      input = "![alt text](http://path/to/img.jpg \"Title\")";
-      expectHtml(input).eq(md`${input}`);
+      let input = "![alt text](http://path/to/img.jpg \"Title\")";
+      expectHtml(input);
+
+      input = "![(alT | alT)](http://path/to/img.jpg \"Title\")";
+      expectHtml(input, "![alT](http://path/to/img.jpg \"Title\")");
+
+      /* KI input = "![(alT | alT)](http://path/to/img.jpg \"Title.lc\")";
+        expectHtml(input, "![alT](http://path/to/img.jpg \"title\")");
+        input = "![(alT | alT)](http://path/to/(img.jpg).cap \"Title\")";
+        expectHtml(input, "![alT](http://path/to/Img.jpg \"Title\")"); */
     });
 
     it('Should resolve js variables', () => {
       let dog = 'terrier';
       expect(rsp`The ${dog} was wet.`).eq('The terrier was wet.');
-      expect(md`${rsp`The ${dog} was wet.`}`).eq(md`The ${dog} was wet.`);
+      expectHtml(`The ${dog} was wet.`);
       dog = '(terrier | terrier)'
-      expect(md`${rsp`The ${dog} was wet.`}`).eq(md`The terrier was wet.`);
+      expectHtml(`The ${dog} was wet.`, `The terrier was wet.`);
     });
 
     it('Should allow minimal styling', () => {
       let input;
-      expect(RiTa.evaluate("(a | a)", 0)).eq("a");
-      expect(RiTa.evaluate("a(b | b)c", 0)).eq("abc");
-      expect(RiTa.evaluate("*(a | a)*", 0)).eq("*a*");
-      expect(RiTa.evaluate("**(a | a)**", 0)).eq("**a**");
-      expect(RiTa.evaluate("_(a | a)_", 0)).eq("_a_");
-      expect(RiTa.evaluate("__(a | a)__", 0)).eq("__a__");
-      expect(RiTa.evaluate("#(a | a)", 0)).eq("#a");
-      expect(RiTa.evaluate("##(a | a)", 0)).eq("##a");
-      expect(RiTa.evaluate("###(a | a)", 0)).eq("###a");
-      expect(RiTa.evaluate("~~(a | a)~~", 0)).eq("~~a~~");
-      //expect(RiTa.evaluate("===========(a | a)", 0)).eq("===========a"); // fails
-      expect(RiTa.evaluate("-----------(a | a)", 0)).eq("-----------a");
+      expectHtml("(a | a)", "a");
+      expectHtml("a(b | b)c", "abc");
+      expectHtml("*(a | a)*", "*a*");
+      expectHtml("**(a | a)**", "**a**");
+      expectHtml("_(a | a)_", "_a_");
+      expectHtml("__(a | a)__", "__a__");
+      expectHtml("#(a | a)", "#a");
+      expectHtml("##(a | a)", "##a");
+      expectHtml("###(a | a)", "###a");
+      expectHtml("~~(a | a)~~", "~~a~~");
+      //expect(RiTa.evaluate("===========(a | a)","===========a"); // fails
+      expectHtml("-----------(a | a)", "-----------a");
 
-      expect(rsp`(a | a)`).eq("a");
-      expect(rsp`**(a | a)**`).eq("**a**");
+      expectHtml(`(a | a)`, "a");
+      expectHtml(`**(a | a)**`, "**a**");
 
-      expectHtml('**(a | a)**').eq("<p><strong>a</strong></p>\n");
-      expectHtml('# (a | a)').eq("<h1>a</h1>\n");
-      expectHtml('# (a | a)// $foo=a').eq("<h1>a</h1>\n");
-      expectHtml(input = 'This is *emphasized* _text_.').eq(md`${input}`);
+      expectHtml('**(a | a)**', '**a**');
+      expectHtml('# (a | a)', '# a');
+      expectHtml('# (a | a)\\\n $foo=a', '# a a'); // cont
     })
 
     it('Should allow links', () => {
       let url;
 
       url = 'https://somelink.com';
-      //console.log(md`[link](${url})`);
-      expectHtml("[(b | b)](" + url + ")")
-        .eq("<p><a href=\"https://somelink.com\">b</a></p>\n");
+      expect(rs`[(b | b)](${url})`, "<p><a href=\"https://somelink.com\">b</a></p>\n");
 
       url = '@dhowe/rita';
-      expectHtml("[(b | b)](" + url + ")")
-        .eq("<p><a href=\"@dhowe/rita\">b</a></p>\n");
+      expectHtml("[(b | b)](" + url + ")","<p><a href=\"@dhowe/rita\">b</a></p>\n");
 
       url = '@dhowe/rita?a=b&c=12';
-      expectHtml("[(b | b)](" + url + ")")
-        .eq("<p><a href=\"@dhowe/rita?a=b&amp;c=12\">b</a></p>\n");
-      expect(RiTa.evaluate("[(a|a[2])](linktext)", 0)).eq("[a](linktext)");
+      expectHtml("[(b | b)](" + url + ")","<p><a href=\"@dhowe/rita?a=b&amp;c=12\">b</a></p>\n");
+      expect(rs`[(a|a[2])](linktext)`).eq(OMD+md`[a](linktext)`+CMD);
 
       url = 'https://somelinkcom';
-      expect(RiTa.evaluate("[(a | a)](" + url + ")", 0)).eq("[a](" + url + ")");
+      expectHtml("[(a | a)](" + url + ")","[a](" + url + ")");
 
       url = 'http://somelink.com?a=b&c=12';
-      expect(RiTa.evaluate("[(a | a)](" + url + ")", 0)).eq("[a](" + url + ")");
+      expectHtml("[(a | a)](" + url + ")","[a](" + url + ")");
 
       url = './somelink/dir/?a=b&c=12';
-      expect(RiTa.evaluate("[(a | a)](" + url + ")", 0)).eq("[a](" + url + ")");
+      expectHtml("[(a | a)](" + url + ")","[a](" + url + ")");
 
       url = '@rita/p5';
-      expect(RiTa.evaluate("[(a | a)](" + url + ")", 0)).eq("[a](" + url + ")");
+      expectHtml("[(a | a)](" + url + ")","[a](" + url + ")");
 
       url = 'https://somelink.com';
-      expect(RiTa.evaluate("[(a | a).uc()](" + url + ")", 0)).eq("[A](" + url + ")");
+      expectHtml("[(a | a).uc()](" + url + ")","[A](" + url + ")");
     });
   });
 
@@ -186,7 +193,7 @@ describe('RiTa.RiScript', function () {
     })
   });
 
-  describe('Sequences', () => { 
+  describe('Sequences', () => {
     /*
     1. "$$names=(jane | dave | rick | chung)\n"
        "This story is about $names and $names.nr()"
@@ -271,7 +278,7 @@ describe('RiTa.RiScript', function () {
       expect(rs.isParseable("&&b")).eq(false);
     });
 
-    it('Should resolve simple expressions', () => { 
+    it('Should resolve simple expressions', () => {
 
       expect(RiTa.evaluate('foo', {})).eq('foo');
       expect(RiTa.evaluate('foo!', {})).eq('foo!');
@@ -288,6 +295,9 @@ describe('RiTa.RiScript', function () {
 
       let str = "Now in one year\n     A book published\n          And plumbing —";
       expect(RiTa.evaluate(str)).eq(str); // needs profiling
+
+      expect(RiTa.evaluate("a   b", 0)).eq("a   b");
+      expect(RiTa.evaluate("a\tb", 0)).eq("a\tb");
 
       //expect(RiTa.evaluate('foo.bar', {}, {trace:0})).eq('foo.bar'); // KNOWN ISSUE
     });
@@ -611,7 +621,7 @@ describe('RiTa.RiScript', function () {
       expect(ctx.foo).eq('a');
     });
 
-    it('Should pluralize phrases', () => { 
+    it('Should pluralize phrases', () => {
       expect(RiTa.evaluate('These (bad feeling).pluralize().')).eq('These bad feelings.');
       expect(RiTa.evaluate('She (pluralize).pluralize().')).eq('She pluralizes.');
       expect(RiTa.evaluate('These ($state feeling).pluralize().', { state: 'bad' })).eq('These bad feelings.');
@@ -624,7 +634,7 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate('These (off-site).pluralize().', { state: '(bad | bad)' })).eq('These off-sites.');
     })
 
-    it('Should resolve transforms on literals', () => { 
+    it('Should resolve transforms on literals', () => {
       expect(RiTa.evaluate('How many (teeth).quotify() do you have?')).eq('How many “teeth” do you have?');
       expect(RiTa.evaluate('That is (ant).articlize().', 0)).eq('That is an ant.');
       expect(RiTa.evaluate('That is ().articlize().', 0)).eq('That is .');
@@ -782,7 +792,7 @@ describe('RiTa.RiScript', function () {
       let matches = 0, count = 10, ctx = {};
       ctx['$$name'] = '(Dave | Jack | Mary)'; // dynamic in context
       for (let i = 0; i < count; i++) {
-        rs = RiTa.evaluate('$name is called $name.', ctx);
+        let rs = RiTa.evaluate('$name is called $name.', ctx);
         expect(ctx['$$name']).eq('(Dave | Jack | Mary)');
         expect(/^(Dave|Jack|Mary) is called (Dave|Jack|Mary)\./.test(rs)).eq(true, "Got: " + rs);
         if (!matching.includes(rs)) break;
@@ -908,7 +918,7 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate('($b=(a | a)).toUpperCase() dog is a $b.toLowerCase().', 0)).eq('A dog is a a.');
       expect(RiTa.evaluate('($b=(a | a)).toUpperCase() dog is a ($b).toLowerCase().', 0)).eq('A dog is a a.');
 
-      rs = RiTa.evaluate('($person=(Dave | Jill | Pete)) talks to $person.', {});
+      let rs = RiTa.evaluate('($person=(Dave | Jill | Pete)) talks to $person.', {});
       expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
 
       /* KI: rs = RiTa.evaluate('($chosen=$person) talks to $chosen.', { person: '(Dave | Jill | Pete)' }, TT);
@@ -950,7 +960,7 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate('The $a.capitalize() dog.', {}, ST)).eq('The $a.capitalize() dog.');
     });
 
-    it('Should ignore no-op symbols in context', () => { 
+    it('Should ignore no-op symbols in context', () => {
       expect(RiTa.evaluate('a $foo dog', {}, ST)).eq('a $foo dog');
       expect(RiTa.evaluate('$100 is a lot of $dog.', { dog: 'terrier' }, ST)).eq('$100 is a lot of terrier.');
       expect(RiTa.evaluate('the $dog cost $100!', { dog: 'terrier' }, ST)).eq('the terrier cost $100!');
@@ -1088,7 +1098,7 @@ describe('RiTa.RiScript', function () {
       expect(() => RiTa.evaluate('(a | b) | c', 0, ST)).to.throw();
     });
 
-    it('Should resolve choices', () => { 
+    it('Should resolve choices', () => {
       expect(RiTa.evaluate('(|)')).eq('');
       expect(RiTa.evaluate('(a)')).eq('a');
       expect(RiTa.evaluate('(a | a)', 0)).eq('a');

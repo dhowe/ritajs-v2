@@ -187,7 +187,6 @@ class RiTa {
   static template(md, opts = {}) {
     let fun = (strs, ...vals) => {
       try {
-
         return RiScript.eval(strs.reduce
           ((a, s, i) => a + s + (vals[i] || ''), ''));
       }
@@ -196,9 +195,8 @@ class RiTa {
         return '[RiScript] ' + e.message;
       }
     }
-    let op = opts.raw ? '' : ORS_DIV;
-    let cl = opts.raw ? '' : CRS_DIV;
-    return md ? (s, ...v) => md`${ op + fun(s, v) + cl }` : fun;
+    let op = opts.raw ? '' : RiTa.OMD, cl = opts.raw ? '' : RiTa.CMD;
+    return md ? ((s, ...v) => op + md`${fun(s, v)}` + cl) : fun;
   }
 
   static tokenize() {
@@ -299,6 +297,9 @@ RiTa.STOP_WORDS = ["and", "a", "of", "in", "i", "you", "is", "to", "that", "it",
 RiTa.INFINITIVE = 1;
 RiTa.GERUND = 2;
 
+RiTa.OMD = "<div style=\"white-space: break-spaces;\">\n";
+RiTa.CMD = "</div>\n"; // tmp, make consts
+
 // For tokenization, Can't -> Can not, etc.
 RiTa.SPLIT_CONTRACTIONS = false;
 
@@ -307,7 +308,6 @@ RiTa.CACHING = true;
 
 const ONLY_PUNCT = /^[^\w\s]*$/;
 const IS_LETTER = /^[a-z\u00C0-\u00ff]+$/;
-const ORS_DIV = "<div style=\"white-space: break-spaces;\">\n"
-const CRS_DIV = "\n</div>"
+
 
 module && (module.exports = RiTa);
