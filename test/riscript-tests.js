@@ -1,7 +1,6 @@
 const { expect } = require('chai');
 const RiTa = require('../src/rita');
 const marked = require('marked');
-const { replace } = require('../src/rita_dict');
 
 describe('RiTa.RiScript', function () {
 
@@ -10,37 +9,20 @@ describe('RiTa.RiScript', function () {
   const ST = { silent: 1 }, TP = { trace: 1 }, TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true, OMD = RiTa.OMD, CMD = RiTa.CMD;
 
-  const md = (strs, ...vals) => marked((strs.reduce((a, s, i) => a + s + (vals[i] || ''), '')));
-  const rs = RiTa.template(md), rsp = RiTa.template(), rsr = RiTa.template(md, { raw: true });
 
   this.slow(100);
-
-  /*describe('Template', function () { // JSONLY
-    const rs = RiTa.template(md);
-    const rsp = RiTa.template();
-    const fix = (s) => s.replace(/^<p>/, '<div style=\"white-space: break-spaces;\">\n').replace(/<\/p>\n$/, "</div>\n");
-    const fmd = (s) => fix(md([s]));
-
-    it('Should preserve whitespace', () => {  
-      expect(rs`# a   b`).eq(fmd`# a   b`);
-      expect(rs`a\tb`).eq(md`a\tb`);
-      expect(rs`a\nb`, 0).eq(md`a\nb`);
-      expect(rs` (a | a)
-              ok
-            `).eq(fix(md` a
-              ok
-            `));
-    });
-  });*/
-
 
   describe('Markdown', function () { // JSONLY
 
     this.slow(150);
-
+    const md = (strs, ...vals) => marked((strs.reduce((a, s, i) => a + s + (vals[i] || ''), '')));
+    const rs = RiTa.template(md), rsp = RiTa.template(), rsr = RiTa.template(md, { raw: true });
     const expectHtml = function (code, exp) {
       try {
-        expect(rs`${code}`).eq(OMD + md`${exp || code}` + CMD);
+        let mdo = md`${exp || code}`;
+        expect(typeof mdo).eq('string');
+        expect(rsr`${code}`).eq(mdo);
+        expect(rs`${code}`).eq(OMD + mdo + CMD);
       }
       catch (e) {
         throw e;
@@ -56,20 +38,25 @@ describe('RiTa.RiScript', function () {
     });
 
     it('Should handle blockquotes', () => {
-      let input = ">## Blockquoted header\n>\n"
+      let input = ">## Blockquoted (header| header)\n>\n"
+        + ">This is blockquoted (text| text).\n>\n"
+        + ">This is a second (par| par).cap";
+      let output = ">## Blockquoted header\n>\n"
         + ">This is blockquoted text.\n>\n"
-        + ">This is a second paragraph";
-      expectHtml(input);
+        + ">This is a second Par";
+      expectHtml(input, output);
     });
 
     it('Should handle code blocks', () => {
-      let input = "If you want to mark something as code, indent it by 4 spaces.\n"
+      let input = "If you want to mark something (as|as) code, indent it by 4 spaces.\n"
         + "    <p>This has been indented 4 spaces.</p>"
-      expectHtml(input);
+      let output = "If you want to mark something as code, indent it by 4 spaces.\n"
+        + "    <p>This has been indented 4 spaces.</p>"
+      expectHtml(input, output);
     });
 
     it('Should handle numbered lists', () => {
-      expectHtml("1. first\n2. second\n3. third");
+      expectHtml("1. first\n2. (second).s \n3. third", "1. first\n2. seconds \n3. third");
     });
 
     it('Should handle headers', () => {

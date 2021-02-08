@@ -196,7 +196,7 @@ class RiTa {
       }
     }
     let op = opts.raw ? '' : RiTa.OMD, cl = opts.raw ? '' : RiTa.CMD;
-    return md ? ((s, ...v) => op + md`${fun(s, v)}` + cl) : fun;
+    return md ? ((s, ...v) => op + (md`${fun(s, v)}`).toString() + cl) : fun;
   }
 
   static tokenize() {
