@@ -1,0 +1,184 @@
+:root {
+  --selection_darkmode: rgba(47, 142, 252, 0.35);
+  --background_darkmode: #1e1e1e;
+  --text_darkmode: #cbcbcb;
+  --choice_darkmode: #d2aefc; 
+  --transform_darkmode: #cdab53;
+  --dynamic_darkmode: #88a3fa;
+  --symbol_darkmode: #9bdbff;
+  --assign_darkmode: #9a88ff;
+  --continuation_darkmode: #f8ff93;
+  --weight_darkmode: #508be5;
+  --entity_darkmode: #ff46ff;
+  --conditional_darkmode: #f8a0a0;
+  --comment_darkmode: #609664;
+
+  --selection_lightmode: rgba(47, 142, 252, 0.35);
+  --background_lightmode: #ffffff;
+  --text_lightmode: #363636;
+  --choice_lightmode: #b66661; 
+  --transform_lightmode: #867959;
+  --dynamic_lightmode: #508be5;
+  --symbol_lightmode: #3d42d4;
+  --assign_lightmode: #9395d4;
+  --continuation_lightmode: #77cc50;
+  --weight_lightmode: #b7ffa8;
+  --entity_lightmode: #d651d6;
+  --conditional_lightmode: #ad92cc;
+  --comment_lightmode: #a7a7a7;
+}
+
+/*----------------css for highlight.js-------------*/
+/* theme tmpl from https://codepen.io/Tibixx/pen/NLpNar*/
+/* default theme(dark) */
+
+pre code {
+  display: block;
+  overflow-x: auto;
+  padding: 10px;
+  background: var(--background);
+  -webkit-text-size-adjust: none;
+}
+
+pre code *::selection,
+.hljs::selection {
+  background: var(--selection_darkmode) !important;
+}
+
+.hljs {
+  color: var(--text_darkmode);
+  background-color: var(--background_darkmode);
+}
+
+.hljs-rs-choice {
+  color: var(--choice_darkmode);
+}
+
+.hljs-rs-transform {
+  color: var(--transform_darkmode) !important;
+}
+
+.hljs-rs-dynamic {
+  color: var(--dynamic_darkmode) !important;
+}
+
+.hljs-rs-symbol {
+  color: var(--symbol_darkmode) !important;
+}
+
+.hljs-comment {
+  color: var(--comment_darkmode);
+}
+
+.hljs-rs-assign {
+  color: var(--assign_darkmode);
+}
+
+.hljs-rs-continuation {
+  color: var(--continuation_darkmode);
+}
+
+.hljs-rs-weight {
+  color: var(--weight_darkmode);
+}
+
+.hljs-rs-entity {
+  color: var(--entity_darkmode);
+}
+
+.hljs-rs-conditional {
+  color: var(--conditional_darkmode);
+}
+
+/* TODOs? lighttheme */
+
+
+/*----------------below is css for codemirror---------------*/
+/*
+darkMode theme for rs editor 
+*/
+
+.CodeMirror.cm-s-darkMode { background: var(--background_darkmode); color: var(--text_darkmode); }
+
+.cm-s-darkMode .CodeMirror-selected { background: var(--selection_darkmode); }
+.cm-s-darkMode .CodeMirror-gutters { background: #464646; border-right: 0px; color: #cbcbcb;}
+.cm-s-darkMode .CodeMirror-linenumber { color: #cbcbcb; }
+
+.cm-s-darkMode .CodeMirror-cursor { border-left: 1px solid #c4c2bd; }
+
+/* color for symbol (e.g $foo) */
+.cm-s-darkMode span.cm-symbol { color: var(--symbol_darkmode); }
+
+/* color for choice (e.g (a|b)) */
+.cm-s-darkMode span.cm-choice { color: var(--choice_darkmode); }
+
+/* color for transforms (e.g $foo.pluralize()) */
+.cm-s-darkMode span.cm-transform { color: var(--transform_darkmode); }
+
+/* color for comment */
+.cm-s-darkMode span.cm-comment { color: var(--comment_darkmode); }
+
+/* color for dynamic */
+.cm-s-darkMode span.cm-dynamic { color: var(--dynamic_darkmode); }
+
+/* color for assign */
+.cm-s-darkMode span.cm-assign { color: var(--assign_darkmode); }
+
+/* color for contiuation */
+.cm-s-darkMode span.cm-continuation { color: var(--continuation_darkmode); }
+
+/* color for entity */
+.cm-s-darkMode span.cm-entity { color: var(--entity_darkmode); }
+
+/* color for conditional */
+.cm-s-darkMode span.cm-conditional { color: var(--conditional_darkmode); }
+
+
+
+.cm-s-darkMode .CodeMirror-activeline-background { background: #2F2F2F; }
+.cm-s-darkMode .CodeMirror-matchingbracket { text-decoration: underline; color: white !important; }
+
+
+/*
+lightMode theme for rs editor
+*/
+
+.CodeMirror.cm-s-lightMode { background: var(--background_lightmode); color: var(--text_lightmode); }
+
+.cm-s-lightMode .div.CodeMirror-selected { background: var(--selection_lightmode); }
+.cm-s-lightMode .CodeMirror-gutters { border-right: 1px solid #ddd; background-color: #f7f7f7; white-space: nowrap; }
+.cm-s-lightMode .CodeMirror-linenumbers {}
+.cm-s-lightMode .CodeMirror-linenumber { padding: 0 3px 0 5px; min-width: 20px; text-align: right; color: #6998ac; white-space: nowrap; }
+
+.cm-s-lightMode .CodeMirror-cursor { border-left: 1px solid #1e1e1e; }
+
+/* color for symbol (e.g $foo) */
+.cm-s-lightMode span.cm-symbol { color: var(--symbol_lightmode); }
+
+/* color for choice (e.g (a|b)) */
+.cm-s-lightMode span.cm-choice { color: var(--choice_lightmode); }
+
+/* color for transforms (e.g $foo.pluralize()) */
+.cm-s-lightMode span.cm-transform { color: var(--transform_lightmode); }
+
+/* color for comment */
+.cm-s-lightMode span.cm-comment { color: var(--comment_lightmode); }
+
+/* color for dynamic */
+.cm-s-lightMode span.cm-dynamic { color: var(--dynamic_lightmode); }
+
+/* color for assign */
+.cm-s-lightMode span.cm-assign { color: var(--assign_lightmode); }
+
+/* color for continuation */
+.cm-s-lightMode span.cm-continuation { color: var(--continuation_lightmode); }
+
+/* color for entity */
+.cm-s-lightMode span.cm-entity { color: var(--entity_lightmode); }
+
+/* color for conditional */
+.cm-s-lightMode span.cm-conditional { color: var(--conditional_lightmode); }
+
+
+.cm-s-lightMode .CodeMirror-activeline-background { background: #2F2F2F; }
+.cm-s-lightMode .CodeMirror-matchingbracket { text-decoration: underline; color: white !important; }
