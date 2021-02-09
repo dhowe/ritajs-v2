@@ -184,7 +184,7 @@ class RiTa {
     return RiTa.analyzer.analyze(...arguments).syllables;
   }
 
-  static template(md, opts = {}) {
+  /*static template(md, opts = {}) {
     let fun = (strs, ...vals) => {
       try {
         return RiScript.eval(strs.reduce
@@ -195,9 +195,13 @@ class RiTa {
         return '[RiScript] ' + e.message;
       }
     }
-    let op = opts.raw ? '' : RiTa.OMD, cl = opts.raw ? '' : RiTa.CMD;
-    return md ? ((s, ...v) => op + (md`${fun(s, v)}`).toString() + cl) : fun;
-  }
+    if (!md) return fun;
+    return (s, ...v) => {
+      let res = md`${fun(s, v)}`;
+      res.style['white-space'] = 'break-spaces';
+      return res;
+    };
+  }*/
 
   static tokenize() {
     return RiTa.tokenizer.tokenize(...arguments);

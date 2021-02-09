@@ -12,7 +12,7 @@ describe('RiTa.RiScript', function () {
 
   this.slow(100);
 
-  describe('Markdown', function () { // JSONLY
+  false && describe('Markdown', function () { // JSONLY
 
     this.slow(150);
     const md = (strs, ...vals) => marked((strs.reduce((a, s, i) => a + s + (vals[i] || ''), '')));
