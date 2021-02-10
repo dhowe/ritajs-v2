@@ -1412,7 +1412,7 @@ describe('RiTa.RiScript', function () {
       rs = RiTa.evaluate('$foo=$bar.result\n$foo', ctx); // no parens
       expect(rs).eq('result');
 
-      ctx = { mammal: "(ox | ox)" };  // SYNC:
+      ctx = { mammal: "(ox | ox)" }; 
       rs = RiTa.evaluate('The big $mammal ate the smaller $mammal.s.', ctx);
       // no parens, alias, resolved from pending symbols
       expect(rs).eq('The big ox ate the smaller oxen.');
