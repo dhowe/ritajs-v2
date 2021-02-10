@@ -120,7 +120,7 @@ describe('RiTa.Lexicon', function () {
     expect(num === 5, result + ": " + syllables).to.be.true; // "5 syllables: "
   });
 
-  it('Should call search without regex', () => { // SYNC:
+  it('Should call search without regex', () => {
     expect(RiTa.search().length).eq(10);
     expect(RiTa.search({ limit: 11 }).length).eq(11);
     expect(RiTa.search({ pos: "n" })).eql([
@@ -201,7 +201,7 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should call search with pos, feature, limit', () => { // SYNC:
+  it('Should call search with pos, feature, limit', () => { 
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }))
       .eql(['abalone', 'abandonment', 'abbreviation', 'abdomen', 'abduction']);
@@ -251,7 +251,7 @@ describe('RiTa.Lexicon', function () {
       .eql(["fantasize"]);
   });
 
-  it('Should call search with stresses, limit', () => { // SYNC:
+  it('Should call search with stresses, limit', () => { 
 
     expect(RiTa.search('010000', { type: 'stresses', limit: 5 })).eql([
       'accountability',
@@ -534,8 +534,7 @@ describe('RiTa.Lexicon', function () {
 
   });
 
-  it('Should call spellsLike.options', () => { // SYNC:
-
+  it('Should call spellsLike.options', () => { 
     let result;
 
     result = RiTa.spellsLike("banana", { minLength: 6, maxLength: 6 });
