@@ -163,7 +163,7 @@ class Lexicon {
     let words = Object.keys(dict);
 
     if (typeof regex === 'string') {
-      if (opts.type === 'stresses' && /^[01]+$/.test(regex)) {
+      if (opts.type === 'stresses' && /^[01]+$/.test(regex)) {  // SYNC: regex
         /* if we have a stress string without slashes, add them
            010 -> 0/1/0, ^010$ -> ^0/1/0$, etc. */
         //let before = regex+"";
