@@ -54,7 +54,7 @@ describe('RiTa.Analyzer', () => {
     eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
   });
 
-  false && it('TODO', () => { // SYNC:
+  false && it('TODO', () => {
 
     let feats = RiTa.analyze("off-site");
     console.log(feats);
@@ -229,7 +229,7 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.syllables(input)).eq(expected);
   });
 
-  it('Should pluralize phrases', () => { // SYNC:
+  it('Should pluralize phrases', () => { 
     let input, expected;
     input = "set of choice"; expected = "set of choices";
     expect(RiTa.pluralize(input)).eq(expected);
