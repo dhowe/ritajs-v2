@@ -1,6 +1,6 @@
 describe('RiTa.Lexicon', function () {
 
-  this.timeout(5000);
+  this.timeout(2000);
   this.slow(700);
 
   if (typeof module !== 'undefined') require('./before');
@@ -513,7 +513,7 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call spellsLike', () => {
 
-    result = RiTa.spellsLike("");
+    let result = RiTa.spellsLike("");
     eql(result, []);
 
     result = RiTa.spellsLike("banana");

@@ -216,7 +216,7 @@ describe('RiTa.RiGrammar', function() {
     });
     it("should call JSON addRules", () => {
         grammars.forEach(g => { // as JSON strings
-            rg = RiGrammar.fromJSON(JSON.stringify(g));
+            let rg = RiGrammar.fromJSON(JSON.stringify(g));
             ok(typeof rg.rules !== 'undefined');
             ok(typeof rg.rules['$$start'] !== 'undefined');
             ok(typeof rg.rules['$$noun_phrase'] !== 'undefined');
