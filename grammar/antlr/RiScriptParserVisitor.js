@@ -30,24 +30,6 @@ RiScriptParserVisitor.prototype.visitExpr = function(ctx) {
 };
 
 
-// Visit a parse tree produced by RiScriptParser#cexpr.
-RiScriptParserVisitor.prototype.visitCexpr = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by RiScriptParser#cond.
-RiScriptParserVisitor.prototype.visitCond = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by RiScriptParser#weight.
-RiScriptParserVisitor.prototype.visitWeight = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
 // Visit a parse tree produced by RiScriptParser#choice.
 RiScriptParserVisitor.prototype.visitChoice = function(ctx) {
   return this.visitChildren(ctx);
@@ -78,32 +60,8 @@ RiScriptParserVisitor.prototype.visitSymbol = function(ctx) {
 };
 
 
-// Visit a parse tree produced by RiScriptParser#wexpr.
-RiScriptParserVisitor.prototype.visitWexpr = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by RiScriptParser#link.
-RiScriptParserVisitor.prototype.visitLink = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by RiScriptParser#url.
-RiScriptParserVisitor.prototype.visitUrl = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
 // Visit a parse tree produced by RiScriptParser#transform.
 RiScriptParserVisitor.prototype.visitTransform = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by RiScriptParser#op.
-RiScriptParserVisitor.prototype.visitOp = function(ctx) {
   return this.visitChildren(ctx);
 };
 

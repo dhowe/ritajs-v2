@@ -38,33 +38,6 @@ RiScriptParserListener.prototype.exitExpr = function(ctx) {
 };
 
 
-// Enter a parse tree produced by RiScriptParser#cexpr.
-RiScriptParserListener.prototype.enterCexpr = function(ctx) {
-};
-
-// Exit a parse tree produced by RiScriptParser#cexpr.
-RiScriptParserListener.prototype.exitCexpr = function(ctx) {
-};
-
-
-// Enter a parse tree produced by RiScriptParser#cond.
-RiScriptParserListener.prototype.enterCond = function(ctx) {
-};
-
-// Exit a parse tree produced by RiScriptParser#cond.
-RiScriptParserListener.prototype.exitCond = function(ctx) {
-};
-
-
-// Enter a parse tree produced by RiScriptParser#weight.
-RiScriptParserListener.prototype.enterWeight = function(ctx) {
-};
-
-// Exit a parse tree produced by RiScriptParser#weight.
-RiScriptParserListener.prototype.exitWeight = function(ctx) {
-};
-
-
 // Enter a parse tree produced by RiScriptParser#choice.
 RiScriptParserListener.prototype.enterChoice = function(ctx) {
 };
@@ -110,48 +83,12 @@ RiScriptParserListener.prototype.exitSymbol = function(ctx) {
 };
 
 
-// Enter a parse tree produced by RiScriptParser#wexpr.
-RiScriptParserListener.prototype.enterWexpr = function(ctx) {
-};
-
-// Exit a parse tree produced by RiScriptParser#wexpr.
-RiScriptParserListener.prototype.exitWexpr = function(ctx) {
-};
-
-
-// Enter a parse tree produced by RiScriptParser#link.
-RiScriptParserListener.prototype.enterLink = function(ctx) {
-};
-
-// Exit a parse tree produced by RiScriptParser#link.
-RiScriptParserListener.prototype.exitLink = function(ctx) {
-};
-
-
-// Enter a parse tree produced by RiScriptParser#url.
-RiScriptParserListener.prototype.enterUrl = function(ctx) {
-};
-
-// Exit a parse tree produced by RiScriptParser#url.
-RiScriptParserListener.prototype.exitUrl = function(ctx) {
-};
-
-
 // Enter a parse tree produced by RiScriptParser#transform.
 RiScriptParserListener.prototype.enterTransform = function(ctx) {
 };
 
 // Exit a parse tree produced by RiScriptParser#transform.
 RiScriptParserListener.prototype.exitTransform = function(ctx) {
-};
-
-
-// Enter a parse tree produced by RiScriptParser#op.
-RiScriptParserListener.prototype.enterOp = function(ctx) {
-};
-
-// Exit a parse tree produced by RiScriptParser#op.
-RiScriptParserListener.prototype.exitOp = function(ctx) {
 };
 
 
