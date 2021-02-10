@@ -260,6 +260,7 @@ describe('RiTa.Lexicon', function () {
       'authoritarianism',
       'colonialism'
     ]);
+
     expect(RiTa.search('010000', { type: 'stresses', limit: 5, maxLength: 11 })).eql([
       'colonialism',
       "imperialism",

@@ -166,8 +166,10 @@ class Lexicon {
       if (opts.type === 'stresses' && /^[01]+$/.test(regex)) {
         /* if we have a stress string without slashes, add them
            010 -> 0/1/0, ^010$ -> ^0/1/0$, etc. */
-        regex = regex.replace(/(?<=[01])([01])/g, "/$1");
-        //console.log(regex);
+        //let before = regex+"";
+        //regex = regex.replace(/(?<=[01])([01])/g, "/$1"); // # no lookbehind support in safari
+        regex = regex.replace(/([01])(?=([01]))/g, "$1/");
+        //console.log('"'+before+'" -> "'+regex+'"');
       }
       regex = new RegExp(regex);
     }
