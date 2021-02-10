@@ -235,7 +235,6 @@ describe('RiTa.RiScript', function () {
       expect(0).eq(1);
     });
 
-return;
     it('Should correctly call isParseable', () => {
       let rs = new RiScript();
       expect(rs.isParseable("(")).eq(true);
