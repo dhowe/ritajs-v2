@@ -83,6 +83,24 @@ RiScriptParserListener.prototype.exitSymbol = function(ctx) {
 };
 
 
+// Enter a parse tree produced by RiScriptParser#wexpr.
+RiScriptParserListener.prototype.enterWexpr = function(ctx) {
+};
+
+// Exit a parse tree produced by RiScriptParser#wexpr.
+RiScriptParserListener.prototype.exitWexpr = function(ctx) {
+};
+
+
+// Enter a parse tree produced by RiScriptParser#weight.
+RiScriptParserListener.prototype.enterWeight = function(ctx) {
+};
+
+// Exit a parse tree produced by RiScriptParser#weight.
+RiScriptParserListener.prototype.exitWeight = function(ctx) {
+};
+
+
 // Enter a parse tree produced by RiScriptParser#transform.
 RiScriptParserListener.prototype.enterTransform = function(ctx) {
 };

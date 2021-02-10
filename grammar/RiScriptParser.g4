@@ -7,14 +7,11 @@ options { tokenVocab=RiScriptLexer; }
 script: line (NL line)* EOF;
 line: expr*;
 expr: (symbol | choice | assign | chars)+;
-//weight: WS* LB INT RB WS*;
-choice: (LP (expr OR)* expr RP) transform*;
+choice: (LP (wexpr OR)* wexpr RP) transform*;
 assign: (dynamic | symbol) EQ expr;
 chars: (DOT | WS | EXC | AST | GT | LT | DOL | HAT | COM | FS | CHR | ENT | INT)+;
 dynamic: DYN transform*;
 symbol: SYM transform*;
-//wexpr: expr? weight?;
-//link:  LB expr RB MDS url MDE WS*;
-//url: MDT+;
+wexpr: expr? weight?;
+weight: WS* LB INT RB WS*;
 transform: TF;
-//op: OP | (LT | GT | EQ);

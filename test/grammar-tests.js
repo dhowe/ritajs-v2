@@ -534,13 +534,13 @@ describe('RiTa.RiGrammar', function() {
     it("should allow context in expand on statics", () => {
         let ctx, rg;
         ctx = { randomPosition: () => 'job type' };
-        rg = RiTa.grammar({ $start: "My .randomPosition()." }, ctx);
+        rg = RiTa.grammar({ $start: "My ().randomPosition()." }, ctx);
         expect(rg.expand()).eq("My job type.");
 
-        rg = RiTa.grammar({ $start: "My .randomPosition." }, ctx);
+        rg = RiTa.grammar({ $start: "My ().randomPosition." }, ctx);
         expect(rg.expand()).eq("My job type."); // no parens
 
-        rg = RiTa.grammar({ $stat: "My .randomPosition()." }, ctx);
+        rg = RiTa.grammar({ $stat: "My ().randomPosition()." }, ctx);
         expect(rg.expand('stat')).eq("My job type.");
     });
 
@@ -558,7 +558,7 @@ describe('RiTa.RiGrammar', function() {
 
     it("should handle custom transforms on statics", () => {
         let context = { randomPosition: () => 'job type' };
-        let rg = RiTa.grammar({ $start: "My .randomPosition()." }, context);
+        let rg = RiTa.grammar({ $start: "My ().randomPosition()." }, context);
         expect(rg.expand()).eq("My job type.");
     });
 
@@ -575,7 +575,7 @@ describe('RiTa.RiGrammar', function() {
 
     it("should handle custom transforms", () => {
         let context = { randomPosition: () => 'job type' };
-        let rg = RiTa.grammar({ start: "My .randomPosition()." }, context);
+        let rg = RiTa.grammar({ start: "My ().randomPosition()." }, context);
         expect(rg.expand()).eq("My job type.");
     });
 

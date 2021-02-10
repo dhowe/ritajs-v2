@@ -60,6 +60,18 @@ RiScriptParserVisitor.prototype.visitSymbol = function(ctx) {
 };
 
 
+// Visit a parse tree produced by RiScriptParser#wexpr.
+RiScriptParserVisitor.prototype.visitWexpr = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
+// Visit a parse tree produced by RiScriptParser#weight.
+RiScriptParserVisitor.prototype.visitWeight = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
 // Visit a parse tree produced by RiScriptParser#transform.
 RiScriptParserVisitor.prototype.visitTransform = function(ctx) {
   return this.visitChildren(ctx);
