@@ -24,13 +24,13 @@ class RiGrammar {
   }
 
   toJSON() {
-    let rules = {};
+    let nrules = {};
     for (let [name, rule] of Object.entries(this.rules)) {
       if (!name.startsWith(DYN)) name = SYM + name;
       //console.log('rules['+name+'] = '+rule);
-      rules[name] = rule;
+      nrules[name] = rule;
     }
-    return JSON.stringify(rules, null, 2);
+    return JSON.stringify(nrules, null, 2);
   }
 
   addRules(rules) { // or rules or ... ?
@@ -54,7 +54,7 @@ class RiGrammar {
     return this;
   }
 
-  expand(rule = 'start', opts = {}) {
+  expand(rule = 'start', opts = {}) { // no context allowed here
     if (arguments.length && typeof rule !== 'string') {
       opts = rule;
       rule = 'start';
@@ -82,7 +82,7 @@ class RiGrammar {
   }
 
   removeRule(name) {
-    if (name) {
+    if (name && name.length) {
       name = validateRuleName(name);
       delete this.rules[name];
     }
@@ -95,7 +95,10 @@ class RiGrammar {
 }
 
 function validateRuleName(name) {
-  if (!name.length) throw Error('expected [string] name');
+
+  if (!name || !name.length) {
+    throw Error('expected [string] name');
+  }
 
   if (name.startsWith(DYN)) {
     name = name.substring(2);

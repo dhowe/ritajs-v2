@@ -206,10 +206,6 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }))
       .eql(['abalone', 'abandonment', 'abbreviation', 'abdomen', 'abduction']);
 
-
-    expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }))
-      .eql(['abalone', 'abandonment', 'abbreviation', 'abdomen', 'abduction']);
-
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n', numSyllables: 3 }))
       .eql(['abdomen', 'abduction', 'abortion', 'abruptness', 'absorber']);
 
@@ -220,6 +216,9 @@ describe('RiTa.Lexicon', function () {
       .eql(['infant']);
 
     expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', pos: 'v', limit: 5 }))
+      .eql(["fantasize"]);
+
+    expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', pos: 'vb', limit: 5 }))
       .eql(["fantasize"]);
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'nns' }))
@@ -246,9 +245,6 @@ describe('RiTa.Lexicon', function () {
 
     expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'nns', limit: 3 }))
       .eql(['elephants', 'infants', 'infantries']);
-
-    expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', pos: 'vb', limit: 5 }))
-      .eql(["fantasize"]);
   });
 
   it('Should call search with stresses, limit', () => { // SYNC:

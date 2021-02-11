@@ -5,6 +5,15 @@ describe('RiTa.Analyzer', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
+  it('Should call analyzeWord', () => {
+
+		let data = RiTa.analyzer.analyzeWord("abandon");
+		expect(data.phones).eq("ah-b-ae-n-d-ah-n ");
+		expect(data.stresses).eq("0/1/0 ");
+		expect(data.syllables).eq("ah/b-ae-n/d-ah-n ");
+		//console.log(data);
+  });
+
   it('Should call analyze.lts', () => {
     let feats;
     feats = RiTa.analyze("cloze", { silent: 1 });
