@@ -157,24 +157,23 @@ class Lexicon {
       : this.similarByType(word, opts);
   }
 
-  search(regex, opts = {}) {  // SYNC:
+  search(regex, opts = {}) {
 
     let dict = this._dict(true);
     let words = Object.keys(dict);
 
     if (typeof regex === 'string') {
-      if (opts.type === 'stresses' && /^[01]+$/.test(regex)) {  // SYNC: regex
+      if (opts.type === 'stresses' && /^[01]+$/.test(regex)) {
         /* if we have a stress string without slashes, add them
            010 -> 0/1/0, ^010$ -> ^0/1/0$, etc. */
-        //let before = regex+"";
         //regex = regex.replace(/(?<=[01])([01])/g, "/$1"); // # no lookbehind support in safari
         regex = regex.replace(/([01])(?=([01]))/g, "$1/");
-        //console.log('"'+before+'" -> "'+regex+'"');
+        //console.log(regex);
       }
       regex = new RegExp(regex);
     }
     else if (typeof regex === 'object' && (!(regex instanceof RegExp))) {
-      opts = regex;  //single argument which is opts
+      opts = regex;  // single argument which is opts
       regex = undefined;
     }
     // else it is a regex object
@@ -201,9 +200,7 @@ class Lexicon {
         if (opts.type === 'stresses') {
           let phones = data ? data[0] : this.rawPhones(word);
           let stresses = this.analyzer.phonesToStress(phones);
-          if (regex.test(stresses)) {
-            result.push(word);
-          }
+          if (regex.test(stresses)) result.push(word);
         }
         else if (opts.type === 'phones') { // TODO: Test *****
           let phones = data ? data[0] : this.rawPhones(word);
