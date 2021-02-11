@@ -19,7 +19,7 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0002\u0003\u0002\u0003\u0002\u0003\u0002\u0003\u0003\u0003\u0003\u0003",
     "\u0003\u0003\u0003\u0007\u0003_\n\u0003\f\u0003\u000e\u0003b\u000b\u0003",
     "\u0003\u0003\u0003\u0003\u0003\u0004\u0003\u0004\u0003\u0004\u0003\u0005",
-    "\u0003\u0005\u0003\u0006\u0003\u0006\u0003\u0007\u0003\u0007\u0003\u0007",
+    "\u0003\u0005\u0003\u0005\u0003\u0005\u0003\u0005\u0003\u0006\u0003\u0006",
     "\u0003\u0007\u0003\u0007\u0003\b\u0003\b\u0003\t\u0003\t\u0003\n\u0003",
     "\n\u0003\u000b\u0003\u000b\u0003\f\u0003\f\u0003\r\u0003\r\u0003\u000e",
     "\u0003\u000e\u0003\u000f\u0003\u000f\u0003\u0010\u0003\u0010\u0003\u0011",
@@ -68,7 +68,7 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0002\u0002B\u0003\u0002\u0002\u0002\u0003H\u0003\u0002\u0002\u0002",
     "\u0003J\u0003\u0002\u0002\u0002\u0004L\u0003\u0002\u0002\u0002\u0006",
     "Z\u0003\u0002\u0002\u0002\be\u0003\u0002\u0002\u0002\nh\u0003\u0002",
-    "\u0002\u0002\fj\u0003\u0002\u0002\u0002\u000el\u0003\u0002\u0002\u0002",
+    "\u0002\u0002\fm\u0003\u0002\u0002\u0002\u000eo\u0003\u0002\u0002\u0002",
     "\u0010q\u0003\u0002\u0002\u0002\u0012s\u0003\u0002\u0002\u0002\u0014",
     "u\u0003\u0002\u0002\u0002\u0016w\u0003\u0002\u0002\u0002\u0018y\u0003",
     "\u0002\u0002\u0002\u001a{\u0003\u0002\u0002\u0002\u001c}\u0003\u0002",
@@ -93,10 +93,10 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0002`^\u0003\u0002\u0002\u0002`a\u0003\u0002\u0002\u0002ac\u0003\u0002",
     "\u0002\u0002b`\u0003\u0002\u0002\u0002cd\b\u0003\u0002\u0002d\u0007",
     "\u0003\u0002\u0002\u0002ef\u0006\u0004\u0002\u0002fg\u0007A\u0002\u0002",
-    "g\t\u0003\u0002\u0002\u0002hi\u0007@\u0002\u0002i\u000b\u0003\u0002",
-    "\u0002\u0002jk\u0007>\u0002\u0002k\r\u0003\u0002\u0002\u0002lm\u0006",
-    "\u0007\u0003\u0002mn\u0007*\u0002\u0002no\u0003\u0002\u0002\u0002op",
-    "\b\u0007\u0003\u0002p\u000f\u0003\u0002\u0002\u0002qr\u0007*\u0002\u0002",
+    "g\t\u0003\u0002\u0002\u0002hi\u0006\u0005\u0003\u0002ij\u0007*\u0002",
+    "\u0002jk\u0003\u0002\u0002\u0002kl\b\u0005\u0003\u0002l\u000b\u0003",
+    "\u0002\u0002\u0002mn\u0007@\u0002\u0002n\r\u0003\u0002\u0002\u0002o",
+    "p\u0007>\u0002\u0002p\u000f\u0003\u0002\u0002\u0002qr\u0007*\u0002\u0002",
     "r\u0011\u0003\u0002\u0002\u0002st\u0007+\u0002\u0002t\u0013\u0003\u0002",
     "\u0002\u0002uv\u0007]\u0002\u0002v\u0015\u0003\u0002\u0002\u0002wx\u0007",
     "_\u0002\u0002x\u0017\u0003\u0002\u0002\u0002yz\u0007}\u0002\u0002z\u0019",
@@ -198,9 +198,9 @@ RiScriptLexer.EOF = antlr4.Token.EOF;
 RiScriptLexer.LCOMM = 1;
 RiScriptLexer.BCOMM = 2;
 RiScriptLexer.Q = 3;
-RiScriptLexer.GT = 4;
-RiScriptLexer.LT = 5;
-RiScriptLexer.MDS = 6;
+RiScriptLexer.MDS = 4;
+RiScriptLexer.GT = 5;
+RiScriptLexer.LT = 6;
 RiScriptLexer.LP = 7;
 RiScriptLexer.RP = 8;
 RiScriptLexer.LB = 9;
@@ -236,22 +236,22 @@ RiScriptLexer.prototype.channelNames = [ "DEFAULT_TOKEN_CHANNEL", "HIDDEN" ];
 
 RiScriptLexer.prototype.modeNames = [ "DEFAULT_MODE", "MD" ];
 
-RiScriptLexer.prototype.literalNames = [ null, null, null, null, "'>'", 
-                                         "'<'", null, "'('", null, "'['", 
-                                         "']'", "'{'", "'}'", "'.'", null, 
-                                         "'/'", "'!'", "'*'", "'^'", "'$'", 
-                                         "','", null, "'\\'" ];
+RiScriptLexer.prototype.literalNames = [ null, null, null, null, null, "'>'", 
+                                         "'<'", "'('", null, "'['", "']'", 
+                                         "'{'", "'}'", "'.'", null, "'/'", 
+                                         "'!'", "'*'", "'^'", "'$'", "','", 
+                                         null, "'\\'" ];
 
-RiScriptLexer.prototype.symbolicNames = [ null, "LCOMM", "BCOMM", "Q", "GT", 
-                                          "LT", "MDS", "LP", "RP", "LB", 
+RiScriptLexer.prototype.symbolicNames = [ null, "LCOMM", "BCOMM", "Q", "MDS", 
+                                          "GT", "LT", "LP", "RP", "LB", 
                                           "RB", "LCB", "RCB", "DOT", "WS", 
                                           "FS", "EXC", "AST", "HAT", "DOL", 
                                           "COM", "CONT", "BS", "NL", "DYN", 
                                           "SYM", "OR", "EQ", "TF", "ENT", 
                                           "INT", "OP", "CHR", "MDT", "MDE" ];
 
-RiScriptLexer.prototype.ruleNames = [ "LCOMM", "BCOMM", "Q", "GT", "LT", 
-                                      "MDS", "LP", "RP", "LB", "RB", "LCB", 
+RiScriptLexer.prototype.ruleNames = [ "LCOMM", "BCOMM", "Q", "MDS", "GT", 
+                                      "LT", "LP", "RP", "LB", "RB", "LCB", 
                                       "RCB", "DOT", "WS", "FS", "EXC", "AST", 
                                       "HAT", "DOL", "COM", "CONT", "BS", 
                                       "NL", "DYN", "SYM", "OR", "EQ", "TF", 
@@ -264,7 +264,7 @@ RiScriptLexer.prototype.sempred = function(localctx, ruleIndex, predIndex) {
 	switch (ruleIndex) {
 		case 2:
 			return this.Q_sempred(localctx, predIndex);
-		case 5:
+		case 3:
 			return this.MDS_sempred(localctx, predIndex);
     	default:
     		throw "No registered predicate for:" + ruleIndex;
@@ -274,7 +274,7 @@ RiScriptLexer.prototype.sempred = function(localctx, ruleIndex, predIndex) {
 RiScriptLexer.prototype.Q_sempred = function(localctx, predIndex) {
 	switch(predIndex) {
 		case 0:
-			return this._input.LA(-1)=="}".charCodeAt(0);
+			return this._input.LA(-1)=='}'.charCodeAt(0);
 		default:
 			throw "No predicate with index:" + predIndex;
 	}
@@ -283,7 +283,7 @@ RiScriptLexer.prototype.Q_sempred = function(localctx, predIndex) {
 RiScriptLexer.prototype.MDS_sempred = function(localctx, predIndex) {
 	switch(predIndex) {
 		case 1:
-			return this._input.LA(-1)=="]".charCodeAt(0);
+			return this._input.LA(-1)==']'.charCodeAt(0);
 		default:
 			throw "No predicate with index:" + predIndex;
 	}

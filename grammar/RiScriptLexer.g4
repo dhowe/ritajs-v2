@@ -5,10 +5,15 @@ lexer grammar RiScriptLexer;
 LCOMM: '/*' .*? '*/' -> channel(HIDDEN);
 BCOMM: '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 
-Q: {this._input.LA(-1)=="}".charCodeAt(0)}? '?';
+Q: {this._input.LA(-1)=='}'.charCodeAt(0)}? '?';
+MDS: {this._input.LA(-1)==']'.charCodeAt(0)}? '('  -> pushMode(MD) ;
+
+// For Java (script this change)
+// Q: {_input.LA(-1)=='}'}? '?'; 
+// MDS: {_input.LA(-1)==']'}? '('  -> pushMode(MD) ;
+
 GT: '>';
 LT: '<';
-MDS: {this._input.LA(-1)=="]".charCodeAt(0)}? '('  -> pushMode(MD) ;
 LP:'(';
 RP: ')';
 LB: '[';
