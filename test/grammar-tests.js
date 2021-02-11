@@ -3,7 +3,7 @@ describe('RiTa.RiGrammar', function() {
 
     if (typeof module !== 'undefined') require('./before');
 
-    const ST = { silent: 1 }, TP = { trace: 1 }, SP = { singlePass: 1 }, TLP = { trace: 1, traceLex: 1 };
+    const ST = { silent: 1 }, TP = { trace: 1 }, TLP = { trace: 1, traceLex: 1 };
     const RiGrammar = RiTa.RiGrammar, SKIP_FOR_NOW = true, SEQ_COUNT = 5;
 
     this.slow(200);
