@@ -116,7 +116,7 @@ class RiScript {
     return this.visitor.init(context, opts).start(tree);
   }
 
-  lexParseVisit(input, context, opts) {
+/*   lexParseVisit(input, context, opts) {
 
     let { pre, parse, post } = this.preparse(input, opts);
 
@@ -124,17 +124,27 @@ class RiScript {
        console.log('preParse("' + pre + '", "' + post + '");');
 
     let tree = parse.length && this.lexParse(parse, opts);
-    let parsed = parse.length ? this.visitor.init(context, opts).start(tree) : '';
-    let result = (pre.length && parsed.length) ? pre + '\n' + parsed : pre + parsed;
+    let visited = parse.length ? this.visitor.init(context, opts).start(tree) : '';
+    let result = (pre.length && visited.length) ? pre + '\n' + visited : pre + visited;
 
     return (result.length && post.length) ? result + '\n' + post : result + post;
   }
+ */
+  lexParseVisit(input, context, opts) {
 
-  normalize(s) {
-    return s && s.length ?
-      s.replace(/\r/g, '')
-        .replace(/\\n/g, '')
-        .replace(/\n/g, ' ') : '';
+    let { pre, parse, post } = this.preparse(input, opts);
+
+    opts.trace && (pre.length || post.length) &&
+       console.log('preParse("' + pre + '", "' + post + '");');
+
+    let visited = "";
+    if (parse.length) {
+      let tree = this.lexParse(parse, opts);
+      visited = this.visitor.init(context, opts).start(tree);
+    }
+
+    let result = (pre.length && visited.length) ? pre + '\n' + visited : pre + visited;
+    return (result.length && post.length) ? result + '\n' + post : result + post;
   }
 
   resolveEntities(result) {
@@ -148,12 +158,15 @@ class RiScript {
 
   preparse(input, opts = {}) {
     let res = { pre: '', parse: input || '', post: '' };
-    if (!input || !input.length) return res;
-    input = input.replace(CONT_RE, '');
+    if (!input.length) return res;
+
     if (!opts.nopre) { // DOC:
-      let lines = (input || '').split(/\r?\n/g);
+
+      input = input.replace(CONT_RE, '');
+      let lines = (input).split(/\r?\n/g);
       let parse = [], pre = [], post = [], mode = 0;
       let dynamic = l => l.startsWith('{') || PARSE_RE.test(l);
+
       lines.forEach(line => {
         if (mode === 0) {      // pre
           if (dynamic(line)) {
@@ -184,6 +197,7 @@ class RiScript {
           }
         }
       });
+
       res.pre = pre.length ? pre.join('\n') : '';
       res.parse = parse.length ? parse.join('\n') : '';
       res.post = post.length ? post.join('\n') : '';
