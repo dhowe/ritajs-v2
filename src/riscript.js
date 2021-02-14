@@ -21,7 +21,6 @@ class RiScript {
   evaluate(input, ctx, opts = {}) {
 
     ctx = ctx || {};
-
     let onepass = opts.singlePass; // TODO: doc
     let last, expr = input, trace = opts.trace;
 
@@ -101,46 +100,37 @@ class RiScript {
       silent || console.error("PARSER: '" + input + "'\n" + e.message + '\n');
       throw e;
     }
-    trace && console.log('\n' + tree.toStringTree(this.parser.ruleNames) + '\n');
+    //trace && 
+    console.log('\n' + tree.toStringTree(this.parser.ruleNames) + '\n');
     return tree;
   }
 
   lexParse(input, opts) {
+    let t, perf = true || opts.perf;
+    if (perf) t = clock()
     let tokens = this.lex(input, opts);
-    return this.parse(tokens, input, opts);
+    if (perf) {
+      console.log("[lexing] " + clock(t) + "ms");
+      t = clock();
+    }
+    let result = this.parse(tokens, input, opts);
+    console.log("[parsing] " + clock(t) + "ms");
+    return result;
   }
 
-  lexParseVisitNoPre(input, context, opts) {
-    if (!input || !input.length) return '';
-    let tree = this.lexParse(input, opts);
-    return this.visitor.init(context, opts).start(tree);
-  }
-
-/*   lexParseVisit(input, context, opts) {
-
-    let { pre, parse, post } = this.preparse(input, opts);
-
-    opts.trace && (pre.length || post.length) &&
-       console.log('preParse("' + pre + '", "' + post + '");');
-
-    let tree = parse.length && this.lexParse(parse, opts);
-    let visited = parse.length ? this.visitor.init(context, opts).start(tree) : '';
-    let result = (pre.length && visited.length) ? pre + '\n' + visited : pre + visited;
-
-    return (result.length && post.length) ? result + '\n' + post : result + post;
-  }
- */
   lexParseVisit(input, context, opts) {
 
     let { pre, parse, post } = this.preparse(input, opts);
 
     opts.trace && (pre.length || post.length) &&
-       console.log('preParse("' + pre + '", "' + post + '");');
+      console.log('preParse("' + pre + '", "' + post + '");');
 
-    let visited = "";
+    let visited = "", perf = true || opts.perf;
     if (parse.length) {
-      let tree = this.lexParse(parse, opts);
+      let t, tree = this.lexParse(parse, opts);
+      if (perf) t = clock();
       visited = this.visitor.init(context, opts).start(tree);
+      if (perf) console.log("[visiting] " + clock(t) + "ms");
     }
 
     let result = (pre.length && visited.length) ? pre + '\n' + visited : pre + visited;
@@ -223,6 +213,12 @@ class RiScript {
   static identity(s) {
     return s;
   }
+}
+
+function clock(start) {
+    if ( !start ) return process.hrtime();
+    var end = process.hrtime(start);
+    return Math.round((end[0]*1000) + (end[1]/1000000));
 }
 
 function RiTa() { return RiScript.parent; }
