@@ -1,9 +1,7 @@
-// const expect = require('chai').expect;
-// const RiTa = require('../src/rita_api');
+import { expect } from 'chai';
+import RiTa from '../src/rita';
 
 describe('RiTa.Conjugator', () => {
-
-  if (typeof module !== 'undefined') require('./before');
 
   it('Should call pastPart', () => {
 
@@ -79,7 +77,7 @@ describe('RiTa.Conjugator', () => {
   });
 
   it('Should call conjugate', () => {
-    let args, s, a;
+    let args, s, a, c;
 
     equal("swum", RiTa.pastPart("swim"));
 

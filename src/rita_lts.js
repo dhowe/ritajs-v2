@@ -1,4 +1,4 @@
-const Util = require("./util");
+import Util from './util';
 
 
 /**
@@ -13318,4 +13318,4 @@ LetterToSound.RULES = [
   'S 4 b 13098 13079'
 ];
 
-module && (module.exports = LetterToSound);
+export default LetterToSound;

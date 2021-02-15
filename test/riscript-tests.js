@@ -1,9 +1,8 @@
+import { expect } from 'chai';
+import RiTa from '../src/rita';
+import Operator from "../src/operator"
 
 describe('RiTa.RiScript', function () {
-
-  if (typeof module !== 'undefined') {
-    require('./before');
-  }
 
   const ST = { silent: 1 }, TP = { trace: 1 }, TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
@@ -1350,8 +1349,6 @@ describe('RiTa.RiScript', function () {
 
   describe('Operators', () => {
     if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') { // skip for prod
-
-      Operator = require("../src/operator");
 
       it('Should invoke assignment ops', () => {
 

@@ -1,6 +1,7 @@
-describe('RiTa.Core', () => {
+import { expect } from 'chai';
+import RiTa from '../src/rita';
 
-  if (typeof module !== 'undefined') require('./before');
+describe('RiTa.Core', () => {
 
   it('Should have access to statics', () => {
     //console.log(process.env.NODE_ENV, process.env.npm_package_version, RiTa.VERSION);

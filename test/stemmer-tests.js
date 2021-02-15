@@ -1,8 +1,7 @@
+import { expect } from 'chai';
+import RiTa from '../src/rita';
 
 describe('RiTa.Stemmer', () => {
-
-  if (typeof module !== 'undefined') require('./before');
-
 
   it('Should test stem1', () => {
 		test("accompanying", "accompani");

@@ -1,9 +1,8 @@
-const deepMerge = require('deepmerge');
-const { expect } = require('chai');
+import deepMerge from 'deepmerge';
+import { expect } from 'chai';
+import RiTa from '../src/rita';
 
 describe('RiTa.Util', () => {
-
-  if (typeof module !== 'undefined') require('./before');
 
   const rand = RiTa.randomizer;
 

@@ -1,10 +1,11 @@
-const antlr4 = require('antlr4');
-const { decode } = require('he');
-const Visitor = require('./visitor');
-const Lexer = require('../grammar/antlr/RiScriptLexer');
-const Parser = require('../grammar/antlr/RiScriptParser');
-const { LexerErrors, ParserErrors } = require('./errors');
+import antlr4 from 'antlr4';
+import { decode } from 'he';
+import Visitor from './visitor';
+import Lexer from '../grammar/antlr/RiScriptLexer';
+import  Parser from '../grammar/antlr/RiScriptParser';
+import { LexerErrors, ParserErrors } from './errors';
 
+//const Lexer = RiScriptLexer;
 class RiScript {
 
   // TODO: quoted strings with spaces in choices or symbols, weighted-empty-string in choice 
@@ -50,7 +51,7 @@ class RiScript {
 
     // create the lexer
     let stream = new antlr4.InputStream(input);
-    this.lexer = new Lexer.RiScriptLexer(stream);
+    this.lexer = new Lexer(stream);
     this.lexer.removeErrorListeners();
     this.lexer.addErrorListener(new LexerErrors());
 
@@ -86,7 +87,7 @@ class RiScript {
   parse(tokens, input, opts) {
 
     // create the parser
-    this.parser = new Parser.RiScriptParser(tokens);
+    this.parser = new Parser(tokens);
     this.parser.removeErrorListeners();
     this.parser.addErrorListener(new ParserErrors());
 
@@ -116,26 +117,26 @@ class RiScript {
     return this.visitor.init(context, opts).start(tree);
   }
 
-/*   lexParseVisit(input, context, opts) {
-
-    let { pre, parse, post } = this.preparse(input, opts);
-
-    opts.trace && (pre.length || post.length) &&
-       console.log('preParse("' + pre + '", "' + post + '");');
-
-    let tree = parse.length && this.lexParse(parse, opts);
-    let visited = parse.length ? this.visitor.init(context, opts).start(tree) : '';
-    let result = (pre.length && visited.length) ? pre + '\n' + visited : pre + visited;
-
-    return (result.length && post.length) ? result + '\n' + post : result + post;
-  }
- */
+  /*   lexParseVisit(input, context, opts) {
+  
+      let { pre, parse, post } = this.preparse(input, opts);
+  
+      opts.trace && (pre.length || post.length) &&
+         console.log('preParse("' + pre + '", "' + post + '");');
+  
+      let tree = parse.length && this.lexParse(parse, opts);
+      let visited = parse.length ? this.visitor.init(context, opts).start(tree) : '';
+      let result = (pre.length && visited.length) ? pre + '\n' + visited : pre + visited;
+  
+      return (result.length && post.length) ? result + '\n' + post : result + post;
+    }
+   */
   lexParseVisit(input, context, opts) {
 
     let { pre, parse, post } = this.preparse(input, opts);
 
     opts.trace && (pre.length || post.length) &&
-       console.log('preParse("' + pre + '", "' + post + '");');
+      console.log('preParse("' + pre + '", "' + post + '");');
 
     let visited = "";
     if (parse.length) {
@@ -289,4 +290,4 @@ const SYM_RE = /\${1,2}\w+/;
 const CONT_RE = /\\\n/;
 const PARSE_RE = /([\/()\$|\[\]])|\.\S/;
 
-module && (module.exports = RiScript);
+export default RiScript;

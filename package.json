@@ -22,17 +22,17 @@
   "scripts": {
     "clean": "rm -f dist/*.*",
     "build": "yarn clean && webpack",
-    "test": "mocha",
+    "test": "mocha -r esm",
     "watch": "webpack --watch",
     "watch.grammar": "npm-watch",
     "test-cov": "nyc --reporter=html mocha && open coverage/index.html",
     "bump": "yarn version --no-git-tag-version --prerelease",
     "bump.version": "yarn version --no-git-tag-version --patch",
     "version": "",
-    "test.g": "mocha ./test/*.js -g ",
+    "test.g": "mocha -r esm ./test/*.js -g ",
     "test.prod": "NODE_ENV=production mocha ./test/*.js",
     "test-g.prod": "NODE_ENV=production mocha ./test/*.js -g",
-    "test.quick": "mocha './test/**/!(lexicon-tests).js'",
+    "test.quick": "mocha -r esm './test/**/!(lexicon-tests).js'",
     "compile": "yarn antlr4.js",
     "analyze": "webpack -c config/webpack-web.js --profile --json > stats.json",
     "view.stats": "webpack-bundle-analyzer stats.json",
@@ -56,6 +56,7 @@
     "he": "^1.2.0"
   },
   "devDependencies": {
+    "esm": "^3.2.25",
     "chai": "^4.2.0",
     "codecov": "^3.8.1",
     "mocha": "^6.2.2",

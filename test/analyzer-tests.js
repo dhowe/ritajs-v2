@@ -1,17 +1,17 @@
-// const expect = require('chai').expect;
-// const RiTa = require('../src/rita_api');
+import { expect } from 'chai';
+import RiTa from '../src/rita';
 
 describe('RiTa.Analyzer', () => {
 
-  if (typeof module !== 'undefined') require('./before');
+  const hasLex = process.env.NODE_ENV
+    !== 'production' || RiTa.lexicon().size();
 
   it('Should call analyzeWord', () => {
 
-		let data = RiTa.analyzer.analyzeWord("abandon");
-		expect(data.phones).eq("ah-b-ae-n-d-ah-n ");
-		expect(data.stresses).eq("0/1/0 ");
-		expect(data.syllables).eq("ah/b-ae-n/d-ah-n ");
-		//console.log(data);
+    let data = RiTa.analyzer.analyzeWord("abandon");
+    expect(data.phones).eq("ah-b-ae-n-d-ah-n ");
+    expect(data.stresses).eq("0/1/0 ");
+    expect(data.syllables).eq("ah/b-ae-n/d-ah-n ");
   });
 
   it('Should call analyze.lts', () => {
@@ -161,13 +161,13 @@ describe('RiTa.Analyzer', () => {
   });
 
   /*it('Should call phones(raw)', () => {
-
+ 
     let silent = RiTa.SILENCE_LTS;
     //RiTa.SILENCE_LTS = true;
-
+ 
     let result, answer;
     let opts = { 'rawPhones': true };
-
+ 
     eq(RiTa.phones("", opts), "");
     eq(RiTa.phones("b", opts), "b");
     eq(RiTa.phones("B", opts), "b");
@@ -175,34 +175,34 @@ describe('RiTa.Analyzer', () => {
     eq(RiTa.phones("flowers", opts), "f-l-aw-er-z");
     eq(RiTa.phones("mice", opts), "m-ay-s");
     eq(RiTa.phones("ant", opts), "ae-n-t");
-
+ 
     eq(RiTa.phones("The.", opts), "dh-ah .");
-
+ 
     // different without lexicon ------------------------------------------
-
+ 
     result = RiTa.phones("The boy jumped over the wild dog.", opts);
     answer = hasLex ? "dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-ao-g ." : 'dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-aa-g .';
     eq(result, answer);
-
+ 
     result = RiTa.phones("The boy ran to the store.", opts);
     answer = hasLex ? "dh-ah b-oy r-ae-n t-uw dh-ah s-t-ao-r ." : 'dh-ah b-oy r-ah-n t-ow dh-ah s-t-ao-r .';
     eq(result, answer);
-
+ 
     result = RiTa.phones("The dog ran faster than the other dog.  But the other dog was prettier.", opts);
     answer = hasLex ? "dh-ah d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ah ah-dh-er d-ao-g . b-ah-t dh-ah ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er ." : 'dh-ah d-aa-g r-ah-n f-ae-s-t-er th-ae-n dh-ah ah-dh-er d-aa-g . b-ah-t dh-ah ah-dh-er d-aa-g w-ah-z p-r-eh-t-iy-er .';
     eq(result, answer);
-
+ 
     eq(RiTa.phones("quiche", opts), hasLex ? "k-iy-sh" : 'k-w-ih-sh');
     eq(RiTa.phones("said", opts), hasLex ? "s-eh-d" : 's-ey-d');
     eq(RiTa.phones("chevrolet", opts), hasLex ? "sh-eh-v-r-ow-l-ey" : 'ch-eh-v-r-ow-l-ah-t');
     eq(RiTa.phones("women", opts), hasLex ? "w-ih-m-eh-n" : 'w-ow-m-eh-n');
     eq(RiTa.phones("genuine", opts), hasLex ? "jh-eh-n-y-uw-w-ah-n" : 'jh-eh-n-y-ah-ay-n');
-
+ 
     if (!hasLex) return; // NOTE: below may fail without lexicon
-
+ 
     expect(RiTa.phones("deforestations", opts)).eq('d-ih-f-ao-r-ih-s-t-ey-sh-ah-n-z');
     expect(RiTa.phones("schizophrenias", opts)).eq('s-k-ih-t-s-ah-f-r-iy-n-iy-ah-z');
-
+ 
     RiTa.SILENCE_LTS = silent;
   });*/
 
@@ -702,4 +702,5 @@ describe('RiTa.Analyzer', () => {
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }
   function eq(a, b, m) { expect(a).eq(b, m); }
+
 });
