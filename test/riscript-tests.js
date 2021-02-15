@@ -1,5 +1,3 @@
-const { expect } = require('chai');
-
 describe('RiTa.RiScript', function () {
 
   if (typeof module !== 'undefined') {
