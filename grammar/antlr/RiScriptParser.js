@@ -1,28 +1,26 @@
-// Generated from grammar/RiScriptParser.g4 by ANTLR 4.8
+// Generated from grammar/RiScriptParser.g4 by ANTLR 4.9.1
 // jshint ignore: start
-var antlr4 = require('antlr4/index');
-var RiScriptParserListener = require('./RiScriptParserListener').RiScriptParserListener;
-var RiScriptParserVisitor = require('./RiScriptParserVisitor').RiScriptParserVisitor;
-
-var grammarFileName = "RiScriptParser.g4";
+import antlr4 from 'antlr4';
+import RiScriptParserListener from './RiScriptParserListener.js';
+import RiScriptParserVisitor from './RiScriptParserVisitor.js';
 
 
-var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
-    "\u0003$\u00cd\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004\u0004\t",
-    "\u0004\u0004\u0005\t\u0005\u0004\u0006\t\u0006\u0004\u0007\t\u0007\u0004",
-    "\b\t\b\u0004\t\t\t\u0004\n\t\n\u0004\u000b\t\u000b\u0004\f\t\f\u0004",
-    "\r\t\r\u0004\u000e\t\u000e\u0004\u000f\t\u000f\u0004\u0010\t\u0010\u0004",
-    "\u0011\t\u0011\u0003\u0002\u0003\u0002\u0003\u0002\u0007\u0002&\n\u0002",
-    "\f\u0002\u000e\u0002)\u000b\u0002\u0003\u0002\u0003\u0002\u0003\u0003",
-    "\u0003\u0003\u0003\u0003\u0007\u00030\n\u0003\f\u0003\u000e\u00033\u000b",
-    "\u0003\u0003\u0004\u0003\u0004\u0003\u0004\u0003\u0004\u0006\u00049",
-    "\n\u0004\r\u0004\u000e\u0004:\u0003\u0005\u0007\u0005>\n\u0005\f\u0005",
-    "\u000e\u0005A\u000b\u0005\u0003\u0005\u0003\u0005\u0006\u0005E\n\u0005",
-    "\r\u0005\u000e\u0005F\u0003\u0005\u0003\u0005\u0003\u0005\u0007\u0005",
-    "L\n\u0005\f\u0005\u000e\u0005O\u000b\u0005\u0003\u0005\u0003\u0005\u0003",
-    "\u0006\u0003\u0006\u0007\u0006U\n\u0006\f\u0006\u000e\u0006X\u000b\u0006",
-    "\u0003\u0006\u0003\u0006\u0007\u0006\\\n\u0006\f\u0006\u000e\u0006_",
-    "\u000b\u0006\u0003\u0006\u0003\u0006\u0007\u0006c\n\u0006\f\u0006\u000e",
+const serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786",
+    "\u5964\u0003$\u00cd\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004\u0004",
+    "\t\u0004\u0004\u0005\t\u0005\u0004\u0006\t\u0006\u0004\u0007\t\u0007",
+    "\u0004\b\t\b\u0004\t\t\t\u0004\n\t\n\u0004\u000b\t\u000b\u0004\f\t\f",
+    "\u0004\r\t\r\u0004\u000e\t\u000e\u0004\u000f\t\u000f\u0004\u0010\t\u0010",
+    "\u0004\u0011\t\u0011\u0003\u0002\u0003\u0002\u0003\u0002\u0007\u0002",
+    "&\n\u0002\f\u0002\u000e\u0002)\u000b\u0002\u0003\u0002\u0003\u0002\u0003",
+    "\u0003\u0003\u0003\u0003\u0003\u0007\u00030\n\u0003\f\u0003\u000e\u0003",
+    "3\u000b\u0003\u0003\u0004\u0003\u0004\u0003\u0004\u0003\u0004\u0006",
+    "\u00049\n\u0004\r\u0004\u000e\u0004:\u0003\u0005\u0007\u0005>\n\u0005",
+    "\f\u0005\u000e\u0005A\u000b\u0005\u0003\u0005\u0003\u0005\u0006\u0005",
+    "E\n\u0005\r\u0005\u000e\u0005F\u0003\u0005\u0003\u0005\u0003\u0005\u0007",
+    "\u0005L\n\u0005\f\u0005\u000e\u0005O\u000b\u0005\u0003\u0005\u0003\u0005",
+    "\u0003\u0006\u0003\u0006\u0007\u0006U\n\u0006\f\u0006\u000e\u0006X\u000b",
+    "\u0006\u0003\u0006\u0003\u0006\u0007\u0006\\\n\u0006\f\u0006\u000e\u0006",
+    "_\u000b\u0006\u0003\u0006\u0003\u0006\u0007\u0006c\n\u0006\f\u0006\u000e",
     "\u0006f\u000b\u0006\u0003\u0006\u0005\u0006i\n\u0006\u0003\u0007\u0007",
     "\u0007l\n\u0007\f\u0007\u000e\u0007o\u000b\u0007\u0003\u0007\u0003\u0007",
     "\u0003\u0007\u0003\u0007\u0007\u0007u\n\u0007\f\u0007\u000e\u0007x\u000b",
@@ -139,43 +137,821 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u00ab\u00ad\u00b0\u00b3\u00be\u00c4\u00ca"].join("");
 
 
-var atn = new antlr4.atn.ATNDeserializer().deserialize(serializedATN);
+const atn = new antlr4.atn.ATNDeserializer().deserialize(serializedATN);
 
-var decisionsToDFA = atn.decisionToState.map( function(ds, index) { return new antlr4.dfa.DFA(ds, index); });
+const decisionsToDFA = atn.decisionToState.map( (ds, index) => new antlr4.dfa.DFA(ds, index) );
 
-var sharedContextCache = new antlr4.PredictionContextCache();
+const sharedContextCache = new antlr4.PredictionContextCache();
 
-var literalNames = [ null, null, null, null, null, "'>'", "'<'", "'('", 
-                     null, "'['", "']'", "'{'", "'}'", "'.'", null, "'/'", 
-                     "'!'", "'*'", "'^'", "'$'", "','", null, "'\\'" ];
+export default class RiScriptParser extends antlr4.Parser {
 
-var symbolicNames = [ null, "LCOMM", "BCOMM", "Q", "MDS", "GT", "LT", "LP", 
-                      "RP", "LB", "RB", "LCB", "RCB", "DOT", "WS", "FS", 
-                      "EXC", "AST", "HAT", "DOL", "COM", "CONT", "BS", "NL", 
-                      "DYN", "SYM", "OR", "EQ", "TF", "ENT", "INT", "OP", 
-                      "CHR", "MDT", "MDE" ];
+    static grammarFileName = "RiScriptParser.g4";
+    static literalNames = [ null, null, null, null, null, "'>'", "'<'", 
+                            "'('", null, "'['", "']'", "'{'", "'}'", "'.'", 
+                            null, "'/'", "'!'", "'*'", "'^'", "'$'", "','", 
+                            null, "'\\'" ];
+    static symbolicNames = [ null, "LCOMM", "BCOMM", "Q", "MDS", "GT", "LT", 
+                             "LP", "RP", "LB", "RB", "LCB", "RCB", "DOT", 
+                             "WS", "FS", "EXC", "AST", "HAT", "DOL", "COM", 
+                             "CONT", "BS", "NL", "DYN", "SYM", "OR", "EQ", 
+                             "TF", "ENT", "INT", "OP", "CHR", "MDT", "MDE" ];
+    static ruleNames = [ "script", "line", "expr", "cexpr", "cond", "weight", 
+                         "choice", "assign", "chars", "dynamic", "symbol", 
+                         "wexpr", "link", "url", "transform", "op" ];
 
-var ruleNames =  [ "script", "line", "expr", "cexpr", "cond", "weight", 
-                   "choice", "assign", "chars", "dynamic", "symbol", "wexpr", 
-                   "link", "url", "transform", "op" ];
+    constructor(input) {
+        super(input);
+        this._interp = new antlr4.atn.ParserATNSimulator(this, atn, decisionsToDFA, sharedContextCache);
+        this.ruleNames = RiScriptParser.ruleNames;
+        this.literalNames = RiScriptParser.literalNames;
+        this.symbolicNames = RiScriptParser.symbolicNames;
+    }
 
-function RiScriptParser (input) {
-	antlr4.Parser.call(this, input);
-    this._interp = new antlr4.atn.ParserATNSimulator(this, atn, decisionsToDFA, sharedContextCache);
-    this.ruleNames = ruleNames;
-    this.literalNames = literalNames;
-    this.symbolicNames = symbolicNames;
-    return this;
-}
+    get atn() {
+        return atn;
+    }
 
-RiScriptParser.prototype = Object.create(antlr4.Parser.prototype);
-RiScriptParser.prototype.constructor = RiScriptParser;
 
-Object.defineProperty(RiScriptParser.prototype, "atn", {
-	get : function() {
-		return atn;
+
+	script() {
+	    let localctx = new ScriptContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 0, RiScriptParser.RULE_script);
+	    var _la = 0; // Token type
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 32;
+	        this.line();
+	        this.state = 37;
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        while(_la===RiScriptParser.NL) {
+	            this.state = 33;
+	            this.match(RiScriptParser.NL);
+	            this.state = 34;
+	            this.line();
+	            this.state = 39;
+	            this._errHandler.sync(this);
+	            _la = this._input.LA(1);
+	        }
+	        this.state = 40;
+	        this.match(RiScriptParser.EOF);
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
 	}
-});
+
+
+
+	line() {
+	    let localctx = new LineContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 2, RiScriptParser.RULE_line);
+	    var _la = 0; // Token type
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 47;
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        while(((((_la - 5)) & ~0x1f) == 0 && ((1 << (_la - 5)) & ((1 << (RiScriptParser.GT - 5)) | (1 << (RiScriptParser.LT - 5)) | (1 << (RiScriptParser.LP - 5)) | (1 << (RiScriptParser.LB - 5)) | (1 << (RiScriptParser.LCB - 5)) | (1 << (RiScriptParser.DOT - 5)) | (1 << (RiScriptParser.WS - 5)) | (1 << (RiScriptParser.FS - 5)) | (1 << (RiScriptParser.EXC - 5)) | (1 << (RiScriptParser.AST - 5)) | (1 << (RiScriptParser.HAT - 5)) | (1 << (RiScriptParser.DOL - 5)) | (1 << (RiScriptParser.COM - 5)) | (1 << (RiScriptParser.DYN - 5)) | (1 << (RiScriptParser.SYM - 5)) | (1 << (RiScriptParser.TF - 5)) | (1 << (RiScriptParser.ENT - 5)) | (1 << (RiScriptParser.INT - 5)) | (1 << (RiScriptParser.CHR - 5)))) !== 0)) {
+	            this.state = 45;
+	            this._errHandler.sync(this);
+	            var la_ = this._interp.adaptivePredict(this._input,1,this._ctx);
+	            switch(la_) {
+	            case 1:
+	                this.state = 42;
+	                this.link();
+	                break;
+
+	            case 2:
+	                this.state = 43;
+	                this.expr();
+	                break;
+
+	            case 3:
+	                this.state = 44;
+	                this.cexpr();
+	                break;
+
+	            }
+	            this.state = 49;
+	            this._errHandler.sync(this);
+	            _la = this._input.LA(1);
+	        }
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	expr() {
+	    let localctx = new ExprContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 4, RiScriptParser.RULE_expr);
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 54; 
+	        this._errHandler.sync(this);
+	        var _alt = 1;
+	        do {
+	        	switch (_alt) {
+	        	case 1:
+	        		this.state = 54;
+	        		this._errHandler.sync(this);
+	        		var la_ = this._interp.adaptivePredict(this._input,3,this._ctx);
+	        		switch(la_) {
+	        		case 1:
+	        		    this.state = 50;
+	        		    this.symbol();
+	        		    break;
+
+	        		case 2:
+	        		    this.state = 51;
+	        		    this.choice();
+	        		    break;
+
+	        		case 3:
+	        		    this.state = 52;
+	        		    this.assign();
+	        		    break;
+
+	        		case 4:
+	        		    this.state = 53;
+	        		    this.chars();
+	        		    break;
+
+	        		}
+	        		break;
+	        	default:
+	        		throw new antlr4.error.NoViableAltException(this);
+	        	}
+	        	this.state = 56; 
+	        	this._errHandler.sync(this);
+	        	_alt = this._interp.adaptivePredict(this._input,4, this._ctx);
+	        } while ( _alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER );
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	cexpr() {
+	    let localctx = new CexprContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 6, RiScriptParser.RULE_cexpr);
+	    var _la = 0; // Token type
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 61;
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        while(_la===RiScriptParser.WS) {
+	            this.state = 58;
+	            this.match(RiScriptParser.WS);
+	            this.state = 63;
+	            this._errHandler.sync(this);
+	            _la = this._input.LA(1);
+	        }
+	        this.state = 64;
+	        this.match(RiScriptParser.LCB);
+	        this.state = 66; 
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        do {
+	            this.state = 65;
+	            this.cond();
+	            this.state = 68; 
+	            this._errHandler.sync(this);
+	            _la = this._input.LA(1);
+	        } while(_la===RiScriptParser.SYM || _la===RiScriptParser.TF);
+	        this.state = 70;
+	        this.match(RiScriptParser.RCB);
+	        this.state = 71;
+	        this.match(RiScriptParser.Q);
+	        this.state = 75;
+	        this._errHandler.sync(this);
+	        var _alt = this._interp.adaptivePredict(this._input,7,this._ctx)
+	        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
+	            if(_alt===1) {
+	                this.state = 72;
+	                this.match(RiScriptParser.WS); 
+	            }
+	            this.state = 77;
+	            this._errHandler.sync(this);
+	            _alt = this._interp.adaptivePredict(this._input,7,this._ctx);
+	        }
+
+	        this.state = 78;
+	        this.expr();
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	cond() {
+	    let localctx = new CondContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 8, RiScriptParser.RULE_cond);
+	    var _la = 0; // Token type
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 80;
+	        this.symbol();
+	        this.state = 84;
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        while(_la===RiScriptParser.WS) {
+	            this.state = 81;
+	            this.match(RiScriptParser.WS);
+	            this.state = 86;
+	            this._errHandler.sync(this);
+	            _la = this._input.LA(1);
+	        }
+	        this.state = 87;
+	        this.op();
+	        this.state = 91;
+	        this._errHandler.sync(this);
+	        var _alt = this._interp.adaptivePredict(this._input,9,this._ctx)
+	        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
+	            if(_alt===1) {
+	                this.state = 88;
+	                this.match(RiScriptParser.WS); 
+	            }
+	            this.state = 93;
+	            this._errHandler.sync(this);
+	            _alt = this._interp.adaptivePredict(this._input,9,this._ctx);
+	        }
+
+	        this.state = 94;
+	        this.chars();
+	        this.state = 98;
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        while(_la===RiScriptParser.WS) {
+	            this.state = 95;
+	            this.match(RiScriptParser.WS);
+	            this.state = 100;
+	            this._errHandler.sync(this);
+	            _la = this._input.LA(1);
+	        }
+	        this.state = 102;
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        if(_la===RiScriptParser.COM) {
+	            this.state = 101;
+	            this.match(RiScriptParser.COM);
+	        }
+
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	weight() {
+	    let localctx = new WeightContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 10, RiScriptParser.RULE_weight);
+	    var _la = 0; // Token type
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 107;
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        while(_la===RiScriptParser.WS) {
+	            this.state = 104;
+	            this.match(RiScriptParser.WS);
+	            this.state = 109;
+	            this._errHandler.sync(this);
+	            _la = this._input.LA(1);
+	        }
+	        this.state = 110;
+	        this.match(RiScriptParser.LB);
+	        this.state = 111;
+	        this.match(RiScriptParser.INT);
+	        this.state = 112;
+	        this.match(RiScriptParser.RB);
+	        this.state = 116;
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        while(_la===RiScriptParser.WS) {
+	            this.state = 113;
+	            this.match(RiScriptParser.WS);
+	            this.state = 118;
+	            this._errHandler.sync(this);
+	            _la = this._input.LA(1);
+	        }
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	choice() {
+	    let localctx = new ChoiceContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 12, RiScriptParser.RULE_choice);
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 119;
+	        this.match(RiScriptParser.LP);
+	        this.state = 125;
+	        this._errHandler.sync(this);
+	        var _alt = this._interp.adaptivePredict(this._input,14,this._ctx)
+	        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
+	            if(_alt===1) {
+	                this.state = 120;
+	                this.wexpr();
+	                this.state = 121;
+	                this.match(RiScriptParser.OR); 
+	            }
+	            this.state = 127;
+	            this._errHandler.sync(this);
+	            _alt = this._interp.adaptivePredict(this._input,14,this._ctx);
+	        }
+
+	        this.state = 128;
+	        this.wexpr();
+	        this.state = 129;
+	        this.match(RiScriptParser.RP);
+	        this.state = 134;
+	        this._errHandler.sync(this);
+	        var _alt = this._interp.adaptivePredict(this._input,15,this._ctx)
+	        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
+	            if(_alt===1) {
+	                this.state = 131;
+	                this.transform(); 
+	            }
+	            this.state = 136;
+	            this._errHandler.sync(this);
+	            _alt = this._interp.adaptivePredict(this._input,15,this._ctx);
+	        }
+
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	assign() {
+	    let localctx = new AssignContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 14, RiScriptParser.RULE_assign);
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 139;
+	        this._errHandler.sync(this);
+	        switch(this._input.LA(1)) {
+	        case RiScriptParser.DYN:
+	            this.state = 137;
+	            this.dynamic();
+	            break;
+	        case RiScriptParser.SYM:
+	        case RiScriptParser.TF:
+	            this.state = 138;
+	            this.symbol();
+	            break;
+	        default:
+	            throw new antlr4.error.NoViableAltException(this);
+	        }
+	        this.state = 141;
+	        this.match(RiScriptParser.EQ);
+	        this.state = 142;
+	        this.expr();
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	chars() {
+	    let localctx = new CharsContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 16, RiScriptParser.RULE_chars);
+	    var _la = 0; // Token type
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 148; 
+	        this._errHandler.sync(this);
+	        var _alt = 1;
+	        do {
+	        	switch (_alt) {
+	        	case 1:
+	        		this.state = 148;
+	        		this._errHandler.sync(this);
+	        		switch(this._input.LA(1)) {
+	        		case RiScriptParser.GT:
+	        		case RiScriptParser.LT:
+	        		case RiScriptParser.DOT:
+	        		case RiScriptParser.WS:
+	        		case RiScriptParser.FS:
+	        		case RiScriptParser.EXC:
+	        		case RiScriptParser.AST:
+	        		case RiScriptParser.HAT:
+	        		case RiScriptParser.DOL:
+	        		case RiScriptParser.COM:
+	        		    this.state = 144;
+	        		    _la = this._input.LA(1);
+	        		    if(!((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << RiScriptParser.GT) | (1 << RiScriptParser.LT) | (1 << RiScriptParser.DOT) | (1 << RiScriptParser.WS) | (1 << RiScriptParser.FS) | (1 << RiScriptParser.EXC) | (1 << RiScriptParser.AST) | (1 << RiScriptParser.HAT) | (1 << RiScriptParser.DOL) | (1 << RiScriptParser.COM))) !== 0))) {
+	        		    this._errHandler.recoverInline(this);
+	        		    }
+	        		    else {
+	        		    	this._errHandler.reportMatch(this);
+	        		        this.consume();
+	        		    }
+	        		    break;
+	        		case RiScriptParser.CHR:
+	        		    this.state = 145;
+	        		    this.match(RiScriptParser.CHR);
+	        		    break;
+	        		case RiScriptParser.ENT:
+	        		    this.state = 146;
+	        		    this.match(RiScriptParser.ENT);
+	        		    break;
+	        		case RiScriptParser.INT:
+	        		    this.state = 147;
+	        		    this.match(RiScriptParser.INT);
+	        		    break;
+	        		default:
+	        		    throw new antlr4.error.NoViableAltException(this);
+	        		}
+	        		break;
+	        	default:
+	        		throw new antlr4.error.NoViableAltException(this);
+	        	}
+	        	this.state = 150; 
+	        	this._errHandler.sync(this);
+	        	_alt = this._interp.adaptivePredict(this._input,18, this._ctx);
+	        } while ( _alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER );
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	dynamic() {
+	    let localctx = new DynamicContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 18, RiScriptParser.RULE_dynamic);
+	    var _la = 0; // Token type
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 152;
+	        this.match(RiScriptParser.DYN);
+	        this.state = 156;
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        while(_la===RiScriptParser.TF) {
+	            this.state = 153;
+	            this.transform();
+	            this.state = 158;
+	            this._errHandler.sync(this);
+	            _la = this._input.LA(1);
+	        }
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	symbol() {
+	    let localctx = new SymbolContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 20, RiScriptParser.RULE_symbol);
+	    try {
+	        this.state = 171;
+	        this._errHandler.sync(this);
+	        switch(this._input.LA(1)) {
+	        case RiScriptParser.SYM:
+	            this.enterOuterAlt(localctx, 1);
+	            this.state = 159;
+	            this.match(RiScriptParser.SYM);
+	            this.state = 163;
+	            this._errHandler.sync(this);
+	            var _alt = this._interp.adaptivePredict(this._input,20,this._ctx)
+	            while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
+	                if(_alt===1) {
+	                    this.state = 160;
+	                    this.transform(); 
+	                }
+	                this.state = 165;
+	                this._errHandler.sync(this);
+	                _alt = this._interp.adaptivePredict(this._input,20,this._ctx);
+	            }
+
+	            break;
+	        case RiScriptParser.TF:
+	            this.enterOuterAlt(localctx, 2);
+	            this.state = 167; 
+	            this._errHandler.sync(this);
+	            var _alt = 1;
+	            do {
+	            	switch (_alt) {
+	            	case 1:
+	            		this.state = 166;
+	            		this.transform();
+	            		break;
+	            	default:
+	            		throw new antlr4.error.NoViableAltException(this);
+	            	}
+	            	this.state = 169; 
+	            	this._errHandler.sync(this);
+	            	_alt = this._interp.adaptivePredict(this._input,21, this._ctx);
+	            } while ( _alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER );
+	            break;
+	        default:
+	            throw new antlr4.error.NoViableAltException(this);
+	        }
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	wexpr() {
+	    let localctx = new WexprContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 22, RiScriptParser.RULE_wexpr);
+	    var _la = 0; // Token type
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 174;
+	        this._errHandler.sync(this);
+	        var la_ = this._interp.adaptivePredict(this._input,23,this._ctx);
+	        if(la_===1) {
+	            this.state = 173;
+	            this.expr();
+
+	        }
+	        this.state = 177;
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        if(_la===RiScriptParser.LB || _la===RiScriptParser.WS) {
+	            this.state = 176;
+	            this.weight();
+	        }
+
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	link() {
+	    let localctx = new LinkContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 24, RiScriptParser.RULE_link);
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 179;
+	        this.match(RiScriptParser.LB);
+	        this.state = 180;
+	        this.expr();
+	        this.state = 181;
+	        this.match(RiScriptParser.RB);
+	        this.state = 182;
+	        this.match(RiScriptParser.MDS);
+	        this.state = 183;
+	        this.url();
+	        this.state = 184;
+	        this.match(RiScriptParser.MDE);
+	        this.state = 188;
+	        this._errHandler.sync(this);
+	        var _alt = this._interp.adaptivePredict(this._input,25,this._ctx)
+	        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
+	            if(_alt===1) {
+	                this.state = 185;
+	                this.match(RiScriptParser.WS); 
+	            }
+	            this.state = 190;
+	            this._errHandler.sync(this);
+	            _alt = this._interp.adaptivePredict(this._input,25,this._ctx);
+	        }
+
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	url() {
+	    let localctx = new UrlContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 26, RiScriptParser.RULE_url);
+	    var _la = 0; // Token type
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 192; 
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        do {
+	            this.state = 191;
+	            this.match(RiScriptParser.MDT);
+	            this.state = 194; 
+	            this._errHandler.sync(this);
+	            _la = this._input.LA(1);
+	        } while(_la===RiScriptParser.MDT);
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	transform() {
+	    let localctx = new TransformContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 28, RiScriptParser.RULE_transform);
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 196;
+	        this.match(RiScriptParser.TF);
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	op() {
+	    let localctx = new OpContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 30, RiScriptParser.RULE_op);
+	    var _la = 0; // Token type
+	    try {
+	        this.state = 200;
+	        this._errHandler.sync(this);
+	        switch(this._input.LA(1)) {
+	        case RiScriptParser.OP:
+	            this.enterOuterAlt(localctx, 1);
+	            this.state = 198;
+	            this.match(RiScriptParser.OP);
+	            break;
+	        case RiScriptParser.GT:
+	        case RiScriptParser.LT:
+	        case RiScriptParser.EQ:
+	            this.enterOuterAlt(localctx, 2);
+	            this.state = 199;
+	            _la = this._input.LA(1);
+	            if(!((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << RiScriptParser.GT) | (1 << RiScriptParser.LT) | (1 << RiScriptParser.EQ))) !== 0))) {
+	            this._errHandler.recoverInline(this);
+	            }
+	            else {
+	            	this._errHandler.reportMatch(this);
+	                this.consume();
+	            }
+	            break;
+	        default:
+	            throw new antlr4.error.NoViableAltException(this);
+	        }
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+}
 
 RiScriptParser.EOF = antlr4.Token.EOF;
 RiScriptParser.LCOMM = 1;
@@ -230,1955 +1006,1159 @@ RiScriptParser.RULE_url = 13;
 RiScriptParser.RULE_transform = 14;
 RiScriptParser.RULE_op = 15;
 
+class ScriptContext extends antlr4.ParserRuleContext {
 
-function ScriptContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
+        }
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_script;
+    }
+
+	line = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
+	    if(i===null) {
+	        return this.getTypedRuleContexts(LineContext);
+	    } else {
+	        return this.getTypedRuleContext(LineContext,i);
+	    }
+	};
+
+	EOF() {
+	    return this.getToken(RiScriptParser.EOF, 0);
+	};
+
+	NL = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.NL);
+	    } else {
+	        return this.getToken(RiScriptParser.NL, i);
+	    }
+	};
+
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterScript(this);
+		}
 	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitScript(this);
+		}
 	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_script;
-    return this;
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitScript(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
 }
 
-ScriptContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-ScriptContext.prototype.constructor = ScriptContext;
-
-ScriptContext.prototype.line = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(LineContext);
-    } else {
-        return this.getTypedRuleContext(LineContext,i);
-    }
-};
-
-ScriptContext.prototype.EOF = function() {
-    return this.getToken(RiScriptParser.EOF, 0);
-};
-
-ScriptContext.prototype.NL = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.NL);
-    } else {
-        return this.getToken(RiScriptParser.NL, i);
-    }
-};
 
 
-ScriptContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterScript(this);
-	}
-};
+class LineContext extends antlr4.ParserRuleContext {
 
-ScriptContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitScript(this);
-	}
-};
-
-ScriptContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitScript(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.ScriptContext = ScriptContext;
-
-RiScriptParser.prototype.script = function() {
-
-    var localctx = new ScriptContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 0, RiScriptParser.RULE_script);
-    var _la = 0; // Token type
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 32;
-        this.line();
-        this.state = 37;
-        this._errHandler.sync(this);
-        _la = this._input.LA(1);
-        while(_la===RiScriptParser.NL) {
-            this.state = 33;
-            this.match(RiScriptParser.NL);
-            this.state = 34;
-            this.line();
-            this.state = 39;
-            this._errHandler.sync(this);
-            _la = this._input.LA(1);
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
         }
-        this.state = 40;
-        this.match(RiScriptParser.EOF);
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_line;
     }
-    return localctx;
-};
+
+	link = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
+	    if(i===null) {
+	        return this.getTypedRuleContexts(LinkContext);
+	    } else {
+	        return this.getTypedRuleContext(LinkContext,i);
+	    }
+	};
+
+	expr = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
+	    if(i===null) {
+	        return this.getTypedRuleContexts(ExprContext);
+	    } else {
+	        return this.getTypedRuleContext(ExprContext,i);
+	    }
+	};
+
+	cexpr = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
+	    if(i===null) {
+	        return this.getTypedRuleContexts(CexprContext);
+	    } else {
+	        return this.getTypedRuleContext(CexprContext,i);
+	    }
+	};
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterLine(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitLine(this);
+		}
+	}
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitLine(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
 
 
-function LineContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_line;
-    return this;
 }
 
-LineContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-LineContext.prototype.constructor = LineContext;
-
-LineContext.prototype.link = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(LinkContext);
-    } else {
-        return this.getTypedRuleContext(LinkContext,i);
-    }
-};
-
-LineContext.prototype.expr = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(ExprContext);
-    } else {
-        return this.getTypedRuleContext(ExprContext,i);
-    }
-};
-
-LineContext.prototype.cexpr = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(CexprContext);
-    } else {
-        return this.getTypedRuleContext(CexprContext,i);
-    }
-};
-
-LineContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterLine(this);
-	}
-};
-
-LineContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitLine(this);
-	}
-};
-
-LineContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitLine(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
 
 
+class ExprContext extends antlr4.ParserRuleContext {
 
-
-RiScriptParser.LineContext = LineContext;
-
-RiScriptParser.prototype.line = function() {
-
-    var localctx = new LineContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 2, RiScriptParser.RULE_line);
-    var _la = 0; // Token type
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 47;
-        this._errHandler.sync(this);
-        _la = this._input.LA(1);
-        while(((((_la - 5)) & ~0x1f) == 0 && ((1 << (_la - 5)) & ((1 << (RiScriptParser.GT - 5)) | (1 << (RiScriptParser.LT - 5)) | (1 << (RiScriptParser.LP - 5)) | (1 << (RiScriptParser.LB - 5)) | (1 << (RiScriptParser.LCB - 5)) | (1 << (RiScriptParser.DOT - 5)) | (1 << (RiScriptParser.WS - 5)) | (1 << (RiScriptParser.FS - 5)) | (1 << (RiScriptParser.EXC - 5)) | (1 << (RiScriptParser.AST - 5)) | (1 << (RiScriptParser.HAT - 5)) | (1 << (RiScriptParser.DOL - 5)) | (1 << (RiScriptParser.COM - 5)) | (1 << (RiScriptParser.DYN - 5)) | (1 << (RiScriptParser.SYM - 5)) | (1 << (RiScriptParser.TF - 5)) | (1 << (RiScriptParser.ENT - 5)) | (1 << (RiScriptParser.INT - 5)) | (1 << (RiScriptParser.CHR - 5)))) !== 0)) {
-            this.state = 45;
-            this._errHandler.sync(this);
-            var la_ = this._interp.adaptivePredict(this._input,1,this._ctx);
-            switch(la_) {
-            case 1:
-                this.state = 42;
-                this.link();
-                break;
-
-            case 2:
-                this.state = 43;
-                this.expr();
-                break;
-
-            case 3:
-                this.state = 44;
-                this.cexpr();
-                break;
-
-            }
-            this.state = 49;
-            this._errHandler.sync(this);
-            _la = this._input.LA(1);
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
         }
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_expr;
     }
-    return localctx;
-};
+
+	symbol = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
+	    if(i===null) {
+	        return this.getTypedRuleContexts(SymbolContext);
+	    } else {
+	        return this.getTypedRuleContext(SymbolContext,i);
+	    }
+	};
+
+	choice = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
+	    if(i===null) {
+	        return this.getTypedRuleContexts(ChoiceContext);
+	    } else {
+	        return this.getTypedRuleContext(ChoiceContext,i);
+	    }
+	};
+
+	assign = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
+	    if(i===null) {
+	        return this.getTypedRuleContexts(AssignContext);
+	    } else {
+	        return this.getTypedRuleContext(AssignContext,i);
+	    }
+	};
+
+	chars = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
+	    if(i===null) {
+	        return this.getTypedRuleContexts(CharsContext);
+	    } else {
+	        return this.getTypedRuleContext(CharsContext,i);
+	    }
+	};
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterExpr(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitExpr(this);
+		}
+	}
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitExpr(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
 
 
-function ExprContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_expr;
-    return this;
 }
 
-ExprContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-ExprContext.prototype.constructor = ExprContext;
 
-ExprContext.prototype.symbol = function(i) {
-    if(i===undefined) {
-        i = null;
+
+class CexprContext extends antlr4.ParserRuleContext {
+
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
+        }
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_cexpr;
     }
-    if(i===null) {
-        return this.getTypedRuleContexts(SymbolContext);
-    } else {
-        return this.getTypedRuleContext(SymbolContext,i);
-    }
-};
 
-ExprContext.prototype.choice = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(ChoiceContext);
-    } else {
-        return this.getTypedRuleContext(ChoiceContext,i);
-    }
-};
+	LCB() {
+	    return this.getToken(RiScriptParser.LCB, 0);
+	};
 
-ExprContext.prototype.assign = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(AssignContext);
-    } else {
-        return this.getTypedRuleContext(AssignContext,i);
-    }
-};
+	RCB() {
+	    return this.getToken(RiScriptParser.RCB, 0);
+	};
 
-ExprContext.prototype.chars = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(CharsContext);
-    } else {
-        return this.getTypedRuleContext(CharsContext,i);
-    }
-};
+	Q() {
+	    return this.getToken(RiScriptParser.Q, 0);
+	};
 
-ExprContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterExpr(this);
-	}
-};
+	expr() {
+	    return this.getTypedRuleContext(ExprContext,0);
+	};
 
-ExprContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitExpr(this);
-	}
-};
-
-ExprContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitExpr(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.ExprContext = ExprContext;
-
-RiScriptParser.prototype.expr = function() {
-
-    var localctx = new ExprContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 4, RiScriptParser.RULE_expr);
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 54; 
-        this._errHandler.sync(this);
-        var _alt = 1;
-        do {
-        	switch (_alt) {
-        	case 1:
-        		this.state = 54;
-        		this._errHandler.sync(this);
-        		var la_ = this._interp.adaptivePredict(this._input,3,this._ctx);
-        		switch(la_) {
-        		case 1:
-        		    this.state = 50;
-        		    this.symbol();
-        		    break;
-
-        		case 2:
-        		    this.state = 51;
-        		    this.choice();
-        		    break;
-
-        		case 3:
-        		    this.state = 52;
-        		    this.assign();
-        		    break;
-
-        		case 4:
-        		    this.state = 53;
-        		    this.chars();
-        		    break;
-
-        		}
-        		break;
-        	default:
-        		throw new antlr4.error.NoViableAltException(this);
-        	}
-        	this.state = 56; 
-        	this._errHandler.sync(this);
-        	_alt = this._interp.adaptivePredict(this._input,4, this._ctx);
-        } while ( _alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER );
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
+	WS = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.WS);
 	    } else {
-	    	throw re;
+	        return this.getToken(RiScriptParser.WS, i);
 	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
+	};
 
 
-function CexprContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
+	cond = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
+	    if(i===null) {
+	        return this.getTypedRuleContexts(CondContext);
+	    } else {
+	        return this.getTypedRuleContext(CondContext,i);
+	    }
+	};
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterCexpr(this);
+		}
 	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitCexpr(this);
+		}
 	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_cexpr;
-    return this;
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitCexpr(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
 }
 
-CexprContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-CexprContext.prototype.constructor = CexprContext;
-
-CexprContext.prototype.LCB = function() {
-    return this.getToken(RiScriptParser.LCB, 0);
-};
-
-CexprContext.prototype.RCB = function() {
-    return this.getToken(RiScriptParser.RCB, 0);
-};
-
-CexprContext.prototype.Q = function() {
-    return this.getToken(RiScriptParser.Q, 0);
-};
-
-CexprContext.prototype.expr = function() {
-    return this.getTypedRuleContext(ExprContext,0);
-};
-
-CexprContext.prototype.WS = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.WS);
-    } else {
-        return this.getToken(RiScriptParser.WS, i);
-    }
-};
 
 
-CexprContext.prototype.cond = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(CondContext);
-    } else {
-        return this.getTypedRuleContext(CondContext,i);
-    }
-};
+class CondContext extends antlr4.ParserRuleContext {
 
-CexprContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterCexpr(this);
-	}
-};
-
-CexprContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitCexpr(this);
-	}
-};
-
-CexprContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitCexpr(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.CexprContext = CexprContext;
-
-RiScriptParser.prototype.cexpr = function() {
-
-    var localctx = new CexprContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 6, RiScriptParser.RULE_cexpr);
-    var _la = 0; // Token type
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 61;
-        this._errHandler.sync(this);
-        _la = this._input.LA(1);
-        while(_la===RiScriptParser.WS) {
-            this.state = 58;
-            this.match(RiScriptParser.WS);
-            this.state = 63;
-            this._errHandler.sync(this);
-            _la = this._input.LA(1);
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
         }
-        this.state = 64;
-        this.match(RiScriptParser.LCB);
-        this.state = 66; 
-        this._errHandler.sync(this);
-        _la = this._input.LA(1);
-        do {
-            this.state = 65;
-            this.cond();
-            this.state = 68; 
-            this._errHandler.sync(this);
-            _la = this._input.LA(1);
-        } while(_la===RiScriptParser.SYM || _la===RiScriptParser.TF);
-        this.state = 70;
-        this.match(RiScriptParser.RCB);
-        this.state = 71;
-        this.match(RiScriptParser.Q);
-        this.state = 75;
-        this._errHandler.sync(this);
-        var _alt = this._interp.adaptivePredict(this._input,7,this._ctx)
-        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
-            if(_alt===1) {
-                this.state = 72;
-                this.match(RiScriptParser.WS); 
-            }
-            this.state = 77;
-            this._errHandler.sync(this);
-            _alt = this._interp.adaptivePredict(this._input,7,this._ctx);
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
         }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_cond;
+    }
 
-        this.state = 78;
-        this.expr();
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
+	symbol() {
+	    return this.getTypedRuleContext(SymbolContext,0);
+	};
+
+	op() {
+	    return this.getTypedRuleContext(OpContext,0);
+	};
+
+	chars() {
+	    return this.getTypedRuleContext(CharsContext,0);
+	};
+
+	WS = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.WS);
 	    } else {
-	    	throw re;
+	        return this.getToken(RiScriptParser.WS, i);
 	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
+	};
 
 
-function CondContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
+	COM() {
+	    return this.getToken(RiScriptParser.COM, 0);
+	};
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterCond(this);
+		}
 	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitCond(this);
+		}
 	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_cond;
-    return this;
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitCond(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
 }
 
-CondContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-CondContext.prototype.constructor = CondContext;
 
-CondContext.prototype.symbol = function() {
-    return this.getTypedRuleContext(SymbolContext,0);
-};
 
-CondContext.prototype.op = function() {
-    return this.getTypedRuleContext(OpContext,0);
-};
+class WeightContext extends antlr4.ParserRuleContext {
 
-CondContext.prototype.chars = function() {
-    return this.getTypedRuleContext(CharsContext,0);
-};
-
-CondContext.prototype.WS = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.WS);
-    } else {
-        return this.getToken(RiScriptParser.WS, i);
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
+        }
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_weight;
     }
-};
 
+	LB() {
+	    return this.getToken(RiScriptParser.LB, 0);
+	};
 
-CondContext.prototype.COM = function() {
-    return this.getToken(RiScriptParser.COM, 0);
-};
+	INT() {
+	    return this.getToken(RiScriptParser.INT, 0);
+	};
 
-CondContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterCond(this);
-	}
-};
+	RB() {
+	    return this.getToken(RiScriptParser.RB, 0);
+	};
 
-CondContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitCond(this);
-	}
-};
-
-CondContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitCond(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.CondContext = CondContext;
-
-RiScriptParser.prototype.cond = function() {
-
-    var localctx = new CondContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 8, RiScriptParser.RULE_cond);
-    var _la = 0; // Token type
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 80;
-        this.symbol();
-        this.state = 84;
-        this._errHandler.sync(this);
-        _la = this._input.LA(1);
-        while(_la===RiScriptParser.WS) {
-            this.state = 81;
-            this.match(RiScriptParser.WS);
-            this.state = 86;
-            this._errHandler.sync(this);
-            _la = this._input.LA(1);
-        }
-        this.state = 87;
-        this.op();
-        this.state = 91;
-        this._errHandler.sync(this);
-        var _alt = this._interp.adaptivePredict(this._input,9,this._ctx)
-        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
-            if(_alt===1) {
-                this.state = 88;
-                this.match(RiScriptParser.WS); 
-            }
-            this.state = 93;
-            this._errHandler.sync(this);
-            _alt = this._interp.adaptivePredict(this._input,9,this._ctx);
-        }
-
-        this.state = 94;
-        this.chars();
-        this.state = 98;
-        this._errHandler.sync(this);
-        _la = this._input.LA(1);
-        while(_la===RiScriptParser.WS) {
-            this.state = 95;
-            this.match(RiScriptParser.WS);
-            this.state = 100;
-            this._errHandler.sync(this);
-            _la = this._input.LA(1);
-        }
-        this.state = 102;
-        this._errHandler.sync(this);
-        _la = this._input.LA(1);
-        if(_la===RiScriptParser.COM) {
-            this.state = 101;
-            this.match(RiScriptParser.COM);
-        }
-
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
+	WS = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.WS);
 	    } else {
-	    	throw re;
+	        return this.getToken(RiScriptParser.WS, i);
 	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
+	};
 
 
-function WeightContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterWeight(this);
+		}
 	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitWeight(this);
+		}
 	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_weight;
-    return this;
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitWeight(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
 }
 
-WeightContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-WeightContext.prototype.constructor = WeightContext;
-
-WeightContext.prototype.LB = function() {
-    return this.getToken(RiScriptParser.LB, 0);
-};
-
-WeightContext.prototype.INT = function() {
-    return this.getToken(RiScriptParser.INT, 0);
-};
-
-WeightContext.prototype.RB = function() {
-    return this.getToken(RiScriptParser.RB, 0);
-};
-
-WeightContext.prototype.WS = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.WS);
-    } else {
-        return this.getToken(RiScriptParser.WS, i);
-    }
-};
 
 
-WeightContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterWeight(this);
-	}
-};
+class ChoiceContext extends antlr4.ParserRuleContext {
 
-WeightContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitWeight(this);
-	}
-};
-
-WeightContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitWeight(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.WeightContext = WeightContext;
-
-RiScriptParser.prototype.weight = function() {
-
-    var localctx = new WeightContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 10, RiScriptParser.RULE_weight);
-    var _la = 0; // Token type
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 107;
-        this._errHandler.sync(this);
-        _la = this._input.LA(1);
-        while(_la===RiScriptParser.WS) {
-            this.state = 104;
-            this.match(RiScriptParser.WS);
-            this.state = 109;
-            this._errHandler.sync(this);
-            _la = this._input.LA(1);
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
         }
-        this.state = 110;
-        this.match(RiScriptParser.LB);
-        this.state = 111;
-        this.match(RiScriptParser.INT);
-        this.state = 112;
-        this.match(RiScriptParser.RB);
-        this.state = 116;
-        this._errHandler.sync(this);
-        _la = this._input.LA(1);
-        while(_la===RiScriptParser.WS) {
-            this.state = 113;
-            this.match(RiScriptParser.WS);
-            this.state = 118;
-            this._errHandler.sync(this);
-            _la = this._input.LA(1);
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
         }
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_choice;
+    }
+
+	LP() {
+	    return this.getToken(RiScriptParser.LP, 0);
+	};
+
+	wexpr = function(i) {
+	    if(i===undefined) {
+	        i = null;
 	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
+	    if(i===null) {
+	        return this.getTypedRuleContexts(WexprContext);
+	    } else {
+	        return this.getTypedRuleContext(WexprContext,i);
+	    }
+	};
+
+	RP() {
+	    return this.getToken(RiScriptParser.RP, 0);
+	};
+
+	transform = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
+	    if(i===null) {
+	        return this.getTypedRuleContexts(TransformContext);
+	    } else {
+	        return this.getTypedRuleContext(TransformContext,i);
+	    }
+	};
+
+	OR = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.OR);
+	    } else {
+	        return this.getToken(RiScriptParser.OR, i);
+	    }
+	};
 
 
-function ChoiceContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterChoice(this);
+		}
 	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitChoice(this);
+		}
 	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_choice;
-    return this;
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitChoice(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
 }
 
-ChoiceContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-ChoiceContext.prototype.constructor = ChoiceContext;
-
-ChoiceContext.prototype.LP = function() {
-    return this.getToken(RiScriptParser.LP, 0);
-};
-
-ChoiceContext.prototype.wexpr = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(WexprContext);
-    } else {
-        return this.getTypedRuleContext(WexprContext,i);
-    }
-};
-
-ChoiceContext.prototype.RP = function() {
-    return this.getToken(RiScriptParser.RP, 0);
-};
-
-ChoiceContext.prototype.transform = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(TransformContext);
-    } else {
-        return this.getTypedRuleContext(TransformContext,i);
-    }
-};
-
-ChoiceContext.prototype.OR = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.OR);
-    } else {
-        return this.getToken(RiScriptParser.OR, i);
-    }
-};
 
 
-ChoiceContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterChoice(this);
-	}
-};
+class AssignContext extends antlr4.ParserRuleContext {
 
-ChoiceContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitChoice(this);
-	}
-};
-
-ChoiceContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitChoice(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.ChoiceContext = ChoiceContext;
-
-RiScriptParser.prototype.choice = function() {
-
-    var localctx = new ChoiceContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 12, RiScriptParser.RULE_choice);
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 119;
-        this.match(RiScriptParser.LP);
-        this.state = 125;
-        this._errHandler.sync(this);
-        var _alt = this._interp.adaptivePredict(this._input,14,this._ctx)
-        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
-            if(_alt===1) {
-                this.state = 120;
-                this.wexpr();
-                this.state = 121;
-                this.match(RiScriptParser.OR); 
-            }
-            this.state = 127;
-            this._errHandler.sync(this);
-            _alt = this._interp.adaptivePredict(this._input,14,this._ctx);
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
         }
-
-        this.state = 128;
-        this.wexpr();
-        this.state = 129;
-        this.match(RiScriptParser.RP);
-        this.state = 134;
-        this._errHandler.sync(this);
-        var _alt = this._interp.adaptivePredict(this._input,15,this._ctx)
-        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
-            if(_alt===1) {
-                this.state = 131;
-                this.transform(); 
-            }
-            this.state = 136;
-            this._errHandler.sync(this);
-            _alt = this._interp.adaptivePredict(this._input,15,this._ctx);
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
         }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_assign;
+    }
 
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
+	EQ() {
+	    return this.getToken(RiScriptParser.EQ, 0);
+	};
+
+	expr() {
+	    return this.getTypedRuleContext(ExprContext,0);
+	};
+
+	dynamic() {
+	    return this.getTypedRuleContext(DynamicContext,0);
+	};
+
+	symbol() {
+	    return this.getTypedRuleContext(SymbolContext,0);
+	};
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterAssign(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitAssign(this);
+		}
+	}
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitAssign(this);
 	    } else {
-	    	throw re;
+	        return visitor.visitChildren(this);
 	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
+	}
 
 
-function AssignContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_assign;
-    return this;
 }
 
-AssignContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-AssignContext.prototype.constructor = AssignContext;
-
-AssignContext.prototype.EQ = function() {
-    return this.getToken(RiScriptParser.EQ, 0);
-};
-
-AssignContext.prototype.expr = function() {
-    return this.getTypedRuleContext(ExprContext,0);
-};
-
-AssignContext.prototype.dynamic = function() {
-    return this.getTypedRuleContext(DynamicContext,0);
-};
-
-AssignContext.prototype.symbol = function() {
-    return this.getTypedRuleContext(SymbolContext,0);
-};
-
-AssignContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterAssign(this);
-	}
-};
-
-AssignContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitAssign(this);
-	}
-};
-
-AssignContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitAssign(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
 
 
+class CharsContext extends antlr4.ParserRuleContext {
 
-
-RiScriptParser.AssignContext = AssignContext;
-
-RiScriptParser.prototype.assign = function() {
-
-    var localctx = new AssignContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 14, RiScriptParser.RULE_assign);
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 139;
-        this._errHandler.sync(this);
-        switch(this._input.LA(1)) {
-        case RiScriptParser.DYN:
-            this.state = 137;
-            this.dynamic();
-            break;
-        case RiScriptParser.SYM:
-        case RiScriptParser.TF:
-            this.state = 138;
-            this.symbol();
-            break;
-        default:
-            throw new antlr4.error.NoViableAltException(this);
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
         }
-        this.state = 141;
-        this.match(RiScriptParser.EQ);
-        this.state = 142;
-        this.expr();
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
-
-
-function CharsContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_chars;
-    return this;
-}
-
-CharsContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-CharsContext.prototype.constructor = CharsContext;
-
-CharsContext.prototype.CHR = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.CHR);
-    } else {
-        return this.getToken(RiScriptParser.CHR, i);
-    }
-};
-
-
-CharsContext.prototype.ENT = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.ENT);
-    } else {
-        return this.getToken(RiScriptParser.ENT, i);
-    }
-};
-
-
-CharsContext.prototype.INT = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.INT);
-    } else {
-        return this.getToken(RiScriptParser.INT, i);
-    }
-};
-
-
-CharsContext.prototype.DOT = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.DOT);
-    } else {
-        return this.getToken(RiScriptParser.DOT, i);
-    }
-};
-
-
-CharsContext.prototype.WS = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.WS);
-    } else {
-        return this.getToken(RiScriptParser.WS, i);
-    }
-};
-
-
-CharsContext.prototype.EXC = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.EXC);
-    } else {
-        return this.getToken(RiScriptParser.EXC, i);
-    }
-};
-
-
-CharsContext.prototype.AST = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.AST);
-    } else {
-        return this.getToken(RiScriptParser.AST, i);
-    }
-};
-
-
-CharsContext.prototype.GT = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.GT);
-    } else {
-        return this.getToken(RiScriptParser.GT, i);
-    }
-};
-
-
-CharsContext.prototype.LT = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.LT);
-    } else {
-        return this.getToken(RiScriptParser.LT, i);
-    }
-};
-
-
-CharsContext.prototype.DOL = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.DOL);
-    } else {
-        return this.getToken(RiScriptParser.DOL, i);
-    }
-};
-
-
-CharsContext.prototype.HAT = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.HAT);
-    } else {
-        return this.getToken(RiScriptParser.HAT, i);
-    }
-};
-
-
-CharsContext.prototype.COM = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.COM);
-    } else {
-        return this.getToken(RiScriptParser.COM, i);
-    }
-};
-
-
-CharsContext.prototype.FS = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.FS);
-    } else {
-        return this.getToken(RiScriptParser.FS, i);
-    }
-};
-
-
-CharsContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterChars(this);
-	}
-};
-
-CharsContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitChars(this);
-	}
-};
-
-CharsContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitChars(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.CharsContext = CharsContext;
-
-RiScriptParser.prototype.chars = function() {
-
-    var localctx = new CharsContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 16, RiScriptParser.RULE_chars);
-    var _la = 0; // Token type
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 148; 
-        this._errHandler.sync(this);
-        var _alt = 1;
-        do {
-        	switch (_alt) {
-        	case 1:
-        		this.state = 148;
-        		this._errHandler.sync(this);
-        		switch(this._input.LA(1)) {
-        		case RiScriptParser.GT:
-        		case RiScriptParser.LT:
-        		case RiScriptParser.DOT:
-        		case RiScriptParser.WS:
-        		case RiScriptParser.FS:
-        		case RiScriptParser.EXC:
-        		case RiScriptParser.AST:
-        		case RiScriptParser.HAT:
-        		case RiScriptParser.DOL:
-        		case RiScriptParser.COM:
-        		    this.state = 144;
-        		    _la = this._input.LA(1);
-        		    if(!((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << RiScriptParser.GT) | (1 << RiScriptParser.LT) | (1 << RiScriptParser.DOT) | (1 << RiScriptParser.WS) | (1 << RiScriptParser.FS) | (1 << RiScriptParser.EXC) | (1 << RiScriptParser.AST) | (1 << RiScriptParser.HAT) | (1 << RiScriptParser.DOL) | (1 << RiScriptParser.COM))) !== 0))) {
-        		    this._errHandler.recoverInline(this);
-        		    }
-        		    else {
-        		    	this._errHandler.reportMatch(this);
-        		        this.consume();
-        		    }
-        		    break;
-        		case RiScriptParser.CHR:
-        		    this.state = 145;
-        		    this.match(RiScriptParser.CHR);
-        		    break;
-        		case RiScriptParser.ENT:
-        		    this.state = 146;
-        		    this.match(RiScriptParser.ENT);
-        		    break;
-        		case RiScriptParser.INT:
-        		    this.state = 147;
-        		    this.match(RiScriptParser.INT);
-        		    break;
-        		default:
-        		    throw new antlr4.error.NoViableAltException(this);
-        		}
-        		break;
-        	default:
-        		throw new antlr4.error.NoViableAltException(this);
-        	}
-        	this.state = 150; 
-        	this._errHandler.sync(this);
-        	_alt = this._interp.adaptivePredict(this._input,18, this._ctx);
-        } while ( _alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER );
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
-
-
-function DynamicContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_dynamic;
-    return this;
-}
-
-DynamicContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-DynamicContext.prototype.constructor = DynamicContext;
-
-DynamicContext.prototype.DYN = function() {
-    return this.getToken(RiScriptParser.DYN, 0);
-};
-
-DynamicContext.prototype.transform = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(TransformContext);
-    } else {
-        return this.getTypedRuleContext(TransformContext,i);
-    }
-};
-
-DynamicContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterDynamic(this);
-	}
-};
-
-DynamicContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitDynamic(this);
-	}
-};
-
-DynamicContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitDynamic(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.DynamicContext = DynamicContext;
-
-RiScriptParser.prototype.dynamic = function() {
-
-    var localctx = new DynamicContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 18, RiScriptParser.RULE_dynamic);
-    var _la = 0; // Token type
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 152;
-        this.match(RiScriptParser.DYN);
-        this.state = 156;
-        this._errHandler.sync(this);
-        _la = this._input.LA(1);
-        while(_la===RiScriptParser.TF) {
-            this.state = 153;
-            this.transform();
-            this.state = 158;
-            this._errHandler.sync(this);
-            _la = this._input.LA(1);
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
         }
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_chars;
     }
-    return localctx;
-};
+
+	CHR = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.CHR);
+	    } else {
+	        return this.getToken(RiScriptParser.CHR, i);
+	    }
+	};
 
 
-function SymbolContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
+	ENT = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.ENT);
+	    } else {
+	        return this.getToken(RiScriptParser.ENT, i);
+	    }
+	};
+
+
+	INT = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.INT);
+	    } else {
+	        return this.getToken(RiScriptParser.INT, i);
+	    }
+	};
+
+
+	DOT = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.DOT);
+	    } else {
+	        return this.getToken(RiScriptParser.DOT, i);
+	    }
+	};
+
+
+	WS = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.WS);
+	    } else {
+	        return this.getToken(RiScriptParser.WS, i);
+	    }
+	};
+
+
+	EXC = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.EXC);
+	    } else {
+	        return this.getToken(RiScriptParser.EXC, i);
+	    }
+	};
+
+
+	AST = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.AST);
+	    } else {
+	        return this.getToken(RiScriptParser.AST, i);
+	    }
+	};
+
+
+	GT = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.GT);
+	    } else {
+	        return this.getToken(RiScriptParser.GT, i);
+	    }
+	};
+
+
+	LT = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.LT);
+	    } else {
+	        return this.getToken(RiScriptParser.LT, i);
+	    }
+	};
+
+
+	DOL = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.DOL);
+	    } else {
+	        return this.getToken(RiScriptParser.DOL, i);
+	    }
+	};
+
+
+	HAT = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.HAT);
+	    } else {
+	        return this.getToken(RiScriptParser.HAT, i);
+	    }
+	};
+
+
+	COM = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.COM);
+	    } else {
+	        return this.getToken(RiScriptParser.COM, i);
+	    }
+	};
+
+
+	FS = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.FS);
+	    } else {
+	        return this.getToken(RiScriptParser.FS, i);
+	    }
+	};
+
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterChars(this);
+		}
 	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitChars(this);
+		}
 	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_symbol;
-    return this;
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitChars(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
 }
 
-SymbolContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-SymbolContext.prototype.constructor = SymbolContext;
-
-SymbolContext.prototype.SYM = function() {
-    return this.getToken(RiScriptParser.SYM, 0);
-};
-
-SymbolContext.prototype.transform = function(i) {
-    if(i===undefined) {
-        i = null;
-    }
-    if(i===null) {
-        return this.getTypedRuleContexts(TransformContext);
-    } else {
-        return this.getTypedRuleContext(TransformContext,i);
-    }
-};
-
-SymbolContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterSymbol(this);
-	}
-};
-
-SymbolContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitSymbol(this);
-	}
-};
-
-SymbolContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitSymbol(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
 
 
+class DynamicContext extends antlr4.ParserRuleContext {
 
-
-RiScriptParser.SymbolContext = SymbolContext;
-
-RiScriptParser.prototype.symbol = function() {
-
-    var localctx = new SymbolContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 20, RiScriptParser.RULE_symbol);
-    try {
-        this.state = 171;
-        this._errHandler.sync(this);
-        switch(this._input.LA(1)) {
-        case RiScriptParser.SYM:
-            this.enterOuterAlt(localctx, 1);
-            this.state = 159;
-            this.match(RiScriptParser.SYM);
-            this.state = 163;
-            this._errHandler.sync(this);
-            var _alt = this._interp.adaptivePredict(this._input,20,this._ctx)
-            while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
-                if(_alt===1) {
-                    this.state = 160;
-                    this.transform(); 
-                }
-                this.state = 165;
-                this._errHandler.sync(this);
-                _alt = this._interp.adaptivePredict(this._input,20,this._ctx);
-            }
-
-            break;
-        case RiScriptParser.TF:
-            this.enterOuterAlt(localctx, 2);
-            this.state = 167; 
-            this._errHandler.sync(this);
-            var _alt = 1;
-            do {
-            	switch (_alt) {
-            	case 1:
-            		this.state = 166;
-            		this.transform();
-            		break;
-            	default:
-            		throw new antlr4.error.NoViableAltException(this);
-            	}
-            	this.state = 169; 
-            	this._errHandler.sync(this);
-            	_alt = this._interp.adaptivePredict(this._input,21, this._ctx);
-            } while ( _alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER );
-            break;
-        default:
-            throw new antlr4.error.NoViableAltException(this);
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
         }
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
-
-
-function WexprContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_wexpr;
-    return this;
-}
-
-WexprContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-WexprContext.prototype.constructor = WexprContext;
-
-WexprContext.prototype.expr = function() {
-    return this.getTypedRuleContext(ExprContext,0);
-};
-
-WexprContext.prototype.weight = function() {
-    return this.getTypedRuleContext(WeightContext,0);
-};
-
-WexprContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterWexpr(this);
-	}
-};
-
-WexprContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitWexpr(this);
-	}
-};
-
-WexprContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitWexpr(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.WexprContext = WexprContext;
-
-RiScriptParser.prototype.wexpr = function() {
-
-    var localctx = new WexprContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 22, RiScriptParser.RULE_wexpr);
-    var _la = 0; // Token type
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 174;
-        this._errHandler.sync(this);
-        var la_ = this._interp.adaptivePredict(this._input,23,this._ctx);
-        if(la_===1) {
-            this.state = 173;
-            this.expr();
-
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
         }
-        this.state = 177;
-        this._errHandler.sync(this);
-        _la = this._input.LA(1);
-        if(_la===RiScriptParser.LB || _la===RiScriptParser.WS) {
-            this.state = 176;
-            this.weight();
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_dynamic;
+    }
+
+	DYN() {
+	    return this.getToken(RiScriptParser.DYN, 0);
+	};
+
+	transform = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
+	    if(i===null) {
+	        return this.getTypedRuleContexts(TransformContext);
+	    } else {
+	        return this.getTypedRuleContext(TransformContext,i);
+	    }
+	};
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterDynamic(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitDynamic(this);
+		}
+	}
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitDynamic(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
+}
+
+
+
+class SymbolContext extends antlr4.ParserRuleContext {
+
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
         }
-
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
-
-
-function LinkContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_link;
-    return this;
-}
-
-LinkContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-LinkContext.prototype.constructor = LinkContext;
-
-LinkContext.prototype.LB = function() {
-    return this.getToken(RiScriptParser.LB, 0);
-};
-
-LinkContext.prototype.expr = function() {
-    return this.getTypedRuleContext(ExprContext,0);
-};
-
-LinkContext.prototype.RB = function() {
-    return this.getToken(RiScriptParser.RB, 0);
-};
-
-LinkContext.prototype.MDS = function() {
-    return this.getToken(RiScriptParser.MDS, 0);
-};
-
-LinkContext.prototype.url = function() {
-    return this.getTypedRuleContext(UrlContext,0);
-};
-
-LinkContext.prototype.MDE = function() {
-    return this.getToken(RiScriptParser.MDE, 0);
-};
-
-LinkContext.prototype.WS = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.WS);
-    } else {
-        return this.getToken(RiScriptParser.WS, i);
-    }
-};
-
-
-LinkContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterLink(this);
-	}
-};
-
-LinkContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitLink(this);
-	}
-};
-
-LinkContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitLink(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.LinkContext = LinkContext;
-
-RiScriptParser.prototype.link = function() {
-
-    var localctx = new LinkContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 24, RiScriptParser.RULE_link);
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 179;
-        this.match(RiScriptParser.LB);
-        this.state = 180;
-        this.expr();
-        this.state = 181;
-        this.match(RiScriptParser.RB);
-        this.state = 182;
-        this.match(RiScriptParser.MDS);
-        this.state = 183;
-        this.url();
-        this.state = 184;
-        this.match(RiScriptParser.MDE);
-        this.state = 188;
-        this._errHandler.sync(this);
-        var _alt = this._interp.adaptivePredict(this._input,25,this._ctx)
-        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
-            if(_alt===1) {
-                this.state = 185;
-                this.match(RiScriptParser.WS); 
-            }
-            this.state = 190;
-            this._errHandler.sync(this);
-            _alt = this._interp.adaptivePredict(this._input,25,this._ctx);
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
         }
-
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_symbol;
     }
-    return localctx;
-};
+
+	SYM() {
+	    return this.getToken(RiScriptParser.SYM, 0);
+	};
+
+	transform = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
+	    if(i===null) {
+	        return this.getTypedRuleContexts(TransformContext);
+	    } else {
+	        return this.getTypedRuleContext(TransformContext,i);
+	    }
+	};
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterSymbol(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitSymbol(this);
+		}
+	}
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitSymbol(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
 
 
-function UrlContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_url;
-    return this;
 }
 
-UrlContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-UrlContext.prototype.constructor = UrlContext;
-
-UrlContext.prototype.MDT = function(i) {
-	if(i===undefined) {
-		i = null;
-	}
-    if(i===null) {
-        return this.getTokens(RiScriptParser.MDT);
-    } else {
-        return this.getToken(RiScriptParser.MDT, i);
-    }
-};
 
 
-UrlContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterUrl(this);
-	}
-};
+class WexprContext extends antlr4.ParserRuleContext {
 
-UrlContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitUrl(this);
-	}
-};
-
-UrlContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitUrl(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.UrlContext = UrlContext;
-
-RiScriptParser.prototype.url = function() {
-
-    var localctx = new UrlContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 26, RiScriptParser.RULE_url);
-    var _la = 0; // Token type
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 192; 
-        this._errHandler.sync(this);
-        _la = this._input.LA(1);
-        do {
-            this.state = 191;
-            this.match(RiScriptParser.MDT);
-            this.state = 194; 
-            this._errHandler.sync(this);
-            _la = this._input.LA(1);
-        } while(_la===RiScriptParser.MDT);
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
-
-
-function TransformContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_transform;
-    return this;
-}
-
-TransformContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-TransformContext.prototype.constructor = TransformContext;
-
-TransformContext.prototype.TF = function() {
-    return this.getToken(RiScriptParser.TF, 0);
-};
-
-TransformContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterTransform(this);
-	}
-};
-
-TransformContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitTransform(this);
-	}
-};
-
-TransformContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitTransform(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.TransformContext = TransformContext;
-
-RiScriptParser.prototype.transform = function() {
-
-    var localctx = new TransformContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 28, RiScriptParser.RULE_transform);
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 196;
-        this.match(RiScriptParser.TF);
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
-
-
-function OpContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = RiScriptParser.RULE_op;
-    return this;
-}
-
-OpContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-OpContext.prototype.constructor = OpContext;
-
-OpContext.prototype.OP = function() {
-    return this.getToken(RiScriptParser.OP, 0);
-};
-
-OpContext.prototype.LT = function() {
-    return this.getToken(RiScriptParser.LT, 0);
-};
-
-OpContext.prototype.GT = function() {
-    return this.getToken(RiScriptParser.GT, 0);
-};
-
-OpContext.prototype.EQ = function() {
-    return this.getToken(RiScriptParser.EQ, 0);
-};
-
-OpContext.prototype.enterRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.enterOp(this);
-	}
-};
-
-OpContext.prototype.exitRule = function(listener) {
-    if(listener instanceof RiScriptParserListener ) {
-        listener.exitOp(this);
-	}
-};
-
-OpContext.prototype.accept = function(visitor) {
-    if ( visitor instanceof RiScriptParserVisitor ) {
-        return visitor.visitOp(this);
-    } else {
-        return visitor.visitChildren(this);
-    }
-};
-
-
-
-
-RiScriptParser.OpContext = OpContext;
-
-RiScriptParser.prototype.op = function() {
-
-    var localctx = new OpContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 30, RiScriptParser.RULE_op);
-    var _la = 0; // Token type
-    try {
-        this.state = 200;
-        this._errHandler.sync(this);
-        switch(this._input.LA(1)) {
-        case RiScriptParser.OP:
-            this.enterOuterAlt(localctx, 1);
-            this.state = 198;
-            this.match(RiScriptParser.OP);
-            break;
-        case RiScriptParser.GT:
-        case RiScriptParser.LT:
-        case RiScriptParser.EQ:
-            this.enterOuterAlt(localctx, 2);
-            this.state = 199;
-            _la = this._input.LA(1);
-            if(!((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << RiScriptParser.GT) | (1 << RiScriptParser.LT) | (1 << RiScriptParser.EQ))) !== 0))) {
-            this._errHandler.recoverInline(this);
-            }
-            else {
-            	this._errHandler.reportMatch(this);
-                this.consume();
-            }
-            break;
-        default:
-            throw new antlr4.error.NoViableAltException(this);
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
         }
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_wexpr;
     }
-    return localctx;
-};
+
+	expr() {
+	    return this.getTypedRuleContext(ExprContext,0);
+	};
+
+	weight() {
+	    return this.getTypedRuleContext(WeightContext,0);
+	};
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterWexpr(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitWexpr(this);
+		}
+	}
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitWexpr(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
 
 
-exports.RiScriptParser = RiScriptParser;
+}
+
+
+
+class LinkContext extends antlr4.ParserRuleContext {
+
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
+        }
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_link;
+    }
+
+	LB() {
+	    return this.getToken(RiScriptParser.LB, 0);
+	};
+
+	expr() {
+	    return this.getTypedRuleContext(ExprContext,0);
+	};
+
+	RB() {
+	    return this.getToken(RiScriptParser.RB, 0);
+	};
+
+	MDS() {
+	    return this.getToken(RiScriptParser.MDS, 0);
+	};
+
+	url() {
+	    return this.getTypedRuleContext(UrlContext,0);
+	};
+
+	MDE() {
+	    return this.getToken(RiScriptParser.MDE, 0);
+	};
+
+	WS = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.WS);
+	    } else {
+	        return this.getToken(RiScriptParser.WS, i);
+	    }
+	};
+
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterLink(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitLink(this);
+		}
+	}
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitLink(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
+}
+
+
+
+class UrlContext extends antlr4.ParserRuleContext {
+
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
+        }
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_url;
+    }
+
+	MDT = function(i) {
+		if(i===undefined) {
+			i = null;
+		}
+	    if(i===null) {
+	        return this.getTokens(RiScriptParser.MDT);
+	    } else {
+	        return this.getToken(RiScriptParser.MDT, i);
+	    }
+	};
+
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterUrl(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitUrl(this);
+		}
+	}
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitUrl(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
+}
+
+
+
+class TransformContext extends antlr4.ParserRuleContext {
+
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
+        }
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_transform;
+    }
+
+	TF() {
+	    return this.getToken(RiScriptParser.TF, 0);
+	};
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterTransform(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitTransform(this);
+		}
+	}
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitTransform(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
+}
+
+
+
+class OpContext extends antlr4.ParserRuleContext {
+
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
+        }
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = RiScriptParser.RULE_op;
+    }
+
+	OP() {
+	    return this.getToken(RiScriptParser.OP, 0);
+	};
+
+	LT() {
+	    return this.getToken(RiScriptParser.LT, 0);
+	};
+
+	GT() {
+	    return this.getToken(RiScriptParser.GT, 0);
+	};
+
+	EQ() {
+	    return this.getToken(RiScriptParser.EQ, 0);
+	};
+
+	enterRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.enterOp(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof RiScriptParserListener ) {
+	        listener.exitOp(this);
+		}
+	}
+
+	accept(visitor) {
+	    if ( visitor instanceof RiScriptParserVisitor ) {
+	        return visitor.visitOp(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
+}
+
+
+
+
+RiScriptParser.ScriptContext = ScriptContext; 
+RiScriptParser.LineContext = LineContext; 
+RiScriptParser.ExprContext = ExprContext; 
+RiScriptParser.CexprContext = CexprContext; 
+RiScriptParser.CondContext = CondContext; 
+RiScriptParser.WeightContext = WeightContext; 
+RiScriptParser.ChoiceContext = ChoiceContext; 
+RiScriptParser.AssignContext = AssignContext; 
+RiScriptParser.CharsContext = CharsContext; 
+RiScriptParser.DynamicContext = DynamicContext; 
+RiScriptParser.SymbolContext = SymbolContext; 
+RiScriptParser.WexprContext = WexprContext; 
+RiScriptParser.LinkContext = LinkContext; 
+RiScriptParser.UrlContext = UrlContext; 
+RiScriptParser.TransformContext = TransformContext; 
+RiScriptParser.OpContext = OpContext; 
