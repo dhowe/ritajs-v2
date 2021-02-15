@@ -1,3 +1,4 @@
+const { expect } = require('chai');
 
 describe('RiTa.RiScript', function () {
 
@@ -1512,6 +1513,26 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate('$a=ello\n{$a^=ell}? foo', {})).eq('foo');
       expect(RiTa.evaluate('$a=helloell\n{$a$=ell}? foo', {})).eq('foo');
       expect(RiTa.evaluate('$a=helloellx\n{$a$=ell}? foo', {})).eq('');
+    });
+  });
+
+  describe('Chinese Characters', () => {
+
+    it('Should handle evalution of Chinese characters', () => {
+      let rs = new RiScript();
+      expect(RiTa.evaluate('中文', {})).eq('中文');
+      expect(RiTa.evaluate('繁體中文', {})).eq('繁體中文');
+      expect(RiTa.evaluate('简体中文', {})).eq('简体中文');
+      expect(RiTa.evaluate('這是中文！', {})).eq('這是中文！');
+      expect(RiTa.evaluate('！简体中文', {})).eq('！简体中文');
+      expect(RiTa.evaluate('"简体中文"', {})).eq('"简体中文"');
+      expect(RiTa.evaluate('$foo=繁體中文\n中文', {})).eq('中文');
+      expect(RiTa.evaluate('$foo=繁體中文\n中文：\n$foo', {})).eq('中文：\n繁體中文');
+      expect(RiTa.evaluate('$foo=(繁體中文|简体中文)\n$foo是$foo', {})).to.be.oneOf(['简体中文是简体中文', '繁體中文是繁體中文']);
+      expect(RiTa.evaluate('($a|$a)', { a: "中文", b: "日文" })).eq('中文');
+
+
+
     });
   });
 
