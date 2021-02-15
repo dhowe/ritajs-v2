@@ -21,7 +21,6 @@ class Visitor extends RiScriptParserVisitor {
     this.context = context || {};
     this.trace = opts && opts.trace;
     this.silent = opts && opts.silent;
-    //this.preparse = opts && opts.preparse;
     return this;
   }
 
@@ -31,6 +30,7 @@ class Visitor extends RiScriptParserVisitor {
     let lastBreak = /\n$/.test(text);
     this.trace && console.log("start: '"
       + text.replace(/\r?\n/g, "\\n") + "'");
+    //this.printChildren(ctx);
     let result = this.visitChildren(ctx);
     return lastBreak ? result : result.replace(/\r?\n$/, '');
   }
@@ -83,12 +83,12 @@ class Visitor extends RiScriptParserVisitor {
 
   visitChoice(ctx) {
 
-    let etext = ctx.getText().replace(TX_RE, ''); //tmp
-    let choice = this.choices[etext];
+    let text = ctx.getText().replace(TX_RE, '');
+    let choice = this.choices[text];
     if (!choice) {
       choice = new ChoiceState(this, ctx);
       //console.log('created Choice: ' + etext);
-      this.choices[etext] = choice;
+      this.choices[text] = choice;
     }
 
     let txs = ctx.transform(), tstr = flattenTx(txs);
@@ -178,7 +178,7 @@ class Visitor extends RiScriptParserVisitor {
     let token = ctx.expr(), id = symbol.getText();
 
     if (id.startsWith(Visitor.DYN)) {
-      this.trace && console.log('visitAssign: ' + id + '=\'' + flatten(token) + ' [*DYN*]');
+      this.trace && console.log('visitAssign: ' + id + '=' + flatten(token) + ' [*DYN*]');
       result = token.getText();
     }
     else {
@@ -204,7 +204,8 @@ class Visitor extends RiScriptParserVisitor {
 
   visitChars(ctx) {
     if (this.trace) console.log("visitChars: '" + ctx.getText() + "'");
-    return ctx.getText();
+    let txt = ctx.getText();
+    return txt;
   }
 
   visitCexpr(ctx) {
@@ -280,7 +281,7 @@ class Visitor extends RiScriptParserVisitor {
 
     // make sure the terminal is resolved
     if (typeof term === 'string') {
-      result = this.parent.normalize(term);
+      result = normalize(term);
       if (this.parent.isParseable(result)) { // save for later
         //throw Error("applyTransforms.isParseable=true: '" + result + "'");
         return;
@@ -344,14 +345,8 @@ class Visitor extends RiScriptParserVisitor {
     let ruleNames = this.parent.parser.getRuleNames();
     let sb = "    [";
     while (rule) {
-      // compute what follows who invoked this rule
       let ruleIndex = rule.getRuleIndex();
-      if (ruleIndex < 0) {
-        sb += "n/a";
-      }
-      else {
-        sb += ruleNames[ruleIndex] + " <- ";
-      }
+      sb += (ruleIndex < 0) ? "n/a" : ruleNames[ruleIndex] + " <- ";
       rule = rule.parent;
     }
     return sb.replace(/ <- $/, "]");
@@ -369,8 +364,8 @@ class Visitor extends RiScriptParserVisitor {
 
   ruleName(ctx) {
     return ctx.hasOwnProperty('symbol') ?
-      this.parent.lexer.symbolicNames[ctx.symbol.type] :
-      this.parent.parser.ruleNames[ctx.ruleIndex];
+      (ctx.symbol.type > -1 ? this.parent.lexer.symbolicNames[ctx.symbol.type] : "EOF")
+      : this.parent.parser.ruleNames[ctx.ruleIndex];
   }
 
   printChildren(ctx) {
@@ -386,10 +381,9 @@ class ChoiceState { // unused at moment (for sequences)
 
   constructor(parent, ctx) {
 
-    this.type = 0
-    this.index = 0;
+    //this.type = 0
+    //this.index = 0;
     this.options = []
-    //this.id = parent.indexer;
     this.rand = parent.RiTa.randomizer;
 
     ctx.wexpr().map((w, k) => {
@@ -410,7 +404,7 @@ class ChoiceState { // unused at moment (for sequences)
   }
 
   select(txStr) {
-    if (!this.options.length) throw Error('no options')
+    if (!this.options.length) throw Error('no options');
     let res;
     /*  if (this.type == SEQUENCE) res = this.selectSequence();
         if (this.type == RSEQUENCE) res = this.selectRandSequence(); */
@@ -431,7 +425,7 @@ class ChoiceState { // unused at moment (for sequences)
     return cand;
   }
 
-  selectSequence() {
+  /*selectSequence() {
     let idx = this.index++ % this.options.length;
     return (this.last = this.options[idx]); d
   }
@@ -444,7 +438,14 @@ class ChoiceState { // unused at moment (for sequences)
       if (this.options[0] != this.last) this.index = 0;
     }
     return this.selectSequence();
-  }
+  }*/
+}
+
+function normalize(s) {
+  return s && s.length ?
+    s.replace(/\r/g, '')
+      .replace(/\\n/g, '')
+      .replace(/\n/g, ' ') : '';
 }
 
 function symbolName(text) {

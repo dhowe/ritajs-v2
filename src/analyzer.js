@@ -71,12 +71,14 @@ class Analyzer {
         rawPhones && (rawPhones += '-z'); // add 's' phone
       }
 
+  		// TODO: what about verb forms here?? TestCase?
+
       let silent = RiTa.SILENT || RiTa.SILENCE_LTS || (opts && opts.silent);
 
       // if no phones yet, try the lts-engine
       if (!rawPhones) {
         let ltsPhones = this.computePhones(word, opts);
-        if (ltsPhones && ltsPhones.length > 0) {
+        if (ltsPhones && ltsPhones.length) {
           if (!silent && lex.size() && word.match(HAS_LETTER_RE)) {
             console.log("[RiTa] Used LTS-rules for '" + word + "'");
           }

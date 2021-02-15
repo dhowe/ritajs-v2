@@ -5,6 +5,15 @@ describe('RiTa.Analyzer', () => {
 
   if (typeof module !== 'undefined') require('./before');
 
+  it('Should call analyzeWord', () => {
+
+		let data = RiTa.analyzer.analyzeWord("abandon");
+		expect(data.phones).eq("ah-b-ae-n-d-ah-n ");
+		expect(data.stresses).eq("0/1/0 ");
+		expect(data.syllables).eq("ah/b-ae-n/d-ah-n ");
+		//console.log(data);
+  });
+
   it('Should call analyze.lts', () => {
     let feats;
     feats = RiTa.analyze("cloze", { silent: 1 });
@@ -54,10 +63,10 @@ describe('RiTa.Analyzer', () => {
     eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
   });
 
-  false && it('TODO', () => {
+  false && it('TODO', () => { // TODO: (then SYNC:) See https://github.com/dhowe/rita/issues/65
 
     let feats = RiTa.analyze("off-site");
-    console.log(feats);
+    //console.log(feats);
     eq(feats["pos"], "jj");
     eq(feats["phones"], 'ah-b-ae-n-d-ah-n');
     eq(feats["tokens"], "abandon");
@@ -65,7 +74,7 @@ describe('RiTa.Analyzer', () => {
     eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
 
     feats = RiTa.analyze("oft-cited");
-    console.log(feats);
+    //console.log(feats);
     eq(feats["pos"], "jj");
     eq(feats["phones"], 'ah-b-ae-n-d-ah-n');
     eq(feats["tokens"], "abandon");
