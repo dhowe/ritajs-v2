@@ -1519,7 +1519,6 @@ describe('RiTa.RiScript', function () {
   describe('Chinese Characters', () => {
 
     it('Should handle evalution of Chinese characters', () => {
-      let rs = new RiScript();
       expect(RiTa.evaluate('中文', {})).eq('中文');
       expect(RiTa.evaluate('繁體中文', {})).eq('繁體中文');
       expect(RiTa.evaluate('简体中文', {})).eq('简体中文');
@@ -1530,8 +1529,33 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate('$foo=繁體中文\n中文：\n$foo', {})).eq('中文：\n繁體中文');
       expect(RiTa.evaluate('$foo=(繁體中文|简体中文)\n$foo是$foo', {})).to.be.oneOf(['简体中文是简体中文', '繁體中文是繁體中文']);
       expect(RiTa.evaluate('($a|$a)', { a: "中文", b: "日文" })).eq('中文');
+    });
 
+    it('Should handle dynamic with Chinese characters', () => {
+      expect(RiTa.evaluate('$$foo=中文\n繁體')).eq('繁體');
+      expect(RiTa.evaluate('$$foo=中文\n繁體$foo')).eq('繁體中文');
+      expect(RiTa.evaluate('$$foo=(繁體)\n$foo\n中文')).eq('繁體\n中文');
+    });
 
+    false && it('Should allow Chinese characters in symbol name', () => { //should it?
+      expect(RiTa.evaluate('$變量=(繁體|简体)\n$變量中文')).to.be.oneOf(['繁體中文', '简体中文']);
+      expect(RiTa.evaluate('$變量中文', { 變量: '繁體' })).eq("繁體中文");
+    });
+
+    it('Should handle continuation with Chinese characters', () => {
+      expect(RiTa.evaluate('前半段句子\\\n後半段句子')).eq('前半段句子後半段句子');
+      expect(RiTa.evaluate('$foo=(前半段句子\\\n後半段句子)\n$foo')).eq('前半段句子後半段句子');
+      expect(RiTa.evaluate('$foo=前半段\n$foo句子   \\\n後半段句子')).eq('前半段句子   後半段句子');
+      expect(RiTa.evaluate('$foo=前半段\n$foo句子\\\n   後半段句子')).eq('前半段句子   後半段句子');
+    });
+
+    it('Should handle conditional with Chinese characters', () => {
+      expect(RiTa.evaluate('$a=繁體\n{$a=繁體}? $a')).eq('繁體');
+      expect(RiTa.evaluate('$a=繁體\n{$a=中文}? $a')).eq('');
+      expect(RiTa.evaluate('$a=繁體\n{$a!=中文}? $a')).eq('繁體');
+      expect(RiTa.evaluate('$a=簡體和繁體中文\n{$a*=中文}? $a')).eq('簡體和繁體中文');
+      expect(RiTa.evaluate('$a=繁體和簡體\n{$a^=繁體}? $a')).eq('繁體和簡體');
+      expect(RiTa.evaluate('$a=簡體繁體\n{$a$=繁體}? $a')).eq('簡體繁體');
 
     });
   });
