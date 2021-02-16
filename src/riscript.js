@@ -2,8 +2,15 @@ import antlr4 from 'antlr4';
 import { decode } from 'he';
 import Visitor from './visitor';
 import Lexer from '../grammar/antlr/RiScriptLexer';
-import  Parser from '../grammar/antlr/RiScriptParser';
-import { LexerErrors, ParserErrors } from './errors';
+import Parser from '../grammar/antlr/RiScriptParser';
+//import { LexerErrors, ParserErrors } from './errors';
+
+class MyErrorListener extends antlr4.error.ErrorListener {
+  syntaxError(recognizer, offendingSymbol, line, column, msg, err) {
+    num_errors++;
+    console.error(`${offendingSymbol} line ${line}, col ${column}: ${msg}`);
+  }
+}
 
 //const Lexer = RiScriptLexer;
 class RiScript {
@@ -53,7 +60,7 @@ class RiScript {
     let stream = new antlr4.InputStream(input);
     this.lexer = new Lexer(stream);
     this.lexer.removeErrorListeners();
-    this.lexer.addErrorListener(new LexerErrors());
+    this.lexer.addErrorListener(new MyErrorListener());//new LexerErrors());
 
     let silent = opts && opts.silent;
     let trace = opts && opts.traceLex;
@@ -89,7 +96,7 @@ class RiScript {
     // create the parser
     this.parser = new Parser(tokens);
     this.parser.removeErrorListeners();
-    this.parser.addErrorListener(new ParserErrors());
+    this.parser.addErrorListener(new MyErrorListener());//new ParserErrors());
 
     let silent = opts && opts.silent;
     let trace = opts && opts.trace;
