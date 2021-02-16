@@ -1,6 +1,4 @@
-
-import { expect } from 'chai';
-import RiTa from '../src/rita';
+import { RiTa, expect } from './before';
   
 describe('RiTa.RiGrammar', function() {
 

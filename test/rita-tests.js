@@ -1,5 +1,4 @@
-import { expect } from 'chai';
-import RiTa from '../src/rita';
+import { RiTa, expect } from './before';
 
 describe('RiTa.Core', () => {
 
@@ -13,7 +12,7 @@ describe('RiTa.Core', () => {
     }
     else {
       eql(RiTa.VERSION, 'DEV');
-    } 
+    }
     eql(RiTa.hasWord('dog'), true);
   });
 
@@ -22,6 +21,14 @@ describe('RiTa.Core', () => {
     expect(RiTa.randomOrdering(2)).to.have.members([0, 1])
     expect(RiTa.randomOrdering(['a'])).eql(['a']);
     expect(RiTa.randomOrdering(['a', 'b'])).to.have.members(['a', 'b']);
+
+    let ro = RiTa.randomOrdering(4); // SYNC: (also remove util-tests.js)
+    expect(ro.length).eq(4);
+    expect(ro).to.have.members([0,1,2,3]);
+    let arr = [0, 3, 5, 7];
+    ro = RiTa.randomOrdering(arr);
+    expect(ro.length).eq(4);
+    expect(ro).to.have.members(arr);
   });
 
   it('Should call isQuestion', () => {
@@ -49,7 +56,7 @@ describe('RiTa.Core', () => {
       "ermintrout", "an ermintrout"
     ];
     if (RiTa.lexicon().size() > 0) {
-      data.push( "honor", "an honor");
+      data.push("honor", "an honor");
     }
     for (let i = 0; i < data.length; i += 2) {
       expect(RiTa.articlize(data[i])).eq(data[i + 1]);
@@ -547,9 +554,9 @@ describe('RiTa.Core', () => {
     expect(data["fried"]).eq(2);
   });
 
-  it('Should call kwic',() => {
+  it('Should call kwic', () => {
     let result;
-    RiTa.concordance("A sentence includes cat."); 
+    RiTa.concordance("A sentence includes cat.");
     result = RiTa.kwic("cat");
     expect(result[0]).eq("A sentence includes cat.");
 
