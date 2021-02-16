@@ -172,6 +172,18 @@ describe('RiTa.Core', () => {
     }
 
     ok(!RiTa.isPunct(""));
+
+    //chinese character
+    //expect(RiTa.isPunct('你')).to.be.false; //-> move to knownIssues
+    let chineseCharacters = "這是一些隨機的中文字後來開始都會發揮吧首度落後兩分看來都是廢話卡卡聖誕賀卡還是阿塞德就回家啊哈薩克話說快時間啊但我阿拉斯加";
+    for (let i = 0; i < chineseCharacters.length; i++) {
+      //ok(!RiTa.isPunct(chineseCharacters[i]), "fail at " + chineseCharacters[i]);
+    }
+    ok(RiTa.isPunct("！"))
+    let chinesePuncts = "！。，“”：；、？⋯⋯";
+    for (let i = 0; i < chinesePuncts.length; i++) {
+      ok(RiTa.isPunct(chinesePuncts[i]));
+    }
   });
 
   it('Should call tokenize', () => {
