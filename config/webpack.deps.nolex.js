@@ -23,5 +23,14 @@ module.exports = {
   plugins: [new (require('webpack').DefinePlugin)({
     __NOLEX__: JSON.stringify(true),
     __VERSION__: JSON.stringify(require("../package.json").version)
-  })]
+  })],
+  module: {
+    rules: [
+      {
+        test: /\.(js)$/,
+        exclude: /node_modules/,
+        use: ['babel-loader']
+      }
+    ]
+  },
 };

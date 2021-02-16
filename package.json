@@ -36,7 +36,7 @@
     "compile": "yarn fix.antlr && yarn antlr4.js",
     "analyze": "webpack -c config/webpack-web.js --profile --json > stats.json",
     "view.stats": "webpack-bundle-analyzer stats.json",
-    "fix.antlr":"cp -r ./fixed-antlr/JavaScript/src/antlr4/ node_modules/antlr4/src/antlr4",
+    "fix.antlr": "cp -r ./fixed-antlr/JavaScript/src/antlr4/ node_modules/antlr4/src/antlr4",
     "antlr4.js": "java -Xmx500M -cp 'jlib/antlr4-4.9.2-SNAPSHOT-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript*.g4",
     "old-antlr4.js": "java -Xmx500M -cp 'jlib/antlr-4.8-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript*.g4",
     "test-codecov": "UNUSED: nyc report --reporter=text-lcov && codecov"
@@ -57,6 +57,10 @@
     "he": "^1.2.0"
   },
   "devDependencies": {
+    "babel-loader": "^8.2.2",
+    "@babel/core": "^7.12.16",
+    "@babel/plugin-proposal-class-properties": "^7.12.13",
+    "@babel/preset-env": "^7.12.16",
     "chai": "^4.2.0",
     "codecov": "^3.8.1",
     "esm": "^3.2.25",
