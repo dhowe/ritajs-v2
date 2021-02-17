@@ -9,9 +9,6 @@
     "type": "git",
     "url": "https://github.com/dhowe/ritajs.git"
   },
-  "np": {
-    "contents": "dist"
-  },
   "files": [
     "dist/*.js",
     "example.js"
@@ -19,6 +16,24 @@
   "main": "dist/rita.js",
   "unpkg": "dist/rita.js",
   "jsdelivr": "dist/rita.js",
+  "autoupdate": {
+    "source": "npm",
+    "target": "rita",
+    "fileMap": [
+      {
+        "basePath": "dist",
+        "files": [
+          "*.js"
+        ]
+      }
+    ]
+  },
+  "runkitExampleFilename": "example.js",
+  "keywords": [
+    "natural language",
+    "generative text",
+    "text analysis"
+  ],
   "scripts": {
     "clean": "rm -f dist/*.*",
     "build": "yarn clean && webpack",
@@ -71,23 +86,5 @@
     "webpack": "^4.41.2",
     "webpack-bundle-analyzer": "^4.1.0",
     "webpack-cli": "^3.3.10"
-  },
-  "autoupdate": {
-    "source": "npm",
-    "target": "rita",
-    "fileMap": [
-      {
-        "basePath": "dist",
-        "files": [
-          "*.js"
-        ]
-      }
-    ]
-  },
-  "runkitExampleFilename": "example.js",
-  "keywords": [
-    "natural language",
-    "generative text",
-    "text analysis"
-  ]
+  }
 }
