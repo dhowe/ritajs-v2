@@ -1,4 +1,4 @@
-const Util = require("./util");
+import Util from './util';
 
 class Lexicon {
 
@@ -317,7 +317,7 @@ class Lexicon {
       if (word.endsWith("ness") || word.endsWith("ism")) return;
 
       result = this.RiTa.pluralize(word);
-      if (!RiTa.isNoun(result)) return; // make sure its still a noun
+      if (!this.RiTa.isNoun(result)) return; // make sure its still a noun
     }
     else if (opts.conjugate) { // inflect
       result = this.reconjugate(word, opts.pos);
@@ -596,4 +596,4 @@ class Lexicon {
 
 const SILENT = { silent: true };
 
-module && (module.exports = Lexicon);
+export default Lexicon;

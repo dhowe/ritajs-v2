@@ -860,4 +860,4 @@ Stemmer.stem = function (input, RiTa) {
 	return Stemmer.parent.untokenize(stems);
 }
 
-module && (module.exports = Stemmer);
+export default Stemmer;

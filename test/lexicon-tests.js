@@ -1,9 +1,9 @@
+import { RiTa, expect } from './before';
+
 describe('RiTa.Lexicon', function () {
 
   this.timeout(2000);
   this.slow(700);
-
-  if (typeof module !== 'undefined') require('./before');
 
   const lex = RiTa.lexicon(); // first load
 
