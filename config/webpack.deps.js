@@ -2,13 +2,13 @@
 
 module.exports = {
   mode: 'production',
-  target: 'node',
   output: {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
     filename: 'rita.js',
     globalObject: 'this',
     libraryTarget: 'umd',
+    libraryExport: 'default'
   },
   node: {
     fs: "empty",
