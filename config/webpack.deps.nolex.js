@@ -23,5 +23,15 @@ module.exports = {
   plugins: [new (require('webpack').DefinePlugin)({
     __NOLEX__: JSON.stringify(true),
     __VERSION__: JSON.stringify(require("../package.json").version)
-  })]
+  })],
+  optimization: {
+    minimize: true,
+    minimizer: [
+        new (require('terser-webpack-plugin'))({
+            //terser plugin v 2.3.8
+          terserOptions: { output: { ascii_only: true } },
+          extractComments: false
+        })
+    ],
+}
 };
