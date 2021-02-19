@@ -83,7 +83,7 @@ class RiTa {
   }
 
   static isPunct(text) {
-    return text && text.length && (ONLY_PUNCT.test(text) && !CHINESE_CHARACTER.test(text));
+    return text && text.length && ONLY_PUNCT.test(text);
   }
 
   static isQuestion(sentence) { // remove?
@@ -310,8 +310,7 @@ RiTa.SPLIT_CONTRACTIONS = false;
 // Set to false to reduce memory (likely slower)
 RiTa.CACHING = true;
 
-const ONLY_PUNCT = /^[^\w\s]*$/;
-const CHINESE_CHARACTER = /^[\u4E00-\u9FA5]$/;
+const ONLY_PUNCT = /^[\p{P}|\+|-|<|>|\^|\$|�|`]*$/u;
 const IS_LETTER = /^[a-z\u00C0-\u00ff]+$/;
 
 
