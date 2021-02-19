@@ -237,7 +237,7 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.syllables(input)).eq(expected);
   });
 
-  it('Should pluralize phrases', () => { // SYNC:
+  it('Should pluralize phrases', () => { 
     let input, expected;
     input = "set of choice"; expected = "set of choices";
     expect(RiTa.pluralize(input)).eq(expected);
