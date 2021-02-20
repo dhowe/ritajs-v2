@@ -1,7 +1,6 @@
-
+import { RiTa, expect } from './before';
+  
 describe('RiTa.RiGrammar', function() {
-
-    if (typeof module !== 'undefined') require('./before');
 
     const ST = { silent: 1 }, TP = { trace: 1 }, TLP = { trace: 1, traceLex: 1 };
     const RiGrammar = RiTa.RiGrammar, SKIP_FOR_NOW = true, SEQ_COUNT = 5;

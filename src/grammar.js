@@ -1,5 +1,4 @@
-const deepMerge = require('deepmerge');
-
+import deepMerge from 'deepmerge';
 
 class RiGrammar {
 
@@ -144,4 +143,4 @@ const SYM = '$', DYN = '$$';
 const SYM_RE = /^\$[^$]/;
 const IN_PARENS_RE = /^\([^()]*\)$/;
 
-module && (module.exports = RiGrammar);
+export default RiGrammar;

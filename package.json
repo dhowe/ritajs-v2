@@ -1,6 +1,6 @@
 {
   "name": "rita",
-  "version": "2.4.69",
+  "version": "2.4.70",
   "author": "Daniel C. Howe",
   "license": "GPL-3.0",
   "description": "tools for generative writing",
@@ -9,9 +9,6 @@
     "type": "git",
     "url": "https://github.com/dhowe/ritajs.git"
   },
-  "np": {
-    "contents": "dist"
-  },
   "files": [
     "dist/*.js",
     "example.js"
@@ -19,52 +16,6 @@
   "main": "dist/rita.js",
   "unpkg": "dist/rita.js",
   "jsdelivr": "dist/rita.js",
-  "scripts": {
-    "clean": "rm -f dist/*.*",
-    "build": "yarn clean && webpack",
-    "test": "mocha",
-    "watch": "webpack --watch",
-    "watch.grammar": "npm-watch",
-    "test-cov": "nyc --reporter=html mocha && open coverage/index.html",
-    "bump": "yarn version --no-git-tag-version --prerelease",
-    "bump.version": "yarn version --no-git-tag-version --patch",
-    "version": "",
-    "test.g": "mocha ./test/*.js -g ",
-    "test.prod": "NODE_ENV=production mocha ./test/*.js",
-    "test-g.prod": "NODE_ENV=production mocha ./test/*.js -g",
-    "test.quick": "mocha './test/**/!(lexicon-tests).js'",
-    "compile": "yarn antlr4.js",
-    "analyze": "webpack -c config/webpack-web.js --profile --json > stats.json",
-    "view.stats": "webpack-bundle-analyzer stats.json",
-    "antlr4.js": "java -Xmx500M -cp 'jlib/antlr-4.8-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript*.g4",
-    "test-codecov": "UNUSED: nyc report --reporter=text-lcov && codecov"
-  },
-  "nyc": {
-    "include": "src"
-  },
-  "watch": {
-    "compile": {
-      "patterns": "grammar",
-      "extensions": "g4"
-    }
-  },
-  "dependencies": {
-    "antlr4": "4.8.0",
-    "deepmerge": "^4.2.2",
-    "flatted": "^2.0.2",
-    "he": "^1.2.0"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "codecov": "^3.8.1",
-    "mocha": "^6.2.2",
-    "npe": "^1.1.3",
-    "npm-watch": "^0.6.0",
-    "nyc": "^15.1.0",
-    "webpack": "^4.41.2",
-    "webpack-bundle-analyzer": "^4.1.0",
-    "webpack-cli": "^3.3.10"
-  },
   "autoupdate": {
     "source": "npm",
     "target": "rita",
@@ -82,5 +33,58 @@
     "natural language",
     "generative text",
     "text analysis"
-  ]
+  ],
+  "scripts": {
+    "clean": "rm -f dist/*.*",
+    "build": "yarn clean && webpack",
+    "test": "mocha -r esm",
+    "watch": "webpack --watch",
+    "watch.grammar": "npm-watch",
+    "test-cov": "nyc --reporter=html mocha && open coverage/index.html",
+    "bump": "yarn version --no-git-tag-version --prerelease",
+    "bump.version": "yarn version --no-git-tag-version --patch",
+    "version": "",
+    "test.g": "mocha -r esm ./test/*.js -g ",
+    "test.prod": "NODE_ENV=production mocha -r esm ./test/*.js",
+    "test-g.prod": "NODE_ENV=production mocha -r esm ./test/*.js -g",
+    "test.quick": "mocha -r esm './test/**/!(lexicon-tests).js'",
+    "compile": "yarn fix.antlr && yarn antlr4.js",
+    "analyze": "webpack -c config/webpack-web.js --profile --json > stats.json",
+    "view.stats": "webpack-bundle-analyzer stats.json",
+    "fix.antlr": "cp -r ./fixed-antlr/JavaScript/src/antlr4/ node_modules/antlr4/src/antlr4",
+    "antlr4.js": "java -Xmx500M -cp 'jlib/antlr4-4.9.2-SNAPSHOT-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript*.g4",
+    "old-antlr4.js": "java -Xmx500M -cp 'jlib/antlr-4.8-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript*.g4",
+    "test-codecov": "UNUSED: nyc report --reporter=text-lcov && codecov"
+  },
+  "nyc": {
+    "include": "src"
+  },
+  "watch": {
+    "compile": {
+      "patterns": "grammar",
+      "extensions": "g4"
+    }
+  },
+  "dependencies": {
+    "antlr4": "^4.9.1",
+    "deepmerge": "^4.2.2",
+    "flatted": "^2.0.2",
+    "he": "^1.2.0"
+  },
+  "devDependencies": {
+    "babel-loader": "^8.2.2",
+    "@babel/core": "^7.12.16",
+    "@babel/plugin-proposal-class-properties": "^7.12.13",
+    "@babel/preset-env": "^7.12.16",
+    "chai": "^4.2.0",
+    "codecov": "^3.8.1",
+    "esm": "^3.2.25",
+    "mocha": "^6.2.2",
+    "npe": "^1.1.3",
+    "npm-watch": "^0.6.0",
+    "nyc": "^15.1.0",
+    "webpack": "^4.41.2",
+    "webpack-bundle-analyzer": "^4.1.0",
+    "webpack-cli": "^3.3.10"
+  }
 }

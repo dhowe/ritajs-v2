@@ -1,10 +1,10 @@
+import { RiTa, expect } from './before';
+import Operator from "../src/operator"
+
 describe('RiTa.RiScript', function () {
 
-  if (typeof module !== 'undefined') {
-    require('./before');
-  }
-
-  const ST = { silent: 1 }, TP = { trace: 1 }, TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
+  const ST = { silent: 1 }, TP = { trace: 1 }, 
+    TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
   this.slow(100);
 
@@ -20,7 +20,7 @@ describe('RiTa.RiScript', function () {
     let count = 5;
     it('Should support norepeat choice transforms', () => {
       let fail = false;
-      for (let i = 0; i < 1; i++) {
+      for (let i = 0; i < count; i++) {
         let res = RiTa.evaluate("$$names=(a|b|c|d|e)\n$names $names.norepeat()", 0);
         expect(/^[a-e] [a-e]$/.test(res)).true;
         let parts = res.split(' ');
@@ -76,17 +76,15 @@ describe('RiTa.RiScript', function () {
 
   describe('Evaluation', () => {
 
-
     it('Should parse MD-style links', () => {
       let res = RiTa.evaluate("[some text](https://somelink.com)", 0);
       expect(res).eq("[some text](https://somelink.com)");
     });
 
-    false && it('Should resolve long expressions', function () {
-      this.timeout(5000);
-      let str = "Lorem ipsum dolor sit amet, (consectetur adipiscing elit) morbi ullamcorper porttitor lorem, in faucibus velit ultrices nec. Curabitur convallis luctus felis, sed posuere turpis mollis quis. Suspendisse euismod vel tellus sit amet tempus. Nullam pretium tincidunt pellentesque. Vestibulum tempus eget eros non dignissim. Nullam faucibus et augue a commodo. ";// Curabitur tellus est, elementum sit amet finibus a, posuere in nunc. In libero metus, tempor nec tincidunt eu, vulputate a ex.Aliquam id tincidunt sapien. In pharetra condimentum lacus, non congue arcu tempor nec. Nullam faucibus odio id diam dapibus volutpat sed in quam. Vivamus ex quam, efficitur sit amet ante eu, congue blandit arcu. Suspendisse molestie sit amet diam ac tristique. Praesent sit amet placerat ligula. Aliquam erat volutpat. Curabitur magna ante, pulvinar ac luctus sit amet, ullamcorper eu justo. Cras fringilla nulla arcu, eu ultrices massa posuere ac. Suspendisse molestie, sapien sed placerat convallis, dolor metus blandit lacus, eu sagittis lacus turpis ac risus. Phasellus a justo nisi. Pellentesque auctor ex sit amet venenatis mollis. Nullam laoreet scelerisque porta. Morbi vehicula ullamcorper erat quis placerat. Quisque lobortis, nisi non elementum volutpat, erat orci dictum ante, sit amet bibendum erat sem vitae nunc. Nulla sodales erat vulputate lorem interdum, et tincidunt nulla cursus. Suspendisse id lectus iaculis arcu imperdiet molestie. Maecenas quam nisl, tempus sit amet ullamcorper quis, hendrerit nec quam. Sed non luctus nulla. Quisque luctus mollis quam ac ornare. Morbi ut est scelerisque, maximus nisl vitae, viverra risus. Nam euismod egestas placerat. Curabitur consequat tortor eget ante sodales laoreet ac id dolor. Nunc et tortor tellus. Mauris turpis diam, feugiat at lacus sit amet, tristique aliquet erat. Quisque volutpat accumsan dolor, egestas tempus arcu auctor sed. Sed iaculis nulla id velit pretium sodales. Quisque hendrerit, enim sit amet pharetra consequat, arcu augue ultricies quam, ornare porttitor turpis ex a felis. Curabitur fringilla vel enim pulvinar placerat. Donec interdum tellus turpis, nec varius mauris tempor non. Phasellus sodales magna nec imperdiet finibus. Fusce erat urna, rutrum non semper nec, accumsan ut nisl. Vivamus tincidunt accumsan congue. Integer consectetur laoreet tellus et blandit. Duis laoreet mi dignissim placerat convallis. Nulla et enim massa. Duis non mi ex. Aenean feugiat libero sed tincidunt tempor. Curabitur ullamcorper varius est ac accumsan. Sed congue iaculis lobortis. Vestibulum feugiat ipsum et felis pharetra, ut molestie massa consectetur. Aliquam viverra placerat cursus. Integer in augue blandit elit rhoncus eleifend in id augue. Duis sodales ultricies orci, sit amet mollis libero porttitor non. Vestibulum tellus leo, eleifend sit amet augue sed, tincidunt dapibus arcu. Quisque maximus nisi ut elit volutpat, rhoncus consectetur augue condimentum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Quisque at purus quis nisi faucibus rhoncus in quis diam. Ut maximus eros lorem, a semper diam consequat id. Integer in urna accumsan magna aliquet egestas. Curabitur tristique sodales nisl, commodo viverra sem ultricies at. Cras id ullamcorper est. Ut efficitur laoreet orci, faucibus iaculis dui aliquam sit amet. Nunc id libero at arcu mattis ornare. Duis et euismod.";
+    it('Should resolve long expressions', function () {
+      //let str = "Lorem ipsum dolor sit amet, (consectetur adipiscing elit) morbi ullamcorper porttitor lorem, in faucibus velit ultrices nec. Curabitur convallis luctus felis, sed posuere turpis mollis quis. Suspendisse euismod vel tellus sit amet tempus. Nullam pretium tincidunt pellentesque. Vestibulum tempus eget eros non dignissim. Nullam faucibus et augue a commodo. Curabitur tellus est, elementum sit amet finibus a, posuere in nunc. In libero metus, tempor nec tincidunt eu, vulputate a ex.Aliquam id tincidunt sapien. In pharetra condimentum lacus, non congue arcu tempor nec. Nullam faucibus odio id diam dapibus volutpat sed in quam. Vivamus ex quam, efficitur sit amet ante eu, congue blandit arcu. Suspendisse molestie sit amet diam ac tristique. Praesent sit amet placerat ligula. Aliquam erat volutpat. Curabitur magna ante, pulvinar ac luctus sit amet, ullamcorper eu justo. Cras fringilla nulla arcu, eu ultrices massa posuere ac. Suspendisse molestie, sapien sed placerat convallis, dolor metus blandit lacus, eu sagittis lacus turpis ac risus. Phasellus a justo nisi. Pellentesque auctor ex sit amet venenatis mollis. Nullam laoreet scelerisque porta. Morbi vehicula ullamcorper erat quis placerat. Quisque lobortis, nisi non elementum volutpat, erat orci dictum ante, sit amet bibendum erat sem vitae nunc. Nulla sodales erat vulputate lorem interdum, et tincidunt nulla cursus. Suspendisse id lectus iaculis arcu imperdiet molestie. Maecenas quam nisl, tempus sit amet ullamcorper quis, hendrerit nec quam. Sed non luctus nulla. Quisque luctus mollis quam ac ornare. Morbi ut est scelerisque, maximus nisl vitae, viverra risus. Nam euismod egestas placerat. Curabitur consequat tortor eget ante sodales laoreet ac id dolor. Nunc et tortor tellus. Mauris turpis diam, feugiat at lacus sit amet, tristique aliquet erat. Quisque volutpat accumsan dolor, egestas tempus arcu auctor sed. Sed iaculis nulla id velit pretium sodales. Quisque hendrerit, enim sit amet pharetra consequat, arcu augue ultricies quam, ornare porttitor turpis ex a felis. Curabitur fringilla vel enim pulvinar placerat. Donec interdum tellus turpis, nec varius mauris tempor non. Phasellus sodales magna nec imperdiet finibus. Fusce erat urna, rutrum non semper nec, accumsan ut nisl. Vivamus tincidunt accumsan congue. Integer consectetur laoreet tellus et blandit. Duis laoreet mi dignissim placerat convallis. Nulla et enim massa. Duis non mi ex. Aenean feugiat libero sed tincidunt tempor. Curabitur ullamcorper varius est ac accumsan. Sed congue iaculis lobortis. Vestibulum feugiat ipsum et felis pharetra, ut molestie massa consectetur. Aliquam viverra placerat cursus. Integer in augue blandit elit rhoncus eleifend in id augue. Duis sodales ultricies orci, sit amet mollis libero porttitor non. Vestibulum tellus leo, eleifend sit amet augue sed, tincidunt dapibus arcu. Quisque maximus nisi ut elit volutpat, rhoncus consectetur augue condimentum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Quisque at purus quis nisi faucibus rhoncus in quis diam. Ut maximus eros lorem, a semper diam consequat id. Integer in urna accumsan magna aliquet egestas. Curabitur tristique sodales nisl, commodo viverra sem ultricies at. Cras id ullamcorper est. Ut efficitur laoreet orci, faucibus iaculis dui aliquam sit amet. Nunc id libero at arcu mattis ornare. Duis et euismod.";
+      let str = "Lorem ipsum dolor sit amet, (consectetur adipiscing elit) morbi ullamcorper porttitor lorem, in faucibus velit ultrices nec. Curabitur convallis luctus felis, sed posuere turpis mollis quis. Suspendisse euismod vel tellus sit amet tempus. Nullam pretium tincidunt pellentesque. Vestibulum tempus eget eros non dignissim. Nullam faucibus et augue a commodo. ";
       expect(RiTa.evaluate(str, 0)).eq(str.replace(/[)(]/g, "")); // longer
-      expect(0).eq(1);
     });
 
     it('Should correctly call isParseable', () => {
@@ -127,7 +125,7 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate("a   b", 0)).eq("a   b");
       expect(RiTa.evaluate("a\tb", 0)).eq("a\tb");
 
-      //expect(RiTa.evaluate('foo.bar', {}, {trace:0})).eq('foo.bar'); // KNOWN ISSUE
+      expect(RiTa.evaluate('foo.bar', {}, {silent:1})).eq('foo.bar'); // KNOWN ISSUE
     });
 
 
@@ -736,9 +734,10 @@ describe('RiTa.RiScript', function () {
       expect(ctx.a).eq(result);
     });
 
-    (!SKIP_FOR_NOW) && it('KI: FAILING', () => {
+    (!SKIP_FOR_NOW) && it('KI: FAILING', () => { // TODO:
       for (let i = 0, rs; i < 10; i++) {
         rs = RiTa.evaluate('($chosen=$person) talks to $chosen.', { person: '(Dave | Jill | Pete)' });
+        console.log(i, rs);
         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
       }
     });
@@ -750,9 +749,6 @@ describe('RiTa.RiScript', function () {
 
       let rs = RiTa.evaluate('($person=(Dave | Jill | Pete)) talks to $person.', {});
       expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]);
-
-      /* KI: rs = RiTa.evaluate('($chosen=$person) talks to $chosen.', { person: '(Dave | Jill | Pete)' }, TT);
-         expect(rs).to.be.oneOf(["Dave talks to Dave.", "Jill talks to Jill.", "Pete talks to Pete."]); */
     });
 
     it('Should reuse assigned variables', () => {
@@ -1239,7 +1235,7 @@ describe('RiTa.RiScript', function () {
       rs = RiTa.evaluate('$foo=$bar.result\n$foo', ctx); // no parens
       expect(rs).eq('result');
 
-      ctx = { mammal: "(ox | ox)" };  // SYNC:
+      ctx = { mammal: "(ox | ox)" }; 
       rs = RiTa.evaluate('The big $mammal ate the smaller $mammal.s.', ctx);
       // no parens, alias, resolved from pending symbols
       expect(rs).eq('The big ox ate the smaller oxen.');
@@ -1349,8 +1345,6 @@ describe('RiTa.RiScript', function () {
 
   describe('Operators', () => {
     if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') { // skip for prod
-
-      Operator = require("../src/operator");
 
       it('Should invoke assignment ops', () => {
 

@@ -1,7 +1,6 @@
+import { RiTa, expect } from './before';
 
 describe('RiTa.Tokenizer', () => {
-
-  if (typeof module !== 'undefined') require('./before');
 
   it ('Should handle tokenize then untokenize', () =>{
     let sentences = [

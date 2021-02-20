@@ -1,4 +1,4 @@
-const Util = require("./util");
+import Util from './util';
 
 class Tokenizer {
 
@@ -253,4 +253,4 @@ const CONTRACTIONS_RE = [
   /['\u2019]re /g, " are "
 ];
 
-module && (module.exports = Tokenizer);
+export default Tokenizer;

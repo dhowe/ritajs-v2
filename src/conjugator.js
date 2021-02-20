@@ -1,4 +1,5 @@
-const { RE } = require("./util");
+import Util from "./util";
+const RE = Util.RE;
 
 // TODO: add tests for all verbs/forms here with 4 parameters **
 
@@ -848,4 +849,4 @@ const PRESENT_RULESET = {
 
 Conjugator.VERB_CONS_DOUBLING = VERB_CONS_DOUBLING; // for scripts
 
-module && (module.exports = Conjugator);
+export default Conjugator;
