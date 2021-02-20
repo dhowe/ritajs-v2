@@ -98,4 +98,4 @@ class Concorder {
   }
 }
 
-module && (module.exports = Concorder);
+export default Concorder;

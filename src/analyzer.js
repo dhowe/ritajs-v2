@@ -1,4 +1,5 @@
-const Util = require("./util");
+import Util from "./util";
+import LetterToSound from "./rita_lts";
 
 class Analyzer {
 
@@ -34,7 +35,6 @@ class Analyzer {
   }
 
   computePhones(word, opts) {
-    const LetterToSound = require("./rita_lts");
     if (!this.lts) this.lts = new LetterToSound(this.RiTa);
     return this.lts.buildPhones(word, opts);
   }
@@ -112,4 +112,4 @@ class Analyzer {
 
 const HAS_LETTER_RE = /[a-zA-Z]+/;
 
-module && (module.exports = Analyzer);
+export default Analyzer;

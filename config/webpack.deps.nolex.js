@@ -2,7 +2,7 @@
 
 module.exports = {
   mode: 'production',
-  target: 'node',
+//  target: 'node',
   output: {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
@@ -10,6 +10,7 @@ module.exports = {
     chunkFilename: 'rita.js',
     globalObject: 'this',
     libraryTarget: 'umd',
+    libraryExport: 'default'
   },  
   node: {
     fs: "empty",
@@ -24,6 +25,7 @@ module.exports = {
     __NOLEX__: JSON.stringify(true),
     __VERSION__: JSON.stringify(require("../package.json").version)
   })],
+<<<<<<< HEAD
   optimization: {
     minimize: true,
     minimizer: [
@@ -34,4 +36,15 @@ module.exports = {
         })
     ],
 }
+=======
+  module: {
+    rules: [
+      {
+        test: /\.(js)$/,
+        exclude: /node_modules/,
+        use: ['babel-loader?compact=true']
+      }
+    ]
+  },
+>>>>>>> 27ebc7a1f23c8c1d37dd92963070794d9ce7f6a8
 };

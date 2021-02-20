@@ -1,6 +1,6 @@
 // adapted from
 
-const Util = require("./util");
+import Util from './util';
 
 class SeededRandom {
 
@@ -126,4 +126,4 @@ class SeededRandom {
 
 }
 
-module && (module.exports = SeededRandom);
+export default SeededRandom;

@@ -1,16 +1,16 @@
-const Util = require("./util");
-const Tagger = require('./tagger');
-const Stemmer = require('./stemmer');
-const Lexicon = require('./lexicon');
-const RiMarkov = require('./markov');
-const RiGrammar = require('./grammar');
-const Analyzer = require('./analyzer');
-const RiScript = require('./riscript');
-const Tokenizer = require('./tokenizer');
-const Concorder = require('./concorder');
-const Conjugator = require('./conjugator');
-const Inflector = require('./inflector');
-const RandGen = require('./randgen');
+import Util from "./util";
+import Tagger from './tagger';
+import Stemmer from './stemmer';
+import Lexicon from './lexicon';
+import RiMarkov from './markov';
+import RiGrammar from './grammar';
+import Analyzer from './analyzer';
+import RiScript from './riscript';
+import Tokenizer from './tokenizer';
+import Concorder from './concorder';
+import Conjugator from './conjugator';
+import Inflector from './inflector';
+import RandGen from './randgen';
 
 class RiTa {
 
@@ -314,4 +314,4 @@ const ONLY_PUNCT = /^[^\w\s]*$/;
 const IS_LETTER = /^[a-z\u00C0-\u00ff]+$/;
 
 
-module && (module.exports = RiTa);
+export default RiTa;

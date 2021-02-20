@@ -9,23 +9,25 @@
 <div id="mocha"></div>
 
 <script src="../dist/rita.js"></script>
-<script src="../node_modules/chai/chai.js"></script>
-<script src="../node_modules/mocha/mocha.js"></script>
+<script src="https://unpkg.com/chai@4.1.2/chai.js"></script>
+<script src="https://unpkg.com/mocha@4.0.1/mocha.js"></script>
+<!-- <script src="../node_modules/chai/chai.js"></script>
+<script src="../node_modules/mocha/mocha.js"></script> -->
 
 <script>mocha.setup('bdd');</script>
 
-<script src="./rita-tests.js"></script>
-<script src="./riscript-tests.js"></script>
-<script src="./grammar-tests.js"></script>
-<script src="./markov-tests.js"></script>
-<script src="./tokenizer-tests.js"></script>
-<script src="./analyzer-tests.js"></script>
-<script src="./tagger-tests.js"></script>
-<script src="./lexicon-tests.js"></script>
+<script type="module" src="./rita-tests.js"></script>
+<script type="module" src="./riscript-tests.js"></script>
+<script type="module" src="./grammar-tests.js"></script>
+<script type="module" src="./markov-tests.js"></script>
+<script type="module" src="./tokenizer-tests.js"></script>
+<script type="module" src="./analyzer-tests.js"></script>
+<script type="module" src="./tagger-tests.js"></script>
+<script type="module" src="./lexicon-tests.js"></script>
 
 <script>
     const hasLex = true;
-    expect = chai.expect;
+    //expect = chai.expect;
     mocha.checkLeaks();
     mocha.run();
 </script>

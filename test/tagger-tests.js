@@ -1,6 +1,6 @@
-describe('RiTa.Tagger', () => {
+import { RiTa, expect } from './before';
 
-  if (typeof module !== 'undefined') require('./before');
+describe('RiTa.Tagger', () => {
 
   it('Should call pos.array', () => {
     //eql(RiTa.pos([]), []);

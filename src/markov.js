@@ -1,4 +1,4 @@
-const { parse, stringify } = require('flatted/cjs');
+import { parse, stringify } from 'flatted/cjs';
 
 class RiMarkov {
 
@@ -6,7 +6,7 @@ class RiMarkov {
     this.n = n;
     this.root = new Node(null, 'ROOT');
 
-    // options (TODO: clarify/document options)
+    // options 
     this.trace = opts.trace;
     this.mlm = opts.maxLengthMatch;
     this.logDuplicates = opts.logDuplicates;
@@ -419,4 +419,4 @@ function isSubArray(find, arr) {
 
 const MULTI_SP_RE = / +/g;
 
-module && (module.exports = RiMarkov);
+export default RiMarkov;

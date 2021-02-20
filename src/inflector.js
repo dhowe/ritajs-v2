@@ -1,4 +1,4 @@
-const Util = require("./util");
+import Util from './util';
 
 class Inflector {
 
@@ -181,4 +181,4 @@ const PLUR_RULES = [
   DEFAULT_PLUR
 ];
 
-module && (module.exports = Inflector);
+export default Inflector;

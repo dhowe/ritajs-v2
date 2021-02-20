@@ -1,4 +1,6 @@
-const { MASS_NOUNS } = require("./util");
+import Util from './util';
+
+const MASS_NOUNS  = Util.MASS_NOUNS;
 
 class Tagger {
 
@@ -366,4 +368,4 @@ const ADVS = ['rb', 'rbr', 'rbs', 'rp'];
 const NOUNS = ['nn', 'nns', 'nnp', 'nnps'];
 const VERBS = ['vb', 'vbd', 'vbg', 'vbn', 'vbp', 'vbz'];
 
-module && (module.exports = Tagger);
+export default Tagger;
