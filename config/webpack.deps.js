@@ -19,21 +19,6 @@ module.exports = {
     ignored: /node_modules/
   },
   entry: './src/rita.js',
-<<<<<<< HEAD
-  plugins: [new (require('webpack').DefinePlugin)({
-    __VERSION__: JSON.stringify(require("../package.json").version)
-  })],
-  optimization: {
-    minimize: true,
-    minimizer: [
-        new (require('terser-webpack-plugin'))({
-            //terser plugin v 2.3.8
-          terserOptions: { output: { ascii_only: true } },
-          extractComments: false
-        })
-    ],
-}
-=======
   plugins: [
     new (require('webpack').DefinePlugin)({
       __VERSION__: JSON.stringify(require("../package.json").version)
@@ -48,5 +33,4 @@ module.exports = {
       }
     ]
   },
->>>>>>> 27ebc7a1f23c8c1d37dd92963070794d9ce7f6a8
 };
