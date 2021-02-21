@@ -2,7 +2,6 @@
 
 module.exports = {
   mode: 'production',
-//  target: 'node',
   output: {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
@@ -11,7 +10,7 @@ module.exports = {
     globalObject: 'this',
     libraryTarget: 'umd',
     libraryExport: 'default'
-  },  
+  },
   node: {
     fs: "empty",
     __dirname: false,
@@ -34,14 +33,17 @@ module.exports = {
       }
     ]
   },
+  performance: {
+    hints: false
+  },
   optimization: {
     minimize: true,
     minimizer: [
-        new (require('terser-webpack-plugin'))({
-            //terser plugin v 2.3.8
-          terserOptions: { output: { ascii_only: true } },
-          extractComments: false
-        })
+      new (require('terser-webpack-plugin'))({
+        //terser plugin v 2.3.8
+        terserOptions: { output: { ascii_only: true } },
+        extractComments: false
+      })
     ],
   }
 };

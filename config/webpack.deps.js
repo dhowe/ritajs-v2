@@ -33,13 +33,16 @@ module.exports = {
       }
     ]
   },
+  performance: {
+    hints: false
+  },
   optimization: {
     minimize: true,
     minimizer: [
-        new (require('terser-webpack-plugin'))({ // v.2.3.8
-          terserOptions: { output: { ascii_only: true } },
-          extractComments: false
-        })
+      new (require('terser-webpack-plugin'))({ // v.2.3.8
+        terserOptions: { output: { ascii_only: true } },
+        extractComments: false
+      })
     ],
   }
 };

@@ -37,12 +37,12 @@
     "clean": "rm -f dist/*.*",
     "build": "yarn clean && webpack",
     "test": "mocha -r esm",
-    "watch": "webpack --watch",
+    "test.src": "NODE_ENV=dev mocha -r esm",
+    "watch": "webpack --watch && yarn test",
     "watch.grammar": "npm-watch",
-    "coverage": "nyc --reporter=html mocha && open coverage/index.html",
     "test.g": "mocha -r esm ./test/*.js -g ",
-    "test.prod": "NODE_ENV=production mocha -r esm ./test/*.js",
     "compile": "yarn fix.antlr && yarn antlr4.js",
+    "coverage": "nyc --reporter=html mocha && open coverage/index.html",
     "fix.antlr": "cp -r ./fixed-antlr/JavaScript/src/antlr4/ node_modules/antlr4/src/antlr4",
     "antlr4.js": "java -Xmx500M -cp 'jlib/antlr4-4.9.2-SNAPSHOT-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript*.g4"
   },
@@ -62,10 +62,10 @@
     "he": "^1.2.0"
   },
   "devDependencies": {
-    "babel-loader": "^8.2.2",
     "@babel/core": "^7.12.16",
     "@babel/plugin-proposal-class-properties": "^7.12.13",
     "@babel/preset-env": "^7.12.16",
+    "babel-loader": "^8.2.2",
     "chai": "^4.2.0",
     "codecov": "^3.8.1",
     "esm": "^3.2.25",

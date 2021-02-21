@@ -5,15 +5,15 @@ describe('RiTa.Core', () => {
   it('Should have access to statics', () => {
     //console.log(process.env.NODE_ENV, process.env.npm_package_version, RiTa.VERSION);
     if (typeof process === 'undefined') return; // TODO:
-
-    if (typeof process.env.npm_package_version !== 'undefined' &&
-      typeof process.env.NODE_ENV !== 'undefined') {
-      eql(RiTa.VERSION, process.env.npm_package_version);
-    }
-    else {
+    if (typeof process.env.NODE_ENV === 'test') {
       eql(RiTa.VERSION, 'DEV');
     }
-    eql(RiTa.hasWord('dog'), true);
+    else {
+      if (typeof process.env.npm_package_version === 'undefined') {
+        throw Error("No package version!");
+      }
+      eql(RiTa.VERSION, process.env.npm_package_version);
+    }
   });
 
   it('Should call randomOrdering', () => {
@@ -24,7 +24,7 @@ describe('RiTa.Core', () => {
 
     let ro = RiTa.randomOrdering(4); // SYNC: (also remove util-tests.js)
     expect(ro.length).eq(4);
-    expect(ro).to.have.members([0,1,2,3]);
+    expect(ro).to.have.members([0, 1, 2, 3]);
     let arr = [0, 3, 5, 7];
     ro = RiTa.randomOrdering(arr);
     expect(ro.length).eq(4);
@@ -154,7 +154,7 @@ describe('RiTa.Core', () => {
 
     punct = '$%&^,';
     for (let i = 0; i < punct.length; i++) {
-      ok(RiTa.isPunct(punct[i]), "fail at:"+punct[i]);
+      ok(RiTa.isPunct(punct[i]), "fail at:" + punct[i]);
     }
 
     punct = ",;:!?)([].#\"\\!@$%&}<>|-\/\\*{^";
