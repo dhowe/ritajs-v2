@@ -1,5 +1,5 @@
 import { RiTa, expect } from './before';
-import Operator from "../src/operator"
+//import Operator from "../src/operator"
 
 describe('RiTa.RiScript', function () {
 
@@ -1343,7 +1343,7 @@ describe('RiTa.RiScript', function () {
     })
   });
 
-  describe('Operators', () => {
+  /*describe('Operators', () => {
     if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') { // skip for prod
 
       it('Should invoke assignment ops', () => {
@@ -1456,7 +1456,7 @@ describe('RiTa.RiScript', function () {
         expect(() => Operator.SW.invoke(null, null)).to.throw();
       });
     }
-  })
+  });*/
 
   describe('Conditionals', () => {
 
