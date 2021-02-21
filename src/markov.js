@@ -6,7 +6,7 @@ class RiMarkov {
     this.n = n;
     this.root = new Node(null, 'ROOT');
 
-    // options (TODO: clarify/document options)
+    // options 
     this.trace = opts.trace;
     this.mlm = opts.maxLengthMatch;
     this.logDuplicates = opts.logDuplicates;
