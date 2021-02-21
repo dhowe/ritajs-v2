@@ -6,7 +6,6 @@ class RiMarkov {
     this.n = n;
     this.root = new Node(null, 'ROOT');
 
-    // options 
     this.trace = opts.trace;
     this.mlm = opts.maxLengthMatch;
     this.logDuplicates = opts.logDuplicates;
@@ -15,18 +14,17 @@ class RiMarkov {
     this.tokenize = opts.tokenize || RiTa().tokenize;
     this.untokenize = opts.untokenize || RiTa().untokenize;
 
-    if (this.mlm && this.mlm <= this.n) throw Error('maxLengthMatch(mlm) must be > N')
+    if (this.mlm && this.mlm <= this.n) {
+      throw Error('maxLengthMatch(mlm) must be > N');
+    }
 
     // we store inputs to verify we don't duplicate sentences
     if (!this.disableInputChecks || this.mlm) this.input = [];
   }
 
   toJSON() {
-    /*     return stringify({input: this.input}, [
-          'n',
-        ], 2); */
-    let k = Object.keys(this).reduce((acc, k) => Object.assign(acc, { [k]: this[k] }), {});
-    return stringify(k);
+    return stringify(Object.keys(this).reduce
+      ((acc, k) => Object.assign(acc, { [k]: this[k] }), {}));
   }
 
   static fromJSON(json) {
