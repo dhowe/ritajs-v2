@@ -29,15 +29,14 @@ module.exports = {
       {
         test: /\.(js)$/,
         exclude: /node_modules/,
-        use: ['babel-loader?compact=true']
+        use: ['babel-loader?compact=false']
       }
     ]
   },
   optimization: {
     minimize: true,
     minimizer: [
-        new (require('terser-webpack-plugin'))({
-            //terser plugin v 2.3.8
+        new (require('terser-webpack-plugin'))({ // v.2.3.8
           terserOptions: { output: { ascii_only: true } },
           extractComments: false
         })

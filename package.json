@@ -15,7 +15,6 @@
   ],
   "main": "dist/rita.js",
   "unpkg": "dist/rita.js",
-  "jsdelivr": "dist/rita.js",
   "autoupdate": {
     "source": "npm",
     "target": "rita",
@@ -40,21 +39,12 @@
     "test": "mocha -r esm",
     "watch": "webpack --watch",
     "watch.grammar": "npm-watch",
-    "test-cov": "nyc --reporter=html mocha && open coverage/index.html",
-    "bump": "yarn version --no-git-tag-version --prerelease",
-    "bump.version": "yarn version --no-git-tag-version --patch",
-    "version": "",
+    "coverage": "nyc --reporter=html mocha && open coverage/index.html",
     "test.g": "mocha -r esm ./test/*.js -g ",
     "test.prod": "NODE_ENV=production mocha -r esm ./test/*.js",
-    "test-g.prod": "NODE_ENV=production mocha -r esm ./test/*.js -g",
-    "test.quick": "mocha -r esm './test/**/!(lexicon-tests).js'",
     "compile": "yarn fix.antlr && yarn antlr4.js",
-    "analyze": "webpack -c config/webpack-web.js --profile --json > stats.json",
-    "view.stats": "webpack-bundle-analyzer stats.json",
     "fix.antlr": "cp -r ./fixed-antlr/JavaScript/src/antlr4/ node_modules/antlr4/src/antlr4",
-    "antlr4.js": "java -Xmx500M -cp 'jlib/antlr4-4.9.2-SNAPSHOT-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript*.g4",
-    "old-antlr4.js": "java -Xmx500M -cp 'jlib/antlr-4.8-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript*.g4",
-    "test-codecov": "UNUSED: nyc report --reporter=text-lcov && codecov"
+    "antlr4.js": "java -Xmx500M -cp 'jlib/antlr4-4.9.2-SNAPSHOT-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript*.g4"
   },
   "nyc": {
     "include": "src"
