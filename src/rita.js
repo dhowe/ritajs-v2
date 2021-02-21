@@ -310,7 +310,7 @@ RiTa.SPLIT_CONTRACTIONS = false;
 // Set to false to reduce memory (likely slower)
 RiTa.CACHING = true;
 
-const ONLY_PUNCT = /^[^\w\s]*$/;
+const ONLY_PUNCT = /^[\p{P}|\+|-|<|>|\^|\$|\ufffd|`]*$/u;
 const IS_LETTER = /^[a-z\u00C0-\u00ff]+$/;
 
 
