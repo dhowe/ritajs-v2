@@ -545,10 +545,15 @@ describe('RiTa.RiMarkov', () => {
   });
 
   it('should serialize and deserialize', () => {
-
-    let rm = new RiMarkov(4, { disableInputChecks: 1 });
+    let rm, copy;
+    rm = new RiMarkov(4, { disableInputChecks: 0 });
     rm.addText(['I ate the dog.']);
-    let copy = RiMarkov.fromJSON(rm.toJSON());
+    copy = RiMarkov.fromJSON(rm.toJSON());
+    markovEquals(rm, copy);
+
+    rm = new RiMarkov(4, { disableInputChecks: 1 });
+    rm.addText(['I ate the dog.']);
+    copy = RiMarkov.fromJSON(rm.toJSON());
     markovEquals(rm, copy);
     expect(copy.generate()).eql(rm.generate());
   });

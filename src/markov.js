@@ -1,4 +1,4 @@
-import { parse, stringify } from 'flatted/cjs';
+import { parse, stringify } from 'flatted';
 
 class RiMarkov {
 
@@ -22,20 +22,26 @@ class RiMarkov {
   }
 
   toJSON() {
-    return stringify(Object.keys(this).reduce(
-      (acc, k) => Object.assign(acc, { [k]: this[k] }), {}));
+    /*     return stringify({input: this.input}, [
+          'n',
+        ], 2); */
+    let k = Object.keys(this).reduce((acc, k) => Object.assign(acc, { [k]: this[k] }), {});
+    return stringify(k);
   }
 
   static fromJSON(json) {
+
     // parse the json and merge with new object
-    let rm = Object.assign(new RiMarkov(), parse(json));
+    let parsed = parse(json);
+    let rm = Object.assign(new RiMarkov(), parsed);
 
     // handle json converting undefined [] to empty []
-    if (!json.input) rm.input = undefined;
+    if (!parsed.input) rm.input = undefined;
 
     // then recreate the n-gram tree with Node objects
     let jsonRoot = rm.root;
     populate(rm.root = new Node(null, 'ROOT'), jsonRoot);
+
     return rm;
   }
 
@@ -305,16 +311,16 @@ class Node {
 
   childNodes(sorted) {
     let kids = Object.values(this.children);
-    sorted && kids.sort((a, b) => b.count !== a.count 
-      ? b.count - a.count 
+    sorted && kids.sort((a, b) => b.count !== a.count
+      ? b.count - a.count
       : b.token.localeCompare(a.token));
     return kids;
   }
 
   childCount(excludeMetaTags) {
-    if (this.numChildren === -1) { 
+    if (this.numChildren === -1) {
       let sum = 0; // a sort of cache
-      for (let k in this.children) { 
+      for (let k in this.children) {
         if (excludeMetaTags && (k === RiMarkov.SS || k === RiMarkov.SE)) {
           continue;
         }
@@ -360,7 +366,7 @@ class Node {
 // --------------------------------------------------------------
 
 function stringulate(mn, str, depth, sort) {
-  
+
   sort = sort || false;
   let l = mn.childNodes(true), indent = '\n';
   if (!l.length) return str;
@@ -369,7 +375,7 @@ function stringulate(mn, str, depth, sort) {
     let node = l[i];
     if (node && node.token) {
       str += indent + "'" + encode(node.token) + "'";
-      if (!node.isRoot()) str += " [" + node.count 
+      if (!node.isRoot()) str += " [" + node.count
         + ",p=" + node.nodeProb().toFixed(3) + "]";
       if (!node.isLeaf()) str += '  {';
       str = mn.childCount() ? stringulate(node, str, depth + 1, sort) : str + '}';
