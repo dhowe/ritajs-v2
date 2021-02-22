@@ -8,11 +8,9 @@ check_err() {
     }
 }
 
-tmp=/tmp
-
-cp ./test/before.js $tmp/ || check_err $? "invalid state[1]" 
-sed 's%\.\./dist/rita%../src/rita%g' $tmp/before.js > ./test/before.js
+cp ./test/before.js /tmp/ || check_err $? "invalid state[1]" 
+sed 's%\.\./dist/rita%../src/rita%g' /tmp/before.js > ./test/before.js
 path=`head -n1 ./test/before.js`
-echo Running tests with: $path
-npm run test.src
-cp $tmp/before.js ./test/ || check_err $? "invalid state[2]"
+echo Running source tests with: $path
+NODE_ENV=dev mocha -r esm
+cp /tmp/before.js ./test/ || check_err $? "invalid state[2]"

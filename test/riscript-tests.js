@@ -1456,7 +1456,7 @@ describe('RiTa.RiScript', function () {
         expect(() => Operator.SW.invoke(null, null)).to.throw();
       });
     }
-  });*/
+  }); */
 
   describe('Conditionals', () => {
 

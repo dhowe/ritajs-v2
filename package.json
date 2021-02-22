@@ -38,8 +38,9 @@
     "build": "npm run clean && webpack",
     "test": "mocha -r esm",
     "prepare": "npm run compile",
-    "test.src": "NODE_ENV=dev mocha -r esm",
-    "watch.grammar": "npm-watch",
+    "watch": "npm-watch test.src",
+    "watch.grammar": "npm-watch antlr4.js",
+    "test.src": "sh ./scripts/test-src.sh",
     "test.g": "mocha -r esm ./test/*.js -g ",
     "compile": "npm run fix.antlr && npm run antlr4.js",
     "coverage": "nyc --reporter=html mocha && open coverage/index.html",
@@ -50,9 +51,14 @@
     "include": "src"
   },
   "watch": {
-    "compile": {
+    "antlr4.js": {
       "patterns": "grammar",
       "extensions": "g4"
+    },
+    "test.src": {
+      "patterns": ["src", "test"],
+      "ignore": "before.js",
+      "extensions": "js"
     }
   },
   "devDependencies": {
