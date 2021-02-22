@@ -35,13 +35,13 @@
   ],
   "scripts": {
     "clean": "rm -f dist/*.*",
-    "build": "yarn clean && webpack",
+    "build": "npm run clean && webpack",
     "test": "mocha -r esm",
-    "prepare": "yarn compile",
+    "prepare": "npm run compile",
     "test.src": "NODE_ENV=dev mocha -r esm",
     "watch.grammar": "npm-watch",
     "test.g": "mocha -r esm ./test/*.js -g ",
-    "compile": "yarn fix.antlr && yarn antlr4.js",
+    "compile": "npm run fix.antlr && npm run antlr4.js",
     "coverage": "nyc --reporter=html mocha && open coverage/index.html",
     "fix.antlr": "cp -r ./fixed-antlr/JavaScript/src/antlr4/ node_modules/antlr4/src/antlr4",
     "antlr4.js": "java -Xmx500M -cp 'jlib/antlr4-4.9.2-SNAPSHOT-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript*.g4"
