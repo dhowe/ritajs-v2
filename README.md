@@ -128,8 +128,8 @@ To install/build the library and run tests (with npm/mocha):
 $ git clone https://github.com/dhowe/ritajs.git
 $ cd ritajs 
 $ npm install
-$ npm build 
-$ npm test
+$ npm run build 
+$ npm run test
 
 ```
 If all goes according to plan, you should see a list of successful tests and find the library built in 'dist'
