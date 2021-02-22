@@ -6,7 +6,7 @@ RiTa is a toolkit for generative writing and natural language. It is implemented
 
 ###
 
-:warning: Version 2.0 contains breaking changes! Please check the [release notes](https://rednoise.org/rita/#whats-new-wrapper)
+Note: version 2.0 contains breaking changes! Please check the [release notes](https://rednoise.org/rita/#whats-new-wrapper)
 
 ### Installation
 
@@ -122,14 +122,14 @@ RiScript is a writer-focused scripting language integrated with RiTa. It enables
 <br>
 
 ## Developing
-To install/build the library and run tests (with yarn/mocha):
+To install/build the library and run tests (with npm/mocha):
 ```shell
 
 $ git clone https://github.com/dhowe/ritajs.git
 $ cd ritajs 
-$ yarn install  (run again if you get an error) 
-$ yarn build 
-$ yarn test.prod
+$ npm install
+$ npm build 
+$ npm test
 
 ```
 If all goes according to plan, you should see a list of successful tests and find the library built in 'dist'
