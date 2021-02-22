@@ -14,7 +14,6 @@
     "example.js"
   ],
   "main": "dist/rita.js",
-  "unpkg": "dist/rita.js",
   "autoupdate": {
     "source": "npm",
     "target": "rita",
@@ -38,9 +37,9 @@
     "build": "npm run clean && webpack",
     "test": "mocha -r esm",
     "prepare": "npm run compile",
-    "watch": "npm-watch test.src",
-    "watch.grammar": "npm-watch antlr4.js",
+    "watch.src": "npm-watch test.src",
     "test.src": "sh ./scripts/test-src.sh",
+    "watch.grammar": "npm-watch antlr4.js",
     "test.g": "mocha -r esm ./test/*.js -g ",
     "compile": "npm run fix.antlr && npm run antlr4.js",
     "coverage": "nyc --reporter=html mocha && open coverage/index.html",
@@ -56,7 +55,10 @@
       "extensions": "g4"
     },
     "test.src": {
-      "patterns": ["src", "test"],
+      "patterns": [
+        "src",
+        "test"
+      ],
       "ignore": "before.js",
       "extensions": "js"
     }
