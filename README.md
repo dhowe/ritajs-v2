@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/dhowe/RiTaJS.svg?branch=master)](https://travis-ci.org/dhowe/ritajs) <a href="http://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL-orange.svg" alt="license"></a> <a href="https://www.npmjs.com/package/rita"><img src="https://img.shields.io/npm/v/rita.svg" alt="npm version"></a> [![](https://data.jsdelivr.com/v1/package/npm/rita/badge)](https://www.jsdelivr.com/package/npm/rita) <a href="https://spectrum.chat/rita"><img src="https://img.shields.io/badge/spectrum-chat-%23b14344"></a> <!--[![CDNJS](https://img.shields.io/cdnjs/v/rita.svg)](https://cdnjs.com/libraries/rita/)-->
+[![Build Status](https://travis-ci.org/dhowe/RiTaJS.svg?branch=master)](https://travis-ci.org/dhowe/ritajs) <a href="http://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL-orange.svg" alt="license"></a> <a href="https://www.npmjs.com/package/rita"><img src="https://img.shields.io/npm/v/rita.svg" alt="npm version"></a> <!--[![](https://data.jsdelivr.com/v1/package/npm/rita/badge)](https://www.jsdelivr.com/package/npm/rita)--> [![CDNJS](https://img.shields.io/cdnjs/v/rita.svg)](https://cdnjs.com/libraries/rita/)
 
 ## RiTa: a toolkit for generative writing and natural language
 
@@ -6,7 +6,7 @@ RiTa is a toolkit for generative writing and natural language. It is implemented
 
 ###
 
-:warning: Version 2.0 contains breaking changes! Please check the [release notes](https://rednoise.org/rita/#whats-new-wrapper)
+Note: version 2.0 contains breaking changes! Please check the [release notes](https://rednoise.org/rita/#whats-new-wrapper)
 
 ### Installation
 
@@ -122,14 +122,14 @@ RiScript is a writer-focused scripting language integrated with RiTa. It enables
 <br>
 
 ## Developing
-To install/build the library and run tests (with yarn/mocha):
+To install/build the library and run tests (with npm/mocha):
 ```shell
 
 $ git clone https://github.com/dhowe/ritajs.git
 $ cd ritajs 
-$ yarn install  (run again if you get an error) 
-$ yarn build 
-$ yarn test.prod
+$ npm install
+$ npm run build 
+$ npm run test
 
 ```
 If all goes according to plan, you should see a list of successful tests and find the library built in 'dist'
