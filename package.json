@@ -38,7 +38,7 @@
     "test": "mocha -r esm",
     "prepare": "npm run compile",
     "watch.src": "npm-watch test.src",
-    "test.src": "sh ./scripts/test-src.sh",
+    "test.src": "sh -c ./scripts/test-src.sh",
     "watch.grammar": "npm-watch antlr4.js",
     "test.g": "mocha -r esm ./test/*.js -g ",
     "compile": "npm run fix.antlr && npm run antlr4.js",
