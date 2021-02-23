@@ -3,7 +3,7 @@ const RiTa = require('../src/rita');
 
 describe('RiScript.KnownIssues', () => { // TODO:
 
-it('Should handle complex inlines in grammars', () => {
+  it('Should handle complex inlines in grammars', () => {
 
     let rg, rs;
     rg = new RiGrammar({
@@ -39,7 +39,7 @@ it('Should handle complex inlines in grammars', () => {
     expect(() => RiTa.evaluate('a.toUpperCase()', 0, { silent: 1, trace: 1 })).to.throw();
   });
 
-  
+
 
   it('Should eval simple expressions', () => {
     // NOT SURE WHAT THIS TEST IS ABOUT
@@ -54,6 +54,13 @@ it('Should handle complex inlines in grammars', () => {
 });
 
 describe('RiTa.KnownIssues', () => {
+
+  it('Failing to tag correctly', () => {
+
+    eql(RiTa.pos('a light blue sky'), ['dt', 'jj', 'jj', 'nn']);
+    eql(RiTa.pos('as the sun came up and winds from Canada blew down.'), []); // check
+
+  });
 
   it('Failing to pluralize correctly', () => {
 

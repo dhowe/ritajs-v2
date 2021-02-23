@@ -217,6 +217,10 @@ class RiTa {
     return Util.isNode() ? RiTa.NODE : RiTa.JS;
   }
 
+  static randi() { // SYNC:
+    return Math.floor(RiTa.randomizer.random(...arguments));
+  }
+
   static random() {
     return RiTa.randomizer.random(...arguments);
   }

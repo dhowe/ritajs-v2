@@ -10,10 +10,26 @@ describe('RiTa.Core', () => {
     }
     else {
       if (typeof process.env.npm_package_version === 'undefined') {
-        throw Error("No package version!");
+        console.warn("[WARN] No package version: ignore if running in vscode ");
+      } else {
+        eql(RiTa.VERSION, process.env.npm_package_version);
       }
-      eql(RiTa.VERSION, process.env.npm_package_version);
     }
+  });
+
+  it('Should call random', () => { // SYNC:
+    expect(RiTa.random(10)).to.be.within(0, 10);
+    expect(RiTa.random(1, 10)).to.be.within(1, 10);
+    expect(RiTa.random()).to.be.within(0, 1);
+  });
+
+  it('Should call randi', () => { // SYNC:
+    expect(RiTa.randi(10)).to.be.within(0, 9);
+    expect(RiTa.randi(1, 10)).to.be.within(1, 9);
+    expect(RiTa.randi()).eq(0);
+
+    expect(RiTa.randi(1, 10)).to.satisfy(Number.isInteger);
+    expect(RiTa.randi(10)).to.satisfy(Number.isInteger);
   });
 
   it('Should call randomOrdering', () => {
