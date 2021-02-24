@@ -176,25 +176,32 @@ describe('RiTa.RiGrammar', function() {
         });
         rs = rg.expand("1line", { trace: 0 });
         expect(rs).to.be.oneOf(["Dave", "Jill", "Pete"]);
+
+        rg = new RiGrammar({ // (with dollar rule names) SYNC:
+            "$start": "$1line talks too much.",
+            "$1line": "Dave | Jill | Pete"
+        });
+        rs = rg.expand({ trace: 0 });
+        expect(rs).to.be.oneOf(["Dave talks too much.", "Jill talks too much.", "Pete talks too much."]);
     });
 
     it('Should allow static rules starting with numbers', () => {
         let rg, rs;
 
         rg = new RiGrammar({
-            "start": "$1line talks too much.",
-            "1line": "Dave | Jill | Pete"
+            "$start": "$1line talks too much.",
+            "$1line": "Dave | Jill | Pete"
         });
         rs = rg.expand({ trace: 0 });
         expect(rs).to.be.oneOf(["Dave talks too much.", "Jill talks too much.", "Pete talks too much."]);
 
         rg = new RiGrammar({
-            "1line": "Dave | Jill | Pete"
+            "$1line": "Dave | Jill | Pete"
         });
-        rs = rg.expand("1line", { trace: 0 });
+        rs = rg.expand("$1line", { trace: 0 });
         expect(rs).to.be.oneOf(["Dave", "Jill", "Pete"]);
 
-        rs = rg.expand("1line", { trace: 0 });
+        rs = rg.expand("$1line", { trace: 0 });
         expect(rs).to.be.oneOf(["Dave", "Jill", "Pete"]);
     });
 

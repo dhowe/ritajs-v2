@@ -1,6 +1,6 @@
 parser grammar RiScriptParser;
 
-// NOTE: changing this file requires a re-compile: use $ yarn watch.grammar 
+// NOTE: changing this file requires a re-compile: use $ npm run watch.grammar 
 
 options { tokenVocab=RiScriptLexer; }
 
