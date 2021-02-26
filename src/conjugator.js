@@ -1,8 +1,8 @@
 import Util from "./util";
-const RE = Util.RE;
 
 // TODO: add tests for all verbs/forms here with 4 parameters **
 
+// TODO: support abbrevs: 
 class Conjugator {
 
   constructor(parent) {
@@ -21,15 +21,31 @@ class Conjugator {
   // !@# TODO: add handling of past tense modals.
   conjugate(theVerb, args) {
 
+
     if (!theVerb || !theVerb.length) throw Error('No verb');
 
     if (!args) return theVerb;
 
+    const RiTa = this.RiTa;
+    if (typeof args === 'string') {  // SYNC: handle abbreviations
+      if (/^[123][SP](Pr|Pa|Fu)$/.test(args)) {
+        let opts = {};
+        opts.person = parseInt(args[0]);
+        opts.number = args[1] === S ? RiTa.SINGULAR : RiTa.PLURAL;
+        let tense = args.substr(2);
+        if (tense === 'Pr') opts.tense = RiTa.PRESENT;
+        if (tense === 'Fu') opts.tense = RiTa.FUTURE;
+        if (tense === 'Pa') opts.tense = RiTa.PAST;
+        args = opts;
+      }
+      else {
+        args = JSON.parse(args);
+      }
+    }
+
     // --------------------- handle args ---------------------
 
     this.reset();
-    const RiTa = this.RiTa;
-
     args.number && (this.number = args.number);
     args.person && (this.person = args.person);
     args.tense && (this.tense = args.tense);
@@ -201,6 +217,7 @@ class Conjugator {
   }
 }
 
+const RE = Util.RE;
 const CONS = "[bcdfghjklmnpqrstvwxyz]";
 const MODALS = ["shall", "would", "may", "might", "ought", "should"];
 const VERBAL_PREFIX = "((be|with|pre|un|over|re|mis|under|out|up|fore|for|counter|co|sub)(-?))";

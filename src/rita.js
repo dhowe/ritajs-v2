@@ -305,9 +305,6 @@ RiTa.STOP_WORDS = ["and", "a", "of", "in", "i", "you", "is", "to", "that", "it",
 RiTa.INFINITIVE = 1;
 RiTa.GERUND = 2;
 
-RiTa.OMD = "<div style=\"white-space: break-spaces;\">\n";
-RiTa.CMD = "</div>\n"; // tmp, make consts
-
 // For tokenization, Can't -> Can not, etc.
 RiTa.SPLIT_CONTRACTIONS = false;
 
