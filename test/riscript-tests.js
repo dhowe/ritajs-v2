@@ -988,7 +988,7 @@ describe('RiTa.RiScript', function () {
 
   describe('Transform', () => {
 
-    it('Should handle variousTransforms', () => {
+    it('Should handle various transforms', () => {
       let ctx = {};
       expect(RiTa.evaluate("(BAZ).toLowerCase().ucf()", ctx)).eq("Baz");
       expect(RiTa.evaluate("(a).toUpperCase()", ctx)).eq("A");
@@ -1101,6 +1101,7 @@ describe('RiTa.RiScript', function () {
 
     it('Should resolve symbol multi-transforms', () => {
 
+      expect(RiTa.evaluate('($pet | $animal).articlize().cap()', { pet: 'ant', animal: 'ant' })).eq('An ant');
       expect(RiTa.evaluate('($a=$dog) $a.articlize().capitalize()', { dog: 'spot' })).eq('spot A spot');
       expect(RiTa.evaluate('($a=$dog) $a.articlize().capitalize()', { dog: 'abe' })).eq('abe An abe');
       expect(RiTa.evaluate('(abe | abe).articlize().capitalize()', { dog: 'abe' })).eq('An abe');
@@ -1113,7 +1114,7 @@ describe('RiTa.RiScript', function () {
 
 
     it('Should resolve parameterized transforms', () => {
-      let res = RiTa.evaluate("walk.conj(a)", { conj: (a, c) => RiTa.conjugate(a, c) }, TLP);
+      let res = RiTa.evaluate("(walk).conj(3PPa)", { conj: (a, c) => RiTa.conjugate(a, c) });
       expect(res).eq("walked");
     });
 

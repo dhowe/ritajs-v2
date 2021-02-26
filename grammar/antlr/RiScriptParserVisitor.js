@@ -42,12 +42,6 @@ export default class RiScriptParserVisitor extends antlr4.tree.ParseTreeVisitor 
 	}
 
 
-	// Visit a parse tree produced by RiScriptParser#choice.
-	visitChoice(ctx) {
-	  return this.visitChildren(ctx);
-	}
-
-
 	// Visit a parse tree produced by RiScriptParser#assign.
 	visitAssign(ctx) {
 	  return this.visitChildren(ctx);
@@ -60,6 +54,12 @@ export default class RiScriptParserVisitor extends antlr4.tree.ParseTreeVisitor 
 	}
 
 
+	// Visit a parse tree produced by RiScriptParser#transform.
+	visitTransform(ctx) {
+	  return this.visitChildren(ctx);
+	}
+
+
 	// Visit a parse tree produced by RiScriptParser#dynamic.
 	visitDynamic(ctx) {
 	  return this.visitChildren(ctx);
@@ -68,6 +68,12 @@ export default class RiScriptParserVisitor extends antlr4.tree.ParseTreeVisitor 
 
 	// Visit a parse tree produced by RiScriptParser#symbol.
 	visitSymbol(ctx) {
+	  return this.visitChildren(ctx);
+	}
+
+
+	// Visit a parse tree produced by RiScriptParser#choice.
+	visitChoice(ctx) {
 	  return this.visitChildren(ctx);
 	}
 
@@ -86,12 +92,6 @@ export default class RiScriptParserVisitor extends antlr4.tree.ParseTreeVisitor 
 
 	// Visit a parse tree produced by RiScriptParser#url.
 	visitUrl(ctx) {
-	  return this.visitChildren(ctx);
-	}
-
-
-	// Visit a parse tree produced by RiScriptParser#transform.
-	visitTransform(ctx) {
 	  return this.visitChildren(ctx);
 	}
 

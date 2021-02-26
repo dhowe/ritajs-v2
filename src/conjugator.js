@@ -2,7 +2,6 @@ import Util from "./util";
 
 // TODO: add tests for all verbs/forms here with 4 parameters **
 
-// TODO: support abbrevs: 
 class Conjugator {
 
   constructor(parent) {
@@ -21,9 +20,7 @@ class Conjugator {
   // !@# TODO: add handling of past tense modals.
   conjugate(theVerb, args) {
 
-
     if (!theVerb || !theVerb.length) throw Error('No verb');
-
     if (!args) return theVerb;
 
     const RiTa = this.RiTa;
@@ -31,7 +28,7 @@ class Conjugator {
       if (/^[123][SP](Pr|Pa|Fu)$/.test(args)) {
         let opts = {};
         opts.person = parseInt(args[0]);
-        opts.number = args[1] === S ? RiTa.SINGULAR : RiTa.PLURAL;
+        opts.number = args[1] === 'S' ? RiTa.SINGULAR : RiTa.PLURAL;
         let tense = args.substr(2);
         if (tense === 'Pr') opts.tense = RiTa.PRESENT;
         if (tense === 'Fu') opts.tense = RiTa.FUTURE;
@@ -39,7 +36,7 @@ class Conjugator {
         args = opts;
       }
       else {
-        args = JSON.parse(args);
+        args = Util.stringArgs(args);
       }
     }
 

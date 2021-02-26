@@ -461,6 +461,7 @@ describe('RiTa.RiGrammar', function() {
     it("should handle transforms", () => {
 
         let rg = RiTa.grammar();
+
         rg.addRule("start", "$pet.toUpperCase()");
         rg.addRule("pet", "dog");
         eq(rg.expand(), "DOG");

@@ -31,7 +31,7 @@ COM: ',';
 CONT: '\\' NL -> channel(HIDDEN);
 BS: '\\';
 NL: '\r'? '\n';
-DID: DOT IDENT;
+DIDENT: DOT IDENT;
 DYN: '$$' NIDENT;
 SYM: '$' NIDENT;
 OR: WS* '|' WS*;
@@ -63,7 +63,7 @@ CHR:
 		| '$'
 		| '\n'
 	)+;
-fragment IDENT: [A-Za-z_] [A-Za-z_0-9-]*;
+IDENT: [A-Za-z_] [A-Za-z_0-9-]*;
 fragment NIDENT: [A-Za-z_0-9] [A-Za-z_0-9-]*;
 
 mode MD;
