@@ -3,7 +3,7 @@ import { RiTa, expect } from './before';
 
 describe('RiTa.RiScript', function () {
 
-  const ST = { silent: 1 }, TP = { trace: 1 }, 
+  const ST = { silent: 1 }, TP = { trace: 1 },
     TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
   const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
   this.slow(100);
@@ -125,7 +125,7 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate("a   b", 0)).eq("a   b");
       expect(RiTa.evaluate("a\tb", 0)).eq("a\tb");
 
-      expect(RiTa.evaluate('foo.bar', {}, {silent:1})).eq('foo.bar'); // KNOWN ISSUE
+      expect(RiTa.evaluate('foo.bar', {}, { silent: 1 })).eq('foo.bar'); // KNOWN ISSUE
     });
 
 
@@ -1097,6 +1097,10 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate("The (boy | boy).toUpperCase() ate.")).eq('The BOY ate.');
       expect(RiTa.evaluate("The (girl).toUpperCase() ate.")).eq('The GIRL ate.');
       expect(RiTa.evaluate('$dog.articlize().capitalize()', { dog: 'spot' })).eq('A spot');
+    })
+
+    it('Should resolve symbol multi-transforms', () => {
+
       expect(RiTa.evaluate('($a=$dog) $a.articlize().capitalize()', { dog: 'spot' })).eq('spot A spot');
       expect(RiTa.evaluate('($a=$dog) $a.articlize().capitalize()', { dog: 'abe' })).eq('abe An abe');
       expect(RiTa.evaluate('(abe | abe).articlize().capitalize()', { dog: 'abe' })).eq('An abe');
@@ -1105,6 +1109,12 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate('(Abe Lincoln).articlize().capitalize()', { dog: 'abe' })).eq('An Abe Lincoln');
       expect(RiTa.evaluate("<li>$start</li>\n$start=($jrSr).capitalize()\n$jrSr=(junior|junior)"))
         .eq("<li>Junior</li>");
+    });
+
+
+    it('Should resolve parameterized transforms', () => {
+      let res = RiTa.evaluate("walk.conj(a)", { conj: (a, c) => RiTa.conjugate(a, c) }, TLP);
+      expect(res).eq("walked");
     });
 
     it('Should resolve object properties', () => {
@@ -1235,7 +1245,7 @@ describe('RiTa.RiScript', function () {
       rs = RiTa.evaluate('$foo=$bar.result\n$foo', ctx); // no parens
       expect(rs).eq('result');
 
-      ctx = { mammal: "(ox | ox)" }; 
+      ctx = { mammal: "(ox | ox)" };
       rs = RiTa.evaluate('The big $mammal ate the smaller $mammal.s.', ctx);
       // no parens, alias, resolved from pending symbols
       expect(rs).eq('The big ox ate the smaller oxen.');

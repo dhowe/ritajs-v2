@@ -44,7 +44,7 @@
     "compile": "npm run fix.antlr && npm run antlr4.js",
     "coverage": "nyc --reporter=html mocha && open coverage/index.html",
     "fix.antlr": "cp -r ./fixed-antlr/JavaScript/src/antlr4/ node_modules/antlr4/src/antlr4",
-    "antlr4.js": "java -Xmx500M -cp 'jlib/antlr4-4.9.2-SNAPSHOT-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -Xexact-output-dir grammar/RiScript*.g4"
+    "antlr4.js": "java -Xmx500M -cp 'jlib/antlr4-4.9.2-SNAPSHOT-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -no-listener -Xexact-output-dir grammar/RiScript*.g4"
   },
   "nyc": {
     "include": "src"

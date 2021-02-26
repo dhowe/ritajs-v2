@@ -3,6 +3,7 @@ import { decode } from 'he';
 import Visitor from './visitor';
 import Lexer from '../grammar/antlr/RiScriptLexer';
 import Parser from '../grammar/antlr/RiScriptParser';
+import RiScriptLexer from '../grammar/antlr/RiScriptLexer';
 //import { LexerErrors, ParserErrors } from './errors';
 
 class MyErrorListener extends antlr4.error.ErrorListener {
@@ -87,7 +88,7 @@ class RiScript {
       txt = t.text.replace(/\n/g, "\\n")
         .replace(/\r/g, "\\r").replace(/\t/g, "\\t");
     }
-    let type = (t.type > -1 ? this.lexer.symbolicNames[t.type] : 'EOF');
+    let type = (t.type > -1 ? RiScriptLexer.symbolicNames[t.type] : 'EOF');
     return "[ " + t.line + "." + t.column + ": '" + txt + "' -> " + type + " ]";
   }
 

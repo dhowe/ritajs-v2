@@ -23,5 +23,5 @@ symbol: SYM transform* | transform+;
 wexpr: expr? weight?;
 link:  LB expr RB MDS url MDE WS*;
 url: MDT+;
-transform: TF;
+transform: (DID ( LP expr? RP )?)+;
 op: OP | (LT | GT | EQ);
