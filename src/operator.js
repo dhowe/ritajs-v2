@@ -90,4 +90,4 @@ const ALL = { GT, LT, NE, LE, GE, SW, EQ, EW, RE };
 
 Object.keys(ALL).forEach(t => Operator[t] = ALL[t]);
 
-module && (module.exports = Operator);
+export default Operator;

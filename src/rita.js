@@ -1,8 +1,9 @@
-import Util from "./util";
+
 import Tagger from './tagger';
 import Stemmer from './stemmer';
 import Lexicon from './lexicon';
 import RiMarkov from './markov';
+import Operator from "./operator";
 import RiGrammar from './grammar';
 import Analyzer from './analyzer';
 import RiScript from './riscript';
@@ -213,10 +214,6 @@ class RiTa {
 
   ////////////////////////////// niapa /////////////////////////////
 
-  static env() { // niapi
-    return Util.isNode() ? RiTa.NODE : RiTa.JS;
-  }
-
   static randi() { // SYNC:
     return Math.floor(RiTa.randomizer.random(...arguments));
   }
@@ -261,6 +258,7 @@ Stemmer.parent = RiTa;
 RiTa.RiGrammar = RiGrammar;
 RiTa.RiMarkov = RiMarkov;
 RiTa.RiScript = RiScript;
+RiTa.Operator = Operator;
 
 // COMPONENTS
 RiTa.tagger = new Tagger(RiTa);

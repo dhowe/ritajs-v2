@@ -109,10 +109,6 @@ class Util {
     return Util.syllablesToPhones(syllables);
   }
 
-  static isNode() {
-    return (typeof module != 'undefined' && module.exports);
-  }
-
   static isNum(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
   }

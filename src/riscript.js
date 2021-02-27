@@ -6,9 +6,13 @@ import Parser from '../grammar/antlr/RiScriptParser';
 import RiScriptLexer from '../grammar/antlr/RiScriptLexer';
 
 class Errors extends antlr4.error.ErrorListener {
+  constructor() {
+    super();
+  }
   syntaxError(recognizer, offendingSymbol, line, column, msg, err) {
-    num_errors++;
-    console.error(`${offendingSymbol} line ${line}, col ${column}: ${msg}`);
+    //num_errors++;
+    ///console.error(`${offendingSymbol} line ${line}, col ${column}: ${msg}`);
+    throw Error(`${offendingSymbol} line ${line}, col ${column}: ${msg}`);
   }
 }
 
@@ -73,8 +77,7 @@ class RiScript {
         tokenStream.tokens.forEach(t => console.log(this.tokenToString(t)));
       }
     } catch (e) {
-      if (!silent) console.error(//require('colors').red
-        ("LEXER: " + input + '\n' + e.message + "\n"));
+      if (!silent) console.error(("LEXER: " + input + '\n' + e.message + "\n"));
       throw e;
     }
     return tokenStream;
@@ -156,7 +159,14 @@ class RiScript {
 
   resolveEntities(result) {
     return (typeof result === 'undefined')
-      ? '' : decode(result).replace(ENT_RE, ' ');
+      ? '' : this.unescape
+        (decode(result)
+          .replace(ENT_RE, ' '));
+  }
+
+  unescape(s) { // only parens for now
+    return s.replace(/\\\(/g, '(')
+      .replace(/\\\)/g, ')');
   }
 
   isParseable(s) {

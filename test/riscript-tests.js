@@ -761,6 +761,32 @@ describe('RiTa.RiScript', function () {
     });
   });
 
+/*
+    (!SKIP_FOR_NOW) && it('Should optimise via preparsing', () => { // TODO: improve tests (not clear if preparsing or not)
+      let ctx, input, rs;
+      ctx = { nothing: 'NOTHING', hang: 'HANG' };
+      input = "Eve near Vancouver, Washington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
+      rs = RiTa.evaluate(input, ctx, { nopre: 0 });
+      //console.log('OUTPUT: '+rs);
+      expect(rs).eq(input.replace('$hang', 'HANG').replace('$nothing', 'NOTHING'));
+
+      input = "Eve near Vancouver,\nWashington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
+      rs = RiTa.evaluate(input, ctx, { nopre: 0 });
+      expect(rs).eq(input.replace('$hang', 'HANG').replace('$nothing', 'NOTHING').replace('\n', ' '));
+
+      input = "Eve&nbsp;near Vancouver";
+      rs = RiTa.evaluate(input, ctx, { nopre: 0 });
+      expect(rs).eq("Eve near Vancouver");
+
+      input = "This is not a &#124;.";
+      rs = RiTa.evaluate(input, ctx, { nopre: 0 });
+      expect(rs).eq("This is not a |.");
+
+      ctx = { bar: { ucf: 'result' } };
+      rs = RiTa.evaluate('$foo=$bar.ucf\n$foo', ctx);
+      expect(rs).eq('result');
+    });
+*/
 
   describe('Symbol', () => {
 
@@ -773,6 +799,35 @@ describe('RiTa.RiScript', function () {
       expect(res).eq('I said hello to her');
       res = RiTa.evaluate('$foo=(hello)\n$start=I said $foo to her\n$start', {});
       expect(res).eq('I said hello to her');
+    });
+
+   it('Should evaluate post defined symbols', () => {
+      let rs = RiTa.evaluate('$foo=$bar\n$bar=baz\n$foo', {});
+      expect(rs).eq('baz');
+      expect(RiTa.evaluate('$foo=$bar.toLowerCase().ucf()\n$bar=baz\n$foo', {})).eq('Baz');
+      expect(RiTa.evaluate('$foo=$bar.toLowerCase.ucf\n$bar=baz\n$foo', {})).eq('Baz');// no parens
+    });
+
+    it('Should resolve symbols with transforms', () => {
+      expect(RiTa.evaluate('$foo=$bar.toUpperCase()\n$bar=baz\n$foo')).eq('BAZ');
+
+      expect(RiTa.evaluate('$foo.capitalize()\n$foo=(a|a)')).eq('A');
+      expect(RiTa.evaluate('$start=$r.capitalize()\n$r=(a|a)\n$start')).eq('A');
+
+      expect(RiTa.evaluate('$foo=(bar).ucf\n$foo')).eq('Bar');
+
+      let ctx = { bar: () => 'result' }; // func transform
+      let rs = RiTa.evaluate('().bar', ctx);
+      expect(rs).eq('result');
+
+      ctx = { bar: { result: 'result' } }; // property transform
+      rs = RiTa.evaluate('$foo=$bar.result\n$foo', ctx); // no parens
+      expect(rs).eq('result');
+
+      ctx = { mammal: "(ox | ox)" };
+      rs = RiTa.evaluate('The big $mammal ate the smaller $mammal.s.', ctx);
+      // no parens, alias, resolved from pending symbols
+      expect(rs).eq('The big ox ate the smaller oxen.');
     });
 
     it('Should output the input for undefined symbol', () => {
@@ -912,6 +967,7 @@ describe('RiTa.RiScript', function () {
   describe('Choice', () => {
 
     it('Should throw on bad choices', () => {
+
       expect(() => RiTa.evaluate('|', 0, ST)).to.throw();
       expect(() => RiTa.evaluate('a |', 0, ST)).to.throw();
       expect(() => RiTa.evaluate('a | b', 0, ST)).to.throw();
@@ -931,7 +987,7 @@ describe('RiTa.RiScript', function () {
 
     });
 
-    /*it('Should resolve choices via scripting', () => {
+    it('Should resolve choices via scripting', () => { // SYNC:
       let rs = RiTa.scripting();
       expect(rs.evaluate('(|)')).eq('');
       expect(rs.evaluate('(a)')).eq('a');
@@ -940,7 +996,7 @@ describe('RiTa.RiScript', function () {
       expect(rs.evaluate('(a | b)')).to.be.oneOf(['a', 'b']);
       expect(rs.evaluate('(a | b | c)'), {}).to.be.oneOf(['a', 'b', 'c']);
       expect(rs.evaluate('(a | (b | c) | d)')).to.be.oneOf(['a', 'b', 'c', 'd']);
-    });*/
+    });
 
     it('Should resolve multiword choices', () => {
       let silent = RiTa.SILENCE_LTS;
@@ -1196,61 +1252,7 @@ describe('RiTa.RiScript', function () {
     });
   });
 
-  describe('Grammaresque', () => {
-
-    it('Should evaluate post defined symbols', () => {
-      let rs = RiTa.evaluate('$foo=$bar\n$bar=baz\n$foo', {});
-      expect(rs).eq('baz');
-      expect(RiTa.evaluate('$foo=$bar.toLowerCase().ucf()\n$bar=baz\n$foo', {})).eq('Baz');
-      expect(RiTa.evaluate('$foo=$bar.toLowerCase.ucf\n$bar=baz\n$foo', {})).eq('Baz');// no parens
-    });
-
-    (!SKIP_FOR_NOW) && it('Should optimise via preparsing', () => { // TODO: improve tests (not clear if preparsing or not)
-      let ctx, input, rs;
-      ctx = { nothing: 'NOTHING', hang: 'HANG' };
-      input = "Eve near Vancouver, Washington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
-      rs = RiTa.evaluate(input, ctx, { nopre: 0 });
-      //console.log('OUTPUT: '+rs);
-      expect(rs).eq(input.replace('$hang', 'HANG').replace('$nothing', 'NOTHING'));
-
-      input = "Eve near Vancouver,\nWashington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
-      rs = RiTa.evaluate(input, ctx, { nopre: 0 });
-      expect(rs).eq(input.replace('$hang', 'HANG').replace('$nothing', 'NOTHING').replace('\n', ' '));
-
-      input = "Eve&nbsp;near Vancouver";
-      rs = RiTa.evaluate(input, ctx, { nopre: 0 });
-      expect(rs).eq("Eve near Vancouver");
-
-      input = "This is not a &#124;.";
-      rs = RiTa.evaluate(input, ctx, { nopre: 0 });
-      expect(rs).eq("This is not a |.");
-
-      ctx = { bar: { ucf: 'result' } };
-      rs = RiTa.evaluate('$foo=$bar.ucf\n$foo', ctx);
-      expect(rs).eq('result');
-    });
-
-    it('Should resolve symbols with transforms', () => {
-      expect(RiTa.evaluate('$foo=$bar.toUpperCase()\n$bar=baz\n$foo')).eq('BAZ');
-
-      expect(RiTa.evaluate('$foo.capitalize()\n$foo=(a|a)')).eq('A');
-      expect(RiTa.evaluate('$start=$r.capitalize()\n$r=(a|a)\n$start')).eq('A');
-
-      expect(RiTa.evaluate('$foo=(bar).ucf\n$foo')).eq('Bar');
-
-      let ctx = { bar: () => 'result' }; // func transform
-      let rs = RiTa.evaluate('().bar', ctx);
-      expect(rs).eq('result');
-
-      ctx = { bar: { result: 'result' } }; // property transform
-      rs = RiTa.evaluate('$foo=$bar.result\n$foo', ctx); // no parens
-      expect(rs).eq('result');
-
-      ctx = { mammal: "(ox | ox)" };
-      rs = RiTa.evaluate('The big $mammal ate the smaller $mammal.s.', ctx);
-      // no parens, alias, resolved from pending symbols
-      expect(rs).eq('The big ox ate the smaller oxen.');
-    });
+  describe('Grammarlike', () => {
 
     /*
     it('Should evaluate symbols even with a bad func transform', () => {
@@ -1291,7 +1293,16 @@ describe('RiTa.RiScript', function () {
 
   });
 
-  describe('Entities', () => { // using 'he' lib for now
+  describe('Entities', () => {
+
+    it('Should decode backslash parens', () => { // SYNC:
+      expect(RiTa.evaluate('The \\(word\\) has parens'))
+        .eq('The (word) has parens'); 
+
+      expect(RiTa.evaluate('The (\\(word\\) | \\((word)\\)) has parens'))
+        .eq('The (word) has parens'); 
+    });
+
     it('Should decode HTML entities', () => {
       expect(RiTa.evaluate('The &#010; line break entity')).eq('The \n line break entity'); // ?
       expect(RiTa.evaluate('The &num; symbol')).eq('The # symbol');
@@ -1354,7 +1365,8 @@ describe('RiTa.RiScript', function () {
     })
   });
 
-  /*describe('Operators', () => {
+  describe('Operators', () => {
+    const Operator = RiTa.Operator;
     if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') { // skip for prod
 
       it('Should invoke assignment ops', () => {
@@ -1467,7 +1479,7 @@ describe('RiTa.RiScript', function () {
         expect(() => Operator.SW.invoke(null, null)).to.throw();
       });
     }
-  }); */
+  }); 
 
   describe('Conditionals', () => {
 
@@ -1519,7 +1531,7 @@ describe('RiTa.RiScript', function () {
     });
   });
 
-  describe('Chinese Characters', () => {
+  describe('Characters', () => {
 
     it('Should handle evalution of Chinese characters', () => {
       expect(RiTa.evaluate('中文', {})).eq('中文');
@@ -1538,11 +1550,6 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate('$$foo=中文\n繁體')).eq('繁體');
       expect(RiTa.evaluate('$$foo=中文\n繁體$foo')).eq('繁體中文');
       expect(RiTa.evaluate('$$foo=(繁體)\n$foo\n中文')).eq('繁體\n中文');
-    });
-
-    false && it('Should allow Chinese characters in symbol name', () => { //should it?
-      expect(RiTa.evaluate('$變量=(繁體|简体)\n$變量中文')).to.be.oneOf(['繁體中文', '简体中文']);
-      expect(RiTa.evaluate('$變量中文', { 變量: '繁體' })).eq("繁體中文");
     });
 
     it('Should handle continuation with Chinese characters', () => {

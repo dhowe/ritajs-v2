@@ -11,12 +11,6 @@ cexpr: WS* LCB cond+ RCB Q WS* expr;
 cond: symbol WS* op WS* chars WS* COM?;
 weight: WS* LB INT RB WS*;
 assign: (dynamic | symbol) EQ expr;
-chars: (
-		(DOT | WS | EXC | AST | GT | LT | DOL | HAT | COM | FS)
-		| CHR
-		| ENT
-		| INT
-	)+;
 transform: DIDENT ( LP expr? RP )?;
 dynamic: DYN transform*;
 symbol: SYM transform* | transform+;
@@ -25,3 +19,4 @@ wexpr: expr? weight?;
 link:  LB expr RB MDS url MDE WS*;
 url: MDT+;
 op: OP | (LT | GT | EQ);
+chars: (CHR | DOT | AST | FS | DOL | WS | GT | LT | COM | ESC | ENT | INT)+;
