@@ -1367,7 +1367,7 @@ describe('RiTa.RiScript', function () {
 
   describe('Operators', () => {
     const Operator = RiTa.Operator;
-    if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') { // skip for prod
+    //if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') { // skip for prod
 
       it('Should invoke assignment ops', () => {
 
@@ -1478,7 +1478,7 @@ describe('RiTa.RiScript', function () {
         expect(() => Operator.SW.invoke(null, "hello")).to.throw();
         expect(() => Operator.SW.invoke(null, null)).to.throw();
       });
-    }
+  //  }
   }); 
 
   describe('Conditionals', () => {

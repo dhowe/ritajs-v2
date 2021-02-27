@@ -305,9 +305,6 @@ class Visitor extends RiScriptParserVisitor {
     let result, raw = target + transform.getText();
     if (this.trace) console.log("applyTransform: '" + raw);
 
-    // check for function
-    //if (tx.endsWith(Visitor.FUNC)) tx = tx.substring(0, tx.length - 2); // strip parens
-
     // function in context
     if (typeof this.context[tx] === 'function') {
       result = expr ? this.context[tx](target, expr.getText())

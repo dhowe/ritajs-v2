@@ -24,7 +24,7 @@ class Conjugator {
     if (!args) return theVerb;
 
     const RiTa = this.RiTa;
-    if (typeof args === 'string') {  // SYNC: handle abbreviations
+    if (typeof args === 'string') {
       if (/^[123][SP](Pr|Pa|Fu)$/.test(args)) {
         let opts = {};
         opts.person = parseInt(args[0]);
