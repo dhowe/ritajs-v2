@@ -271,7 +271,6 @@ function quotify(s) {
 /// Pluralizes the word according to english regular/irregular rules.
 /// </summary>
 function pluralize(s) {
-
   return RiTa().pluralize(s);
 }
 
@@ -300,7 +299,7 @@ RiScript.transforms = {
 };
 
 const VOW_RE = /[aeiou]/;
-const ENT_RE = /[\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
+const ENT_RE = /[\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g; // SYNC:
 const PRS_RE = /([(){}|]|(\${1,2}\w+))/;
 const SYM_RE = /\${1,2}\w+/;
 const CONT_RE = /\\\n/;
