@@ -1297,12 +1297,17 @@ describe('RiTa.RiScript', function () {
 
   describe('Entities', () => {
 
-    it('Should decode backslash parens', () => {
+    it('Should decode escaped characters', () => {
       expect(RiTa.evaluate('The \\(word\\) has parens'))
         .eq('The (word) has parens'); 
 
       expect(RiTa.evaluate('The (\\(word\\) | \\((word)\\)) has parens'))
         .eq('The (word) has parens'); 
+    });
+
+    it('Should decode emojis', () => {
+      expect(RiTa.evaluate('The 👍 is thumbs up'))
+        .eq('The 👍 is thumbs up'); 
     });
 
     it('Should decode HTML entities', () => {

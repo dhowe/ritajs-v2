@@ -1,3 +1,3 @@
-import RiTa from '../dist/rita';
+import RiTa from '../src/rita';
 import { expect } from 'chai';
 export { RiTa, expect };
