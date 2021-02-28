@@ -40,44 +40,13 @@ class Visitor extends RiScriptParserVisitor {
   }
 
   visitLink(ctx) {
-    this.trace && console.log("visitLink: '"
-      + ctx.getText() + "' link=" + ctx.url().getText());
-    return '[' + this.visit(ctx.expr()) + ']'
-      + '&lpar;' + ctx.url().getText() + '&rpar;' + ctx.WS();
-  }
-
-  visitChoiceNoObj(ctx) {// not used (save)
-
-    let options = [], rand = this.RiTa.randomizer;
-
-    ctx.wexpr().map((w, k) => {
-      let wctx = w.weight();
-      let weight = wctx ? parseInt(wctx.INT()) : 1;
-      let expr = w.expr() || Visitor.EC;
-      for (let i = 0; i < weight; i++) options.push(expr);
-    });
-
     let txs = ctx.transform();
-    this.trace && console.log("visitChoice: '" + ctx.getText() + "' options=["
-      + options.map(o => o.getText()) + "] tfs=" + flattenTx(txs));
-
-    // make the selection
-    let tok = rand.random(options); // SIMPLE
-    if (this.trace) console.log("  select: '" + tok.getText()
-      + "' [" + this.ruleName(tok) + "]");
-
-    // now visit the token 
-    let visited = this.visit(tok).trim(); // trim inside choices
-
-    // now apply any transforms
-    if (!txs.length) return visited;
-    let applied = this.applyTransforms(visited, txs);
-    let result = typeof applied !== 'undefined' ? applied
-      : '(' + visited + ')' + flattenTx(txs);
-
-    if (this.trace) console.log("resolveChoice: '" + result + "'");
-
-    return result.trim();
+    this.trace && console.log("visitLink: [" 
+      + ctx.expr().getText() + "]("+ctx.url().getText()+") tfs=" + flattenTx(txs));
+    let result = '[' + this.visit(ctx.expr()) + ']'
+      + '(' + ctx.url().getText() + ')';
+    if (txs && txs.length) result = this.applyTransforms(result, txs);
+    return result + ctx.WS();
   }
 
   visitChoice(ctx) {

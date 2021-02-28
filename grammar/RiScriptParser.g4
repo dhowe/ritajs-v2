@@ -16,7 +16,7 @@ dynamic: DYN transform*;
 symbol: SYM transform* | transform+;
 choice: (LP (wexpr OR)* wexpr RP) transform*;
 wexpr: expr? weight?;
-link:  LB expr RB MDS url MDE WS*;
+link:  (LB expr RB MDS url MDE WS*) transform*;
 url: MDT+;
 op: OP | (LT | GT | EQ);
 chars: (CHR | DOT | AST | FS | DOL | WS | GT | LT | COM | ESC | ENT | INT)+;
