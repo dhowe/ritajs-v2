@@ -79,7 +79,9 @@ describe('RiTa.RiScript', function () {
     it('Should parse MD-style links', () => {
       let res = RiTa.evaluate("[some text](https://somelink.com)", 0);
       expect(res).eq("[some text](https://somelink.com)");
-      expect(RiTa.evaluate("$p1=Passage with a [link](#anchor) inside",0,TP)).eq("");
+      let pass = "Passage with a [link](#anchor) inside";
+      expect(RiTa.evaluate("$p1="+pass)).eq("");
+      expect(RiTa.evaluate("$p1="+pass+"\n$p1")).eq(pass);
     });
 
     it('Should resolve long expressions', function () {
