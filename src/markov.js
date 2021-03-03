@@ -8,14 +8,14 @@ class RiMarkov {
 
     this.trace = opts.trace;
     this.mlm = opts.maxLengthMatch;
-    this.logDuplicates = opts.logDuplicates;
     this.maxAttempts = opts.maxAttempts || 999;
-    this.disableInputChecks = opts.disableInputChecks;
+    
     this.tokenize = opts.tokenize || RiTa().tokenize;
     this.untokenize = opts.untokenize || RiTa().untokenize;
+    this.disableInputChecks = opts.disableInputChecks;
 
-    if (this.mlm && this.mlm <= this.n) {
-      throw Error('maxLengthMatch(mlm) must be > N');
+    if (this.mlm && this.mlm < this.n) {
+      throw Error('maxLengthMatch(mlm) must be >= N');
     }
 
     // we store inputs to verify we don't duplicate sentences
@@ -72,7 +72,6 @@ class RiMarkov {
     const temp = opts.temperature;
     const minLength = opts.minLength || 5;
     const maxLength = opts.maxLength || 35;
-    const allowDuplicates = opts.allowDuplicates;
     let startTokens = opts.startTokens;
 
     let result = [], tokens, tries = 0;
@@ -83,7 +82,9 @@ class RiMarkov {
       return 1;
     }
 
-    if (typeof startTokens === 'string') startTokens = this.tokenize(startTokens);
+    if (typeof startTokens === 'string') {
+      startTokens = this.tokenize(startTokens);
+    }
 
     while (result.length < num) {
 
@@ -103,14 +104,18 @@ class RiMarkov {
 
           tokens.pop();
           if (tokens.length >= minLength) {
-            let rawtoks = tokens.map(t => t.token); // convert to strings
 
-            // TODO: do we need this if checking mlm with each word? yes
-            if (isSubArray(rawtoks, this.input) && fail('in input')) break;
+            let rawtoks = tokens.map(t => t.token); // to string array
+
+            // Here we check if the output sentence occurs in the input
+            if (!this.disableInputChecks && isSubArray(rawtoks, this.input)) {
+               fail('in input'); 
+               break;
+            }
 
             let sent = this._flatten(tokens);
-            if (!allowDuplicates && result.includes(sent) && fail('is dup')) break;
-            this.trace && console.log('-- GOOD', sent.replace(MULTI_SP_RE, ' '));
+            if (!opts.allowDuplicates && result.includes(sent) && fail('is dup')) break;
+            this.trace && console.log('-- OK', sent.replace(MULTI_SP_RE, ' '));
             result.push(sent.replace(MULTI_SP_RE, ' '));
             break;
           }
@@ -300,7 +305,7 @@ class Node {
     const children = this.childNodes();
     const weights = children.map(n => n.count);
     const pdist = rand.ndist(weights);
-    return children[rand.pselect(pdist)];
+    return children[ rand.pselect(pdist) ];
   }
 
   isLeaf() { return this.childCount() < 1; }

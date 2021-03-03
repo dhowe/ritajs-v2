@@ -39,7 +39,7 @@ class SeededRandom {
     Returns a single (selected) index from a normalised
     probability distribution (with probabilities summing to 1)
   */
-  pselect(probs) {  // probs must sum to 1
+  pselect(probs) {
     let point = this.randF(), cutoff = 0;
     for (let i = 0; i < probs.length - 1; ++i) {
       cutoff += probs[i];
@@ -49,8 +49,19 @@ class SeededRandom {
   }
 
   /*
-    Returns a normalised probability distribution (summing to 1) for arbitrary postive weights
-    If temperature is provideded this is basically the softmax.
+   *  Returns the selected index from a probability distribution
+   * (probabilities do NOT need to sum to 1)
+   * TODO: test (more general version)
+   */
+  pselect2(weights) {
+    let sum = weights.reduce((acc, ele) => acc + ele, 0);
+    let rand = Math.random() * sum; // from 0 - sum
+    return weights.find(ele => (rand -= ele) < 0);
+  }
+
+  /*
+    Returns a normalised probability distribution (summing to 1) for arbitrary positive weights
+    If temperature is provided this is basically the softmax, otherwise it simple normalisation
     Temperature parameter: range is between 0 and +Infinity (excluding both).
     Lower values move the highest-weighted output toward a probability of 1.0.
     Higher values tend to even out all the probabilities

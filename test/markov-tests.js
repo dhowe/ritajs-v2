@@ -268,7 +268,7 @@ describe('RiTa.RiMarkov', () => {
 
   it('should call generate.mlm', () => {
 
-    let mlms = 10, rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
+    let mlms = 7, rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
     rm.addText(RiTa.sentences(sample3));
     let sents = rm.generate(5);
     for (let i = 0; i < sents.length; i++) {
@@ -276,7 +276,7 @@ describe('RiTa.RiMarkov', () => {
       let toks = RiTa.tokenize(sent);
       //console.log(i, sent);
 
-      // All sequences of len=N must be in text
+      // All sequences of len=N are (by def.) in the input text
       for (let j = 0; j <= toks.length - rm.n; j++) {
         let part = toks.slice(j, j + rm.n);
         let res = RiTa.untokenize(part);
