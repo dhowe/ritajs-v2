@@ -16,7 +16,6 @@ echo Running source tests with: $path
 
 if [ -z "$1" ]
 then
-    echo "No argument supplied"
     NODE_ENV=dev mocha -r esm
 else
     NODE_ENV=dev mocha -r esm -g $1
