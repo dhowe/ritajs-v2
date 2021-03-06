@@ -42,7 +42,7 @@
     "watch.grammar": "npm-watch antlr4.js",
     "test.g": "mocha -r esm ./test/*.js -g ",
     "compile": "npm run fix.antlr && npm run antlr4.js",
-    "coverage": "nyc --reporter=html mocha && open coverage/index.html",
+    "coverage": "nyc --reporter=html mocha -r esm && open coverage/index.html",
     "fix.antlr": "cp -r ./fixed-antlr/JavaScript/src/antlr4/ node_modules/antlr4/src/antlr4",
     "antlr4.js": "java -Xmx500M -cp 'jlib/antlr4-4.9.2-SNAPSHOT-complete.jar' org.antlr.v4.Tool -Dlanguage=JavaScript -o grammar/antlr -visitor -no-listener -Xexact-output-dir grammar/RiScript*.g4"
   },
