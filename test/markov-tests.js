@@ -49,8 +49,8 @@ describe('RiTa.RiMarkov', () => {
         results.push(sum / 1000);
       });
       expect(results[0]).to.be.closeTo(expected[0], .1);
-      expect(results[1]).to.be.closeTo(expected[1], .01);
-      expect(results[2]).to.be.closeTo(expected[2], .01);
+      expect(results[1]).to.be.closeTo(expected[1], .05);
+      expect(results[2]).to.be.closeTo(expected[2], .05);
     }
   });
 
