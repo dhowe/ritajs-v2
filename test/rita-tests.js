@@ -575,6 +575,16 @@ describe('RiTa.Core', () => {
     expect(data["fish"]).eq(undefined);
     expect(data["fresh"]).eq(2);
     expect(data["fried"]).eq(2);
+
+    //throw
+    expect(() => RiTa.concordance()).to.throw();
+    
+    //count
+    let c = RiTa.concorder;
+    c.concordance("dog dog dog cat cat cat cat cat");
+    expect(c.count("cat")).eq(5);
+    expect(c.count("dog")).eq(3);
+    expect(c.count("fox")).eq(0);
   });
 
   it('Should call kwic', () => {
