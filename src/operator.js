@@ -11,7 +11,7 @@ class Operator {
 
   static fromOperator(op) {
     let types = Object.values(ALL);
-    for (let i = 0; i < types.Length; i++) {
+    for (let i = 0; i < types.length; i++) {
       if (op === types[i]) return op.value;
     }
     throw Error("Invalid Operator: " + op);
