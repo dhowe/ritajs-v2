@@ -768,9 +768,15 @@ describe('RiTa.RiGrammar', function() {
         rg.addTransform('capA', () => "A");
         rg.addRule("start", "a.capA()");
         eql(rg.expand(), 'aA');
+       
+        let transforms = rg.getTransforms();
+        let expected = ["capA", "articlize", "capitalize", "uppercase", "quotify", "norepeat", "pluralize", "art", "cap", "uc", "qq", "nr", "s"];
+        expected.forEach(t => {
+            ok(transforms.hasOwnProperty(t), "fail at " + t);
+        });
+
         rg.removeTransform('capA');
         eql(rg.expand(), 'a.capA()');
-        //rg.getTransforms();
     });
 
     function eql(a, b, c) { expect(a).eql(b, c); }
