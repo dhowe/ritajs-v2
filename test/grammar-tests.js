@@ -763,6 +763,16 @@ describe('RiTa.RiGrammar', function() {
         eql(res, "bad feelings");
     });
 
+    it('Should call add/remove/getTransform', () => { 
+        let rg = RiTa.grammar();
+        rg.addTransform('capA', () => "A");
+        rg.addRule("start", "a.capA()");
+        eql(rg.expand(), 'aA');
+        rg.removeTransform('capA');
+        eql(rg.expand(), 'a.capA()');
+        //rg.getTransforms();
+    });
+
     function eql(a, b, c) { expect(a).eql(b, c); }
     function eq(a, b, c) { expect(a).eq(b, c); }
     function ok(a, m) { expect(a, m).to.be.true; }
