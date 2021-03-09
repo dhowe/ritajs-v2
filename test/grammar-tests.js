@@ -314,8 +314,6 @@ describe('RiTa.RiGrammar', function() {
         expect(() => RiTa.grammar().addRule("rule", "pet")).not.to.throw();
         expect(() => RiTa.grammar().removeRule("rule")).not.to.throw();
         expect(() => RiGrammar.fromJSON('{ "start": "pet" }')).not.to.throw();
-
-        expect(() => RiGrammar.fromJSON('{ "$$start": "pet" }')).not.to.throw(); // remove in fromJSON
     });
 
     it("should call toString", () => {

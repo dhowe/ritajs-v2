@@ -4,9 +4,9 @@ class RiGrammar {
 
   /*
    * Default behavior for rules is dynamic (using $$rulename)
-   * and stored in the context with the $$ prefix { '$$rule': '(a | b) }
+   * and stored in the context with the $$ prefix { '$$rule': '(a | b)' }
    *
-   * This can be overridden by setting a rule with a $ prefix
+   * This can be overridden by setting a rule with a '$' prefix
    * which will be stored in the context with no prefix (as a normal variable)
    */
   constructor(rules, context) {
@@ -18,7 +18,7 @@ class RiGrammar {
 
   static fromJSON(json, context) {
     let rg = new RiGrammar(0, context);
-    parseJSON(rg, json);
+    parseJSON(rg, json, true);
     return rg;
   }
 
@@ -35,9 +35,11 @@ class RiGrammar {
   addRules(rules) { // or rules or ... ?
     if (rules) {
       if (typeof rules === 'string') {
-        rules = JSON.parse(rules);
+        parseJSON(this, rules);
       }
-      Object.keys(rules).forEach(r => this.addRule(r, rules[r]))
+      else {
+        setRules(this, rules);
+      }
     }
     return this;
   }
@@ -102,22 +104,25 @@ function validateRuleName(name) {
   if (name.startsWith(DYN)) {
     name = name.substring(2);
     throw Error('Grammar rules are dynamic by default;'
-      + ' if you need a non-dynamic rule, use \'$'
-      + name + '\', otherwise just use \'' + name + '\'.');
+      + " if you need a non-dynamic rule, use '$"
+      + name + "', otherwise just use '" + name + "'.");
   }
 
   if (SYM_RE.test(name)) {
-    // override dynamic default, context -> 'barevar'
+    // override dynamic default, context -> 'bare_var'
     name = name.substring(1);
   }
   else { // dynamic default, context -> '$$dynvar'
     if (!name.startsWith(DYN)) name = DYN + name;
   }
+
   return name;
 }
 
-function parseJSON(grammar, json) {
-  if (typeof json !== 'string') throw Error('expected [string] json')
+function parseJSON(rg, json, noError) {
+  if (typeof json !== 'string') {
+    throw Error('expected JSON string')
+  }
   let rules;
   try {
     rules = JSON.parse(json);
@@ -125,8 +130,13 @@ function parseJSON(grammar, json) {
     throw Error('RiGrammar appears to be invalid JSON,'
       + ' please check it at http://jsonlint.com/\n' + json);
   }
-  Object.keys(rules).forEach(r => { // remove $$
-    grammar.addRule(r.startsWith(DYN) ? r.substring(2) : r, rules[r]);
+  setRules(rg, rules, noError);
+}
+
+function setRules(rg, rules, noError) {
+  Object.keys(rules).forEach(r => {
+    rg.addRule((noError && r.startsWith(DYN)) ? r.substring(2) : r, rules[r]);
+    //rg.addRule(, rules[r]);
   });
 }
 
