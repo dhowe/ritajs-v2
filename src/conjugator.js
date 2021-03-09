@@ -206,7 +206,7 @@ class Conjugator {
   }
 
   toString() {
-    return "  ---------------------" + + "  Passive = " + this.passive +
+    return "  ---------------------" + "\n" + "  Passive = " + this.passive +
       '\n' + "  Perfect = " + this.perfect + '\n' + "  Progressive = " +
       this.progressive + '\n' + "  ---------------------" + '\n' + "  Number = " +
       this.number + '\n' + "  Person = " + this.person + '\n' + "  Tense = " +
