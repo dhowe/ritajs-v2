@@ -700,6 +700,14 @@ describe('RiTa.Core', () => {
     eql(output, expected);
   });
 
+  it('Should call getTransforms', () => { 
+    let transforms = RiTa.getTransforms();
+    let expected = ["articlize", "capitalize", "uppercase", "quotify", "norepeat", "pluralize", "art", "cap", "uc", "qq", "nr", "s"];
+    expected.forEach(t => {
+      ok(transforms.hasOwnProperty(t), "fail at " + t);
+    });
+  });
+
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }
   function eql(a, b, m) { expect(a).eql(b, m); }
