@@ -6399,8 +6399,8 @@ describe('RiTa.Stemmer', () => {
   });
 
   it('Should call stemAll', () => { 
-    let input = ['went', 'apples', 'cut', 'does'];
-    let expect = ['go', 'apple', 'cut', 'do'];
+    let input = ["cured", "cats", "cut", "plays"];
+    let expect = ["cure", "cat", "cut", "play"];
     //unreachable function at stemmer.js line 844, add to rita.js?
     //let ouput = Stemmer.stemAll(input);
     // for (let i = 0; i < input.length; i++) {
