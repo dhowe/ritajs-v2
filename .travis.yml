@@ -3,7 +3,7 @@ node_js:
   - "12"
   - "14"
   - "lts/*"
-  - "node" #temp
+  #- "node" #temp
 cache:
   directories:
     - "node_modules"

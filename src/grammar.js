@@ -32,16 +32,10 @@ class RiGrammar {
     return JSON.stringify(nrules, null, 2);
   }
 
-  addRules(rules) { // or rules or ... ?
-    if (rules) {
-      if (typeof rules === 'string') {
-        parseJSON(this, rules);
-      }
-      else {
-        setRules(this, rules);
-      }
-    }
-    return this;
+  addRules(rules) { // or setRules or ... ?
+    if (!rules) throw Error('No rules found');
+    return (typeof rules === 'string')
+      ? parseJSON(this, rules) : setRules(this, rules);
   }
 
   addRule(name, rule) {
@@ -60,7 +54,7 @@ class RiGrammar {
       opts = rule;
       rule = 'start';
     }
-    
+
     let ctx = deepMerge(this.context, this.rules); // ?
     //if (opts) ctx = deepMerge(ctx, opts);
 
