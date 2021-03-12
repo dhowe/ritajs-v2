@@ -149,6 +149,31 @@ describe('RiTa.Tokenizer', () => {
     expect(RiTa.tokenize(txt4)).eql(["It's", "not", "that", "I", "can't", "."]);
     expect(RiTa.tokenize(txt5)).eql(["We've", "found", "the", "cat", "."]);
     expect(RiTa.tokenize(txt6)).eql(["We", "didn't", "find", "the", "cat", "."]);
+
+    // html tags (rita#103)
+    inputs = [
+      "<!DOCTYPE html>",
+      "<a>link</a>",
+      "<span>inline</span>",
+      "<h1>header</h1>",
+      "<!-- this is a comment -->", //? should this be divided? 
+      "<a href=\"www.google.com\">a link to google</a>",
+      "<p>this<br>is</br>a<br>paragraph<br/></p>"
+    ];
+
+    outputs = [
+      ["<!DOCTYPE html>"],
+      ["<a>", "link", "</a>"],
+      ["<span>", "inline", "</span>"],
+      ["<h1>", "header", "</h1>"],
+      ["<!-- this is a comment -->"],
+      ["<a href=\"www.google.com\">", "a", "link", "to", "google", "</a>"],
+      ["<p>", "this", "<br>", "is", "</br>", "a", "<br>", "paragraph", "<br/>", "</p>"]
+    ];
+    expect(inputs.length).eq(outputs.length);
+    for (let i = 0; i < inputs.length; i++) {
+      expect(RiTa.tokenize(inputs[i])).eql(outputs[i]);
+    }
   });
 
   it('Should call untokenize', () => {

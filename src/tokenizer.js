@@ -47,6 +47,18 @@ class Tokenizer {
     if (regex) return words.split(regex);
 
     words = words.trim(); // ???
+
+    //handle html tags ---- save tags
+    let htmlTags = [];
+    let indexOfTags = 0;
+    for (let i = 0; i < HTML_TAGS_RE.length; i++) {
+      while (HTML_TAGS_RE[i].test(words)) {
+        htmlTags.push(words.match(HTML_TAGS_RE[i])[0]);
+        words = words.replace(HTML_TAGS_RE[i], " _HTMLTAG" + indexOfTags + "_ ");
+        indexOfTags++;
+      }
+    }
+
     for (let i = 0; i < TOKENIZE_RE.length; i += 2) {
       words = words.replace(TOKENIZE_RE[i], TOKENIZE_RE[i + 1]);
     }
@@ -58,11 +70,15 @@ class Tokenizer {
     }
 
     let result = words.trim().split(/\s+/);
-    result.forEach((token, i) => { // use filter?
-      if (token.includes('_')) {
-        result[i] = token.replace(/([a-zA-z]|[\.\,])_([a-zA-Z])/g, "$1 $2");
+    for (let i = 0; i < result.length; i++) {
+      if (POP_HTMLTAG_RE.test(result[i])) {
+        result[i] = htmlTags.shift();
       }
-    });
+
+      if (result[i].includes('_')) {
+        result[i] = result[i].replace(/([a-zA-z]|[\.\,])_([a-zA-Z])/g, "$1 $2");
+      }
+    } 
 
     return result;
   }
@@ -171,7 +187,7 @@ const NO_SPACE_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""\u201c\u201d\u2019\u2018`'%\u2026
 
 const TOKENIZE_RE = [
 
-  // save abbreviations --------
+  // save  --------
   /([Ee])[.]([Gg])[.]/g, "_$1$2_",//E.g
   /([Ii])[.]([Ee])[.]/g, "_$1$2_",//i.e
   /([Aa])[.]([Mm])[.]/g, "_$1$2_",//a.m.
@@ -216,7 +232,7 @@ const TOKENIZE_RE = [
   /\u00b0/g, " \u00b0 ",
   /_elipsisDDD_/g, " ... ",
 
-  //pop abbreviations------------------
+  //pop ------------------
   /_([Ee])([Gg])_/g, "$1.$2.",//Eg
   /_([Ii])([Ee])_/g, "$1.$2.",//ie
   /_([Aa])([Mm])_/g, "$1.$2.",//a.m.
@@ -252,5 +268,12 @@ const CONTRACTIONS_RE = [
   /['\u2019]ve /g, " have ",
   /['\u2019]re /g, " are "
 ];
+
+const HTML_TAGS_RE = [
+  /(<\/?[a-z0-9='"#;:&\s\-\+\/\.\?]+\/?>)/i, // html tags (rita#103)
+  /(<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i // doctype and comment
+];
+
+const POP_HTMLTAG_RE = /_HTMLTAG[0-9]+_/;
 
 export default Tokenizer;
