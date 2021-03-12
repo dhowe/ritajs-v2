@@ -54,13 +54,13 @@ class Concorder {
 
   count(word) {
     let value = this._lookup(word);
-    return value === null ? 0 : value.count;
+    return value === null || value === undefined ? 0 : value.indexes.length;
   }
 
   ///////////////////////////////////////////////////////////////////////////
 
   _buildModel() {
-    if (!this.words) throw Error('No text in model');
+    if (!this.words || this.words.length == 0) throw Error('No text in model'); 
     this.model = {};
     for (let j = 0; j < this.words.length; j++) {
       let word = this.words[j];

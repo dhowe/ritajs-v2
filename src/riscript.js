@@ -281,6 +281,8 @@ RiScript.transforms = {
   pluralize,
   capitalize,
   articlize: RiScript.articlize,
+  uppercase,
+  pluralize, 
 
   // sequences
   //seq: RiScript.identity,

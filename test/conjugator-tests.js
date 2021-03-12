@@ -247,6 +247,10 @@ describe('RiTa.Conjugator', () => {
     }
   });
 
+  it('Should call toString', () => { 
+    equal(RiTa.conjugator.toString(), '  ---------------------\n  Passive = false\n  Perfect = false\n  Progressive = false\n  ---------------------\n  Number = 8\n  Person = 2\n  Tense = 4\n  ---------------------\n');
+  });
+
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }
   function equal(a, b, m) { expect(a).eq(b, m); }

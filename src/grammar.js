@@ -1,4 +1,5 @@
 import deepMerge from 'deepmerge';
+import RiScript from './riscript';
 
 class RiGrammar {
 
@@ -85,8 +86,8 @@ class RiGrammar {
   }
 
   addTransform() { RiScript.addTransform(...arguments); return this }
-  removeTransform() { RiScript.removeTransform(...arguments); return this }
-  getTransforms() { return RiScript.getTransforms(); }
+  removeTransform(name) { RiScript.addTransform(name, null); return this }
+  getTransforms() { return RiScript.transforms; } //change according to Java
 }
 
 function validateRuleName(name) {

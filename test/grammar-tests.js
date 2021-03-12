@@ -761,6 +761,22 @@ describe('RiTa.RiGrammar', function() {
         eql(res, "bad feelings");
     });
 
+    it('Should call add/remove/getTransform', () => { 
+        let rg = RiTa.grammar();
+        rg.addTransform('capA', () => "A");
+        rg.addRule("start", "a.capA()");
+        eql(rg.expand(), 'aA');
+       
+        let transforms = rg.getTransforms();
+        let expected = ["capA", "articlize", "capitalize", "uppercase", "quotify", "norepeat", "pluralize", "art", "cap", "uc", "qq", "nr", "s"];
+        expected.forEach(t => {
+            ok(transforms.hasOwnProperty(t), "fail at " + t);
+        });
+
+        rg.removeTransform('capA');
+        eql(rg.expand(), 'a.capA()');
+    });
+
     function eql(a, b, c) { expect(a).eql(b, c); }
     function eq(a, b, c) { expect(a).eq(b, c); }
     function ok(a, m) { expect(a, m).to.be.true; }

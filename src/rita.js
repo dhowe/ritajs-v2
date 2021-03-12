@@ -52,7 +52,7 @@ class RiTa {
   }
 
   static getTransforms() {
-    return RiScript.getTransforms();
+    return RiScript.transforms; // according to Java
   }
 
   static hasWord(word) {
