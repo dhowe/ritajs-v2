@@ -18,7 +18,7 @@ class Errors extends antlr4.error.ErrorListener {
 
 class RiScript {
 
-  // TODO: quoted strings with spaces in choices or symbols, weighted-empty-string in choice 
+  // TODO: quoted strings with spaces in choices or symbols
   //       notebook -> context, variable transforms (useless with js/tt)
   constructor() {
     this.visitor = new Visitor(this, RiTa());
@@ -60,10 +60,9 @@ class RiScript {
   lex(input, opts) {
 
     // create the lexer
-    let stream = new antlr4.InputStream(input);
-    this.lexer = new Lexer(stream);
+    this.lexer = new Lexer(new antlr4.InputStream(input));
     this.lexer.removeErrorListeners();
-    this.lexer.addErrorListener(new Errors());//new LexerErrors());
+    this.lexer.addErrorListener(new Errors());
 
     let silent = opts && opts.silent;
     let trace = opts && opts.traceLex;
@@ -98,7 +97,7 @@ class RiScript {
     // create the parser
     this.parser = new Parser(tokens);
     this.parser.removeErrorListeners();
-    this.parser.addErrorListener(new Errors());//new ParserErrors());
+    this.parser.addErrorListener(new Errors());
 
     let silent = opts && opts.silent;
     let trace = opts && opts.trace;
@@ -126,20 +125,6 @@ class RiScript {
     return this.visitor.init(context, opts).start(tree);
   }
 
-  /*   lexParseVisit(input, context, opts) {
-  
-      let { pre, parse, post } = this.preparse(input, opts);
-  
-      opts.trace && (pre.length || post.length) &&
-         console.log('preParse("' + pre + '", "' + post + '");');
-  
-      let tree = parse.length && this.lexParse(parse, opts);
-      let visited = parse.length ? this.visitor.init(context, opts).start(tree) : '';
-      let result = (pre.length && visited.length) ? pre + '\n' + visited : pre + visited;
-  
-      return (result.length && post.length) ? result + '\n' + post : result + post;
-    }
-   */
   lexParseVisit(input, context, opts) {
 
     let { pre, parse, post } = this.preparse(input, opts);
