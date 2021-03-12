@@ -774,7 +774,7 @@ describe('RiTa.RiGrammar', function() {
         });
 
         rg.removeTransform('capA');
-        eql(rg.expand(), 'a.capA()');
+        eql(rg.expand(ST), 'a.capA()');
     });
 
     function eql(a, b, c) { expect(a).eql(b, c); }
