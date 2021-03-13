@@ -158,7 +158,8 @@ describe('RiTa.Tokenizer', () => {
       "<h1>header</h1>",
       "<!-- this is a comment -->", //? should this be divided? 
       "<a href=\"www.google.com\">a link to google</a>",
-      "<p>this<br>is</br>a<br>paragraph<br/></p>"
+      "<p>this<br>is</br>a<br>paragraph<br/></p>",
+      "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p><img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"
     ];
 
     outputs = [
@@ -168,7 +169,8 @@ describe('RiTa.Tokenizer', () => {
       ["<h1>", "header", "</h1>"],
       ["<!-- this is a comment -->"],
       ["<a href=\"www.google.com\">", "a", "link", "to", "google", "</a>"],
-      ["<p>", "this", "<br>", "is", "</br>", "a", "<br>", "paragraph", "<br/>", "</p>"]
+      ["<p>", "this", "<br>", "is", "</br>", "a", "<br>", "paragraph", "<br/>", "</p>"],
+      ["<p>", "Link", "<a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">", "here", "</a>", "is", "about", "<span class=\"cat\">", "cute", "cat", "</span>", "</p>", "<img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"]
     ];
     expect(inputs.length).eq(outputs.length);
     for (let i = 0; i < inputs.length; i++) {
