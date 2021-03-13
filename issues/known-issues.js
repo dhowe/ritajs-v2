@@ -56,8 +56,6 @@ describe('RiScript.KnownIssues', () => { // TODO:
 describe('RiTa.KnownIssues', () => {
 
   it('Failing to tag correctly', () => {
-
-    eql(RiTa.pos('a light blue sky'), ['dt', 'jj', 'jj', 'nn']);
     eql(RiTa.pos('as the sun came up and winds from Canada blew down.'), []); // check
 
   });

@@ -1485,6 +1485,44 @@ describe('RiTa.RiScript', function () {
         expect(() => Operator.SW.invoke(null, "hello")).to.throw();
         expect(() => Operator.SW.invoke(null, null)).to.throw();
       });
+    
+    it('Should call other Operator functions', () => { 
+      //toString and fromString
+      expect(Operator.GT.toString()).eq('>');
+      expect(Operator.LT.toString()).eq('<');
+      expect(Operator.GE.toString()).eq('>=');
+      expect(Operator.LE.toString()).eq('<=');
+      expect(Operator.NE.toString()).eq('!=');
+      expect(Operator.SW.toString()).eq('^=');
+      expect(Operator.EW.toString()).eq('$=');
+      expect(Operator.RE.toString()).eq('*=');
+      expect(Operator.EQ.toString()).eq('=');
+      expect(new Operator('=', 'EQUALITY').toString()).eq('=');
+
+      expect(Operator.fromString(Operator.GT.toString())).eq(Operator.GT);
+      expect(Operator.fromString(Operator.LT.toString())).eq(Operator.LT);
+      expect(Operator.fromString(Operator.GE.toString())).eq(Operator.GE);
+      expect(Operator.fromString(Operator.LE.toString())).eq(Operator.LE);
+      expect(Operator.fromString(Operator.NE.toString())).eq(Operator.NE);
+      expect(Operator.fromString(Operator.SW.toString())).eq(Operator.SW);
+      expect(Operator.fromString(Operator.EW.toString())).eq(Operator.EW);
+      expect(Operator.fromString(Operator.RE.toString())).eq(Operator.RE);
+      expect(Operator.fromString(Operator.EQ.toString())).eq(Operator.EQ);
+      expect(Operator.fromString('==')).eq(Operator.EQ);
+      expect(() => Operator.fromString('a')).to.throw();
+      
+      //fromOperator
+      expect(Operator.fromOperator(Operator.GT)).eq(Operator.GT.toString());
+      expect(Operator.fromOperator(Operator.LT)).eq(Operator.LT.toString());
+      expect(Operator.fromOperator(Operator.GE)).eq(Operator.GE.toString());
+      expect(Operator.fromOperator(Operator.LE)).eq(Operator.LE.toString());
+      expect(Operator.fromOperator(Operator.NE)).eq(Operator.NE.toString());
+      expect(Operator.fromOperator(Operator.SW)).eq(Operator.SW.toString());
+      expect(Operator.fromOperator(Operator.EW)).eq(Operator.EW.toString());
+      expect(Operator.fromOperator(Operator.RE)).eq(Operator.RE.toString());
+      expect(Operator.fromOperator(Operator.EQ)).eq(Operator.EQ.toString());
+      expect(() => Operator.fromOperator(new Operator("a", "b"))).to.throw();
+    });
   //  }
   }); 
 

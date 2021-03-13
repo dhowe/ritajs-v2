@@ -6398,5 +6398,15 @@ describe('RiTa.Stemmer', () => {
     test("cyttaria", "cyttaria");
   });
 
+  it('Should call stemAll', () => { 
+    let input = ["cured", "cats", "cut", "plays"];
+    let expect = ["cure", "cat", "cut", "play"];
+    //unreachable function at stemmer.js line 844, add to rita.js?
+    //let ouput = Stemmer.stemAll(input);
+    // for (let i = 0; i < input.length; i++) {
+    //   expect(ouput[i]).eq(expect[i]);
+    // }
+  });
+
 	function test(i, o) { expect(RiTa.stem(i)).eq(o); }
 });

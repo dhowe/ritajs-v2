@@ -217,6 +217,9 @@ describe('RiTa.Tagger', () => {
     for (let i = 0, j = checks.length; i < j; i++) {
       eql(RiTa.pos(checks[i]), ["nn"]);
     }
+
+    //sequential adjectives
+    eql(RiTa.pos('a light blue sky'), ['dt', 'jj', 'jj', 'nn']);
   });
 
   it('Should call pos.simple', () => {

@@ -340,6 +340,21 @@ class Tagger {
         }
       }
 
+      //webIssue#83 sequential adjectives(jc): (?:dt)? (?:jj)* (nn) (?:jj)* nn && $1 can be tagged as jj-> $1 convert to jj (e.g a light bule sky)
+      if (tag === "nn" && result.slice(i + 1).includes("nn")) {
+        let idx = result.slice(i + 1).indexOf("nn");
+        let allJJ = true; // between nn and nn are all jj
+        for (let k = 0; k < idx; k++) {
+          if (!result[i + 1 + k] === "jj") {
+            allJJ = false;
+            break;
+          }
+        }
+        if (allJJ && this.allTags(word).includes('jj')) {
+          tag = "jj";
+        }
+      }
+
       result[i] = tag;
     }
 
