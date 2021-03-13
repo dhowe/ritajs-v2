@@ -170,6 +170,29 @@ class Tokenizer {
       }
     }
 
+    //html tags
+    for (let i = 0; i < UNTOKENIZE_HTMLTAG_RE.length; i++) {
+      switch (i) {
+        default:
+          break;
+        case 0:
+          result = result.replace(UNTOKENIZE_HTMLTAG_RE[0], function(match, p1){ return "<" + p1.trim() + "/>" });
+          break;
+        case 1:
+          result = result.replace(UNTOKENIZE_HTMLTAG_RE[1], function (match, p1) { return "<" + p1.trim() + ">" });
+          break;
+        case 2:
+          result = result.replace(UNTOKENIZE_HTMLTAG_RE[2], function(match, p1){ return "</" + p1.trim() + ">" });
+          break;
+        case 3:
+          result = result.replace(UNTOKENIZE_HTMLTAG_RE[3], function (match, p1, p2) { return "<" + p1.replace(/ +/, "") + " " + p2.trim() + ">" });
+          break;
+        case 4:
+          result = result.replace(UNTOKENIZE_HTMLTAG_RE[4], function (match, p1) { return "<!--" + p1.trim() + "-->" });
+          break;
+      }
+    }
+
     return result.trim();
   }
 }
@@ -275,5 +298,12 @@ const HTML_TAGS_RE = [
 ];
 
 const POP_HTMLTAG_RE = /_HTMLTAG[0-9]+_/;
+const UNTOKENIZE_HTMLTAG_RE = [
+  / <([a-z0-9='"#;:&\s\-\+\/\.\?]+)\/> /gi, // empty tags <br/> <img /> etc.
+  /<([a-z0-9='"#;:&\s\-\+\/\.\?]+)> /gi, // opening tags <a>, <p> etc.
+  / <\/([a-z0-9='"#;:&\s\-\+\/\.\?]+)>/gi, // closing tags </a> </p> etc.
+  /< *(! *DOCTYPE)([^>]*)>/gi, // <!DOCTYPE>
+  /<! *--([^->]*)-->/gi // <!-- -->
+];
 
 export default Tokenizer;

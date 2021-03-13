@@ -317,6 +317,32 @@ describe('RiTa.Tokenizer', () => {
     for (let i = 0; i < inputs.length; i++) {
       expect(RiTa.untokenize(inputs[i])).eq(outputs[i]);
     }
+
+    //html tags
+    inputs = [
+      ["1", "<", "2"],
+      ["<", "a", ">", "link", "<", "/", "a", ">"],
+      ["<", "span", ">", "some", "text", "here", "<", "/", "span", ">"],
+      ["<", "p", ">", "some", "text", "<", "br", "/", ">", "new", "line", "<", "/", "p", ">"],
+      ["something", "<", "a", "href", "=", "\"", "www", ".", "google", ".", "com", "\"", ">", "link", "to", "google", "<", "/", "a", ">"],
+      ["<", "!", "DOCTYPE", "html", ">"],
+      ["<", "p", ">", "1", "<", "2", "is", "truth", "<", "/", "p", ">"],
+      ["a", "<", "!", "-", "-", "code", "comment", "-", "-", ">", "b"]
+    ];
+    outputs = [
+      "1 < 2",
+      "<a>link</a>",
+      "<span>some text here</span>",
+      "<p>some text<br/>new line</p>",
+      "something <a href = \"www.google.com\">link to google</a>",
+      "<!DOCTYPE html>",
+      "<p>1 < 2 is truth</p>",
+      "a <!--code comment--> b"
+    ];
+    expect(inputs.length).eq(outputs.length);
+    for (let i = 0; i < inputs.length; i++) {
+      expect(RiTa.untokenize(inputs[i])).eq(outputs[i]);
+    }
   });
 
   it('Should call sentences', () => {
