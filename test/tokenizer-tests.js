@@ -2,7 +2,19 @@ import { RiTa, expect } from './before';
 
 describe('RiTa.Tokenizer', () => {
 
-  it ('Should handle tokenize then untokenize', () =>{
+  it('Should call tokens', () => {
+    let input = "She wrote: \"I don't paint anymore. For a while I thought it was just a phase that I'd get over.\"";
+    expect(RiTa.tokens(input)).eql([
+      'a', 'anymore', 'for',
+      'get', 'i', 'it',
+      'just', 'over', 'paint',
+      'phase', 'she', 'that',
+      'thought', 'was', 'while',
+      'wrote'
+    ]);
+  });
+
+  it('Should handle tokenize then untokenize', () => {
     let sentences = [
       "this is www.google.com",
       "it is 'hell'"
@@ -11,7 +23,7 @@ describe('RiTa.Tokenizer', () => {
       ["this", "is", "www", ".", "google", ".", "com"],
       ["it", "is", "'", "hell", "'"]
     ];
-    for (let i = 0; i < sentences.length; i++){
+    for (let i = 0; i < sentences.length; i++) {
       let usingTokenize = RiTa.tokenize(sentences[i]);
       expect(usingTokenize).eql(tokens[i]);
       let usingUntokenize = RiTa.untokenize(usingTokenize);
@@ -96,33 +108,33 @@ describe('RiTa.Tokenizer', () => {
     // reference :PENN treebank tokenization document :ftp://ftp.cis.upenn.edu/pub/treebank/public_html/tokenization.html
     //            and aslo English punctuation Wiki page Latin abbreviations Wiki page
     let inputs = ["A simple sentence.",
-    "that's why this is our place).",
-    "most, punctuation; is. split: from! adjoining words?",
-    "double quotes \"OK\"", //Treebank tokenization document says double quotes (") are changed to doubled single forward- and backward- quotes (`` and '') tho
-    "face-to-face class",
-    '"it is strange", said John, "Katherine does not drink alchol."',
-    '"What?!", John yelled.',
-    //tests below this line don't pass
-    "John's Katherine's Jack's Linda's students' people's",
-    "more abbreviations: a.m. p.m. Cap. c. et al. etc. P.S. Ph.D R.I.P vs. v. Mr. Ms. Dr. Pf. Mx. Ind. Inc. Corp. Co,.Ltd. Co,. Ltd. Co. Lid. Ltd.",
-    "(testing) [brackets] {all} ⟨kinds⟩",
-    "elipsis dots... another elipsis dots…",
-    "children's parents' won't gonna I'm"
-  ];
+      "that's why this is our place).",
+      "most, punctuation; is. split: from! adjoining words?",
+      "double quotes \"OK\"", //Treebank tokenization document says double quotes (") are changed to doubled single forward- and backward- quotes (`` and '') tho
+      "face-to-face class",
+      '"it is strange", said John, "Katherine does not drink alchol."',
+      '"What?!", John yelled.',
+      //tests below this line don't pass
+      "John's Katherine's Jack's Linda's students' people's",
+      "more abbreviations: a.m. p.m. Cap. c. et al. etc. P.S. Ph.D R.I.P vs. v. Mr. Ms. Dr. Pf. Mx. Ind. Inc. Corp. Co,.Ltd. Co,. Ltd. Co. Lid. Ltd.",
+      "(testing) [brackets] {all} ⟨kinds⟩",
+      "elipsis dots... another elipsis dots…",
+      "children's parents' won't gonna I'm"
+    ];
     let outputs = [
       ["A", "simple", "sentence", "."],
       ["that's", "why", "this", "is", "our", "place", ")", "."],
-      ["most",",","punctuation",";","is",'.','split',':',"from","!","adjoining","words","?"],
-      ["double","quotes","\"","OK","\""],
-      ["face-to-face","class"],
-      ["\"","it","is","strange","\"",",","said","John",",","\"","Katherine","does","not","drink","alchol",".","\""],
-      ["\"","What","?","!","\"",",","John","yelled","."],
+      ["most", ",", "punctuation", ";", "is", '.', 'split', ':', "from", "!", "adjoining", "words", "?"],
+      ["double", "quotes", "\"", "OK", "\""],
+      ["face-to-face", "class"],
+      ["\"", "it", "is", "strange", "\"", ",", "said", "John", ",", "\"", "Katherine", "does", "not", "drink", "alchol", ".", "\""],
+      ["\"", "What", "?", "!", "\"", ",", "John", "yelled", "."],
       //test below this line don't pass
-      ["John","'s","katherine","'s","Jack","'s","Linda","'s","students","'","people","'s"],
-      ["more","abbreviations",":","a.m.","p.m.","Cap.","c.","et al.","etc.","P.S.","Ph.D","R.I.P","vs.","v.","Mr.","Ms.","Dr.","Pf.","Mx.","Ind.","Inc.","Corp.","Co.,Ltd","Co., Ltd","Co. Ltd.","Ltd."],
-      ["(","testing",")","[","brackets","]","{","all","}","⟨","kinds","⟩"],//this might not need to be fix coz ⟨⟩ is rarely seen
-      ["elipsis","dots","...","another","elipsis","dots","…"],
-      ["children","'s","parents","'","wo","n't","gon","na","I","'m"]
+      ["John", "'s", "katherine", "'s", "Jack", "'s", "Linda", "'s", "students", "'", "people", "'s"],
+      ["more", "abbreviations", ":", "a.m.", "p.m.", "Cap.", "c.", "et al.", "etc.", "P.S.", "Ph.D", "R.I.P", "vs.", "v.", "Mr.", "Ms.", "Dr.", "Pf.", "Mx.", "Ind.", "Inc.", "Corp.", "Co.,Ltd", "Co., Ltd", "Co. Ltd.", "Ltd."],
+      ["(", "testing", ")", "[", "brackets", "]", "{", "all", "}", "⟨", "kinds", "⟩"],//this might not need to be fix coz ⟨⟩ is rarely seen
+      ["elipsis", "dots", "...", "another", "elipsis", "dots", "…"],
+      ["children", "'s", "parents", "'", "wo", "n't", "gon", "na", "I", "'m"]
     ];
 
     // contractions -------------------------

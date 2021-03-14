@@ -204,6 +204,10 @@ class RiTa {
     };
   }*/
 
+  static tokens() {
+    return RiTa.tokenizer.tokens(...arguments);
+  }
+
   static tokenize() {
     return RiTa.tokenizer.tokenize(...arguments);
   }
