@@ -161,6 +161,33 @@ describe('RiTa.Tokenizer', () => {
     expect(RiTa.tokenize(txt4)).eql(["It's", "not", "that", "I", "can't", "."]);
     expect(RiTa.tokenize(txt5)).eql(["We've", "found", "the", "cat", "."]);
     expect(RiTa.tokenize(txt6)).eql(["We", "didn't", "find", "the", "cat", "."]);
+
+    // html tags (rita#103)
+    inputs = [
+      "<!DOCTYPE html>",
+      "<a>link</a>",
+      "<span>inline</span>",
+      "<h1>header</h1>",
+      "<!-- this is a comment -->", //? should this be divided? 
+      "<a href=\"www.google.com\">a link to google</a>",
+      "<p>this<br>is</br>a<br>paragraph<br/></p>",
+      "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p><img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"
+    ];
+
+    outputs = [
+      ["<!DOCTYPE html>"],
+      ["<a>", "link", "</a>"],
+      ["<span>", "inline", "</span>"],
+      ["<h1>", "header", "</h1>"],
+      ["<!-- this is a comment -->"],
+      ["<a href=\"www.google.com\">", "a", "link", "to", "google", "</a>"],
+      ["<p>", "this", "<br>", "is", "</br>", "a", "<br>", "paragraph", "<br/>", "</p>"],
+      ["<p>", "Link", "<a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">", "here", "</a>", "is", "about", "<span class=\"cat\">", "cute", "cat", "</span>", "</p>", "<img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"]
+    ];
+    expect(inputs.length).eq(outputs.length);
+    for (let i = 0; i < inputs.length; i++) {
+      expect(RiTa.tokenize(inputs[i])).eql(outputs[i]);
+    }
   });
 
   it('Should call untokenize', () => {
@@ -298,6 +325,32 @@ describe('RiTa.Tokenizer', () => {
       ["that", "is", "www6", ".", "cityu", ".", "edu", ".", "hk"]
     ];
 
+    expect(inputs.length).eq(outputs.length);
+    for (let i = 0; i < inputs.length; i++) {
+      expect(RiTa.untokenize(inputs[i])).eq(outputs[i]);
+    }
+
+    //html tags
+    inputs = [
+      ["1", "<", "2"],
+      ["<", "a", ">", "link", "<", "/", "a", ">"],
+      ["<", "span", ">", "some", "text", "here", "<", "/", "span", ">"],
+      ["<", "p", ">", "some", "text", "<", "br", "/", ">", "new", "line", "<", "/", "p", ">"],
+      ["something", "<", "a", "href", "=", "\"", "www", ".", "google", ".", "com", "\"", ">", "link", "to", "google", "<", "/", "a", ">"],
+      ["<", "!", "DOCTYPE", "html", ">"],
+      ["<", "p", ">", "1", "<", "2", "is", "truth", "<", "/", "p", ">"],
+      ["a", "<", "!", "-", "-", "code", "comment", "-", "-", ">", "b"]
+    ];
+    outputs = [
+      "1 < 2",
+      "<a>link</a>",
+      "<span>some text here</span>",
+      "<p>some text<br/>new line</p>",
+      "something <a href = \"www.google.com\">link to google</a>",
+      "<!DOCTYPE html>",
+      "<p>1 < 2 is truth</p>",
+      "a <!--code comment--> b"
+    ];
     expect(inputs.length).eq(outputs.length);
     for (let i = 0; i < inputs.length; i++) {
       expect(RiTa.untokenize(inputs[i])).eq(outputs[i]);

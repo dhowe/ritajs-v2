@@ -52,7 +52,19 @@ class Tokenizer {
 
     if (regex) return text.split(regex);
 
-    text = text.trim();
+    text = text.trim(); // ???
+
+    //handle html tags ---- save tags
+    let htmlTags = [];
+    let indexOfTags = 0;
+    for (let i = 0; i < HTML_TAGS_RE.length; i++) {
+      while (HTML_TAGS_RE[i].test(text)) {
+        htmlTags.push(text.match(HTML_TAGS_RE[i])[0]);
+        text = text.replace(HTML_TAGS_RE[i], " _HTMLTAG" + indexOfTags + "_ ");
+        indexOfTags++;
+      }
+    }
+
     for (let i = 0; i < TOKENIZE_RE.length; i += 2) {
       text = text.replace(TOKENIZE_RE[i], TOKENIZE_RE[i + 1]);
     }
@@ -64,8 +76,15 @@ class Tokenizer {
     }
 
     let result = text.trim().split(/\s+/);
-    result.forEach((tok, i) => tok.includes('_') &&
-      (result[i] = tok.replace(UNDER_RE, "$1 $2")));
+    for (let i = 0; i < result.length; i++) {
+      if (POP_HTMLTAG_RE.test(result[i])) {
+        result[i] = htmlTags.shift();
+      }
+
+      if (result[i].includes('_')) {
+        result[i] = result[i].replace(/([a-zA-z]|[\.\,])_([a-zA-Z])/g, "$1 $2");
+      }
+    } 
 
     return result;
   }
@@ -148,6 +167,29 @@ class Tokenizer {
       }
     }
 
+    //html tags
+    for (let i = 0; i < UNTOKENIZE_HTMLTAG_RE.length; i++) {
+      switch (i) {
+        default:
+          break;
+        case 0:
+          result = result.replace(UNTOKENIZE_HTMLTAG_RE[0], function(match, p1){ return "<" + p1.trim() + "/>" });
+          break;
+        case 1:
+          result = result.replace(UNTOKENIZE_HTMLTAG_RE[1], function (match, p1) { return "<" + p1.trim() + ">" });
+          break;
+        case 2:
+          result = result.replace(UNTOKENIZE_HTMLTAG_RE[2], function(match, p1){ return "</" + p1.trim() + ">" });
+          break;
+        case 3:
+          result = result.replace(UNTOKENIZE_HTMLTAG_RE[3], function (match, p1, p2) { return "<" + p1.replace(/ +/, "") + " " + p2.trim() + ">" });
+          break;
+        case 4:
+          result = result.replace(UNTOKENIZE_HTMLTAG_RE[4], function (match, p1) { return "<!--" + p1.trim() + "-->" });
+          break;
+      }
+    }
+
     return result.trim();
   }
 }
@@ -167,7 +209,7 @@ const NO_SPACE_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""\u201c\u201d\u2019\u2018`'%\u2026
 
 const TOKENIZE_RE = [
 
-  // save abbreviations --------
+  // save  --------
   /([Ee])[.]([Gg])[.]/g, "_$1$2_",//E.g
   /([Ii])[.]([Ee])[.]/g, "_$1$2_",//i.e
   /([Aa])[.]([Mm])[.]/g, "_$1$2_",//a.m.
@@ -212,7 +254,7 @@ const TOKENIZE_RE = [
   /\u00b0/g, " \u00b0 ",
   /_elipsisDDD_/g, " ... ",
 
-  //pop abbreviations------------------
+  //pop ------------------
   /_([Ee])([Gg])_/g, "$1.$2.",//Eg
   /_([Ii])([Ee])_/g, "$1.$2.",//ie
   /_([Aa])([Mm])_/g, "$1.$2.",//a.m.
@@ -247,6 +289,20 @@ const CONTRACTS_RE = [
   /n['\u2019]t /g, " not ",
   /['\u2019]ve /g, " have ",
   /['\u2019]re /g, " are "
+];
+
+const HTML_TAGS_RE = [
+  /(<\/?[a-z0-9='"#;:&\s\-\+\/\.\?]+\/?>)/i, // html tags (rita#103)
+  /(<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i // doctype and comment
+];
+
+const POP_HTMLTAG_RE = /_HTMLTAG[0-9]+_/;
+const UNTOKENIZE_HTMLTAG_RE = [
+  / <([a-z0-9='"#;:&\s\-\+\/\.\?]+)\/> /gi, // empty tags <br/> <img /> etc.
+  /<([a-z0-9='"#;:&\s\-\+\/\.\?]+)> /gi, // opening tags <a>, <p> etc.
+  / <\/([a-z0-9='"#;:&\s\-\+\/\.\?]+)>/gi, // closing tags </a> </p> etc.
+  /< *(! *DOCTYPE)([^>]*)>/gi, // <!DOCTYPE>
+  /<! *--([^->]*)-->/gi // <!-- -->
 ];
 
 export default Tokenizer;
