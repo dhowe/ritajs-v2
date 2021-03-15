@@ -162,10 +162,17 @@ describe('RiTa.Tokenizer', () => {
     expect(RiTa.tokenize(txt5)).eql(["We've", "found", "the", "cat", "."]);
     expect(RiTa.tokenize(txt6)).eql(["We", "didn't", "find", "the", "cat", "."]);
 
+  });
+
+  it('Should tokenize tags', () => { // SYNC:
+
     // html tags (rita#103)
-    inputs = [
-      "<!DOCTYPE html>",
+    let inputs = [
+      "<br>",
+      "<br/>",
+      "</br>",
       "<a>link</a>",
+      "<!DOCTYPE html>",
       "<span>inline</span>",
       "<h1>header</h1>",
       "<!-- this is a comment -->", //? should this be divided? 
@@ -174,9 +181,12 @@ describe('RiTa.Tokenizer', () => {
       "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p><img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"
     ];
 
-    outputs = [
-      ["<!DOCTYPE html>"],
+    let outputs = [
+      ["<br>"],
+      ["<br/>"],
+      ["</br>"],
       ["<a>", "link", "</a>"],
+      ["<!DOCTYPE html>"],
       ["<span>", "inline", "</span>"],
       ["<h1>", "header", "</h1>"],
       ["<!-- this is a comment -->"],
@@ -186,7 +196,9 @@ describe('RiTa.Tokenizer', () => {
     ];
     expect(inputs.length).eq(outputs.length);
     for (let i = 0; i < inputs.length; i++) {
-      expect(RiTa.tokenize(inputs[i])).eql(outputs[i]);
+      let res = RiTa.tokenize(inputs[i]);
+      //console.log(i, res);
+      expect(res).eql(outputs[i]);
     }
   });
 
@@ -329,9 +341,11 @@ describe('RiTa.Tokenizer', () => {
     for (let i = 0; i < inputs.length; i++) {
       expect(RiTa.untokenize(inputs[i])).eq(outputs[i]);
     }
+  });
 
-    //html tags
-    inputs = [
+  it('Should untokenize tags', () => { // SYNC:
+
+    let inputs = [
       ["1", "<", "2"],
       ["<", "a", ">", "link", "<", "/", "a", ">"],
       ["<", "span", ">", "some", "text", "here", "<", "/", "span", ">"],
@@ -341,7 +355,8 @@ describe('RiTa.Tokenizer', () => {
       ["<", "p", ">", "1", "<", "2", "is", "truth", "<", "/", "p", ">"],
       ["a", "<", "!", "-", "-", "code", "comment", "-", "-", ">", "b"]
     ];
-    outputs = [
+
+    let outputs = [
       "1 < 2",
       "<a>link</a>",
       "<span>some text here</span>",
@@ -351,6 +366,7 @@ describe('RiTa.Tokenizer', () => {
       "<p>1 < 2 is truth</p>",
       "a <!--code comment--> b"
     ];
+
     expect(inputs.length).eq(outputs.length);
     for (let i = 0; i < inputs.length; i++) {
       expect(RiTa.untokenize(inputs[i])).eq(outputs[i]);

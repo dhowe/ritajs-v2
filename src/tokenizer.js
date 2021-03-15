@@ -1,4 +1,5 @@
 import Util from './util';
+import { encode } from 'he';
 
 class Tokenizer {
 
@@ -10,7 +11,7 @@ class Tokenizer {
   sentences(text, regex) {
     if (!text || !text.length) return [text];
 
-    let clean = text.replace(LB_RE, ' ')
+    let clean = text.replace(NL_RE, ' ')
 
     let delim = '___';
     let re = new RegExp(delim, 'g');
@@ -41,29 +42,19 @@ class Tokenizer {
   }
 
   tokens(text, regex) {
+
     let words = this.tokenize(text, regex), tokens = {};
     words.forEach(w => ALPHA_RE.test(w) && (tokens[w.toLowerCase()] = 1));
     return Object.keys(tokens).sort();
   }
 
-  tokenize(text, regex) {
+  tokenize(input, regex) {
 
-    if (typeof text !== 'string') return [];
+    if (typeof input !== 'string') return [];
 
-    if (regex) return text.split(regex);
+    if (regex) return input.split(regex);
 
-    text = text.trim(); // ???
-
-    //handle html tags ---- save tags
-    let htmlTags = [];
-    let indexOfTags = 0;
-    for (let i = 0; i < HTML_TAGS_RE.length; i++) {
-      while (HTML_TAGS_RE[i].test(text)) {
-        htmlTags.push(text.match(HTML_TAGS_RE[i])[0]);
-        text = text.replace(HTML_TAGS_RE[i], " _HTMLTAG" + indexOfTags + "_ ");
-        indexOfTags++;
-      }
-    }
+    let { tags, text } = this.pushTags(input.trim());
 
     for (let i = 0; i < TOKENIZE_RE.length; i += 2) {
       text = text.replace(TOKENIZE_RE[i], TOKENIZE_RE[i + 1]);
@@ -75,18 +66,7 @@ class Tokenizer {
       }
     }
 
-    let result = text.trim().split(/\s+/);
-    for (let i = 0; i < result.length; i++) {
-      if (POP_HTMLTAG_RE.test(result[i])) {
-        result[i] = htmlTags.shift();
-      }
-
-      if (result[i].includes('_')) {
-        result[i] = result[i].replace(/([a-zA-z]|[\.\,])_([a-zA-Z])/g, "$1 $2");
-      }
-    } 
-
-    return result;
+    return this.popTags(text.trim().split(WS_RE), tags);
   }
 
   untokenize(arr, delim) { // so ugly (but works)
@@ -102,12 +82,12 @@ class Tokenizer {
       if (!arr[i]) continue;
 
       let thisComma = arr[i] === ',', lastComma = arr[i - 1] === ',';
-      let thisNBPunct = NO_SPACE_BF_PUNCT_RE.test(arr[i]); // NB -> no space before the punctuation
-      let thisLBracket = LEFT_BRACKETS_RE.test(arr[i]); // LBracket -> left bracket
-      let thisRBracket = RIGHT_BRACKETS_RE.test(arr[i]); // RBracket -> right bracket
-      let lastNBPunct = NO_SPACE_BF_PUNCT_RE.test(arr[i - 1]); // NB -> no space before
-      let lastNAPunct = NO_SPACE_AFTER_PUNCT_RE.test(arr[i - 1]); // NA -> no space after
-      let lastLB = LEFT_BRACKETS_RE.test(arr[i - 1]), lastRB = RIGHT_BRACKETS_RE.test(arr[i - 1]);
+      let thisNBPunct = NOSP_BF_PUNCT_RE.test(arr[i]); // NB -> no space before the punctuation
+      let thisLBracket = LB_RE.test(arr[i]); // LBracket -> left bracket
+      let thisRBracket = RB_RE.test(arr[i]); // RBracket -> right bracket
+      let lastNBPunct = NOSP_BF_PUNCT_RE.test(arr[i - 1]); // NB -> no space before
+      let lastNAPunct = NOSP_AF_PUNCT_RE.test(arr[i - 1]); // NA -> no space after
+      let lastLB = LB_RE.test(arr[i - 1]), lastRB = RB_RE.test(arr[i - 1]);
       let lastEndWithS = (arr[i - 1][arr[i - 1].length - 1] === 's'
         && arr[i - 1] != "is" && arr[i - 1] != "Is" && arr[i - 1] != "IS");
       let lastIsWWW = WWW_RE.test(arr[i - 1]), isDomain = DOMAIN_RE.test(arr[i]);
@@ -167,45 +147,76 @@ class Tokenizer {
       }
     }
 
-    //html tags
-    for (let i = 0; i < UNTOKENIZE_HTMLTAG_RE.length; i++) {
+    return this.untokenizeTags(result).trim();
+  }
+
+  pushTags(text) {
+    let tags = [], tagIdx = 0;
+    for (let i = 0; i < TAG_RE.length; i++) {
+      let regex = TAG_RE[i];
+      while (regex.test(text)) {
+        tags.push(text.match(regex)[0]);
+        text = text.replace(regex, " _" + TAG + (tagIdx++) + "_ ");
+      }
+    }
+    return { tags, text };
+  }
+
+  popTags(result, tags) {
+    for (let i = 0; i < result.length; i++) {
+      if (POPTAG_RE.test(result[i])) {
+        result[i] = tags.shift();
+      }
+      if (result[i].includes('_')) {
+        result[i] = result[i].replace(UNDER_RE, "$1 $2");
+      }
+    }
+    return result;
+  }
+
+  untokenizeTags(result) {
+    for (let i = 0; i < UNTAG_RE.length; i++) {
       switch (i) {
         default:
           break;
         case 0:
-          result = result.replace(UNTOKENIZE_HTMLTAG_RE[0], function(match, p1){ return "<" + p1.trim() + "/>" });
+          result = result.replace(UNTAG_RE[0], (m, p) =>`<${p.trim()}/>`);
           break;
         case 1:
-          result = result.replace(UNTOKENIZE_HTMLTAG_RE[1], function (match, p1) { return "<" + p1.trim() + ">" });
+          result = result.replace(UNTAG_RE[1], (m, p) => `<${p.trim()}>`);
           break;
         case 2:
-          result = result.replace(UNTOKENIZE_HTMLTAG_RE[2], function(match, p1){ return "</" + p1.trim() + ">" });
+          result = result.replace(UNTAG_RE[2], (m, p) => `</${p.trim()}>`);
           break;
         case 3:
-          result = result.replace(UNTOKENIZE_HTMLTAG_RE[3], function (match, p1, p2) { return "<" + p1.replace(/ +/, "") + " " + p2.trim() + ">" });
+          result = result.replace(UNTAG_RE[3], (m, p, q) => `<${p.replace(WS_RE, "")} ${q.trim()}>`);
           break;
         case 4:
-          result = result.replace(UNTOKENIZE_HTMLTAG_RE[4], function (match, p1) { return "<!--" + p1.trim() + "-->" });
+          result = result.replace(UNTAG_RE[4], (m, p) => `<!--${p.trim()}-->`);
           break;
       }
     }
-
-    return result.trim();
+    return result;
   }
+
 }
 
-const LEFT_BRACKETS_RE = /^[\[\(\{\u27e8]+$/;
-const RIGHT_BRACKETS_RE = /^[\)\]\}\u27e9]+$/;
-const UNDER_RE = /([a-zA-z]|[\.\,])_([a-zA-Z])/g;
+const UNTAG_RE = [
+  / <([a-z0-9='"#;:&\s\-\+\/\.\?]+)\/> /gi, // empty tags <br/> <img /> etc.
+  /<([a-z0-9='"#;:&\s\-\+\/\.\?]+)> /gi, // opening tags <a>, <p> etc.
+  / <\/([a-z0-9='"#;:&\s\-\+\/\.\?]+)>/gi, // closing tags </a> </p> etc.
+  /< *(! *DOCTYPE) ([^>]*)>/gi, // <!DOCTYPE>
+  /<! *--([^->]*)-->/gi // <!-- -->
+];
+
+const NOSP_AF_PUNCT_RE = /^[\^\*\$\/\u2044#\-@\u00b0]+$/;
+const TAG = "TAG", UNDER_RE = /([a-zA-z]|[\.\,])_([a-zA-Z])/g;
+const LB_RE = /^[\[\(\{\u27e8]+$/, RB_RE = /^[\)\]\}\u27e9]+$/;
 const QUOTE_RE = /^[""\u201c\u201d\u2019\u2018`''\u00ab\u00bb]+$/;
-const SQUOTE_RE = /^[\u2019\u2018`']+$/;
-const ALPHA_RE = /^[A-Za-z]+$/;
-const APOS_RE = /^[\u2019']+$/;
-const LB_RE = /(\r?\n)+/g;
-const WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
-const NO_SPACE_AFTER_PUNCT_RE = /^[\^\*\$\/\u2044#\-@\u00b0]+$/;
 const DOMAIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|ch|fr)$/;
-const NO_SPACE_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""\u201c\u201d\u2019\u2018`'%\u2026\u2103\^\*\u00b0\/\u2044\-@]+$/;
+const SQUOTE_RE = /^[\u2019\u2018`']+$/, ALPHA_RE = /^[A-Za-z]+$/, WS_RE = /\s+/;
+const APOS_RE = /^[\u2019']+$/, NL_RE = /(\r?\n)+/g, WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
+const NOSP_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""\u201c\u201d\u2019\u2018`'%\u2026\u2103\^\*\u00b0\/\u2044\-@]+$/;
 
 const TOKENIZE_RE = [
 
@@ -291,18 +302,12 @@ const CONTRACTS_RE = [
   /['\u2019]re /g, " are "
 ];
 
-const HTML_TAGS_RE = [
+const TAG_RE = [
   /(<\/?[a-z0-9='"#;:&\s\-\+\/\.\?]+\/?>)/i, // html tags (rita#103)
   /(<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i // doctype and comment
 ];
 
-const POP_HTMLTAG_RE = /_HTMLTAG[0-9]+_/;
-const UNTOKENIZE_HTMLTAG_RE = [
-  / <([a-z0-9='"#;:&\s\-\+\/\.\?]+)\/> /gi, // empty tags <br/> <img /> etc.
-  /<([a-z0-9='"#;:&\s\-\+\/\.\?]+)> /gi, // opening tags <a>, <p> etc.
-  / <\/([a-z0-9='"#;:&\s\-\+\/\.\?]+)>/gi, // closing tags </a> </p> etc.
-  /< *(! *DOCTYPE)([^>]*)>/gi, // <!DOCTYPE>
-  /<! *--([^->]*)-->/gi // <!-- -->
-];
+
+const POPTAG_RE = new RegExp(`_${TAG}[0-9]+_`);
 
 export default Tokenizer;
