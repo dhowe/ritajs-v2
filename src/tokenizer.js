@@ -52,15 +52,15 @@ class Tokenizer {
 
     if (regex) return text.split(regex);
 
-    words = words.trim(); // ???
+    text = text.trim(); // ???
 
     //handle html tags ---- save tags
     let htmlTags = [];
     let indexOfTags = 0;
     for (let i = 0; i < HTML_TAGS_RE.length; i++) {
-      while (HTML_TAGS_RE[i].test(words)) {
-        htmlTags.push(words.match(HTML_TAGS_RE[i])[0]);
-        words = words.replace(HTML_TAGS_RE[i], " _HTMLTAG" + indexOfTags + "_ ");
+      while (HTML_TAGS_RE[i].test(text)) {
+        htmlTags.push(text.match(HTML_TAGS_RE[i])[0]);
+        text = text.replace(HTML_TAGS_RE[i], " _HTMLTAG" + indexOfTags + "_ ");
         indexOfTags++;
       }
     }
@@ -75,7 +75,7 @@ class Tokenizer {
       }
     }
 
-    let result = words.trim().split(/\s+/);
+    let result = text.trim().split(/\s+/);
     for (let i = 0; i < result.length; i++) {
       if (POP_HTMLTAG_RE.test(result[i])) {
         result[i] = htmlTags.shift();
