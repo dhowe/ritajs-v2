@@ -40,11 +40,17 @@ class Tokenizer {
     return arr && arr.length ? unescapeAbbrevs(arr) : [text];
   }
 
-  tokenize(words, regex) {
+  tokens(text, regex) {
+    let words = this.tokenize(text, regex), tokens = {};
+    words.forEach(w => ALPHA_RE.test(w) && (tokens[w.toLowerCase()] = 1));
+    return Object.keys(tokens).sort();
+  }
 
-    if (typeof words !== 'string') return [];
+  tokenize(text, regex) {
 
-    if (regex) return words.split(regex);
+    if (typeof text !== 'string') return [];
+
+    if (regex) return text.split(regex);
 
     words = words.trim(); // ???
 
@@ -60,12 +66,12 @@ class Tokenizer {
     }
 
     for (let i = 0; i < TOKENIZE_RE.length; i += 2) {
-      words = words.replace(TOKENIZE_RE[i], TOKENIZE_RE[i + 1]);
+      text = text.replace(TOKENIZE_RE[i], TOKENIZE_RE[i + 1]);
     }
 
     if (this.RiTa.SPLIT_CONTRACTIONS) {
-      for (let i = 0; i < CONTRACTIONS_RE.length; i += 2) {
-        words = words.replace(CONTRACTIONS_RE[i], CONTRACTIONS_RE[i + 1]);
+      for (let i = 0; i < CONTRACTS_RE.length; i += 2) {
+        text = text.replace(CONTRACTS_RE[i], CONTRACTS_RE[i + 1]);
       }
     }
 
@@ -95,7 +101,7 @@ class Tokenizer {
 
       if (!arr[i]) continue;
 
-      let thisComma = arr[i] === ',',  lastComma = arr[i - 1] === ',';
+      let thisComma = arr[i] === ',', lastComma = arr[i - 1] === ',';
       let thisNBPunct = NO_SPACE_BF_PUNCT_RE.test(arr[i]); // NB -> no space before the punctuation
       let thisLBracket = LEFT_BRACKETS_RE.test(arr[i]); // LBracket -> left bracket
       let thisRBracket = RIGHT_BRACKETS_RE.test(arr[i]); // RBracket -> right bracket
@@ -110,21 +116,17 @@ class Tokenizer {
       let thisQuote = QUOTE_RE.test(arr[i]);
 
       if ((arr[i - 1] === "." && isDomain) || nextNoSpace) {
-
         nextNoSpace = false;
         result += arr[i];
         continue;
 
       } else if (arr[i] === "." && lastIsWWW) {
-
         nextNoSpace = true;
 
       } else if (thisLBracket) {
-
         result += delim;
 
       } else if (lastRB) {
-
         if (!thisNBPunct && !thisLBracket) {
           result += delim;
         }
@@ -132,41 +134,36 @@ class Tokenizer {
       } else if (thisQuote) {
 
         if (withinQuote) {
-
           // no-delim, mark quotation done
           afterQuote = true;
           withinQuote = false;
-
-        } else if (!((APOS_RE.test(arr[i]) && lastEndWithS) || (APOS_RE.test(arr[i]) && nextIsS))) {
+        } else if (!((APOS_RE.test(arr[i]) && lastEndWithS)
+          || (APOS_RE.test(arr[i]) && nextIsS))) {
           withinQuote = true;
           afterQuote = false;
           result += delim;
         }
 
       } else if (afterQuote && !thisNBPunct) {
-
         result += delim;
         afterQuote = false;
 
       } else if (lastQuote && thisComma) {
-
         midSentence = true;
 
       } else if (midSentence && lastComma) {
-
         result += delim;
         midSentence = false;
 
       } else if ((!thisNBPunct && !lastQuote && !lastNAPunct && !lastLB && !thisRBracket)
         || (!isLast && thisNBPunct && lastNBPunct && !lastNAPunct
           && !lastQuote && !lastLB && !thisRBracket)) {
-
         result += delim;
       }
 
       result += arr[i]; // add to result
       if (thisNBPunct && !lastNBPunct && !withinQuote && SQUOTE_RE.test(arr[i]) && lastEndWithS) {
-        result += delim; // ??
+        result += delim;
       }
     }
 
@@ -199,8 +196,10 @@ class Tokenizer {
 
 const LEFT_BRACKETS_RE = /^[\[\(\{\u27e8]+$/;
 const RIGHT_BRACKETS_RE = /^[\)\]\}\u27e9]+$/;
+const UNDER_RE = /([a-zA-z]|[\.\,])_([a-zA-Z])/g;
 const QUOTE_RE = /^[""\u201c\u201d\u2019\u2018`''\u00ab\u00bb]+$/;
 const SQUOTE_RE = /^[\u2019\u2018`']+$/;
+const ALPHA_RE = /^[A-Za-z]+$/;
 const APOS_RE = /^[\u2019']+$/;
 const LB_RE = /(\r?\n)+/g;
 const WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
@@ -281,7 +280,7 @@ const TOKENIZE_RE = [
   /_(prof|PROF|Prof)_/g, "$1." //Prof.
 ];
 
-const CONTRACTIONS_RE = [
+const CONTRACTS_RE = [
   /([Cc])an['\u2019]t/g, "$1an not",
   /([Dd])idn['\u2019]t/g, "$1id not",
   /([CcWw])ouldn['\u2019]t/g, "$1ould not",
