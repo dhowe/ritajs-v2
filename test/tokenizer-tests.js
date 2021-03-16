@@ -38,8 +38,8 @@ describe('RiTa.Tokenizer', () => {
       "<span class=\"test\">in line</span>",
       "<!DOCTYPE html> <head><title>Test Page</title></head>",
       "<!--comment lines-->",
-      "<p>this<br>is</br>a<br>paragraph<br/></p>",
-      "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p><img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />",
+      "<p>this <br>is</br> a <br>paragraph <br/></p>",
+      "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p> <img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />",
       "<p>a paragraph with an <span class=\"test\">in line element</span> and a <a href=\"https://www.google.com\">link to google</a>.</p>"
     ];
     let tokens = [
@@ -206,7 +206,8 @@ describe('RiTa.Tokenizer', () => {
       "<!-- this is a comment -->", //? should this be divided? 
       "<a href=\"www.google.com\">a link to google</a>",
       "<p>this<br>is</br>a<br>paragraph<br/></p>",
-      "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p><img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"
+      "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p><img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />",
+      "1 < 2 and 3 > 2."
     ];
 
     let outputs = [
@@ -220,7 +221,8 @@ describe('RiTa.Tokenizer', () => {
       ["<!-- this is a comment -->"],
       ["<a href=\"www.google.com\">", "a", "link", "to", "google", "</a>"],
       ["<p>", "this", "<br>", "is", "</br>", "a", "<br>", "paragraph", "<br/>", "</p>"],
-      ["<p>", "Link", "<a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">", "here", "</a>", "is", "about", "<span class=\"cat\">", "cute", "cat", "</span>", "</p>", "<img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"]
+      ["<p>", "Link", "<a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">", "here", "</a>", "is", "about", "<span class=\"cat\">", "cute", "cat", "</span>", "</p>", "<img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"],
+      ["1", "<", "2", "and", "3", ">", "2", "."]
     ];
     expect(inputs.length).eq(outputs.length);
     for (let i = 0; i < inputs.length; i++) {
@@ -388,7 +390,7 @@ describe('RiTa.Tokenizer', () => {
       "1 < 2",
       "<a>link</a>",
       "<span>some text here</span>",
-      "<p>some text<br/>new line</p>",
+      "<p>some text <br/> new line</p>",
       "something <a href = \"www.google.com\">link to google</a>",
       "<!DOCTYPE html>",
       "<p>1 < 2 is truth</p>",

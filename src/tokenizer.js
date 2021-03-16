@@ -80,27 +80,29 @@ class Tokenizer {
     for (let i = 1; i < arr.length; i++) {
 
       if (!arr[i]) continue;
+      let thisToken = arr[i];
+      let lastToken = arr[i - 1];
 
-      let thisComma = arr[i] === ',', lastComma = arr[i - 1] === ',';
-      let thisNBPunct = NOSP_BF_PUNCT_RE.test(arr[i]); // NB -> no space before the punctuation
-      let thisLBracket = LB_RE.test(arr[i]); // LBracket -> left bracket
-      let thisRBracket = RB_RE.test(arr[i]); // RBracket -> right bracket
-      let lastNBPunct = NOSP_BF_PUNCT_RE.test(arr[i - 1]); // NB -> no space before
-      let lastNAPunct = NOSP_AF_PUNCT_RE.test(arr[i - 1]); // NA -> no space after
-      let lastLB = LB_RE.test(arr[i - 1]), lastRB = RB_RE.test(arr[i - 1]);
-      let lastEndWithS = (arr[i - 1][arr[i - 1].length - 1] === 's'
-        && arr[i - 1] != "is" && arr[i - 1] != "Is" && arr[i - 1] != "IS");
-      let lastIsWWW = WWW_RE.test(arr[i - 1]), isDomain = DOMAIN_RE.test(arr[i]);
+      let thisComma = thisToken === ',', lastComma = lastToken === ',';
+      let thisNBPunct = NOSP_BF_PUNCT_RE.test(thisToken) || UNTAG_RE[2].test(thisToken); // NB -> no space before the punctuation (add closing tag)
+      let thisLBracket = LB_RE.test(thisToken); // LBracket -> left bracket
+      let thisRBracket = RB_RE.test(thisToken); // RBracket -> right bracket
+      let lastNBPunct = NOSP_BF_PUNCT_RE.test(lastToken); // NB -> no space before
+      let lastNAPunct = NOSP_AF_PUNCT_RE.test(lastToken) || UNTAG_RE[1].test(lastToken)// NA -> no space after (add opening tag)
+      let lastLB = LB_RE.test(lastToken), lastRB = RB_RE.test(lastToken);
+      let lastEndWithS = (lastToken[lastToken.length - 1] === 's'
+        && lastToken != "is" && lastToken != "Is" && lastToken != "IS");
+      let lastIsWWW = WWW_RE.test(lastToken), isDomain = DOMAIN_RE.test(thisToken);
       let nextIsS = i == arr.length - 1 ? false : (arr[i + 1] === "s" || arr[i + 1] === "S");
-      let lastQuote = QUOTE_RE.test(arr[i - 1]), isLast = (i == arr.length - 1);
-      let thisQuote = QUOTE_RE.test(arr[i]);
+      let lastQuote = QUOTE_RE.test(lastToken), isLast = (i == arr.length - 1);
+      let thisQuote = QUOTE_RE.test(thisToken);
 
-      if ((arr[i - 1] === "." && isDomain) || nextNoSpace) {
+      if ((lastToken === "." && isDomain) || nextNoSpace) {
         nextNoSpace = false;
-        result += arr[i];
+        result += thisToken;
         continue;
 
-      } else if (arr[i] === "." && lastIsWWW) {
+      } else if (thisToken === "." && lastIsWWW) {
         nextNoSpace = true;
 
       } else if (thisLBracket) {
@@ -117,8 +119,8 @@ class Tokenizer {
           // no-delim, mark quotation done
           afterQuote = true;
           withinQuote = false;
-        } else if (!((APOS_RE.test(arr[i]) && lastEndWithS)
-          || (APOS_RE.test(arr[i]) && nextIsS))) {
+        } else if (!((APOS_RE.test(thisToken) && lastEndWithS)
+          || (APOS_RE.test(thisToken) && nextIsS))) {
           withinQuote = true;
           afterQuote = false;
           result += delim;
@@ -141,8 +143,8 @@ class Tokenizer {
         result += delim;
       }
 
-      result += arr[i]; // add to result
-      if (thisNBPunct && !lastNBPunct && !withinQuote && SQUOTE_RE.test(arr[i]) && lastEndWithS) {
+      result += thisToken; // add to result
+      if (thisNBPunct && !lastNBPunct && !withinQuote && SQUOTE_RE.test(thisToken) && lastEndWithS) {
         result += delim;
       }
     }
@@ -171,40 +173,14 @@ class Tokenizer {
     }
     return result;
   }
-
-  untokenizeTags(result) {
-    for (let i = 0; i < UNTAG_RE.length; i++) {
-      switch (i) {
-        default:
-          break;
-        case 0:
-          result = result.replace(UNTAG_RE[0], (m, p) =>`<${p.trim()}/>`);
-          break;
-        case 1:
-          result = result.replace(UNTAG_RE[1], (m, p) => `<${p.trim()}>`);
-          break;
-        case 2:
-          result = result.replace(UNTAG_RE[2], (m, p) => `</${p.trim()}>`);
-          break;
-        case 3:
-          result = result.replace(UNTAG_RE[3], (m, p, q) => `<${p.replace(WS_RE, "")} ${q.trim()}>`);
-          break;
-        case 4:
-          result = result.replace(UNTAG_RE[4], (m, p) => `<!--${p.trim()}-->`);
-          break;
-      }
-    }
-    return result;
-  }
-
 }
 
 const UNTAG_RE = [
-  /<([a-z0-9='"#;:&\s\-\+\/\.\?]+)\/>/gi, // empty tags <br/> <img /> etc. -> should be taken as a opening tag + a close tag, space before and after it
-  /<([a-z0-9='"#;:&\s\-\+\/\.\?]+)>/gi, // opening tags <a>, <p> etc. -> space before it
-  /<\/([a-z0-9='"#;:&\s\-\+\/\.\?]+)>/gi, // closing tags </a> </p> etc. -> space after it
-  /< *(! *DOCTYPE) ([^>]*)>/gi, // <!DOCTYPE> -> should be taken like empty tags
-  /<! *--([^->]*)-->/gi // <!-- --> -> should be taken like empty tags
+  /<[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*\/>/i, // empty tags <br/> <img /> etc. -> like a normal word
+  /<[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*>/i, // opening tags <a>, <p> etc. -> no space after 
+  /<\/[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*>/i, // closing tags </a> </p> etc. -> no space before
+  /<!DOCTYPE[^>]*>/i, // <!DOCTYPE> -> like a normal word
+  /<!--[^->]*-->/i // <!-- --> -> like a normal word
 ];
 
 const NOSP_AF_PUNCT_RE = /^[\^\*\$\/\u2044#\-@\u00b0]+$/;
