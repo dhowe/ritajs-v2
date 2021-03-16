@@ -36,7 +36,7 @@ describe('RiTa.Tokenizer', () => {
     let strings = [
       "<a>link</a>",
       "<span class=\"test\">in line</span>",
-      "<!DOCTYPE html><head><title>Test Page</title></head>",
+      "<!DOCTYPE html> <head><title>Test Page</title></head>",
       "<!--comment lines-->",
       "<p>this<br>is</br>a<br>paragraph<br/></p>",
       "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p><img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />",
