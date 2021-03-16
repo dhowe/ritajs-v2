@@ -152,13 +152,11 @@ class Tokenizer {
 
   pushTags(text) {
     let tags = [], tagIdx = 0;
-    for (let i = 0; i < TAG_RE.length; i++) {
-      let regex = TAG_RE[i];
-      while (regex.test(text)) {
-        tags.push(text.match(regex)[0]);
-        text = text.replace(regex, " _" + TAG + (tagIdx++) + "_ ");
-      }
+    while (TAG_RE.test(text)) {
+      tags.push(text.match(TAG_RE)[0]);
+      text = text.replace(TAG_RE, " _" + TAG + (tagIdx++) + "_ ");
     }
+    
     return { tags, text };
   }
 
@@ -302,10 +300,7 @@ const CONTRACTS_RE = [
   /['\u2019]re /g, " are "
 ];
 
-const TAG_RE = [
-  /(<\/?[a-z0-9='"#;:&\s\-\+\/\.\?]+\/?>)/i, // html tags (rita#103)
-  /(<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i // doctype and comment
-];
+const TAG_RE = /(<\/?[a-z0-9='"#;:&\s\-\+\/\.\?]+\/?>|<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i; // html tags (rita#103)
 
 
 const POPTAG_RE = new RegExp(`_${TAG}[0-9]+_`);
