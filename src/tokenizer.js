@@ -147,7 +147,7 @@ class Tokenizer {
       }
     }
 
-    return this.untokenizeTags(result).trim();
+    return result.trim();
   }
 
   pushTags(text) {
@@ -200,11 +200,11 @@ class Tokenizer {
 }
 
 const UNTAG_RE = [
-  / <([a-z0-9='"#;:&\s\-\+\/\.\?]+)\/> /gi, // empty tags <br/> <img /> etc.
-  /<([a-z0-9='"#;:&\s\-\+\/\.\?]+)> /gi, // opening tags <a>, <p> etc.
-  / <\/([a-z0-9='"#;:&\s\-\+\/\.\?]+)>/gi, // closing tags </a> </p> etc.
-  /< *(! *DOCTYPE) ([^>]*)>/gi, // <!DOCTYPE>
-  /<! *--([^->]*)-->/gi // <!-- -->
+  /<([a-z0-9='"#;:&\s\-\+\/\.\?]+)\/>/gi, // empty tags <br/> <img /> etc. -> should be taken as a opening tag + a close tag, space before and after it
+  /<([a-z0-9='"#;:&\s\-\+\/\.\?]+)>/gi, // opening tags <a>, <p> etc. -> space before it
+  /<\/([a-z0-9='"#;:&\s\-\+\/\.\?]+)>/gi, // closing tags </a> </p> etc. -> space after it
+  /< *(! *DOCTYPE) ([^>]*)>/gi, // <!DOCTYPE> -> should be taken like empty tags
+  /<! *--([^->]*)-->/gi // <!-- --> -> should be taken like empty tags
 ];
 
 const NOSP_AF_PUNCT_RE = /^[\^\*\$\/\u2044#\-@\u00b0]+$/;
@@ -300,7 +300,7 @@ const CONTRACTS_RE = [
   /['\u2019]re /g, " are "
 ];
 
-const TAG_RE = /(<\/?[a-z0-9='"#;:&\s\-\+\/\.\?]+\/?>|<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i; // html tags (rita#103)
+const TAG_RE = /(<\/?[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*\/?>|<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i; // html tags (rita#103)
 
 
 const POPTAG_RE = new RegExp(`_${TAG}[0-9]+_`);
