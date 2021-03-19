@@ -77,6 +77,8 @@ class Tokenizer {
     let withinQuote = arr.length && QUOTE_RE.test(arr[0]);
     let result = arr[0] || '';
 
+    arr = preProcessTags(arr);
+
     for (let i = 1; i < arr.length; i++) {
 
       if (!arr[i]) continue;
@@ -172,6 +174,10 @@ class Tokenizer {
       }
     }
     return result;
+  }
+
+  preProcessTags(array) {
+    
   }
 }
 
