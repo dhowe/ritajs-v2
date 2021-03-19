@@ -36,6 +36,7 @@
     "clean": "rm -f dist/*.*",
     "build": "npm run clean && webpack",
     "test": "mocha -r esm",
+    "testImport": "npm t -- ./test/import-test.js",
     "prepare": "npm run compile",
     "watch.src": "npm-watch test.src",
     "test.src": "./scripts/test-src.sh",
