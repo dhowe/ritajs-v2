@@ -89,7 +89,7 @@ console.log(grammar.expand());
       <a href="https://rednoise.org/rita/reference/RiTa/untokenize/index.html">RiTa.untokenize()</a><br/>
       <!--a href="./RiTa/VERSION/index.html">RiTa.VERSION</a><br/-->
     </td>
-    <td style="vertical-align: top; padding-top: 15px; min-width: 125px">
+    <td style="vertical-align: top !important; padding-top: 15px; min-width: 125px">
       <a href="https://rednoise.org/rita/reference/RiMarkov/addText/index.html">addText()</a><br/>
       <a href="https://rednoise.org/rita/reference/RiMarkov/completions/index.html">completions()</a><br/>
       <a href="https://rednoise.org/rita/reference/RiMarkov/generate/index.html">generate()</a><br/>
@@ -100,7 +100,7 @@ console.log(grammar.expand());
       <a href="https://rednoise.org/rita/reference/RiMarkov/toJSON/index.html">toJSON()</a><br/>
       <a href="https://rednoise.org/rita/reference/RiMarkov/fromJSON/index.html">fromJSON()</a><br/>
     </td>
-    <td style="vertical-align: top; padding-top: 15px; min-width: 125px">
+    <td style="vertical-align: top !important; padding-top: 15px; min-width: 125px">
       <a href="https://rednoise.org/rita/reference/RiGrammar/addRule/index.html">addRule()</a><br/>
       <a href="https://rednoise.org/rita/reference/RiGrammar/addRules/index.html">addRules()</a><br/>
       <a href="https://rednoise.org/rita/reference/RiGrammar/expand/index.html">expand()</a><br/>
