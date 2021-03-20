@@ -37,10 +37,10 @@ console.log(grammar.expand());
 
   <table cellspacing="0" cellpadding="0" style="vertical-align: top;">
    <tr>
-    <th colspan=2 style="text-align: left; padding-left: 12px">RiTa
+    <th colspan=2 style="vertical-align: top;text-align: left; padding-left: 12px">RiTa
     </th>
-    <th colspan=1 style="text-align: left;">RiMarkov</th>
-    <th colspan=1 style="text-align: left;">RiGrammar</th>
+    <th colspan=1 style="vertical-align: top;text-align: left;">RiMarkov</th>
+    <th colspan=1 style="vertical-align: top;text-align: left;">RiGrammar</th>
    </tr>
    <tr>
     <td style="vertical-align: top; padding-top: 15px">
