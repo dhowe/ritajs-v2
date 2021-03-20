@@ -119,7 +119,8 @@ describe('RiTa.Tokenizer', () => {
       "<!--comment lines-->",
       "<p>this <br>is</br> a <br>paragraph <br/></p>",
       "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p> <img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />",
-      "<p>a paragraph with an <span class=\"test\">in line element</span> and a <a href=\"https://www.google.com\">link to google</a>.</p>"
+      "<p>a paragraph with an <span class=\"test\">in line element</span> and a <a href=\"https://www.google.com\">link to google</a>.</p>",
+      "a <br/> b"
     ];
     let tokens = [
       ["<a>", "link", "</a>"],
@@ -128,7 +129,8 @@ describe('RiTa.Tokenizer', () => {
       ["<!--comment lines-->"],
       ["<p>", "this", "<br>", "is", "</br>", "a", "<br>", "paragraph", "<br/>", "</p>"],
       ["<p>", "Link", "<a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">", "here", "</a>", "is", "about", "<span class=\"cat\">", "cute", "cat", "</span>", "</p>", "<img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"],
-      ["<p>", "a", "paragraph", "with", "an", "<span class=\"test\">", "in", "line", "element", "</span>", "and", "a", "<a href=\"https://www.google.com\">", "link", "to", "google", "</a>", ".", "</p>"]
+      ["<p>", "a", "paragraph", "with", "an", "<span class=\"test\">", "in", "line", "element", "</span>", "and", "a", "<a href=\"https://www.google.com\">", "link", "to", "google", "</a>", ".", "</p>"],
+      ["a", "<br/>", "b"]
     ];
     expect(strings.length).eq(tokens.length);
     for (let i = 0; i < strings.length; i++) {
@@ -474,6 +476,7 @@ describe('RiTa.Tokenizer', () => {
 
     let inputs = [
       ["1", "<", "2"],
+      ["<","a",">"],
       ["<", "a", ">", "link", "<", "/", "a", ">"],
       ["<", "span", ">", "some", "text", "here", "<", "/", "span", ">"],
       ["<", "p", ">", "some", "text", "<", "br", "/", ">", "new", "line", "<", "/", "p", ">"],
@@ -485,6 +488,7 @@ describe('RiTa.Tokenizer', () => {
 
     let outputs = [
       "1 < 2",
+      "<a>",
       "<a>link</a>",
       "<span>some text here</span>",
       "<p>some text <br/> new line</p>",

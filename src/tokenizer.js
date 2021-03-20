@@ -75,14 +75,12 @@ class Tokenizer {
   }
 
   untokenize(arr, delim) { // very ugly (but works)
-
+    arr = this.preProcessTags(arr);
     delim = delim || ' ';
 
     let nextNoSpace = false, afterQuote = false, midSentence = false;
     let withinQuote = arr.length && QUOTE_RE.test(arr[0]);
     let result = arr[0] || '';
-
-    arr = preProcessTags(arr);
 
     for (let i = 1; i < arr.length; i++) {
 
@@ -182,18 +180,80 @@ class Tokenizer {
   }
 
   preProcessTags(array) {
-    
+    let result = [], currentIdx = 0;
+    while (currentIdx < array.length) {
+      let currentToken = array[currentIdx];
+      if (!LT_RE.test(currentToken)) {
+        result.push(currentToken);
+        currentIdx++;
+        continue;
+      } // if not '<'
+      let subArray = [array[currentIdx]];
+      let inspectIdx = currentIdx + 1;
+      while (inspectIdx < array.length) {
+        subArray.push(array[inspectIdx]);
+        if (LT_RE.test(array[inspectIdx])) break;
+        if (GT_RE.test(array[inspectIdx])) break;
+        inspectIdx++;
+      }
+      if (LT_RE.test(subArray[subArray.length - 1])) {
+        result = result.concat(subArray.slice(0,subArray.length - 1));
+        currentIdx = inspectIdx;
+        continue;
+      }
+      if (!GT_RE.test(subArray[subArray.length - 1])) {
+        result = result.concat(subArray);
+        currentIdx = inspectIdx + 1;
+        continue;
+      }
+      if (!TAG_RE.test(subArray.join(''))) {
+        result = result.concat(subArray);
+        currentIdx = inspectIdx + 1;
+        continue;
+      }
+      let tag = this.tagSubarrayToString(subArray);
+      result.push(tag);
+      currentIdx = inspectIdx + 1;
+    }
+    return result;
   }
+
+  tagSubarrayToString(array) {
+    if (!LT_RE.test(array[0]) || !GT_RE.test(array[array.length - 1])) throw Error(array + 'is not a tag');
+    let start = '', end = '';
+    start += array[0].trim();
+    end = array[array.length - 1].trim() + end;
+    //start
+    let inspectIdx = 1;
+    while (inspectIdx < array.length - 1 && TAGSTART_RE.test(array[inspectIdx])) {
+      start += array[inspectIdx].trim();
+      inspectIdx++;
+    }
+    let contentStartIdx = inspectIdx;
+    inspectIdx = array.length - 2;
+    while (inspectIdx > contentStartIdx && TAGEND_RE.test(array[inspectIdx])) {
+      end = array[inspectIdx].trim() + end;
+      inspectIdx--;
+    }
+    let contentEndIdx = inspectIdx;
+    let result = start + this.untokenize(array.slice(contentStartIdx, contentEndIdx + 1)).trim() + end;
+    return result;
+  }
+
 }
 
 const UNTAG_RE = [
-  /<[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*\/>/i, // empty tags <br/> <img /> etc. -> like a normal word
-  /<[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*>/i, // opening tags <a>, <p> etc. -> no space after 
-  /<\/[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*>/i, // closing tags </a> </p> etc. -> no space before
-  /<!DOCTYPE[^>]*>/i, // <!DOCTYPE> -> like a normal word
-  /<!--[^->]*-->/i // <!-- --> -> like a normal word
+  /^ *<[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*\/> *$/i, // empty tags <br/> <img /> etc. -> like a normal word
+  /^ *<([a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*[a-z0-9='"#;:&\s\-\+\.\?]|[a-z])> *$/i, // opening tags <a>, <p> etc. -> no space after 
+  /^ *<\/[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*> *$/i, // closing tags </a> </p> etc. -> no space before
+  /^ *<!DOCTYPE[^>]*> *$/i, // <!DOCTYPE> -> like a normal word
+  /^ *<!--[^->]*--> *$/i // <!-- --> -> like a normal word
 ];
 
+const LT_RE = /^ *< *$/;
+const GT_RE = /^ *> *$/;
+const TAGSTART_RE = /^ *[!\-\/] *$/;
+const TAGEND_RE = /^ *[\-\/] *$/
 const NOSP_AF_PUNCT_RE = /^[\^\*\$\/\u2044#\-@\u00b0]+$/;
 const TAG = "TAG", UNDER_RE = /([a-zA-z]|[\.\,])_([a-zA-Z])/g;
 const LB_RE = /^[\[\(\{\u27e8]+$/, RB_RE = /^[\)\]\}\u27e9]+$/;
