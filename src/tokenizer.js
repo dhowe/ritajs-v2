@@ -8,6 +8,18 @@ class Tokenizer {
     this.splitter = /(\S.+?[.!?]["\u201D]?)(?=\s+|$)/g;
   }
 
+  tokens(text, opts = {}) { // SYNC: (ADD to Java)
+
+    let words = this.tokenize(text, opts), map = {};
+    words.forEach(w => {
+      if (!opts.caseSensitive) w = w.toLowerCase();
+      if (opts.includePunct || ALPHA_RE.test(w)) map[w] = 1;
+    });
+    let tokens = Object.keys(map);
+    if (opts.skipStopWords) tokens = tokens.filter(t => !this.RiTa.isStopWord(t));
+    return opts.sort ? tokens.sort() : tokens;
+  }
+
   sentences(text, regex) {
     if (!text || !text.length) return [text];
 
@@ -41,18 +53,11 @@ class Tokenizer {
     return arr && arr.length ? unescapeAbbrevs(arr) : [text];
   }
 
-  tokens(text, regex) {
-
-    let words = this.tokenize(text, regex), tokens = {};
-    words.forEach(w => ALPHA_RE.test(w) && (tokens[w.toLowerCase()] = 1));
-    return Object.keys(tokens).sort();
-  }
-
-  tokenize(input, regex) {
+  tokenize(input, opts = {}) { // SYNC:
 
     if (typeof input !== 'string') return [];
 
-    if (regex) return input.split(regex);
+    if (opts.regex) return input.split(regex);
 
     let { tags, text } = this.pushTags(input.trim());
 
@@ -60,7 +65,7 @@ class Tokenizer {
       text = text.replace(TOKENIZE_RE[i], TOKENIZE_RE[i + 1]);
     }
 
-    if (this.RiTa.SPLIT_CONTRACTIONS) {
+    if (this.RiTa.SPLIT_CONTRACTIONS || opts.splitContractions) {
       for (let i = 0; i < CONTRACTS_RE.length; i += 2) {
         text = text.replace(CONTRACTS_RE[i], CONTRACTS_RE[i + 1]);
       }
@@ -69,7 +74,7 @@ class Tokenizer {
     return this.popTags(text.trim().split(WS_RE), tags);
   }
 
-  untokenize(arr, delim) { // so ugly (but works)
+  untokenize(arr, delim) { // very ugly (but works)
 
     delim = delim || ' ';
 
@@ -82,7 +87,7 @@ class Tokenizer {
       if (!arr[i]) continue;
 
       let thisComma = arr[i] === ',', lastComma = arr[i - 1] === ',';
-      let thisNBPunct = NOSP_BF_PUNCT_RE.test(arr[i]); // NB -> no space before the punctuation
+      let thisNBPunct = NOSP_BF_PUNCT_RE.test(arr[i]); // NB -> no space bf the punc
       let thisLBracket = LB_RE.test(arr[i]); // LBracket -> left bracket
       let thisRBracket = RB_RE.test(arr[i]); // RBracket -> right bracket
       let lastNBPunct = NOSP_BF_PUNCT_RE.test(arr[i - 1]); // NB -> no space before
@@ -180,7 +185,7 @@ class Tokenizer {
         default:
           break;
         case 0:
-          result = result.replace(UNTAG_RE[0], (m, p) =>`<${p.trim()}/>`);
+          result = result.replace(UNTAG_RE[0], (m, p) => `<${p.trim()}/>`);
           break;
         case 1:
           result = result.replace(UNTAG_RE[1], (m, p) => `<${p.trim()}>`);
@@ -214,7 +219,7 @@ const TAG = "TAG", UNDER_RE = /([a-zA-z]|[\.\,])_([a-zA-Z])/g;
 const LB_RE = /^[\[\(\{\u27e8]+$/, RB_RE = /^[\)\]\}\u27e9]+$/;
 const QUOTE_RE = /^[""\u201c\u201d\u2019\u2018`''\u00ab\u00bb]+$/;
 const DOMAIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|ch|fr)$/;
-const SQUOTE_RE = /^[\u2019\u2018`']+$/, ALPHA_RE = /^[A-Za-z]+$/, WS_RE = /\s+/;
+const SQUOTE_RE = /^[\u2019\u2018`']+$/, ALPHA_RE = /^[A-Za-z’']+$/, WS_RE = /\s+/;
 const APOS_RE = /^[\u2019']+$/, NL_RE = /(\r?\n)+/g, WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
 const NOSP_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""\u201c\u201d\u2019\u2018`'%\u2026\u2103\^\*\u00b0\/\u2044\-@]+$/;
 
@@ -291,12 +296,17 @@ const TOKENIZE_RE = [
   /_(prof|PROF|Prof)_/g, "$1." //Prof.
 ];
 
-const CONTRACTS_RE = [
+const CONTRACTS_RE = [ // SYNC:
+  // ADDED: she'd, he'd, i'd, she'll, he'll, i'll
+
   /([Cc])an['\u2019]t/g, "$1an not",
   /([Dd])idn['\u2019]t/g, "$1id not",
   /([CcWw])ouldn['\u2019]t/g, "$1ould not",
   /([Ss])houldn['\u2019]t/g, "$1hould not",
-  /([Ii])t['\u2019]s/g, " $1t is",
+  /([Ii])t['\u2019]s/g, "$1t is",
+  /([tT]hat)['\u2019]s/g, "$1 is",
+  /(she|he|you|they|i)['\u2019]d/gi, "$1 would",
+  /(she|he|you|they|i)['\u2019]ll/gi, "$1 will",
   /n['\u2019]t /g, " not ",
   /['\u2019]ve /g, " have ",
   /['\u2019]re /g, " are "
@@ -306,7 +316,6 @@ const TAG_RE = [
   /(<\/?[a-z0-9='"#;:&\s\-\+\/\.\?]+\/?>)/i, // html tags (rita#103)
   /(<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i // doctype and comment
 ];
-
 
 const POPTAG_RE = new RegExp(`_${TAG}[0-9]+_`);
 
