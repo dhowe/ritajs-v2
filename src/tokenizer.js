@@ -8,7 +8,7 @@ class Tokenizer {
     this.splitter = /(\S.+?[.!?]["\u201D]?)(?=\s+|$)/g;
   }
 
-  tokens(text, opts = {}) { // TODO: [DOC] opts: [ includePunct, caseSensitive, skipStopWords, sort] SYNC:
+  tokens(text, opts = {}) { // SYNC: (ADD to Java)
 
     let words = this.tokenize(text, opts), map = {};
     words.forEach(w => {
@@ -53,9 +53,11 @@ class Tokenizer {
     return arr && arr.length ? unescapeAbbrevs(arr) : [text];
   }
 
-  tokenize(input, opts = {}) {  // TODO: [DOC] opts: [ splitContractions ] SYNC:
+  tokenize(input, opts = {}) { // SYNC:
 
     if (typeof input !== 'string') return [];
+
+    if (opts.regex) return input.split(regex);
 
     let { tags, text } = this.pushTags(input.trim());
 
