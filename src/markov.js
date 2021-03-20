@@ -312,9 +312,9 @@ class Node {
 
   isRoot() { return !this.parent; }
 
-  childNodes(sorted) {
+  childNodes(sort) {
     let kids = Object.values(this.children);
-    sorted && kids.sort((a, b) => b.count !== a.count
+    sort && kids.sort((a, b) => b.count !== a.count
       ? b.count - a.count
       : b.token.localeCompare(a.token));
     return kids;

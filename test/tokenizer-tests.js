@@ -2,16 +2,95 @@ import { RiTa, expect } from './before';
 
 describe('RiTa.Tokenizer', () => {
 
-  it('Should call tokens', () => {
-    let input = "She wrote: \"I don't paint anymore. For a while I thought it was just a phase that I'd get over.\"";
-    expect(RiTa.tokens(input)).eql([
-      'a', 'anymore', 'for',
-      'get', 'i', 'it',
-      'just', 'over', 'paint',
-      'phase', 'she', 'that',
+  it('Should call tokens()', () => { // SYNC:
+
+    let tokens, input = "She wrote: \"I don't paint anymore. For a while she thought it was just a phase that she'd get over.\"";
+
+    tokens = RiTa.tokens(input);
+    expect(tokens).eql([
+      'she', 'wrote', 'i',
+      "don't", 'paint', 'anymore',
+      'for', 'a', 'while',
+      'thought', 'it', 'was',
+      'just', 'phase', 'that',
+      "she'd", 'get', 'over'
+    ]);
+
+    tokens = RiTa.tokens(input, { sort: true });
+    expect(tokens).eql([
+      'a', 'anymore', "don't",
+      'for', 'get', 'i',
+      'it', 'just',
+      'over', 'paint', 'phase',
+      'she', "she'd", 'that', 'thought',
+      'was', 'while', 'wrote'
+    ]);
+
+    tokens = RiTa.tokens(input, { caseSensitive: true });
+    expect(tokens).eql([
+      'She', 'wrote', 'I',
+      "don't", 'paint', 'anymore',
+      'For', 'a', 'while',
+      'she', 'thought', 'it',
+      'was', 'just', 'phase',
+      'that', "she'd", 'get',
+      'over'
+    ]);
+
+    tokens = RiTa.tokens(input, { caseSensitive: true, sort: true });
+    expect(tokens).eql([
+      'For', 'I', 'She',
+      'a', 'anymore', "don't",
+      'get', 'it', 'just',
+      'over', 'paint', 'phase',
+      'she', "she'd", 'that',
       'thought', 'was', 'while',
       'wrote'
     ]);
+
+    tokens = RiTa.tokens(input, { skipStopWords: true });
+    expect(tokens).eql([
+      'wrote', 'paint',
+      'anymore', 'while',
+      'thought', 'phase',
+      "she'd", 'get'
+    ]);
+
+    tokens = RiTa.tokens(input, { splitContractions: true });
+    expect(tokens).eql([
+      'she', 'wrote', 'i',
+      "do", "not", 'paint', 'anymore',
+      'for', 'a', 'while',
+      'thought', 'it', 'was',
+      'just', 'phase', 'that',
+      'would', 'get', 'over'
+    ]);
+
+
+    tokens = RiTa.tokens(input, { splitContractions: true, sort: true });
+    expect(tokens).eql([
+      'a', 'anymore', 'do',
+      'for', 'get', 'i',
+      'it', 'just', 'not',
+      'over', 'paint', 'phase',
+      'she', 'that', 'thought',
+      'was', 'while', 'would',
+      'wrote'
+    ]);
+
+    tokens = RiTa.tokens(input, { splitContractions: true, includePunct: true });
+    console.log(tokens);
+    expect(tokens).eql([
+      'she', 'wrote', ':',
+      '"', 'i', 'do',
+      'not', 'paint', 'anymore',
+      '.', 'for', 'a',
+      'while', 'thought', 'it',
+      'was', 'just', 'phase',
+      'that', 'would', 'get',
+      'over'
+    ]);
+
   });
 
   it('Should handle tokenize then untokenize', () => {
@@ -57,6 +136,24 @@ describe('RiTa.Tokenizer', () => {
       expect(afterTokenize).eql(tokens[i]);
       let afterUntokenize = RiTa.untokenize(afterTokenize);
       expect(afterUntokenize).eq(strings[i]);
+    }
+  });
+
+  it('Should call tokenize.splitContractions', () => { // SYNC:
+    let inputs = [
+      "That's why this is our place.",
+      "that's why he'll win.",
+      "that's why I'd lose."
+    ]
+    let outputs = [
+      ["That", "is", "why", "this", "is", "our", "place", "."],
+      ["that", "is", "why", "he", "will", "win", "."],
+      ["that", "is", "why", "I", "would", "lose", "."]
+    ]
+    for (let i = 0; i < inputs.length; i++) {
+      let res = RiTa.tokenize(inputs[i], { splitContractions: 1 });
+      //console.log(i,'=>', res);
+      expect(res).eql(outputs[i]);
     }
   });
 
