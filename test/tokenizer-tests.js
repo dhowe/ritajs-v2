@@ -111,6 +111,36 @@ describe('RiTa.Tokenizer', () => {
 
   });
 
+  it('Should handle tokenize then untokenzie tags', () => {
+    let strings = [
+      "<a>link</a>",
+      "<span class=\"test\">in line</span>",
+      "<!DOCTYPE html> <head><title>Test Page</title></head>",
+      "<!--comment lines-->",
+      "<p>this <br>is</br> a <br>paragraph <br/></p>",
+      "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p> <img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />",
+      "<p>a paragraph with an <span class=\"test\">in line element</span> and a <a href=\"https://www.google.com\">link to google</a>.</p>",
+      "a <br/> b"
+    ];
+    let tokens = [
+      ["<a>", "link", "</a>"],
+      ["<span class=\"test\">", "in", "line", "</span>"],
+      ["<!DOCTYPE html>", "<head>", "<title>", "Test", "Page", "</title>", "</head>"],
+      ["<!--comment lines-->"],
+      ["<p>", "this", "<br>", "is", "</br>", "a", "<br>", "paragraph", "<br/>", "</p>"],
+      ["<p>", "Link", "<a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">", "here", "</a>", "is", "about", "<span class=\"cat\">", "cute", "cat", "</span>", "</p>", "<img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"],
+      ["<p>", "a", "paragraph", "with", "an", "<span class=\"test\">", "in", "line", "element", "</span>", "and", "a", "<a href=\"https://www.google.com\">", "link", "to", "google", "</a>", ".", "</p>"],
+      ["a", "<br/>", "b"]
+    ];
+    expect(strings.length).eq(tokens.length);
+    for (let i = 0; i < strings.length; i++) {
+      let afterTokenize = RiTa.tokenize(strings[i]);
+      expect(afterTokenize).eql(tokens[i]);
+      let afterUntokenize = RiTa.untokenize(afterTokenize);
+      expect(afterUntokenize).eq(strings[i]);
+    }
+  });
+
   it('Should call tokenize.splitContractions', () => { // SYNC:
     let inputs = [
       "That's why this is our place.",
@@ -275,7 +305,8 @@ describe('RiTa.Tokenizer', () => {
       "<!-- this is a comment -->", //? should this be divided? 
       "<a href=\"www.google.com\">a link to google</a>",
       "<p>this<br>is</br>a<br>paragraph<br/></p>",
-      "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p><img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"
+      "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p><img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />",
+      "1 < 2 and 3 > 2."
     ];
 
     let outputs = [
@@ -289,7 +320,8 @@ describe('RiTa.Tokenizer', () => {
       ["<!-- this is a comment -->"],
       ["<a href=\"www.google.com\">", "a", "link", "to", "google", "</a>"],
       ["<p>", "this", "<br>", "is", "</br>", "a", "<br>", "paragraph", "<br/>", "</p>"],
-      ["<p>", "Link", "<a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">", "here", "</a>", "is", "about", "<span class=\"cat\">", "cute", "cat", "</span>", "</p>", "<img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"]
+      ["<p>", "Link", "<a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">", "here", "</a>", "is", "about", "<span class=\"cat\">", "cute", "cat", "</span>", "</p>", "<img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"],
+      ["1", "<", "2", "and", "3", ">", "2", "."]
     ];
     expect(inputs.length).eq(outputs.length);
     for (let i = 0; i < inputs.length; i++) {
@@ -444,6 +476,7 @@ describe('RiTa.Tokenizer', () => {
 
     let inputs = [
       ["1", "<", "2"],
+      ["<","a",">"],
       ["<", "a", ">", "link", "<", "/", "a", ">"],
       ["<", "span", ">", "some", "text", "here", "<", "/", "span", ">"],
       ["<", "p", ">", "some", "text", "<", "br", "/", ">", "new", "line", "<", "/", "p", ">"],
@@ -455,9 +488,10 @@ describe('RiTa.Tokenizer', () => {
 
     let outputs = [
       "1 < 2",
+      "<a>",
       "<a>link</a>",
       "<span>some text here</span>",
-      "<p>some text<br/>new line</p>",
+      "<p>some text <br/> new line</p>",
       "something <a href = \"www.google.com\">link to google</a>",
       "<!DOCTYPE html>",
       "<p>1 < 2 is truth</p>",

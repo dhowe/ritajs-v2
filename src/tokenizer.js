@@ -75,7 +75,7 @@ class Tokenizer {
   }
 
   untokenize(arr, delim) { // very ugly (but works)
-
+    arr = this.preProcessTags(arr);
     delim = delim || ' ';
 
     let nextNoSpace = false, afterQuote = false, midSentence = false;
@@ -85,27 +85,29 @@ class Tokenizer {
     for (let i = 1; i < arr.length; i++) {
 
       if (!arr[i]) continue;
+      let thisToken = arr[i];
+      let lastToken = arr[i - 1];
 
-      let thisComma = arr[i] === ',', lastComma = arr[i - 1] === ',';
-      let thisNBPunct = NOSP_BF_PUNCT_RE.test(arr[i]); // NB -> no space bf the punc
-      let thisLBracket = LB_RE.test(arr[i]); // LBracket -> left bracket
-      let thisRBracket = RB_RE.test(arr[i]); // RBracket -> right bracket
-      let lastNBPunct = NOSP_BF_PUNCT_RE.test(arr[i - 1]); // NB -> no space before
-      let lastNAPunct = NOSP_AF_PUNCT_RE.test(arr[i - 1]); // NA -> no space after
-      let lastLB = LB_RE.test(arr[i - 1]), lastRB = RB_RE.test(arr[i - 1]);
-      let lastEndWithS = (arr[i - 1][arr[i - 1].length - 1] === 's'
-        && arr[i - 1] != "is" && arr[i - 1] != "Is" && arr[i - 1] != "IS");
-      let lastIsWWW = WWW_RE.test(arr[i - 1]), isDomain = DOMAIN_RE.test(arr[i]);
+      let thisComma = thisToken === ',', lastComma = lastToken === ',';
+      let thisNBPunct = NOSP_BF_PUNCT_RE.test(thisToken) || UNTAG_RE[2].test(thisToken); // NB -> no space before the punctuation (add closing tag)
+      let thisLBracket = LB_RE.test(thisToken); // LBracket -> left bracket
+      let thisRBracket = RB_RE.test(thisToken); // RBracket -> right bracket
+      let lastNBPunct = NOSP_BF_PUNCT_RE.test(lastToken); // NB -> no space before
+      let lastNAPunct = NOSP_AF_PUNCT_RE.test(lastToken) || UNTAG_RE[1].test(lastToken)// NA -> no space after (add opening tag)
+      let lastLB = LB_RE.test(lastToken), lastRB = RB_RE.test(lastToken);
+      let lastEndWithS = (lastToken[lastToken.length - 1] === 's'
+        && lastToken != "is" && lastToken != "Is" && lastToken != "IS");
+      let lastIsWWW = WWW_RE.test(lastToken), isDomain = DOMAIN_RE.test(thisToken);
       let nextIsS = i == arr.length - 1 ? false : (arr[i + 1] === "s" || arr[i + 1] === "S");
-      let lastQuote = QUOTE_RE.test(arr[i - 1]), isLast = (i == arr.length - 1);
-      let thisQuote = QUOTE_RE.test(arr[i]);
+      let lastQuote = QUOTE_RE.test(lastToken), isLast = (i == arr.length - 1);
+      let thisQuote = QUOTE_RE.test(thisToken);
 
-      if ((arr[i - 1] === "." && isDomain) || nextNoSpace) {
+      if ((lastToken === "." && isDomain) || nextNoSpace) {
         nextNoSpace = false;
-        result += arr[i];
+        result += thisToken;
         continue;
 
-      } else if (arr[i] === "." && lastIsWWW) {
+      } else if (thisToken === "." && lastIsWWW) {
         nextNoSpace = true;
 
       } else if (thisLBracket) {
@@ -122,8 +124,8 @@ class Tokenizer {
           // no-delim, mark quotation done
           afterQuote = true;
           withinQuote = false;
-        } else if (!((APOS_RE.test(arr[i]) && lastEndWithS)
-          || (APOS_RE.test(arr[i]) && nextIsS))) {
+        } else if (!((APOS_RE.test(thisToken) && lastEndWithS)
+          || (APOS_RE.test(thisToken) && nextIsS))) {
           withinQuote = true;
           afterQuote = false;
           result += delim;
@@ -146,24 +148,22 @@ class Tokenizer {
         result += delim;
       }
 
-      result += arr[i]; // add to result
-      if (thisNBPunct && !lastNBPunct && !withinQuote && SQUOTE_RE.test(arr[i]) && lastEndWithS) {
+      result += thisToken; // add to result
+      if (thisNBPunct && !lastNBPunct && !withinQuote && SQUOTE_RE.test(thisToken) && lastEndWithS) {
         result += delim;
       }
     }
 
-    return this.untokenizeTags(result).trim();
+    return result.trim();
   }
 
   pushTags(text) {
     let tags = [], tagIdx = 0;
-    for (let i = 0; i < TAG_RE.length; i++) {
-      let regex = TAG_RE[i];
-      while (regex.test(text)) {
-        tags.push(text.match(regex)[0]);
-        text = text.replace(regex, " _" + TAG + (tagIdx++) + "_ ");
-      }
+    while (TAG_RE.test(text)) {
+      tags.push(text.match(TAG_RE)[0]);
+      text = text.replace(TAG_RE, " _" + TAG + (tagIdx++) + "_ ");
     }
+    
     return { tags, text };
   }
 
@@ -179,41 +179,81 @@ class Tokenizer {
     return result;
   }
 
-  untokenizeTags(result) {
-    for (let i = 0; i < UNTAG_RE.length; i++) {
-      switch (i) {
-        default:
-          break;
-        case 0:
-          result = result.replace(UNTAG_RE[0], (m, p) => `<${p.trim()}/>`);
-          break;
-        case 1:
-          result = result.replace(UNTAG_RE[1], (m, p) => `<${p.trim()}>`);
-          break;
-        case 2:
-          result = result.replace(UNTAG_RE[2], (m, p) => `</${p.trim()}>`);
-          break;
-        case 3:
-          result = result.replace(UNTAG_RE[3], (m, p, q) => `<${p.replace(WS_RE, "")} ${q.trim()}>`);
-          break;
-        case 4:
-          result = result.replace(UNTAG_RE[4], (m, p) => `<!--${p.trim()}-->`);
-          break;
+  preProcessTags(array) {
+    let result = [], currentIdx = 0;
+    while (currentIdx < array.length) {
+      let currentToken = array[currentIdx];
+      if (!LT_RE.test(currentToken)) {
+        result.push(currentToken);
+        currentIdx++;
+        continue;
+      } // if not '<'
+      let subArray = [array[currentIdx]];
+      let inspectIdx = currentIdx + 1;
+      while (inspectIdx < array.length) {
+        subArray.push(array[inspectIdx]);
+        if (LT_RE.test(array[inspectIdx])) break;
+        if (GT_RE.test(array[inspectIdx])) break;
+        inspectIdx++;
       }
+      if (LT_RE.test(subArray[subArray.length - 1])) {
+        result = result.concat(subArray.slice(0,subArray.length - 1));
+        currentIdx = inspectIdx;
+        continue;
+      }
+      if (!GT_RE.test(subArray[subArray.length - 1])) {
+        result = result.concat(subArray);
+        currentIdx = inspectIdx + 1;
+        continue;
+      }
+      if (!TAG_RE.test(subArray.join(''))) {
+        result = result.concat(subArray);
+        currentIdx = inspectIdx + 1;
+        continue;
+      }
+      let tag = this.tagSubarrayToString(subArray);
+      result.push(tag);
+      currentIdx = inspectIdx + 1;
     }
+    return result;
+  }
+
+  tagSubarrayToString(array) {
+    if (!LT_RE.test(array[0]) || !GT_RE.test(array[array.length - 1])) throw Error(array + 'is not a tag');
+    let start = '', end = '';
+    start += array[0].trim();
+    end = array[array.length - 1].trim() + end;
+    //start
+    let inspectIdx = 1;
+    while (inspectIdx < array.length - 1 && TAGSTART_RE.test(array[inspectIdx])) {
+      start += array[inspectIdx].trim();
+      inspectIdx++;
+    }
+    let contentStartIdx = inspectIdx;
+    inspectIdx = array.length - 2;
+    while (inspectIdx > contentStartIdx && TAGEND_RE.test(array[inspectIdx])) {
+      end = array[inspectIdx].trim() + end;
+      inspectIdx--;
+    }
+    let contentEndIdx = inspectIdx;
+    let result = start + this.untokenize(array.slice(contentStartIdx, contentEndIdx + 1)).trim() + end;
     return result;
   }
 
 }
 
 const UNTAG_RE = [
-  / <([a-z0-9='"#;:&\s\-\+\/\.\?]+)\/> /gi, // empty tags <br/> <img /> etc.
-  /<([a-z0-9='"#;:&\s\-\+\/\.\?]+)> /gi, // opening tags <a>, <p> etc.
-  / <\/([a-z0-9='"#;:&\s\-\+\/\.\?]+)>/gi, // closing tags </a> </p> etc.
-  /< *(! *DOCTYPE) ([^>]*)>/gi, // <!DOCTYPE>
-  /<! *--([^->]*)-->/gi // <!-- -->
+  /^ *<[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*\/> *$/i, // empty tags <br/> <img /> etc. -> like a normal word
+  /^ *<([a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*[a-z0-9='"#;:&\s\-\+\.\?]|[a-z])> *$/i, // opening tags <a>, <p> etc. -> no space after 
+  /^ *<\/[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*> *$/i, // closing tags </a> </p> etc. -> no space before
+  /^ *<!DOCTYPE[^>]*> *$/i, // <!DOCTYPE> -> like a normal word
+  /^ *<!--[^->]*--> *$/i // <!-- --> -> like a normal word
 ];
 
+const LT_RE = /^ *< *$/;
+const GT_RE = /^ *> *$/;
+const TAGSTART_RE = /^ *[!\-\/] *$/;
+const TAGEND_RE = /^ *[\-\/] *$/
 const NOSP_AF_PUNCT_RE = /^[\^\*\$\/\u2044#\-@\u00b0]+$/;
 const TAG = "TAG", UNDER_RE = /([a-zA-z]|[\.\,])_([a-zA-Z])/g;
 const LB_RE = /^[\[\(\{\u27e8]+$/, RB_RE = /^[\)\]\}\u27e9]+$/;
@@ -312,10 +352,7 @@ const CONTRACTS_RE = [ // SYNC:
   /['\u2019]re /g, " are "
 ];
 
-const TAG_RE = [
-  /(<\/?[a-z0-9='"#;:&\s\-\+\/\.\?]+\/?>)/i, // html tags (rita#103)
-  /(<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i // doctype and comment
-];
+const TAG_RE = /(<\/?[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*\/?>|<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i; // html tags (rita#103)
 
 const POPTAG_RE = new RegExp(`_${TAG}[0-9]+_`);
 
