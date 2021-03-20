@@ -5,8 +5,15 @@ describe('RiTa.RiScript', function () {
 
   const ST = { silent: 1 }, TP = { trace: 1 },
     TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
-  const RiScript = RiTa.RiScript, SKIP_FOR_NOW = true;
+  const SKIP_FOR_NOW = true;
+  let RiScript;
   this.slow(100);
+
+  before(function () {
+    while (!RiTa) {
+    }
+    RiScript = RiTa.RiScript;
+  });
 
   describe('Sequences', () => {
     /*
@@ -1373,7 +1380,12 @@ describe('RiTa.RiScript', function () {
   });
 
   describe('Operators', () => {
-    const Operator = RiTa.Operator;
+    let Operator;
+    before(function () {
+      while (!RiTa) {
+      }
+      Operator = RiTa.Operator;
+    });
     //if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') { // skip for prod
 
       it('Should invoke assignment ops', () => {
