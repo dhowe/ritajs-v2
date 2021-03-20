@@ -107,7 +107,7 @@ console.log(grammar.expand());
       <a href="https://rednoise.org/rita/reference/RiGrammar/removeRule/index.html">removeRule()</a><br/>
       <a href="https://rednoise.org/rita/reference/RiGrammar/toJSON/index.html">toJSON()</a><br/>
       <a href="https://rednoise.org/rita/reference/RiGrammar/toString/index.html">toString()</a><br/>
-      <a href="https://rednoise.org/rita/reference/RiGrammar/fromJSON/index.html">fromJSON()</a><br/>
+      <a href="https://rednoise.org/rita/reference/RiGrammar/fromJSON/index.html">fromJSON()</a><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
     </td>
  </tr>
 </table>
