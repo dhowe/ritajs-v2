@@ -5,7 +5,12 @@ describe('RiTa.Lexicon', function () {
   this.timeout(2000);
   this.slow(700);
 
-  const lex = RiTa.lexicon(); // first load
+  let lex;
+  before(function () {
+    while (!RiTa) {
+    }
+    lex = RiTa.lexicon(); // first load
+  });
 
   it('Should call hasWord', () => {
     expect(RiTa.hasWord("random")).to.be.true;

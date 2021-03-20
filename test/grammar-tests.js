@@ -3,7 +3,8 @@ import { RiTa, expect } from './before';
 describe('RiTa.RiGrammar', function() {
 
     const ST = { silent: 1 }, TP = { trace: 1 }, TLP = { trace: 1, traceLex: 1 };
-    const RiGrammar = RiTa.RiGrammar, SKIP_FOR_NOW = true, SEQ_COUNT = 5;
+    let RiGrammar;
+    const SKIP_FOR_NOW = true, SEQ_COUNT = 5;
 
     this.slow(200);
 
@@ -35,6 +36,12 @@ describe('RiTa.RiGrammar', function() {
     };
 
     let grammars = [sentences1, sentences2, sentences3];
+
+    before(function () {
+        while (!RiTa) {
+        }
+        RiGrammar = RiTa.RiGrammar;
+    });
 
     it('should call constructor', () => {
         ok(typeof new RiGrammar() !== 'undefined');
