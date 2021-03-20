@@ -1,23 +1,14 @@
-async function getRiTa(){
-    if (process.env.NODE_ENV === 'dev') {
-        try {
-            const RiTa = await import('../src/rita.js');
-            return RiTa.default;
-        } catch {
-            throw Error('fail to load RiTa');
-        }
-    } else {
-        try {
-            const RiTa = await import('../dist/rita.js');
-            return RiTa.default;
-        } catch {
-            throw Error('fail to load RiTa');
-        }
-    }
-}
-let RiTa;
-getRiTa().then((Module) => {
-    RiTa = Module;
-})
 import { expect } from 'chai';
+
+let RiTa;
+if (process && process.env) {
+  (async function () {
+    let path = process.env.NODE_ENV === 'dev' ? '../src' : '../dist';
+    return (await import(path + '/rita.js')).default;
+  })().then(module => RiTa = module);
+}
+else if (window) {
+  RiTa = window.RiTa;
+}
+
 export { RiTa, expect };

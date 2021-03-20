@@ -79,7 +79,7 @@ describe('RiTa.Tokenizer', () => {
     ]);
 
     tokens = RiTa.tokens(input, { splitContractions: true, includePunct: true });
-    console.log(tokens);
+    //console.log(tokens);
     expect(tokens).eql([
       'she', 'wrote', ':',
       '"', 'i', 'do',
