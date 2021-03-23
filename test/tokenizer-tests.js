@@ -111,7 +111,7 @@ describe('RiTa.Tokenizer', () => {
 
   });
 
-  it('Should handle tokenize then untokenzie tags', () => {
+  it('Should handle tokenize then untokenize tags', () => {
     let strings = [
       "<a>link</a>",
       "<span class=\"test\">in line</span>",
