@@ -3,6 +3,22 @@ const RiTa = require('../src/rita');
 
 describe('RiScript.KnownIssues', () => { // TODO:
 
+  it('Should resolve global functions in context', () => {
+    let rs = '$player.name has $timer() secs left.';
+    let gameState = {
+      player: {
+        name: 'Wing',
+        color: 'blue',
+        traits: []
+      },
+      timer: () => new Date().getSeconds()
+    };
+    let res = RiTa.evaluate(rs, gameState);
+    console.log(res);
+    expect(/Wing has [0-9]{1,2} secs left/.test(res)).true;
+  });
+
+
   it('Should handle complex inlines in grammars', () => {
 
     let rg, rs;

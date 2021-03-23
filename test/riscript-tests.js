@@ -87,8 +87,8 @@ describe('RiTa.RiScript', function () {
       let res = RiTa.evaluate("[some text](https://somelink.com)", 0);
       expect(res).eq("[some text](https://somelink.com)");
       let pass = "Passage with a [link](#anchor) inside";
-      expect(RiTa.evaluate("$p1="+pass)).eq("");
-      expect(RiTa.evaluate("$p1="+pass+"\n$p1")).eq(pass);
+      expect(RiTa.evaluate("$p1=" + pass)).eq("");
+      expect(RiTa.evaluate("$p1=" + pass + "\n$p1")).eq(pass);
     });
 
     it('Should resolve long expressions', function () {
@@ -770,32 +770,32 @@ describe('RiTa.RiScript', function () {
     });
   });
 
-/*
-    (!SKIP_FOR_NOW) && it('Should optimise via preparsing', () => { // TODO: improve tests (not clear if preparsing or not)
-      let ctx, input, rs;
-      ctx = { nothing: 'NOTHING', hang: 'HANG' };
-      input = "Eve near Vancouver, Washington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
-      rs = RiTa.evaluate(input, ctx, { nopre: 0 });
-      //console.log('OUTPUT: '+rs);
-      expect(rs).eq(input.replace('$hang', 'HANG').replace('$nothing', 'NOTHING'));
-
-      input = "Eve near Vancouver,\nWashington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
-      rs = RiTa.evaluate(input, ctx, { nopre: 0 });
-      expect(rs).eq(input.replace('$hang', 'HANG').replace('$nothing', 'NOTHING').replace('\n', ' '));
-
-      input = "Eve&nbsp;near Vancouver";
-      rs = RiTa.evaluate(input, ctx, { nopre: 0 });
-      expect(rs).eq("Eve near Vancouver");
-
-      input = "This is not a &#124;.";
-      rs = RiTa.evaluate(input, ctx, { nopre: 0 });
-      expect(rs).eq("This is not a |.");
-
-      ctx = { bar: { ucf: 'result' } };
-      rs = RiTa.evaluate('$foo=$bar.ucf\n$foo', ctx);
-      expect(rs).eq('result');
-    });
-*/
+  /*
+      (!SKIP_FOR_NOW) && it('Should optimise via preparsing', () => { // TODO: improve tests (not clear if preparsing or not)
+        let ctx, input, rs;
+        ctx = { nothing: 'NOTHING', hang: 'HANG' };
+        input = "Eve near Vancouver, Washington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
+        rs = RiTa.evaluate(input, ctx, { nopre: 0 });
+        //console.log('OUTPUT: '+rs);
+        expect(rs).eq(input.replace('$hang', 'HANG').replace('$nothing', 'NOTHING'));
+  
+        input = "Eve near Vancouver,\nWashington is devastated that the SAT exam was postponed. Junior year means NOTHING if you can't HANG out. At least that's what she thought. Summer is going to suck.";
+        rs = RiTa.evaluate(input, ctx, { nopre: 0 });
+        expect(rs).eq(input.replace('$hang', 'HANG').replace('$nothing', 'NOTHING').replace('\n', ' '));
+  
+        input = "Eve&nbsp;near Vancouver";
+        rs = RiTa.evaluate(input, ctx, { nopre: 0 });
+        expect(rs).eq("Eve near Vancouver");
+  
+        input = "This is not a &#124;.";
+        rs = RiTa.evaluate(input, ctx, { nopre: 0 });
+        expect(rs).eq("This is not a |.");
+  
+        ctx = { bar: { ucf: 'result' } };
+        rs = RiTa.evaluate('$foo=$bar.ucf\n$foo', ctx);
+        expect(rs).eq('result');
+      });
+  */
 
   describe('Symbol', () => {
 
@@ -810,7 +810,7 @@ describe('RiTa.RiScript', function () {
       expect(res).eq('I said hello to her');
     });
 
-   it('Should evaluate post defined symbols', () => {
+    it('Should evaluate post defined symbols', () => {
       let rs = RiTa.evaluate('$foo=$bar\n$bar=baz\n$foo', {});
       expect(rs).eq('baz');
       expect(RiTa.evaluate('$foo=$bar.toLowerCase().ucf()\n$bar=baz\n$foo', {})).eq('Baz');
@@ -1177,6 +1177,21 @@ describe('RiTa.RiScript', function () {
         .eq("<li>Junior</li>");
     });
 
+    it('Should resolve functions on context symbols', () => { // SYNC:
+      let rs = '$player.name has $time.secs() secs left.';
+      let gameState = {
+        player: {
+          name: 'Wing',
+          color: 'blue',
+          traits: []
+        },
+        time: {
+          secs: () => new Date().getSeconds()
+        }
+      };
+      let res = RiTa.evaluate(rs, gameState);
+      expect(/Wing has [0-9]{1,2} secs left/.test(res)).true;
+    });
 
     it('Should resolve parameterized transforms', () => {
       let res = RiTa.evaluate("(walk).conj(3PPa)", { conj: (a, c) => RiTa.conjugate(a, c) });
@@ -1306,15 +1321,15 @@ describe('RiTa.RiScript', function () {
 
     it('Should decode escaped characters', () => {
       expect(RiTa.evaluate('The \\(word\\) has parens'))
-        .eq('The (word) has parens'); 
+        .eq('The (word) has parens');
 
       expect(RiTa.evaluate('The (\\(word\\) | \\((word)\\)) has parens'))
-        .eq('The (word) has parens'); 
+        .eq('The (word) has parens');
     });
 
     it('Should decode emojis', () => {
       expect(RiTa.evaluate('The 👍 is thumbs up'))
-        .eq('The 👍 is thumbs up'); 
+        .eq('The 👍 is thumbs up');
     });
 
     it('Should decode HTML entities', () => {
@@ -1388,117 +1403,117 @@ describe('RiTa.RiScript', function () {
     });
     //if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') { // skip for prod
 
-      it('Should invoke assignment ops', () => {
+    it('Should invoke assignment ops', () => {
 
-        expect(Operator.EQ.invoke("hello", "hello")).eq(true);
-        expect(Operator.EQ.invoke("hello", "")).eq(false);
-        expect(Operator.EQ.invoke("hello", null)).eq(false);
+      expect(Operator.EQ.invoke("hello", "hello")).eq(true);
+      expect(Operator.EQ.invoke("hello", "")).eq(false);
+      expect(Operator.EQ.invoke("hello", null)).eq(false);
 
-        expect(Operator.NE.invoke("hello", "hello")).eq(false);
-        expect(Operator.NE.invoke("hello", "")).eq(true);
-        expect(Operator.NE.invoke("hello", null)).eq(true);
+      expect(Operator.NE.invoke("hello", "hello")).eq(false);
+      expect(Operator.NE.invoke("hello", "")).eq(true);
+      expect(Operator.NE.invoke("hello", null)).eq(true);
 
-        expect(Operator.EQ.invoke("true", "false")).eq(false);
-        expect(Operator.EQ.invoke("false", "false")).eq(true);
-        expect(Operator.EQ.invoke("false", null)).eq(false);
+      expect(Operator.EQ.invoke("true", "false")).eq(false);
+      expect(Operator.EQ.invoke("false", "false")).eq(true);
+      expect(Operator.EQ.invoke("false", null)).eq(false);
 
-        expect(Operator.NE.invoke("hello", "")).eq(true);
-        expect(Operator.NE.invoke("hello", "false")).eq(true);
+      expect(Operator.NE.invoke("hello", "")).eq(true);
+      expect(Operator.NE.invoke("hello", "false")).eq(true);
 
-        expect(() => Operator.NE.invoke(null, null)).to.throw();
-      });
+      expect(() => Operator.NE.invoke(null, null)).to.throw();
+    });
 
-      it('Should invoke equality ops', () => {
+    it('Should invoke equality ops', () => {
 
-        expect(Operator.EQ.invoke("hello", "hello")).eq(true);
-        expect(Operator.EQ.invoke("hello", "")).eq(false);
-        expect(Operator.EQ.invoke("hello", null)).eq(false);
+      expect(Operator.EQ.invoke("hello", "hello")).eq(true);
+      expect(Operator.EQ.invoke("hello", "")).eq(false);
+      expect(Operator.EQ.invoke("hello", null)).eq(false);
 
-        expect(Operator.NE.invoke("hello", "hello")).eq(false);
-        expect(Operator.NE.invoke("hello", "")).eq(true);
-        expect(Operator.NE.invoke("hello", null)).eq(true);
+      expect(Operator.NE.invoke("hello", "hello")).eq(false);
+      expect(Operator.NE.invoke("hello", "")).eq(true);
+      expect(Operator.NE.invoke("hello", null)).eq(true);
 
-        expect(Operator.EQ.invoke("true", "false")).eq(false);
-        expect(Operator.EQ.invoke("false", "false")).eq(true);
-        expect(Operator.EQ.invoke("false", null)).eq(false);
+      expect(Operator.EQ.invoke("true", "false")).eq(false);
+      expect(Operator.EQ.invoke("false", "false")).eq(true);
+      expect(Operator.EQ.invoke("false", null)).eq(false);
 
-        expect(Operator.NE.invoke("hello", "")).eq(true);
-        expect(Operator.NE.invoke("hello", "false")).eq(true);
+      expect(Operator.NE.invoke("hello", "")).eq(true);
+      expect(Operator.NE.invoke("hello", "false")).eq(true);
 
-        expect(() => Operator.NE.invoke(null, null)).to.throw();
-      });
+      expect(() => Operator.NE.invoke(null, null)).to.throw();
+    });
 
-      it('Should invoke comparison ops', () => {
+    it('Should invoke comparison ops', () => {
 
-        expect(Operator.GT.invoke("2", "1")).eq(true);
-        expect(Operator.GT.invoke("1", "2")).eq(false);
-        expect(Operator.GT.invoke("1", "1")).eq(false);
-        expect(Operator.GT.invoke("2.0", "1")).eq(true);
-        expect(Operator.GT.invoke("1.0", "2")).eq(false);
-        expect(Operator.GT.invoke("1.0", "1")).eq(false);
-        expect(Operator.GT.invoke("2.0", "1.00")).eq(true);
-        expect(Operator.GT.invoke("1.0", "2.00")).eq(false);
-        expect(Operator.GT.invoke("1.0", "1.00")).eq(false);
+      expect(Operator.GT.invoke("2", "1")).eq(true);
+      expect(Operator.GT.invoke("1", "2")).eq(false);
+      expect(Operator.GT.invoke("1", "1")).eq(false);
+      expect(Operator.GT.invoke("2.0", "1")).eq(true);
+      expect(Operator.GT.invoke("1.0", "2")).eq(false);
+      expect(Operator.GT.invoke("1.0", "1")).eq(false);
+      expect(Operator.GT.invoke("2.0", "1.00")).eq(true);
+      expect(Operator.GT.invoke("1.0", "2.00")).eq(false);
+      expect(Operator.GT.invoke("1.0", "1.00")).eq(false);
 
-        expect(Operator.LT.invoke("2", "1")).eq(false);
-        expect(Operator.LT.invoke("1", "2")).eq(true);
-        expect(Operator.LT.invoke("1", "1")).eq(false);
-        expect(Operator.LT.invoke("2.0", "1")).eq(false);
-        expect(Operator.LT.invoke("1.0", "2")).eq(true);
-        expect(Operator.LT.invoke("1.0", "1")).eq(false);
-        expect(Operator.LT.invoke("2.0", "1.00")).eq(false);
-        expect(Operator.LT.invoke("1.0", "2.00")).eq(true);
-        expect(Operator.LT.invoke("1.0", "1.00")).eq(false);
+      expect(Operator.LT.invoke("2", "1")).eq(false);
+      expect(Operator.LT.invoke("1", "2")).eq(true);
+      expect(Operator.LT.invoke("1", "1")).eq(false);
+      expect(Operator.LT.invoke("2.0", "1")).eq(false);
+      expect(Operator.LT.invoke("1.0", "2")).eq(true);
+      expect(Operator.LT.invoke("1.0", "1")).eq(false);
+      expect(Operator.LT.invoke("2.0", "1.00")).eq(false);
+      expect(Operator.LT.invoke("1.0", "2.00")).eq(true);
+      expect(Operator.LT.invoke("1.0", "1.00")).eq(false);
 
-        expect(Operator.LE.invoke("2", "1")).eq(false);
-        expect(Operator.LE.invoke("1", "2")).eq(true);
-        expect(Operator.LE.invoke("1", "1")).eq(true);
-        expect(Operator.LE.invoke("2.0", "1")).eq(false);
-        expect(Operator.LE.invoke("1.0", "2")).eq(true);
-        expect(Operator.LE.invoke("1.0", "1")).eq(true);
-        expect(Operator.LE.invoke("2.0", "1.00")).eq(false);
-        expect(Operator.LE.invoke("1.0", "2.00")).eq(true);
-        expect(Operator.LE.invoke("1.0", "1.00")).eq(true);
+      expect(Operator.LE.invoke("2", "1")).eq(false);
+      expect(Operator.LE.invoke("1", "2")).eq(true);
+      expect(Operator.LE.invoke("1", "1")).eq(true);
+      expect(Operator.LE.invoke("2.0", "1")).eq(false);
+      expect(Operator.LE.invoke("1.0", "2")).eq(true);
+      expect(Operator.LE.invoke("1.0", "1")).eq(true);
+      expect(Operator.LE.invoke("2.0", "1.00")).eq(false);
+      expect(Operator.LE.invoke("1.0", "2.00")).eq(true);
+      expect(Operator.LE.invoke("1.0", "1.00")).eq(true);
 
-        expect(() => Operator.GT.invoke("2", "")).to.throw();
-        expect(() => Operator.LT.invoke("2", null)).to.throw();
-        expect(() => Operator.LE.invoke("2", "h")).to.throw();
-        expect(() => Operator.GE.invoke("", "")).to.throw();
-      });
+      expect(() => Operator.GT.invoke("2", "")).to.throw();
+      expect(() => Operator.LT.invoke("2", null)).to.throw();
+      expect(() => Operator.LE.invoke("2", "h")).to.throw();
+      expect(() => Operator.GE.invoke("", "")).to.throw();
+    });
 
-      it('Should invoke matching ops', () => {
+    it('Should invoke matching ops', () => {
 
-        expect(Operator.SW.invoke("Hello", "He")).eq(true);
-        expect(Operator.SW.invoke("Hello", "Hello")).eq(true);
-        expect(Operator.SW.invoke("Hello", "Hej")).eq(false);
-        expect(Operator.SW.invoke("Hello", null)).eq(false);
-        expect(Operator.SW.invoke("Hello", "")).eq(true);
+      expect(Operator.SW.invoke("Hello", "He")).eq(true);
+      expect(Operator.SW.invoke("Hello", "Hello")).eq(true);
+      expect(Operator.SW.invoke("Hello", "Hej")).eq(false);
+      expect(Operator.SW.invoke("Hello", null)).eq(false);
+      expect(Operator.SW.invoke("Hello", "")).eq(true);
 
-        expect(Operator.EW.invoke("Hello", "o")).eq(true);
-        expect(Operator.EW.invoke("Hello", "Hello")).eq(true);
-        expect(Operator.EW.invoke("Hello", "l1o")).eq(false);
-        expect(Operator.EW.invoke("Hello", null)).eq(false);
-        expect(Operator.EW.invoke("Hello", "")).eq(true);
+      expect(Operator.EW.invoke("Hello", "o")).eq(true);
+      expect(Operator.EW.invoke("Hello", "Hello")).eq(true);
+      expect(Operator.EW.invoke("Hello", "l1o")).eq(false);
+      expect(Operator.EW.invoke("Hello", null)).eq(false);
+      expect(Operator.EW.invoke("Hello", "")).eq(true);
 
-        expect(Operator.RE.invoke("Hello", "ll")).eq(true);
-        expect(Operator.RE.invoke("Hello", "e")).eq(true);
-        expect(Operator.RE.invoke("Hello", "l1")).eq(false);
-        expect(Operator.RE.invoke("Hello", null)).eq(false);
-        expect(Operator.RE.invoke("Hello", "")).eq(true);
+      expect(Operator.RE.invoke("Hello", "ll")).eq(true);
+      expect(Operator.RE.invoke("Hello", "e")).eq(true);
+      expect(Operator.RE.invoke("Hello", "l1")).eq(false);
+      expect(Operator.RE.invoke("Hello", null)).eq(false);
+      expect(Operator.RE.invoke("Hello", "")).eq(true);
 
 
-        expect(Operator.SW.invoke("$Hello", "$")).eq(true);
-        expect(Operator.EW.invoke("$Hello", "$")).eq(false);
-        expect(Operator.RE.invoke("$Hello", "$")).eq(true);
-        expect(Operator.RE.invoke("hello", "(hello|bye)")).eq(true);
-        expect(Operator.RE.invoke("bye", "(hello|bye)")).eq(true);
-        expect(Operator.RE.invoke("by", "(hello|bye)")).eq(false);
+      expect(Operator.SW.invoke("$Hello", "$")).eq(true);
+      expect(Operator.EW.invoke("$Hello", "$")).eq(false);
+      expect(Operator.RE.invoke("$Hello", "$")).eq(true);
+      expect(Operator.RE.invoke("hello", "(hello|bye)")).eq(true);
+      expect(Operator.RE.invoke("bye", "(hello|bye)")).eq(true);
+      expect(Operator.RE.invoke("by", "(hello|bye)")).eq(false);
 
-        expect(() => Operator.SW.invoke(null, "hello")).to.throw();
-        expect(() => Operator.SW.invoke(null, null)).to.throw();
-      });
-    
-    it('Should call other Operator functions', () => { 
+      expect(() => Operator.SW.invoke(null, "hello")).to.throw();
+      expect(() => Operator.SW.invoke(null, null)).to.throw();
+    });
+
+    it('Should call other Operator functions', () => {
       //toString and fromString
       expect(Operator.GT.toString()).eq('>');
       expect(Operator.LT.toString()).eq('<');
@@ -1522,7 +1537,7 @@ describe('RiTa.RiScript', function () {
       expect(Operator.fromString(Operator.EQ.toString())).eq(Operator.EQ);
       expect(Operator.fromString('==')).eq(Operator.EQ);
       expect(() => Operator.fromString('a')).to.throw();
-      
+
       //fromOperator
       expect(Operator.fromOperator(Operator.GT)).eq(Operator.GT.toString());
       expect(Operator.fromOperator(Operator.LT)).eq(Operator.LT.toString());
@@ -1535,8 +1550,8 @@ describe('RiTa.RiScript', function () {
       expect(Operator.fromOperator(Operator.EQ)).eq(Operator.EQ.toString());
       expect(() => Operator.fromOperator(new Operator("a", "b"))).to.throw();
     });
-  //  }
-  }); 
+    //  }
+  });
 
   describe('Conditionals', () => {
 
