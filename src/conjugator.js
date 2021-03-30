@@ -455,7 +455,6 @@ const PAST_PARTICIPLE_RULES = [
 
 const PAST_RULES = [
   RE("^(reduce)$", 0, "d"),
-  RE("^write$", 3, "ote"),
   RE("^" + VERBAL_PREFIX + "?[pls]ay$", 1, "id", 1),
   RE(CONS + "y$", 1, "ied", 1),
   RE("^(fling|cling|hang)$", 3, "ung"),
@@ -700,6 +699,7 @@ const PAST_RULES = [
   RE("^wear$", 3, "ore"),
   RE("^wind$", 3, "ound"),
   RE("^weave$", 4, "ove"),
+  RE("^write$", 3, "ote"),
   RE("^trek$", 1, "cked"),
   RE("^ko$", 1, "o'd"),
   RE("^bid", 2, "ade"),
