@@ -282,6 +282,27 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST }), "studied", `${stem} => studied`);
     equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PRESENT }), "study", `${stem} => study`);
     equal(RiTa.conjugate(stem, { number: RiTa.SINGULAR, person: RiTa.THIRD, tense: RiTa.PRESENT }), "studies", `${stem} => studies`);
+
+    //more random test
+    let opts = { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST };
+    let pairs = [
+      ["accompanying", "accompanied"],
+      ["feeling", "felt"],
+      ["placating", "placated"],
+      ["centralizing", "centralized"], 
+      ["humanized", "humanized"],
+      ["boosted", "boosted"],
+      ["wearing", "wore"],
+      ["aroused", "aroused"],
+      ["rising", "rose"],
+      ["raising", "raised"],
+      ["vibrating", "vibrated"],
+      ["injection", "injected"],
+      ["vibration", "vibrated"],
+    ];
+    pairs.forEach(p => {
+      equal(RiTa.conjugate(RiTa.stem(p[0]), opts), p[1], p[0] + " => " + RiTa.stem(p[0]) + " => " + p[1]);
+    });
   });
 
   function ok(a, m) { expect(a, m).to.be.true; }

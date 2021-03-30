@@ -215,7 +215,7 @@ class Conjugator {
   }
 
   handleStem = function (word) {
-    if (this.RiTa.hasWord(word)) return word;
+    if (this.RiTa.hasWord(word) && this.RiTa.isVerb(word)) return word;
     let w = word;
     while (w.length > 1) {
       let regex = new RegExp('^' + w);
@@ -456,7 +456,6 @@ const PAST_PARTICIPLE_RULES = [
 const PAST_RULES = [
   RE("^(reduce)$", 0, "d"),
   RE("^write$", 3, "ote"),
-  RE("e$", 0, "d", 1),
   RE("^" + VERBAL_PREFIX + "?[pls]ay$", 1, "id", 1),
   RE(CONS + "y$", 1, "ied", 1),
   RE("^(fling|cling|hang)$", 3, "ung"),
@@ -706,6 +705,7 @@ const PAST_RULES = [
   RE("^bid", 2, "ade"),
   RE("^win$", 2, "on"),
   RE("^swim", 2, "am"),
+  RE("e$", 0, "d", 1),
 
   // Null past forms
   RE("^" + VERBAL_PREFIX + "?(cast|thrust|typeset|cut|bid|upset|wet|bet|cut|hit|hurt|inset|" + "let|cost|burst|beat|beset|set|upset|offset|put|quit|wed|typeset|" + "wed|spread|split|slit|read|run|shut|shed|lay)$", 0)
