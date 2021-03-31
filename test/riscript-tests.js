@@ -1039,7 +1039,7 @@ describe('RiTa.RiScript', function () {
 
       let result = { b: 0, a: 0 };
       for (let i = 0; i < 100; i++) {
-        result[RiTa.evaluate('(a | b [2])')]++;
+        result[RiTa.evaluate('(a | b [3])')]++;
       } //console.log(result);
       expect(result.b).gt(result.a);
 

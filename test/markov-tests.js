@@ -143,7 +143,7 @@ describe('RiTa.RiMarkov', () => {
     let sentArray = text.match(/[^，；。？！]+[，；。？！]/g);
     let rm = new RiMarkov(4);
     rm.addText(sentArray);
-    let result = rm.generate(5, { startTokens: '家' });
+    let result = rm.generate(5, { seed: '家' });
     eq(result.length, 5);
     result.forEach(r => ok(/^家[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
   });
@@ -157,7 +157,7 @@ describe('RiTa.RiMarkov', () => {
 
     let rm = new RiMarkov(4, { tokenize, untokenize });
     rm.addText(sentArray);
-    let result = rm.generate(5, { startTokens: '家' });
+    let result = rm.generate(5, { seed: '家' });
     //console.log(result);
 
     eq(result.length, 5);
@@ -221,21 +221,21 @@ describe('RiTa.RiMarkov', () => {
     let start = 'One';
     rm.addText(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
-      let s = rm.generate({ startTokens: start });
+      let s = rm.generate({ seed: start });
       //console.log(i + ") " + s);
       ok(s.startsWith(start));
     }
 
     start = 'Achieving';
     for (let i = 0; i < 5; i++) {
-      let res = rm.generate({ startTokens: start });
+      let res = rm.generate({ seed: start });
       ok(typeof res === 'string');
       ok(res.startsWith(start));
     }
 
     start = 'I';
     for (let i = 0; i < 5; i++) {
-      let arr = rm.generate(2, { startTokens: start });
+      let arr = rm.generate(2, { seed: start });
       ok(Array.isArray(arr));
       eq(arr.length, 2);
       ok(arr[0].startsWith(start));
@@ -248,21 +248,21 @@ describe('RiTa.RiMarkov', () => {
     let start = ['One'];
     rm.addText(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
-      let s = rm.generate({ startTokens: start });
+      let s = rm.generate({ seed: start });
       //console.log(i + ") " + s);
       ok(s.startsWith(start));
     }
 
     start = ['Achieving'];
     for (let i = 0; i < 5; i++) {
-      let res = rm.generate({ startTokens: start });
+      let res = rm.generate({ seed: start });
       ok(typeof res === 'string');
       ok(res.startsWith(start));
     }
 
     start = ['I'];
     for (let i = 0; i < 5; i++) {
-      let arr = rm.generate(2, { startTokens: start });
+      let arr = rm.generate(2, { seed: start });
       eq(arr.length, 2);
       ok(arr[0].startsWith(start));
     }
@@ -271,20 +271,20 @@ describe('RiTa.RiMarkov', () => {
     rm.addText(RiTa.sentences(sample));
     start = ['One', 'reason'];
     for (let i = 0; i < 1; i++) {
-      let s = rm.generate({ startTokens: start });
+      let s = rm.generate({ seed: start });
       ok(s.startsWith(start.join(' ')));
     }
 
     start = ['Achieving', 'personal'];
     for (let i = 0; i < 5; i++) {
-      let res = rm.generate({ startTokens: start });
+      let res = rm.generate({ seed: start });
       ok(typeof res === 'string');
       ok(res.startsWith(start.join(' ')));
     }
 
     start = ['I', 'also'];
     for (let i = 0; i < 5; i++) {
-      let res = rm.generate({ startTokens: start });
+      let res = rm.generate({ seed: start });
       ok(typeof res === 'string');
       ok(res.startsWith(start.join(' ')));
     }

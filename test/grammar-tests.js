@@ -452,7 +452,7 @@ describe('RiTa.RiGrammar', function() {
         eq(rg.expand("mammal"), "dog");
 
         let hawks = 0, dogs = 0;
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 20; i++) {
             let res = rg.expand("start");
             ok(res === "hawk hawk" || res === 'dog dog', 'got ' + res);
 

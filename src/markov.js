@@ -72,7 +72,7 @@ class RiMarkov {
     const temp = opts.temperature;
     const minLength = opts.minLength || 5;
     const maxLength = opts.maxLength || 35;
-    let startTokens = opts.startTokens;
+    let seed = opts.seed || opts.startTokens; // dep
 
     let result = [], tokens, tries = 0;
     let fail = (msg) => {
@@ -82,14 +82,12 @@ class RiMarkov {
       return 1;
     }
 
-    if (typeof startTokens === 'string') {
-      startTokens = this.tokenize(startTokens);
-    }
+    if (typeof seed === 'string') seed = this.tokenize(seed);
 
     while (result.length < num) {
 
-      tokens = tokens || this._initSentence(startTokens);
-      if (!tokens) throw Error('No sentence starts with: "' + startTokens + '"');
+      tokens = tokens || this._initSentence(seed);
+      if (!tokens) throw Error('No sentence starts with: "' + seed + '"');
 
       while (tokens && tokens.length < maxLength) {
 
