@@ -1,15 +1,86 @@
 import Util from "./util";
-
-// TODO: add tests for all verbs/forms here with 4 parameters **
-
 class Conjugator {
 
   constructor(parent) {
     this.RiTa = parent;
-    this.reset();
+    this._reset();
   }
 
-  reset() {
+  // TODO: add handling of past tense modals.
+  conjugate(verb, args) {
+
+    if (!verb || !verb.length) throw Error('No verb');
+    if (!args) return verb;
+
+    verb = verb.toLowerCase(); 
+    args = this._parseArgs(args);
+
+    // handle 'to be' verbs and stemming
+    let frontVG = TO_BE.includes(verb) ? "be" : this._handleStem(verb);
+
+    let actualModal, verbForm, conjs = [], RiTa = this.RiTa;
+
+    if (this.form === RiTa.INFINITIVE) {
+      actualModal = "to";
+    }
+    if (this.tense === RiTa.FUTURE) {
+      actualModal = "will";
+    }
+    if (this.passive) {
+      conjs.push(this.pastPart(frontVG));
+      frontVG = "be";
+    }
+    if (this.progressive) {
+      conjs.push(this.presentPart(frontVG));
+      frontVG = "be";
+    }
+    if (this.perfect) {
+      conjs.push(this.pastPart(frontVG));
+      frontVG = "have";
+    }
+    if (actualModal) {
+      conjs.push(frontVG);
+      frontVG = null;
+    }
+
+    // Now inflect frontVG (if it exists) and push it on restVG
+    if (frontVG) {
+      if (this.form === RiTa.GERUND) { // gerund - use ING form
+        conjs.push(this.presentPart(frontVG));
+      } else if (this.interrogative && frontVG != "be" && conjs.length < 1) {
+        conjs.push(frontVG);
+      } else {
+        verbForm = this._verbForm(frontVG, this.tense, this.person, this.number);
+        conjs.push(verbForm);
+      }
+    }
+
+    // add modal, and we're done
+    actualModal && conjs.push(actualModal);
+
+    return conjs.reduce((acc, cur) => cur + ' ' + acc).trim();
+  }
+
+  presentPart(theVerb) {
+    return theVerb === 'be' ? 'being' :
+      this._checkRules(PRESENT_PARTICIPLE_RULESET, theVerb);
+  }
+
+  pastPart(theVerb) {
+    return this._checkRules(PAST_PARTICIPLE_RULESET, theVerb);
+  }
+
+  toString() {
+    return "  ---------------------" + "\n" + "  Passive = " + this.passive +
+      '\n' + "  Perfect = " + this.perfect + '\n' + "  Progressive = " +
+      this.progressive + '\n' + "  ---------------------" + '\n' + "  Number = " +
+      this.number + '\n' + "  Person = " + this.person + '\n' + "  Tense = " +
+      this.tense + '\n' + "  ---------------------" + '\n';
+  }
+
+  /////////////////////////////// End API ///////////////////////////////////
+
+  _reset() {
     this.perfect = this.progressive = this.passive = this.interrogative = false;
     this.tense = this.RiTa.PRESENT;
     this.person = this.RiTa.FIRST;
@@ -17,11 +88,9 @@ class Conjugator {
     this.form = this.RiTa.NORMAL;
   }
 
-  // !@# TODO: add handling of past tense modals.
-  conjugate(theVerb, args) {
+  _parseArgs(args) {
 
-    if (!theVerb || !theVerb.length) throw Error('No verb');
-    if (!args) return theVerb;
+    this._reset();
 
     const RiTa = this.RiTa;
     if (typeof args === 'string') {
@@ -36,83 +105,22 @@ class Conjugator {
         args = opts;
       }
       else {
-        args = Util.stringArgs(args);
+        throw Error('Invalid args: '+args)
+        args = Util.stringArgs(args); // what?
       }
     }
 
-    // --------------------- handle args ---------------------
-
-    this.reset();
-    args.number && (this.number = args.number);
-    args.person && (this.person = args.person);
-    args.tense && (this.tense = args.tense);
-    args.form && (this.form = args.form);
-    args.passive && (this.passive = args.passive);
-    args.progressive && (this.progressive = args.progressive);
-    args.interrogative && (this.interrogative = args.interrogative);
-    args.perfect && (this.perfect = args.perfect);
-
-    let v = this.handleStem(theVerb); // handle stemmed words
-    // ----------------------- start ---------------------------
-
-    v = v.toLowerCase(); // handle to-be forms
-    if (["am", "are", "is", "was", "were"].includes(v)) v = "be";
-
-    let actualModal, conjs = [], verbForm, frontVG = v;
-
-    if (this.form === RiTa.INFINITIVE) {
-      actualModal = "to";
-    }
-
-    if (this.tense === RiTa.FUTURE) {
-      actualModal = "will";
-    }
-
-    if (this.passive) {
-      conjs.push(this.pastPart(frontVG));
-      frontVG = "be";
-    }
-
-    if (this.progressive) {
-      conjs.push(this.presentPart(frontVG));
-      frontVG = "be";
-    }
-
-    if (this.perfect) {
-      conjs.push(this.pastPart(frontVG));
-      frontVG = "have";
-    }
-
-    if (actualModal) {
-      conjs.push(frontVG);
-      frontVG = null;
-    }
-
-    // Now inflect frontVG (if it exists) and push it on restVG
-    if (frontVG) {
-      if (this.form === RiTa.GERUND) { // gerund - use ING form
-        let pp = this.presentPart(frontVG);
-        // !@# not yet implemented! ??? WHAT?
-        conjs.push(pp);
-      } else if (this.interrogative && frontVG != "be" && conjs.length < 1) {
-        conjs.push(frontVG);
-      } else {
-        verbForm = this.verbForm(frontVG, this.tense, this.person, this.number);
-        conjs.push(verbForm);
-      }
-    }
-
-    // add modal, and we're done
-    actualModal && conjs.push(actualModal);
-
-    // !@# test this
-    let s = conjs.reduce((acc, cur) => cur + ' ' + acc);
-    //if (s.endsWith("peted")) throw Error("Unexpected output: ", this);
-
-    return s.trim();
+    if (args.number) this.number = args.number;
+    if (args.person) this.person = args.person;
+    if (args.tense) this.tense = args.tense;
+    if (args.form) this.form = args.form;
+    if (args.passive) this.passive = args.passive;
+    if (args.progressive) this.progressive = args.progressive;
+    if (args.interrogative) this.interrogative = args.interrogative;
+    if (args.perfect) this.perfect = args.perfect;
   }
 
-  checkRules(ruleSet, theVerb) {
+  _checkRules(ruleSet, theVerb) {
 
     if (!theVerb || !theVerb.length) return '';
 
@@ -135,7 +143,7 @@ class Conjugator {
     dbug && console.log("NO HIT!");
     if (ruleSet.doubling && VERB_CONS_DOUBLING.includes(theVerb)) {
       dbug && console.log("doDoubling!");
-      theVerb = this.doubleFinalConsonant(theVerb);
+      theVerb = this._doubleFinalConsonant(theVerb);
     }
 
     res = defRule.fire(theVerb);
@@ -144,11 +152,11 @@ class Conjugator {
     return res;
   }
 
-  doubleFinalConsonant(word) {
+  _doubleFinalConsonant(word) {
     return word + word.charAt(word.length - 1);
   }
 
-  pastTense(theVerb, pers, numb) {
+  _pastTense(theVerb, pers, numb) {
     const RiTa = this.RiTa;
     if (theVerb.toLowerCase() === "be") {
       switch (numb) {
@@ -163,15 +171,15 @@ class Conjugator {
           return "were";
       }
     }
-    return this.checkRules(PAST_RULESET, theVerb);
+    return this._checkRules(PAST_RULESET, theVerb);
   }
 
-  presentTense(theVerb, person, number) {
+  _presentTense(theVerb, person, number) {
     person = person || this.person;
     number = number || this.number;
     const RiTa = this.RiTa;
     if (person === RiTa.THIRD && number === RiTa.SINGULAR) {
-      return this.checkRules(PRESENT_RULESET, theVerb);
+      return this._checkRules(PRESENT_RULESET, theVerb);
     }
     else if (theVerb === "be") {
       if (number === RiTa.SINGULAR) {
@@ -187,54 +195,42 @@ class Conjugator {
     return theVerb;
   }
 
-  presentPart(theVerb) {
-    return theVerb === 'be' ? 'being' :
-      this.checkRules(PRESENT_PARTICIPLE_RULESET, theVerb);
-  }
-
-  pastPart(theVerb) {
-    return this.checkRules(PAST_PARTICIPLE_RULESET, theVerb);
-  }
-
-  verbForm(theVerb, tense, person, number) {
+  _verbForm(theVerb, tense, person, number) {
     switch (tense) {
       case this.RiTa.PRESENT:
-        return this.presentTense(theVerb, person, number);
+        return this._presentTense(theVerb, person, number);
       case this.RiTa.PAST:
-        return this.pastTense(theVerb, person, number);
+        return this._pastTense(theVerb, person, number);
     }
     return theVerb;
   }
 
-  toString() {
-    return "  ---------------------" + "\n" + "  Passive = " + this.passive +
-      '\n' + "  Perfect = " + this.perfect + '\n' + "  Progressive = " +
-      this.progressive + '\n' + "  ---------------------" + '\n' + "  Number = " +
-      this.number + '\n' + "  Person = " + this.person + '\n' + "  Tense = " +
-      this.tense + '\n' + "  ---------------------" + '\n';
-  }
+  _handleStem = function (word) {
 
-  handleStem = function (word) {
-    if (this.RiTa.hasWord(word) && this.RiTa.isVerb(word)) return word;
+    if (this.RiTa.hasWord(word) && this.RiTa.isVerb(word)) {
+      return word;
+    }
+
     let w = word;
     while (w.length > 1) {
-      let regex = new RegExp('^' + w);
-      let guess = this.RiTa.search(regex, { pos: 'v' });
-      if (!guess || guess.length == 0) {
+
+      let guess = this.RiTa.search(new RegExp('^' + w), { pos: 'v' });
+      if (!guess || guess.length < 1) {
         w = w.slice(0, -1);
         continue;
       }
       // always look for shorter words first
-      guess.sort((a, b) => {
-        return a.length - b.length;
-      });
-      // look for words (a==b or stem(b)==a) first
+      guess.sort((a, b) => a.length - b.length);
+
+      // look for words (a===b or stem(b)===a) first
       for (let i = 0; i < guess.length; i++){
-        if (word == guess[i]) return word;
-        if (this.RiTa.stem(guess[i]) == word) return guess[i];
+        if (word === guess[i]) return word;
+        if (this.RiTa.stem(guess[i]) === word) return guess[i];
       }
+
       w = w.slice(0, -1);
     }
+
     // can't find possible word in dict, return original
     return word;
   }
@@ -886,6 +882,8 @@ const PRESENT_RULESET = {
   rules: PRESENT_RULES,
   doubling: false
 };
+
+const TO_BE = ["am", "are", "is", "was", "were"];
 
 Conjugator.VERB_CONS_DOUBLING = VERB_CONS_DOUBLING; // for scripts
 
