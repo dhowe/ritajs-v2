@@ -10,8 +10,7 @@ class Errors extends antlr4.error.ErrorListener {
     super();
   }
   syntaxError(recognizer, offendingSymbol, line, column, msg, err) {
-    //num_errors++;
-    ///console.error(`${offendingSymbol} line ${line}, col ${column}: ${msg}`);
+    //console.error(`${offendingSymbol} line ${line}, col ${column}: ${msg}`);
     throw Error(`${offendingSymbol} line ${line}, col ${column}: ${msg}`);
   }
 }
