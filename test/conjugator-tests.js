@@ -251,6 +251,60 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.conjugator.toString(), '  ---------------------\n  Passive = false\n  Perfect = false\n  Progressive = false\n  ---------------------\n  Number = 8\n  Person = 2\n  Tense = 4\n  ---------------------\n');
   });
 
+  it('Should accept stems', () => {
+    // https://github.com/dhowe/rita/issues/116
+    let stem = RiTa.stem("walking");
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST }), "walked", `${stem} => walked`);
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PRESENT }), "walk", `${stem} => walk`);
+    equal(RiTa.conjugate(stem, { number: RiTa.SINGULAR, person: RiTa.THIRD, tense: RiTa.PRESENT }), "walks", `${stem} => walks`);
+
+    stem = RiTa.stem("writing");
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST }), "wrote", `${stem} => wrote`);
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PRESENT }), "write", `${stem} => write`);
+    equal(RiTa.conjugate(stem, { number: RiTa.SINGULAR, person: RiTa.THIRD, tense: RiTa.PRESENT }), "writes", `${stem} => writes`);
+
+    stem = RiTa.stem("asked");
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST }), "asked", `${stem} => asked`);
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PRESENT }), "ask", `${stem} => ask`);
+    equal(RiTa.conjugate(stem, { number: RiTa.SINGULAR, person: RiTa.THIRD, tense: RiTa.PRESENT }), "asks", `${stem} => asks`);
+
+    stem = RiTa.stem("admired");
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST }), "admired", `${stem} => admired`);
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PRESENT }), "admire", `${stem} => admire`);
+    equal(RiTa.conjugate(stem, { number: RiTa.SINGULAR, person: RiTa.THIRD, tense: RiTa.PRESENT }), "admires", `${stem} => admires`);
+
+    stem = RiTa.stem("cured");
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST }), "cured", `${stem} => cured`);
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PRESENT }), "cure", `${stem} => cure`);
+    equal(RiTa.conjugate(stem, { number: RiTa.SINGULAR, person: RiTa.THIRD, tense: RiTa.PRESENT }), "cures", `${stem} => cures`);
+
+    stem = RiTa.stem("studies");
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST }), "studied", `${stem} => studied`);
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PRESENT }), "study", `${stem} => study`);
+    equal(RiTa.conjugate(stem, { number: RiTa.SINGULAR, person: RiTa.THIRD, tense: RiTa.PRESENT }), "studies", `${stem} => studies`);
+
+    //more random test
+    let opts = { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST };
+    let pairs = [
+      ["accompanying", "accompanied"],
+      ["feeling", "felt"],
+      ["placating", "placated"],
+      ["centralizing", "centralized"], 
+      ["humanized", "humanized"],
+      ["boosted", "boosted"],
+      ["wearing", "wore"],
+      ["aroused", "aroused"],
+      ["rising", "rose"],
+      ["raising", "raised"],
+      ["vibrating", "vibrated"],
+      ["injection", "injected"],
+      ["vibration", "vibrated"],
+    ];
+    pairs.forEach(p => {
+      equal(RiTa.conjugate(RiTa.stem(p[0]), opts), p[1], p[0] + " => " + RiTa.stem(p[0]) + " => " + p[1]);
+    });
+  });
+
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }
   function equal(a, b, m) { expect(a).eq(b, m); }

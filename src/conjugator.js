@@ -52,9 +52,10 @@ class Conjugator {
     args.interrogative && (this.interrogative = args.interrogative);
     args.perfect && (this.perfect = args.perfect);
 
+    let v = this.handleStem(theVerb); // handle stemmed words
     // ----------------------- start ---------------------------
 
-    let v = theVerb.toLowerCase(); // handle to-be forms
+    v = v.toLowerCase(); // handle to-be forms
     if (["am", "are", "is", "was", "were"].includes(v)) v = "be";
 
     let actualModal, conjs = [], verbForm, frontVG = v;
@@ -211,6 +212,31 @@ class Conjugator {
       this.progressive + '\n' + "  ---------------------" + '\n' + "  Number = " +
       this.number + '\n' + "  Person = " + this.person + '\n' + "  Tense = " +
       this.tense + '\n' + "  ---------------------" + '\n';
+  }
+
+  handleStem = function (word) {
+    if (this.RiTa.hasWord(word) && this.RiTa.isVerb(word)) return word;
+    let w = word;
+    while (w.length > 1) {
+      let regex = new RegExp('^' + w);
+      let guess = this.RiTa.search(regex, { pos: 'v' });
+      if (!guess || guess.length == 0) {
+        w = w.slice(0, -1);
+        continue;
+      }
+      // always look for shorter words first
+      guess.sort((a, b) => {
+        return a.length - b.length;
+      });
+      // look for words (a==b or stem(b)==a) first
+      for (let i = 0; i < guess.length; i++){
+        if (word == guess[i]) return word;
+        if (this.RiTa.stem(guess[i]) == word) return guess[i];
+      }
+      w = w.slice(0, -1);
+    }
+    // can't find possible word in dict, return original
+    return word;
   }
 }
 
@@ -429,7 +455,6 @@ const PAST_PARTICIPLE_RULES = [
 
 const PAST_RULES = [
   RE("^(reduce)$", 0, "d"),
-  RE("e$", 0, "d", 1),
   RE("^" + VERBAL_PREFIX + "?[pls]ay$", 1, "id", 1),
   RE(CONS + "y$", 1, "ied", 1),
   RE("^(fling|cling|hang)$", 3, "ung"),
@@ -680,6 +705,7 @@ const PAST_RULES = [
   RE("^bid", 2, "ade"),
   RE("^win$", 2, "on"),
   RE("^swim", 2, "am"),
+  RE("e$", 0, "d", 1),
 
   // Null past forms
   RE("^" + VERBAL_PREFIX + "?(cast|thrust|typeset|cut|bid|upset|wet|bet|cut|hit|hurt|inset|" + "let|cost|burst|beat|beset|set|upset|offset|put|quit|wed|typeset|" + "wed|spread|split|slit|read|run|shut|shed|lay)$", 0)
