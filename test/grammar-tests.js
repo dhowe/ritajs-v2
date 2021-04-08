@@ -125,6 +125,7 @@ describe('RiTa.RiGrammar', function() {
         let rg = new RiGrammar();
         rg.addRule("start", "pet");
         eq(rg.expand(), "pet");
+        expect(() => { rg.expand('pet') }).to.throw();
         rg = new RiGrammar();
         rg.addRule("start", "$pet");
         rg.addRule("pet", "dog");
@@ -226,7 +227,13 @@ describe('RiTa.RiGrammar', function() {
             ok(typeof rg.rules['$$noun_phrase'] !== 'undefined');
             ok(rg.expand().length > 0);
         });
+
+        rg = new RiGrammar();
+        expect(() => { rg.addRules() }).to.throw();
+        rg.addRules('{"start":"a"}'); // as JSON string
+        ok(rg.expand().length > 0);
     });
+
     it("should call JSON addRules", () => {
         grammars.forEach(g => { // as JSON strings
             let rg = RiGrammar.fromJSON(JSON.stringify(g));
@@ -360,6 +367,13 @@ describe('RiTa.RiGrammar', function() {
         rg.addRule("start", "$pet");
         rg.addRule("pet", "dog");
         eq(rg.expand(), "dog");
+
+        //throw on bad rule
+        rg = new RiGrammar();
+        rg.addRule("pet", "dog");
+        expect(() => { rg.expand() }).to.throw();
+        expect(() => { rg.expand('$$pet') }).to.throw();
+        expect(() => { rg.expand('a$pet') }).to.throw();
     });
 
     it("should override dynamic default", () => {
@@ -439,6 +453,9 @@ describe('RiTa.RiGrammar', function() {
         ok(typeof rg.rules["$$start"] !== 'undefined');
         rg.addRule("$start", "$dog", .3); // static
         ok(typeof rg.rules["start"] !== 'undefined');
+        rg.addRule("start", "a|b"); // auto wrap
+        ok(typeof rg.rules["start"] !== 'undefined');
+        expect(() => { rg.addRule("start") }).to.throw();
     });
 
     it("should call expandFrom.weights.static", () => {
@@ -720,6 +737,10 @@ describe('RiTa.RiGrammar', function() {
 
     it("should call to/from JSON", () => {
         let json, rg, rg2, generatedJSON;
+
+        //fromJSON should throw on non-json-string
+        expect(() => { let gra = RiGrammar.fromJSON({ a: "b" }) }).to.throw();
+        expect(() => { let gra = RiGrammar.fromJSON("non-JSON string") }).to.throw();
 
         json = '{ "$start": "$pet $iphone", "$pet": "(dog | cat)", "$iphone": "(iphoneSE | iphone12)" }';
         rg = new RiGrammar(json);
