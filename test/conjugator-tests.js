@@ -78,9 +78,14 @@ describe('RiTa.Conjugator', () => {
   it('Should call conjugate', () => {
     let args, s, a, c;
 
+    equal(RiTa.conjugate("walk"), "walk");
+    expect(() => { RiTa.conjugate() }).to.throw();
+    expect(() => { RiTa.conjugate("") }).to.throw();
+
     equal("swum", RiTa.pastPart("swim"));
 
     equal(RiTa.conjugate("be", { form: RiTa.GERUND, }), "being");
+    equal(RiTa.conjugate("are", { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST}), "were");
 
     s = ["swim", "need", "open"];
     a = ["swims", "needs", "opens"];
@@ -245,6 +250,32 @@ describe('RiTa.Conjugator', () => {
     for (let i = 0; i < s.length; i++) {
       equal(RiTa.conjugate(s[i], args), a[i], 'failed on ' + s[i]);
     }
+
+    args = {
+      number: RiTa.PLURAL,
+      person: RiTa.SECOND,
+      tense: RiTa.PAST,
+      interrogative: true
+    }
+    s = ["compete", "complete", "eject"];
+    a = ["compete", "complete", "eject"];
+    for (let i = 0; i < s.length; i++) {
+      equal(RiTa.conjugate(s[i], args), a[i], 'failed on ' + s[i]);
+    }
+
+    //string args
+    expect(() => { RiTa.conjugate("walk", "invalid args") }).to.throw();
+    expect(RiTa.conjugate("walk", "1SPr")).eq("walk");
+    expect(RiTa.conjugate("walk", "1PPr")).eq("walk");
+    expect(RiTa.conjugate("walk", "2SPr")).eq("walk");
+    expect(RiTa.conjugate("walk", "3SPr")).eq("walks");
+    expect(RiTa.conjugate("walk", "1SFu")).eq("will walk");
+    expect(RiTa.conjugate("walk", "1SPa")).eq("walked");
+    expect(RiTa.conjugate("walk", "2PPa")).eq("walked");
+    expect(RiTa.conjugate("is", "3PPa")).eq("were");
+    expect(RiTa.conjugate("is", "2SPa")).eq("were");
+    expect(RiTa.conjugate("is", "3SPa")).eq("was");
+    expect(RiTa.conjugate("is", "2PPa")).eq("were");
   });
 
   it('Should call toString', () => { 

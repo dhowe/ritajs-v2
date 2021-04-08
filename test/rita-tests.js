@@ -15,6 +15,8 @@ describe('RiTa.Core', () => {
         eql(RiTa.VERSION, process.env.npm_package_version);
       }
     }
+
+    eq(RiTa.CDN, "https://www.unpkg.com/rita/");
   });
 
   it('Should call random', () => { // SYNC:
@@ -58,6 +60,8 @@ describe('RiTa.Core', () => {
     ok(RiTa.isQuestion("Is this yours?"));
     ok(RiTa.isQuestion("Are you done?"));
     ok(RiTa.isQuestion("what is this? , where is that?"));
+    ok(RiTa.isQuestion("Will you come tomorrow?"));
+    ok(RiTa.isQuestion("Would you do that?"));
     ok(!RiTa.isQuestion("That is not a toy This is an apple"));
     ok(!RiTa.isQuestion("string"));
     ok(!RiTa.isQuestion("?"));

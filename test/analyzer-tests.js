@@ -14,6 +14,7 @@ describe('RiTa.Analyzer', () => {
   });
 
   it('Should call analyze.lts', () => {
+    expect(RiTa.SILENCE_LTS).eq(false);
     let feats;
     feats = RiTa.analyze("cloze", { silent: 1 });
     expect(feats.pos).eq("nn");
