@@ -592,6 +592,13 @@ describe('RiTa.Analyzer', () => {
     for (let i = 0; i < test.length; i += 2) {
       expect(RiTa.singularize(test[i])).eq(test[i + 1]);
     }
+
+    expect(RiTa.singularize()).eq("");
+    expect(RiTa.singularize("")).eq("");
+    expect(() => { RiTa.singularize([1]) }).to.throw();
+    expect(() => { RiTa.singularize(1) }).to.throw();
+    expect(RiTa.singularize("sheep", { dbug: true })).eq("sheep");
+    expect(RiTa.singularize("apples", { dbug: true })).eq("apple");
   });
 
   it('Should correctly call pluralize', () => {
@@ -708,12 +715,34 @@ describe('RiTa.Analyzer', () => {
     for (let i = 0; i < tests.length; i += 2) {
       expect(RiTa.pluralize(tests[i + 1])).eq(tests[i]);
     }
+
+    expect(RiTa.pluralize()).eq("");
+    expect(RiTa.pluralize("")).eq("");
+    expect(() => { RiTa.pluralize([1]) }).to.throw();
+    expect(() => { RiTa.pluralize(1) }).to.throw();
+    expect(RiTa.pluralize("sheep", { dbug: true })).eq("sheep");
+    expect(RiTa.pluralize("apple", { dbug: true })).eq("apples");
   });
 
   it('Should call phonesToStress', () => {
     expect(RiTa.analyzer.phonesToStress()).eq(undefined);
     expect(RiTa.analyzer.phonesToStress(" ")).eq("");
     expect(RiTa.analyzer.phonesToStress("ah b-ae1-n d-ah-n")).eq("0/1/0");
+  });
+
+  it('Should call isPlural', () => {
+    expect(RiTa.inflector.isPlural()).eq(false);
+    expect(RiTa.inflector.isPlural("")).eq(false);
+    expect(() => { RiTa.inflector.isPlural([1]) }).to.throw();
+    expect(() => { RiTa.inflector.isPlural(1) }).to.throw();
+    expect(RiTa.inflector.isPlural('sheep')).eq(true);
+    expect(RiTa.inflector.isPlural('apples')).eq(true);
+    expect(RiTa.inflector.isPlural('leaves', { debug: true })).eq(true);
+    expect(RiTa.inflector.isPlural('feet', { debug: true })).eq(true);
+    expect(RiTa.inflector.isPlural('beaux', { debug: true })).eq(false);
+    expect(RiTa.inflector.isPlural('child', { debug: true })).eq(false);
+    expect(RiTa.inflector.isPlural('abbots', { debug: true })).eq(true);
+    expect(RiTa.inflector.isPlural('happiness')).eq(true);
   });
 
   function ok(a, m) { expect(a, m).to.be.true; }
