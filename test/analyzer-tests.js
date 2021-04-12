@@ -11,6 +11,17 @@ describe('RiTa.Analyzer', () => {
     expect(data.phones).eq("ah-b-ae-n-d-ah-n ");
     expect(data.stresses).eq("0/1/0 ");
     expect(data.syllables).eq("ah/b-ae-n/d-ah-n ");
+
+    data = RiTa.analyzer.analyzeWord("z");
+    expect(data.phones).eq("z ");
+    expect(data.stresses).eq("0 ");
+    expect(data.syllables).eq("z ");
+    
+    // with lts
+    data = RiTa.analyzer.analyzeWord("cloze");
+    expect(data.phones).eq("k-l-ow-z ");
+    expect(data.stresses).eq("1 ");
+    expect(data.syllables).eq("k-l-ow-z ");
   });
 
   it('Should call analyze.lts', () => {
@@ -697,6 +708,12 @@ describe('RiTa.Analyzer', () => {
     for (let i = 0; i < tests.length; i += 2) {
       expect(RiTa.pluralize(tests[i + 1])).eq(tests[i]);
     }
+  });
+
+  it('Should call phonesToStress', () => {
+    expect(RiTa.analyzer.phonesToStress()).eq(undefined);
+    expect(RiTa.analyzer.phonesToStress(" ")).eq("");
+    expect(RiTa.analyzer.phonesToStress("ah b-ae1-n d-ah-n")).eq("0/1/0");
   });
 
   function ok(a, m) { expect(a, m).to.be.true; }
