@@ -7,8 +7,8 @@ class Inflector {
   }
 
   adjustNumber(word, type, dbug) {
-
-    if (!word || !word.length) return '';
+    if (word && typeof word !== 'string') throw Error(`${type === SING ? 'singularize()' : 'pluralize()'} requires a string as input`); // fix for singularize([1]) and similar calls
+    if (!word || word.length === 0) return '';
 
     word = word.trim();
 
@@ -39,8 +39,9 @@ class Inflector {
   }
 
   isPlural(word, opts) { // add to API?
+    if (word && typeof word !== 'string') throw Error(`isPlural() requires a string as input`); // similar to adjustNumber
 
-    if (!word || !word.length) return false;
+    if (!word || word.length === 0) return false;
 
     let dbug = opts && opts.debug;
     let fatal = opts && opts.fatal;
@@ -53,7 +54,7 @@ class Inflector {
     let sing = this.RiTa.singularize(word);
 
     // Is singularized form is in lexicon as 'nn'?
-    if (dict[sing] && dict[sing].length === 2) {
+    if (sing !== word && dict[sing] && dict[sing].length === 2) { // fix for words like child (mass nouns should have been detected above)
       let pos = dict[sing][1].split(' ');
       if (pos.includes('nn')) return true;
     }
