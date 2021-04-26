@@ -112,7 +112,7 @@ class Tagger {
     if (a && b) return a.concat(b);
     if (a) return a;
     if (b) return b;
-  }
+  } // ! this function is never used
 
   _derivePosData(word) {
     /*
@@ -192,7 +192,7 @@ class Tagger {
 
   _log(i, frm, to) { // log custom tag
     console.log("\n  Custom(" + i + ") tagged '" + frm + "' -> '" + to + "'\n\n");
-  }
+  }// this function will not be avaliable in built version since 'dbug' in tag() is fixed to 0
 
   // Applies a customized subset of the Brill transformations
   _applyContext(words, result, choices, dbug) {
@@ -231,7 +231,7 @@ class Tagger {
 
       // transform 2: convert a noun to a number (cd) if it is
       // all digits and/or a decimal "."
-      if (tag.startsWith("n") && !choices[i]) {
+      if (tag.startsWith("n")) { //choices[i] always exist (from allTags())
         if (Util.isNum(word)) {
           tag = "cd";
           dbug && this._log(2, word, tag);
@@ -278,7 +278,7 @@ class Tagger {
       if (tag.startsWith("nn") && word.endsWith("ing")) {
 
         // DH: fixed here -- add check on choices for any verb: eg. // 'morning'
-        if (this.hasTag(choices[i], "vb")) {
+        if (this.hasTag(choices[i], "vbg")) { // JC: fixed for 'fishing' and etc
           tag = "vbg";
           dbug && this._log(8, word, tag);
         }

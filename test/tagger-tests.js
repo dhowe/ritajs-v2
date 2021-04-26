@@ -612,9 +612,27 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.tagger.allTags('monkeys'), ["nns"]);
     eq(RiTa.tagger.allTags(''), undefined);
     eq(RiTa.tagger.allTags(['monkey']), undefined);
-    eq(RiTa.tagger.allTags("koainsdas", true), null);
-    eq(RiTa.tagger.allTags("koainsdas", true), null);
-    eql(RiTa.tagger.allTags("koainsdas"), ["nns"]);
+    eq(RiTa.tagger.allTags("hates", true), null);
+    eql(RiTa.tagger.allTags("satisfies"), ["vbz"]);
+    eql(RiTa.tagger.allTags("falsifies"), ["vbz"])
+    expect(RiTa.tagger.allTags("hates")).to.include("vbz");
+    expect(RiTa.tagger.allTags("hates")).to.include("nns");
+    expect(RiTa.tagger.allTags("cakes")).to.include("nns");
+    expect(RiTa.tagger.allTags("repossesses")).to.include("vbz");
+    expect(RiTa.tagger.allTags("thieves")).to.include("nns");
+    expect(RiTa.tagger.allTags("thieves")).to.include("vbz");
+    expect(RiTa.tagger.allTags("hated")).to.include("vbd");
+    expect(RiTa.tagger.allTags("hated")).to.include("vbn");
+    expect(RiTa.tagger.allTags("owed")).to.include("vbd");
+    expect(RiTa.tagger.allTags("owed")).to.include("vbn");
+    expect(RiTa.tagger.allTags("assenting")).to.include("vbg");
+    expect(RiTa.tagger.allTags("hating")).to.include("vbg");
+    expect(RiTa.tagger.allTags("feet")).to.include("nns");
+    expect(RiTa.tagger.allTags("men")).to.include("nns");
+    //given up
+    expect(RiTa.tagger.allTags("ashdj")).to.include("nn");
+    expect(RiTa.tagger.allTags("kahsdly")).to.include("rb");
+    expect(RiTa.tagger.allTags("asdkasws")).to.include("nns");
   });
 
   it('Should call hasTag', () => {
@@ -637,6 +655,38 @@ describe('RiTa.Tagger', () => {
     eq(RiTa.tagger.tag([], { inline: true }), "");
     eql(RiTa.tagger.tag(["I", "am", "happy", "."], { simple: true }), ["-", "v", "a", "-"]);
     eq(RiTa.tagger.tag(["I", "am", "happy", "."], { simple: true, inline: true }), "I/- am/v happy/a .");
+    eq(RiTa.tagger.tag(["I", "roll", "a", "9", "."], { inline: true }), "I/prp roll/vbp a/dt 9/cd .");
+    eq(RiTa.tagger.tag(["A", "badguy", "."], { inline: true }), "A/dt badguy/nn .");
+    eq(RiTa.tagger.tag(["A", "C", "level", "grade", "."], { inline: true }), "A/dt C/C level/jj grade/nn .");
+    // rule 1
+    eq(RiTa.tagger.tag(["The", "run", "was", "great", "."], { inline: true }), "The/dt run/nn was/vbd great/jj .");
+    eq(RiTa.tagger.tag(["They", "are", "the", "beaten", "."], { inline: true }), "They/prp are/vbp the/dt beaten/nn .");
+    eq(RiTa.tagger.tag(["A", "diss", "."], { inline: true }), "A/dt diss/nns .");
+    eq(RiTa.tagger.tag(["The", "soon", "."], { inline: true }), "The/dt soon/jj .");
+    eq(RiTa.tagger.tag(["The", "sooner", "."], { inline: true }), "The/dt sooner/jjr .");
+    eq(RiTa.tagger.tag(["The", "soonest", "."], { inline: true }), "The/dt soonest/jjs .");
+    //rule 2
+    eq(RiTa.tagger.tag(["It", "is", "59876", "."], { inline: true }), "It/prp is/vbz 59876/cd .");
+    //rule 3
+    eq(RiTa.tagger.tag(["I", "gooded", "."], { inline: true }), "I/prp gooded/vbn .");
+    eq(RiTa.tagger.tag(["Sun", "gooded", "."], { inline: true }), "Sun/nn gooded/vbn .");
+    //rule 4
+    eq(RiTa.tagger.tag(["The", "fortunately", "."], { inline: true }), "The/dt fortunately/rb ."); // 1-b then 4
+    eq(RiTa.tagger.tag(["He", "is", "goodly", "working", "."], { inline: true }), "He/prp is/vbz goodly/rb working/vbg .");
+    //rule 5
+    eq(RiTa.tagger.tag(["It", "is", "nonexistional", "."], { inline: true }), "It/prp is/vbz nonexistional/jj .");
+    eq(RiTa.tagger.tag(["It", "is", "mammal", "."], { inline: true }), "It/prp is/vbz mammal/nn .");
+    eq(RiTa.tagger.tag(["It", "is", "onal", "."], { inline: true }), "It/prp is/vbz onal/nn .");
+    //rule 6
+    eq(RiTa.tagger.tag(["We", "must", "place", "it", "."], { inline: true }), "We/prp must/md place/vb it/prp .");
+    eq(RiTa.tagger.tag(["We", "must", "teabag", "him", "."], { inline: true }), "We/prp must/md teabag/vb him/prp .");
+    //rule 7 
+    eq(RiTa.tagger.tag(["He", "has", "played", "it", "."], { inline: true }), "He/prp has/vbz played/vbn it/prp .");
+    eq(RiTa.tagger.tag(["He", "gets", "played", "."], { inline: true }), "He/prp gets/vbz played/vbn .");
+    //rule 8
+    eq(RiTa.tagger.tag(["The", "morning", "."], { inline: true }), "The/dt morning/nn .");
+    eq(RiTa.tagger.tag(["They", "are", "fishing", "."], { inline: true }), "They/prp are/vbp fishing/vbg .");
+    //rule 9
   });
 
   function eql(a, b, m) { expect(a).eql(b, m); }
