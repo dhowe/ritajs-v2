@@ -29,12 +29,7 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos("Elephants dance".split(/ /), { simple: true }), ["n", "v"]);
     eql(RiTa.pos("the boy dances".split(/ /), { simple: true }), ["-", "n", "v"]);
   });
-
-  it('Should call allTags', () => {
-    eql(RiTa.tagger.allTags('monkey'), ["nn"]);
-    eql(RiTa.tagger.allTags('monkeys'), ["nns"]);
-  });
-
+  
   it('Should call pos.array.inline.simple', () => {
     let result, answer, txt;
 
@@ -349,7 +344,11 @@ describe('RiTa.Tagger', () => {
 
   it('Should call isAdverb', () => {
 
+    //bad inputs
     ok(!RiTa.isAdverb(""));
+    ok(!RiTa.isAdverb());
+    ok(!RiTa.isAdverb(42));
+    ok(!RiTa.isAdverb(["lively"]));
 
     ok(!RiTa.isAdverb("swim"));
     ok(!RiTa.isAdverb("walk"));
@@ -462,6 +461,12 @@ describe('RiTa.Tagger', () => {
     ok(!RiTa.isNoun("sleepily"));
     ok(!RiTa.isNoun("excitedly"));
     ok(!RiTa.isNoun("energetically"));
+
+    //bad inputs
+    ok(!RiTa.isNoun(""));
+    ok(!RiTa.isNoun());
+    ok(!RiTa.isNoun(42));
+    ok(!RiTa.isNoun(["rabbit"]));
   });
 
   it('Should call isVerb', () => {
@@ -540,6 +545,12 @@ describe('RiTa.Tagger', () => {
     ok(RiTa.isVerb("hates"));
     ok(RiTa.isVerb("hated"));
     ok(RiTa.isVerb("ridden"));
+
+    // bad inputs
+    ok(!RiTa.isVerb(""));
+    ok(!RiTa.isVerb());
+    ok(!RiTa.isVerb(42));
+    ok(!RiTa.isVerb(["work"]));
   });
 
   it('Should call isAdjective', () => {
@@ -586,6 +597,46 @@ describe('RiTa.Tagger', () => {
     ok(!RiTa.isAdjective("sleepily"));
     ok(!RiTa.isAdjective("excitedly"));
     ok(!RiTa.isAdjective("energetically"));
+
+    //bad inputs
+    ok(!RiTa.isAdjective(""));
+    ok(!RiTa.isAdjective());
+    ok(!RiTa.isAdjective(42));
+    ok(!RiTa.isAdjective(["happy"]));
+  });
+
+  //test helpers
+
+  it('Should call allTags', () => {
+    eql(RiTa.tagger.allTags('monkey'), ["nn"]);
+    eql(RiTa.tagger.allTags('monkeys'), ["nns"]);
+    eq(RiTa.tagger.allTags(''), undefined);
+    eq(RiTa.tagger.allTags(['monkey']), undefined);
+    eq(RiTa.tagger.allTags("koainsdas", true), null);
+    eq(RiTa.tagger.allTags("koainsdas", true), null);
+    eql(RiTa.tagger.allTags("koainsdas"), ["nns"]);
+  });
+
+  it('Should call hasTag', () => {
+    ok(!RiTa.tagger.hasTag());
+    ok(!RiTa.tagger.hasTag('nn adj', 'nn'));
+    ok(RiTa.tagger.hasTag(RiTa.tagger.allTags('monkey'), 'nn'));
+  });
+
+  it('Should call inlineTags', () => {
+    eq(RiTa.tagger.inlineTags(), "");
+    eq(RiTa.tagger.inlineTags([]), "");
+    expect(() => { RiTa.tagger.inlineTags(["I", "am", "Pikachu"], [], "/"); }).to.throw();
+    eq(RiTa.tagger.inlineTags(["I", "am", "happy", "."], ["prp", "vbp", "jj", "."]), "I/prp am/vbp happy/jj .");
+    eq(RiTa.tagger.inlineTags(["I", "am", "happy", "."], ["prp", "vbp", "jj", "."], ";"), "I;prp am;vbp happy;jj .");
+  });
+
+  it('Should call tag', () => {
+    eql(RiTa.tagger.tag([]), []);
+    eql(RiTa.tagger.tag(), []);
+    eq(RiTa.tagger.tag([], { inline: true }), "");
+    eql(RiTa.tagger.tag(["I", "am", "happy", "."], { simple: true }), ["-", "v", "a", "-"]);
+    eq(RiTa.tagger.tag(["I", "am", "happy", "."], { simple: true, inline: true }), "I/- am/v happy/a .");
   });
 
   function eql(a, b, m) { expect(a).eql(b, m); }

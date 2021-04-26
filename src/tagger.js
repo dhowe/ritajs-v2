@@ -55,7 +55,7 @@ class Tagger {
   }
 
   allTags(word, noDerivations) { // returns an array of choices
-    if (word && word.length) {
+    if (word && typeof word === 'string' && word.length) { // fix error when sth like allTags(['word']) is called
       let posData = this.RiTa.lexicon()._posArr(word);
       return posData || (noDerivations ? null : this._derivePosData(word));
     }
