@@ -668,8 +668,9 @@ describe('RiTa.Tagger', () => {
     //rule 2
     eq(RiTa.tagger.tag(["It", "is", "59876", "."], { inline: true }), "It/prp is/vbz 59876/cd .");
     //rule 3
-    eq(RiTa.tagger.tag(["I", "gooded", "."], { inline: true }), "I/prp gooded/vbn .");
-    eq(RiTa.tagger.tag(["Sun", "gooded", "."], { inline: true }), "Sun/nn gooded/vbn .");
+    eq(RiTa.tagger.tag(["I", "teabaged", "."], { inline: true }), "I/prp teabaged/vbn .");
+    eq(RiTa.tagger.tag(["Sun", "teabaged", "."], { inline: true }), "Sun/nn teabaged/vbn .");
+    eq(RiTa.tagger.tag(["The", "worker", "proletarianized", "."], { inline: true }), "The/dt worker/nn proletarianized/vbn .");
     //rule 4
     eq(RiTa.tagger.tag(["The", "fortunately", "."], { inline: true }), "The/dt fortunately/rb ."); // 1-b then 4
     eq(RiTa.tagger.tag(["He", "is", "goodly", "working", "."], { inline: true }), "He/prp is/vbz goodly/rb working/vbg .");
@@ -687,6 +688,31 @@ describe('RiTa.Tagger', () => {
     eq(RiTa.tagger.tag(["The", "morning", "."], { inline: true }), "The/dt morning/nn .");
     eq(RiTa.tagger.tag(["They", "are", "fishing", "."], { inline: true }), "They/prp are/vbp fishing/vbg .");
     //rule 9
+    eq(RiTa.tagger.tag(["He", "dances", "."], { inline: true }), "He/prp dances/vbz .");
+    eq(RiTa.tagger.tag(["The", "dog", "dances", "."], { inline: true }), "The/dt dog/nn dances/vbz .");
+    eq(RiTa.tagger.tag(["Dave", "dances", "."], { inline: true }), "Dave/nnp dances/vbz .");
+    //rule 10
+    eq(RiTa.tagger.tag(["Taipei", "."], { inline: true }), "Taipei/nnp .");
+    eq(RiTa.tagger.tag(["Buddhas", "."], { inline: true }), "Buddhas/nnps .");
+    eq(RiTa.tagger.tag(["In", "Beijing", "."], { inline: true }), "In/in Beijing/nnp .");
+    eq(RiTa.tagger.tag(["One", "of", "the", "Beats", "."], { inline: true }), "One/cd of/in the/dt Beats/nnps .");
+    eq(RiTa.tagger.tag(["Taipei", "is", "a", "big", "city", "."], { inline: true }), "Taipei/nnp is/vbz a/dt big/jj city/nn .");
+    eq(RiTa.tagger.tag(["Buddhas", "in", "this", "temple", "have", "a", "history", "of", "500", "years", "."], { inline: true }), "Buddhas/nnps in/in this/dt temple/nn have/vbp a/dt history/nn of/in 500/cd years/nns .");
+    eq(RiTa.tagger.tag(["Balls", "on", "the", "floor", "."], { inline: true }), "Balls/nns on/in the/dt floor/nn .");
+    //rule 11
+    eq(RiTa.tagger.tag(["dances", "."], { inline: true }), "dances/nns .");
+    eq(RiTa.tagger.tag(["dances", "and", "performances", "."], { inline: true }), "dances/nns and/cc performances/nns .");
+    eq(RiTa.tagger.tag(["cakes", "quickly", "."], { inline: true }), "cakes/nns quickly/rb .");
+    eq(RiTa.tagger.tag(["dances", "quickly", "."], { inline: true }), "dances/vbz quickly/rb .");
+    //rule 12
+    eq(RiTa.tagger.tag(["David", "cakes", "."], { inline: true }), "David/nnp cakes/nns .");
+    eq(RiTa.tagger.tag(["David", "laughs", "and", "dances", "."], { inline: true }), "David/nnp laughs/vbz and/cc dances/vbz .");
+    eq(RiTa.tagger.tag(["counterattacks", "."], { inline: true }), "counterattacks/nns .");
+    //rule 13
+    eq(RiTa.tagger.tag(["Monkeys", "run", "."], { inline: true }), "Monkeys/nns run/vbp .");
+    eq(RiTa.tagger.tag(["Monkeys", "attack", "."], { inline: true }), "Monkeys/nns attack/vbp .");
+    //
+    eq(RiTa.tagger.tag(["A", "light", "blue", "sky", "."], { inline: true }), "A/dt light/jj blue/jj sky/nn .");
   });
 
   function eql(a, b, m) { expect(a).eql(b, m); }
