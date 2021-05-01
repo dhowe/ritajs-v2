@@ -16,6 +16,8 @@ describe('RiTa.RiMarkov', () => {
 
   it('should call RiMarkov', () => {
     ok(typeof new RiMarkov(3) !== 'undefined');
+    //should throw when options conflict
+    expect(() => { let rm = new RiMarkov(3, { maxLengthMatch: 2 }) }).to.throw();
   });
 
   it('should call createRiMarkov', () => {
@@ -135,6 +137,14 @@ describe('RiTa.RiMarkov', () => {
     let rm = new RiMarkov(4);
     rm.addText(RiTa.sentences(sample));
     expect(() => rm.generate(5)).to.throw;
+
+    rm = new RiMarkov(4, { maxLengthMatch: 5 });
+    rm.addText(RiTa.sentences(sample));
+    expect(() => rm.generate(5)).to.throw;
+    
+    rm = new RiMarkov(4, { maxAttempts: 1 });
+    rm.addText("This is a text that is too short.");
+    expect(() => rm.generate(5)).to.throw;
   });
 
   it('should generate non-english sentences', () => {
@@ -165,8 +175,21 @@ describe('RiTa.RiMarkov', () => {
   });
 
   it('should call generate', () => {
+    //with no count
+    let rm = new RiMarkov(4, { disableInputChecks: true });
+    rm.addText(RiTa.sentences(sample));
 
-    let rm = new RiMarkov(4, { disableInputChecks: 1 });
+    let sent = rm.generate();
+    ok(typeof sent === 'string');
+    eq(sent[0], sent[0].toUpperCase());
+    ok(/[!?.]$/.test(sent));
+
+    sent = rm.generate({ seed: "I" });
+    ok(typeof sent === 'string');
+    eq(sent[0], "I");
+    ok(/[!?.]$/.test(sent));
+
+    rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
     let sents = rm.generate(5);
     eq(sents.length, 5);
@@ -240,6 +263,21 @@ describe('RiTa.RiMarkov', () => {
       eq(arr.length, 2);
       ok(arr[0].startsWith(start));
     }
+    //should throw when sentence start is not found
+    start = "Not-exist";
+    expect(() => { rm.generate(2, { seed: start }) }).to.throw();
+    start = "I and she";
+    expect(() => { rm.generate(2, { seed: start }) }).to.throw();
+    //if startToken is empty string, equal to not have start token
+    start = "";
+    ok(rm.generate(2, { seed: start }).length === 2);
+    //if startToken is just space, throw
+    start = " ";
+    expect(() => { rm.generate(2, { seed: start }) }).to.throw();
+    //if startToken is an array
+    start = ["a"]
+    expect(rm.generate(2, { seed: start }).length).eq(2);
+    expect(rm.generate({ seed: start })[0].toLowerCase()).eq("a");
   });
 
   it('should call generate.startArray', () => {
@@ -294,6 +332,7 @@ describe('RiTa.RiMarkov', () => {
   it('should call generate.mlm', () => {
 
     let mlms = 7, rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
+    expect(typeof rm.input === 'object').to.be.true;
     rm.addText(RiTa.sentences(sample3));
     let sents = rm.generate(5);
     for (let i = 0; i < sents.length; i++) {
@@ -367,6 +406,17 @@ describe('RiTa.RiMarkov', () => {
 
     res = rm.completions(['I', 'did'], ['want']);
     eql(res, ["not", "occasionally"]);
+
+    //should throw at bad inputs
+    expect(() => { rm.completions(['I', 'did', 'not', 'occasionally'], ['want']); }).to.throw();
+
+    //should return undefined if completions not found
+    res = rm.completions(['I', 'non-exist'], ['want']);
+    eq(res, undefined);
+    RiTa.SLIENT = true;
+    res = rm.completions(['I', 'non-exist'], ['want']);
+    eq(res, undefined);
+    RiTa.SLIENT = false;
   });
 
   it('should call probabilities', () => {
@@ -571,6 +621,10 @@ describe('RiTa.RiMarkov', () => {
 
   it('should serialize and deserialize', () => {
     let rm, copy;
+    rm = new RiMarkov(4);
+    copy = RiMarkov.fromJSON(rm.toJSON());
+    markovEquals(rm, copy);
+
     rm = new RiMarkov(4, { disableInputChecks: 0 });
     rm.addText(['I ate the dog.']);
     copy = RiMarkov.fromJSON(rm.toJSON());
@@ -581,6 +635,16 @@ describe('RiTa.RiMarkov', () => {
     copy = RiMarkov.fromJSON(rm.toJSON());
     markovEquals(rm, copy);
     expect(copy.generate()).eql(rm.generate());
+  });
+
+  it('Should output log with trace option', () => {
+    let rm = new RiMarkov(4, { maxAttempts: 2, trace: true });
+    rm.addText("This is a text that is too short.");
+    expect(() => rm.generate(5)).to.throw;
+
+    rm = new RiMarkov(3, { trace: true, maxLengthMatch: 10 });
+    rm.addText(sample3);
+    expect(rm.generate(2).length).eq(2);
   });
 
   /////////////////////////// helpers ////////////////////////////
