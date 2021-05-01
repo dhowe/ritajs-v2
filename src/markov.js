@@ -220,7 +220,7 @@ class RiMarkov {
 
     root = root || this.root;
 
-    let tokens = [root.child(RiMarkov.SS).pselect()];
+    let tokens = this.n < 2 ? [root.pselect()] : [root.child(RiMarkov.SS).pselect()];
     if (initWith) {
       tokens = [];
       let st = this._pathTo(initWith, root);
@@ -267,7 +267,7 @@ class RiMarkov {
 
   /* create a sentence string from an array of nodes */
   _flatten(nodes) {
-    if (!nodes || !nodes.length) return '';
+    if (!nodes || (Array.isArray(nodes) && !nodes.length)) return '';
     if (nodes.token) return nodes.token; // single-node
     return this.untokenize(nodes.map(n => n.token));
   }
