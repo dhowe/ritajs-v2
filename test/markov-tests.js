@@ -125,13 +125,18 @@ describe('RiTa.RiMarkov', () => {
     rm.addText(txt);
     let toks = rm._initSentence();
     eq(toks.length, 1);
-    eq(toks[0].token, 'The');
+    eq(rm._flatten(toks), "The");
+    eq(rm._flatten(toks[0]), "The");
 
     rm = new RiMarkov(4);
     rm.addText(RiTa.sentences(sample));
     eq(rm._flatten(rm._initSentence(['I', 'also'])), "I also");
-  });
 
+    rm = new RiMarkov(4);
+    rm.addText(RiTa.sentences(sample));
+    eq(rm._flatten(rm._initSentence('I')), "I");
+    eq(rm._flatten(), "");
+  });
 
   it('should throw on failed generate', () => {
     let rm = new RiMarkov(4);
@@ -175,8 +180,15 @@ describe('RiTa.RiMarkov', () => {
   });
 
   it('should call generate', () => {
+    //will not crash when n = 1
+    let rm = new RiMarkov(1);
+    rm.addText(RiTa.sentences(sample));
+    let res = rm.generate(2);
+    eq(res.length, 2);
+    ok(typeof res[0] === 'string' && res[0].length > 0);
+    ok(typeof res[1] === 'string' && res[1].length > 0);
     //with no count
-    let rm = new RiMarkov(4, { disableInputChecks: true });
+    rm = new RiMarkov(4, { disableInputChecks: true });
     rm.addText(RiTa.sentences(sample));
 
     let sent = rm.generate();
