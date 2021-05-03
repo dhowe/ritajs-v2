@@ -536,6 +536,9 @@ describe('RiTa.RiMarkov', () => {
     rm = new RiMarkov(3);
     rm.addText(sample);
     eq(rm.probability("power"), 0.017045454545454544);
+
+    //bad inputs
+    expect(rm.probability("Non-exist")).eq(0);
   });
 
   it('should call probability.array', () => {
@@ -597,6 +600,20 @@ describe('RiTa.RiMarkov', () => {
     rm.addText('The dog ate the cat');
     //console.log(rm.toString());
     expect(exp).eq(rm.toString().replace(/\n/g, ' '));
+
+    rm = new RiMarkov(2);
+    eq(rm.toString(), "ROOT ")
+    exp = "ROOT {\n  'you' [1,p=0.200]  {\n    '?' [1,p=1.000]\n  }\n  'Can' [1,p=0.200]  {\n    'you' [1,p=1.000]\n  }\n  '<s>' [1,p=0.200]  {\n    'Can' [1,p=1.000]\n  }\n  '</s>' [1,p=0.200]\n  '?' [1,p=0.200]  {\n    '</s>' [1,p=1.000]\n  }\n}"
+    rm.addText("Can you?");
+    eq(rm.toString(), exp);
+
+    eq(rm.root.toString(), "Root");
+    eq(rm.root.child("Can").toString(), "Can(1/0.200%)");
+
+    rm = new RiMarkov(2);
+    rm.addText("\\n and \\t and \\r and \\r\\n");
+    exp = "ROOT {\n  'and' [3,p=0.333]  {\n    '\\t' [1,p=0.333]\n    '\\r\\n' [1,p=0.333]\n    '\\r' [1,p=0.333]\n  }\n  '<s>' [1,p=0.111]  {\n    '\\n' [1,p=1.000]\n  }\n  '</s>' [1,p=0.111]\n  '\\t' [1,p=0.111]  {\n    'and' [1,p=1.000]\n  }\n  '\\r\\n' [1,p=0.111]  {\n    '</s>' [1,p=1.000]\n  }\n  '\\r' [1,p=0.111]  {\n    'and' [1,p=1.000]\n  }\n  '\\n' [1,p=0.111]  {\n    'and' [1,p=1.000]\n  }\n}";
+    eq(rm.toString(), exp);
   });
 
   it('should call size', () => {
