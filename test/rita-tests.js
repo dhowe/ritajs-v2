@@ -646,6 +646,35 @@ describe('RiTa.Core', () => {
     result = RiTa.kwic("cat", 4);
     expect(result[0]).eq("The dog ate the cat, what a tragedy");
     expect(result[1]).eq("Little Kali loves the cat, it was her");
+
+    RiTa.concordance("A sentence includes cat. Another sentence includes cat.")
+    result = RiTa.kwic("cat", { numWords: 4 });
+    expect(result[0]).eq("A sentence includes cat. Another sentence includes");
+    expect(result[1]).eq(". Another sentence includes cat.");
+
+    RiTa.concordance("The dog ate the cat, what a tragedy! Little Kali loves the cat, it was her best friend.");
+    result = RiTa.kwic("cat", { numWords: 4 });
+    expect(result[0]).eq("The dog ate the cat, what a tragedy");
+    expect(result[1]).eq("Little Kali loves the cat, it was her");
+
+    //use options.text or options.word to override kwic model
+    result = RiTa.kwic("fish", { text: "The dog ate the cat that ate the fish." });
+    expect(result.length).eq(1);
+    expect(result[0]).eq("ate the cat that ate the fish.");
+
+    result = RiTa.kwic("fish", { words: RiTa.tokenize("The dog ate the cat that ate the fish.") });
+    expect(result.length).eq(1);
+    expect(result[0]).eq("ate the cat that ate the fish.");
+
+    result = RiTa.kwic("fish", { words: RiTa.tokenize("The dog ate the cat that ate the fish. He yelled at the dog and buy a new fish."), numWords: 7});
+    expect(result.length).eq(2);
+    expect(result[0]).eq("dog ate the cat that ate the fish. He yelled at the dog and");
+    expect(result[1]).eq("at the dog and buy a new fish.");
+
+    result = RiTa.kwic("fish", { text: "The dog ate the cat that ate the fish. He yelled at the dog and buy a new fish.", numWords: 7});
+    expect(result.length).eq(2);
+    expect(result[0]).eq("dog ate the cat that ate the fish. He yelled at the dog and");
+    expect(result[1]).eq("at the dog and buy a new fish.")
   });
 
   it('Should call sentences', () => {

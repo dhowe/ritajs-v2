@@ -1190,7 +1190,7 @@ describe('RiTa.RiScript', function () {
         }
       };
       let res = RiTa.evaluate(rs, gameState);
-      expect(/Wing has [0-9]{1,2} secs left/.test(res)).true;
+      expect(/Wing has [0-9]{1,2} secs left\./.test(res)).true;
     });
 
     it('Should resolve parameterized transforms', () => {

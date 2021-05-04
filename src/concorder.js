@@ -26,7 +26,7 @@ class Concorder {
     let numWords = 6;
     if (typeof opts === 'object') { 
       numWords = opts['numWords'];
-      text = opts['text'];
+      //text = opts['text'];
       if (opts['text'] && opts['text'].length) this.concordance(opts['text'], opts);
       if (opts['words'] && opts['words'].length) this.concordance(opts['words'], opts); 
     }
