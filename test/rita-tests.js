@@ -669,6 +669,11 @@ describe('RiTa.Core', () => {
     result = RiTa.kwic("fish", { words: "The dog ate the cat that ate the fish. He yelled at the dog and buy a new fish.", numWords: 7});
     expect(result.length).eq(2);
     expect(result[0]).eq("dog ate the cat that ate the fish. He yelled at the dog and");
+    expect(result[1]).eq("at the dog and buy a new fish.");
+
+    result = RiTa.kwic("fish", { text: "The dog ate the cat that ate the fish. He yelled at the dog and buy a new fish.", numWords: 7});
+    expect(result.length).eq(2);
+    expect(result[0]).eq("dog ate the cat that ate the fish. He yelled at the dog and");
     expect(result[1]).eq("at the dog and buy a new fish.")
   });
 
