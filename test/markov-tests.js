@@ -422,13 +422,18 @@ describe('RiTa.RiMarkov', () => {
     //should throw at bad inputs
     expect(() => { rm.completions(['I', 'did', 'not', 'occasionally'], ['want']); }).to.throw();
 
+    let tmp = RiTa.SILENT;
+    RiTa.SILENT = true;
+
     //should return undefined if completions not found
     res = rm.completions(['I', 'non-exist'], ['want']);
     eq(res, undefined);
-    RiTa.SLIENT = true;
+
+
     res = rm.completions(['I', 'non-exist'], ['want']);
     eq(res, undefined);
-    RiTa.SLIENT = false;
+    
+    RiTa.SILENT = tmp;
   });
 
   it('should call probabilities', () => {
@@ -666,7 +671,7 @@ describe('RiTa.RiMarkov', () => {
     expect(copy.generate()).eql(rm.generate());
   });
 
-  it('Should output log with trace option', () => {
+  0 && it('Should output log with trace option', () => {
     let rm = new RiMarkov(4, { maxAttempts: 2, trace: true });
     rm.addText("This is a text that is too short.");
     expect(() => rm.generate(5)).to.throw;

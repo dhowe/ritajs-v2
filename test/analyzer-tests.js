@@ -7,21 +7,26 @@ describe('RiTa.Analyzer', () => {
 
   it('Should call analyzeWord', () => {
 
+    let tmp = RiTa.SILENCE_LTS;
+    RiTa.SILENCE_LTS = true;
+
     let data = RiTa.analyzer.analyzeWord("abandon");
     expect(data.phones).eq("ah-b-ae-n-d-ah-n ");
     expect(data.stresses).eq("0/1/0 ");
     expect(data.syllables).eq("ah/b-ae-n/d-ah-n ");
 
+    // with lts
     data = RiTa.analyzer.analyzeWord("z");
     expect(data.phones).eq("z ");
     expect(data.stresses).eq("0 ");
     expect(data.syllables).eq("z ");
     
-    // with lts
     data = RiTa.analyzer.analyzeWord("cloze");
     expect(data.phones).eq("k-l-ow-z ");
     expect(data.stresses).eq("1 ");
     expect(data.syllables).eq("k-l-ow-z ");
+
+    RiTa.SILENCE_LTS = tmp;
   });
 
   it('Should call analyze.lts', () => {
@@ -597,8 +602,8 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.singularize("")).eq("");
     expect(() => { RiTa.singularize([1]) }).to.throw();
     expect(() => { RiTa.singularize(1) }).to.throw();
-    expect(RiTa.singularize("sheep", { dbug: true })).eq("sheep");
-    expect(RiTa.singularize("apples", { dbug: true })).eq("apple");
+/*     expect(RiTa.singularize("sheep", { dbug: true })).eq("sheep");
+    expect(RiTa.singularize("apples", { dbug: true })).eq("apple"); */
   });
 
   it('Should correctly call pluralize', () => {
@@ -720,8 +725,8 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.pluralize("")).eq("");
     expect(() => { RiTa.pluralize([1]) }).to.throw();
     expect(() => { RiTa.pluralize(1) }).to.throw();
-    expect(RiTa.pluralize("sheep", { dbug: true })).eq("sheep");
-    expect(RiTa.pluralize("apple", { dbug: true })).eq("apples");
+/*     expect(RiTa.pluralize("sheep", { dbug: true })).eq("sheep");
+    expect(RiTa.pluralize("apple", { dbug: true })).eq("apples"); */
   });
 
   it('Should call phonesToStress', () => {
@@ -737,11 +742,16 @@ describe('RiTa.Analyzer', () => {
     expect(() => { RiTa.inflector.isPlural(1) }).to.throw();
     expect(RiTa.inflector.isPlural('sheep')).eq(true);
     expect(RiTa.inflector.isPlural('apples')).eq(true);
-    expect(RiTa.inflector.isPlural('leaves', { debug: true })).eq(true);
+/*     expect(RiTa.inflector.isPlural('leaves', { debug: true })).eq(true);
     expect(RiTa.inflector.isPlural('feet', { debug: true })).eq(true);
     expect(RiTa.inflector.isPlural('beaux', { debug: true })).eq(false);
     expect(RiTa.inflector.isPlural('child', { debug: true })).eq(false);
-    expect(RiTa.inflector.isPlural('abbots', { debug: true })).eq(true);
+    expect(RiTa.inflector.isPlural('abbots', { debug: true })).eq(true); */
+    expect(RiTa.inflector.isPlural('leaves', { debug: false })).eq(true);
+    expect(RiTa.inflector.isPlural('feet', { debug: false })).eq(true);
+    expect(RiTa.inflector.isPlural('beaux', { debug: false })).eq(false);
+    expect(RiTa.inflector.isPlural('child', { debug: false })).eq(false);
+    expect(RiTa.inflector.isPlural('abbots', { debug: false })).eq(true);
     expect(RiTa.inflector.isPlural('happiness')).eq(true);
   });
 
@@ -753,18 +763,18 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.analyzer.computePhones("")).eq(undefined);
     expect(RiTa.analyzer.computePhones(",")).eq(undefined);
     // non - english input -> return null
-    expect(RiTa.analyzer.computePhones("你好")).eq(null);
-    expect(RiTa.analyzer.computePhones("Künste")).eq(null);
-    expect(RiTa.analyzer.computePhones("你好", { silent:false })).eq(null);
-    expect(RiTa.analyzer.computePhones("Künste", { silent:false })).eq(null);
+    /* expect(RiTa.analyzer.computePhones("你好")).eq(null);
+    expect(RiTa.analyzer.computePhones("Künste")).eq(null); */
+    expect(RiTa.analyzer.computePhones("你好", { silent:true })).eq(null);
+    expect(RiTa.analyzer.computePhones("Künste", { silent:true })).eq(null);
     //setting slience option
     expect(RiTa.analyzer.computePhones("leo", { silent: true })).eql(["l", "iy", "ow"]);
-    expect(RiTa.analyzer.computePhones("leo", { silent: false })).eql(["l", "iy", "ow"]);
+    //expect(RiTa.analyzer.computePhones("leo", { silent: false })).eql(["l", "iy", "ow"]);
     //numbers
     expect(RiTa.analyzer.computePhones("1")).eql(["w-ah-n"]);
     expect(RiTa.analyzer.computePhones("50")).eql(["f-ay-v", "z-ih-r-ow"]);
     //with "'"
-    expect(RiTa.analyzer.computePhones("student's", { silent: false })).eql(["s", "t", "uw1", "d", "eh1", "n", "t", "z"]);
+    //expect(RiTa.analyzer.computePhones("student's", { silent: false })).eql(["s", "t", "uw1", "d", "eh1", "n", "t", "z"]);
   });
 
   function ok(a, m) { expect(a, m).to.be.true; }
