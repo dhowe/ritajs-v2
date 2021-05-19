@@ -4222,7 +4222,7 @@ module && (module.exports = {
   "count":["k-aw1-n-t","nn vb vbp"],
   "countdown":["k-aw1-n-t d-aw-n","nn"],
   "countenance":["k-aw1-n t-ah n-ah-n-s","nn vb"],
-  "counter":["k-aw1-n t-er","nn in jj rb vb vbp"],
+  "counter":["k-aw1-n t-er","nn vb vbp"],
   "counteract":["k-aw1-n t-er ae-k-t","vb"],
   "counterattack":["k-aw1-n t-er ah t-ae-k","nn vb"],
   "counterbalance":["k-aw1-n t-er b-ae l-ah-n-s","vb nn"],
