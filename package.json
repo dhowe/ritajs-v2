@@ -1,6 +1,6 @@
 {
   "name": "rita",
-  "version": "2.4.86",
+  "version": "2.4.87",
   "author": "Daniel C. Howe",
   "license": "GPL-3.0",
   "description": "tools for generative natural language",
@@ -84,4 +84,3 @@
     "webpack-cli": "^3.3.10"
   }
 }
-
