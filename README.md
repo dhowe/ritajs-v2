@@ -5,6 +5,14 @@
 
 RiTa is implemented in Java and JavaScript, with a common API for both, and is free/libre/open-source via the GPL license.
 
+### Features in v2.0
+
+* Smart lexicon search for words matching part-of-speech, syllable, stress and rhyme patterns
+* Fast, heuristic algorithms for inflection, conjugation, stemming, tokenization, and more
+* Letter-to-sound engine for feature analysis of arbitrary words (with/without lexicon)
+* Integration of the [RiScript](https://observablehq.com/@dhowe/riscript) scripting language, designed for writers
+* Powerful new options for generation via grammars and Markov chains
+
 Note: version 2.0 contains breaking changes -- please check the [release notes](https://rednoise.org/rita/#whats-new-wrapper)
 
 ### Installation
