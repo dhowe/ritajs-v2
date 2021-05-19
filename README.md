@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/dhowe/RiTaJS.svg?branch=master)](https://travis-ci.org/dhowe/ritajs)[![Unit Tests](https://github.com/dhowe/ritajs/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/dhowe/ritajs/actions?query=workflow%3A%22unit+tests%22) <a href="http://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL-orange.svg" alt="license"></a> <a href="https://www.npmjs.com/package/rita"><img src="https://img.shields.io/npm/v/rita.svg" alt="npm version"></a> <!--[![](https://data.jsdelivr.com/v1/package/npm/rita/badge)](https://www.jsdelivr.com/package/npm/rita)--> [![CDNJS](https://img.shields.io/cdnjs/v/rita.svg)](https://cdnjs.com/libraries/rita/) 
 
 
-## RiTa: a toolkit for generative writing and natural language
+## RiTa: tools for generative natural language
 
 RiTa is a toolkit for generative writing and natural language. It is implemented in [Java](https://github.com/dhowe/rita4j/) and JavaScript, with a common API for both, and is free/libre/open-source via the GPL license.
 
