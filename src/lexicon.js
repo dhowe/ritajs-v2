@@ -116,33 +116,6 @@ class Lexicon {
     return result;
   }
 
-  randomWord(opts = {}) {
-
-    opts.minLength = opts.minLength || 4; // not 3
-    this.parseArgs(opts);
-
-    const dict = this._dict(true);
-    const words = Object.keys(dict);
-    const ran = Math.floor(this.RiTa.random(words.length));
-
-    let _silent = opts.silent;
-    opts.silent = true; // auto-silent
-
-    for (let k = 0; k < words.length; k++) {
-      let j = (ran + k) % words.length;
-      let word = words[j], rdata = dict[word];
-      if (!this.checkCriteria(word, rdata, opts)) continue;
-      if (!opts.targetPos) return word // done if no pos to match
-
-      let result = this.matchPos(word, rdata, opts, true);
-      if (result) return result;
-    }
-
-    opts.silent = _silent; // reset
-
-    throw Error('No random word with options: ' + JSON.stringify(opts));
-  }
-
   spellsLike(word, opts = {}) {
     if (!word || !word.length) return [];
     opts.type = 'letter';
@@ -157,6 +130,11 @@ class Lexicon {
       : this.similarByType(word, opts);
   }
 
+  randomWord(opts = {}) {
+    opts.limit = 1; // delegate to search
+    return this.search(0, opts)[0];
+  }
+
   search(regex, opts = {}) {
 
     let dict = this._dict(true);
@@ -166,9 +144,7 @@ class Lexicon {
       if (opts.type === 'stresses' && /^[01]+$/.test(regex)) {
         /* if we have a stress string without slashes, add them
            010 -> 0/1/0, ^010$ -> ^0/1/0$, etc. */
-        //regex = regex.replace(/(?<=[01])([01])/g, "/$1"); // # no lookbehind support in safari
         regex = regex.replace(/([01])(?=([01]))/g, "$1/");
-        //console.log(regex);
       }
       regex = new RegExp(regex);
     }
@@ -176,7 +152,7 @@ class Lexicon {
       opts = regex;  // single argument which is opts
       regex = undefined;
     }
-    // else it is a regex object
+    // else a regex object
 
     this.parseArgs(opts);
 
@@ -189,7 +165,7 @@ class Lexicon {
       if (!this.checkCriteria(word, data, opts)) continue;
 
       if (opts.targetPos) {
-        word = this.matchPos(word, data, opts);
+        word = this.matchPos(word, data, opts, opts.limit === 1);
         if (!word) continue;
         // Note: we may have changed the word here (e.g. via conjugation)
         // and it is also may no longer be in the dictionary
@@ -202,7 +178,7 @@ class Lexicon {
           let stresses = this.analyzer.phonesToStress(phones);
           if (regex.test(stresses)) result.push(word);
         }
-        else if (opts.type === 'phones') { // TODO: Test *****
+        else if (opts.type === 'phones') {
           let phones = data ? data[0] : this.rawPhones(word);
           phones = phones.replace(/1/g, '').replace(/ /g, '-');// + ' ';
           if (regex.test(phones)) result.push(word);
