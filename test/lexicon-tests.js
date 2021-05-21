@@ -50,21 +50,21 @@ describe('RiTa.Lexicon', function () {
   it("should call randomWord with stress/phoneme", () => {
     let result
     // stress
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 10; i++) {
       result = RiTa.randomWord({ type: "stresses", regex: "0/1/0" });
       expect(RiTa.analyze(result).stresses.includes("0/1/0")).to.be.true;
     }
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 10; i++) {
       result = RiTa.randomWord({ type: "stresses", regex: "1/0" });
       expect(RiTa.analyze(result).stresses.includes("1/0")).to.be.true;
     }
 
     // phoneme
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 10; i++) {
       result = RiTa.randomWord({ type: "phones", regex: "f-ah-n-t" });
       expect(RiTa.analyze(result).phones.includes("f-ah-n-t"), result + " " + RiTa.analyze(result).phones).to.be.true;
     }
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 10; i++) {
       result = RiTa.randomWord({ type: "phones", regex: "k-ae" });
       expect(RiTa.analyze(result).phones.includes("k-ae"), result + " " + RiTa.analyze(result).phones).to.be.true;
     }
