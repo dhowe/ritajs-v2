@@ -366,8 +366,26 @@ describe('RiTa.RiMarkov', () => {
         ok(sample3.indexOf(res) < 0, 'Got "' + sent + '"\n\nBut "' + res + '" was found in input:\n\n' + sample + '\n\n' + rm.input);
       }
     }
-    // TODO: add more
-
+    
+    mlms = 9
+    rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
+    expect(typeof rm.input === 'object').to.be.true;
+    rm.addText(RiTa.sentences(sample2));
+    sents = rm.generate(5);
+    for (let i = 0; i < sents.length; i++) {
+      let sent = sents[i];
+      let toks = RiTa.tokenize(sent);
+      for (let j = 0; j <= toks.length - rm.n; j++) {
+        let part = toks.slice(j, j + rm.n);
+        let res = RiTa.untokenize(part);
+        ok(sample2.indexOf(res) > -1, 'output not found in text: "' + res + '"');
+      }
+      for (let j = 0; j <= toks.length - (mlms + 1); j++) {
+        let part = toks.slice(j, j + (mlms + 1));
+        let res = RiTa.untokenize(part);
+        ok(sample2.indexOf(res) < 0, 'Got "' + sent + '"\n\nBut "' + res + '" was found in input:\n\n' + sample + '\n\n' + rm.input);
+      }
+    }
   });
 
   it('should call completions', () => {
