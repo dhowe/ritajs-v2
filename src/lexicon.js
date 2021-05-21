@@ -152,7 +152,7 @@ class Lexicon {
       opts = regex;  // single argument which is opts
       regex = undefined;
     }
-    else if (regex === 0 && opts.regex !== undefined) {
+    else if (regex === 0 && opts.limit === 1 && opts.regex !== undefined) {
       // randomWord with stress/phone limit
       regex = opts.regex instanceof RegExp ? opts.regex : new RegExp(opts.regex);
     }

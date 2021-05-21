@@ -50,23 +50,47 @@ describe('RiTa.Lexicon', function () {
   it("should call randomWord with stress/phoneme", () => {
     let result
     // stress
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       result = RiTa.randomWord({ type: "stresses", regex: "0/1/0" });
       expect(RiTa.analyze(result).stresses.includes("0/1/0")).to.be.true;
     }
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       result = RiTa.randomWord({ type: "stresses", regex: "1/0" });
       expect(RiTa.analyze(result).stresses.includes("1/0")).to.be.true;
     }
+    for (let i = 0; i < 5; i++) {
+      result = RiTa.randomWord({ type: "stresses", regex: /1\/0/ });
+      expect(RiTa.analyze(result).stresses.includes("1/0")).to.be.true;
+    }
+    for (let i = 0; i < 5; i++) {
+      result = RiTa.randomWord({ type: "stresses", regex: /^0\/1\/0$/ });
+      expect(RiTa.analyze(result).stresses).eq("0/1/0");
+    }
+    for (let i = 0; i < 5; i++) {
+      result = RiTa.randomWord({ type: "stresses", regex: "^0\/1\/0$" });
+      expect(RiTa.analyze(result).stresses).eq("0/1/0");
+    }
 
     // phoneme
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       result = RiTa.randomWord({ type: "phones", regex: "f-ah-n-t" });
       expect(RiTa.analyze(result).phones.includes("f-ah-n-t"), result + " " + RiTa.analyze(result).phones).to.be.true;
     }
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       result = RiTa.randomWord({ type: "phones", regex: "k-ae" });
       expect(RiTa.analyze(result).phones.includes("k-ae"), result + " " + RiTa.analyze(result).phones).to.be.true;
+    }
+    for (let i = 0; i < 5; i++) {
+      result = RiTa.randomWord({ type: "phones", regex: /k-ae/ });
+      expect(RiTa.analyze(result).phones.includes("k-ae"), result + " " + RiTa.analyze(result).phones).to.be.true;
+    }
+    for (let i = 0; i < 5; i++) {
+      result = RiTa.randomWord({ type: "phones", regex: "^b-ih-l-iy-v$" });
+      expect(RiTa.analyze(result).phones).eq("b-ih-l-iy-v");
+    }
+    for (let i = 0; i < 5; i++) {
+      result = RiTa.randomWord({ type: "phones", regex: /^b-ih-l-iy-v$/ });
+      expect(RiTa.analyze(result).phones).eq("b-ih-l-iy-v");
     }
   });
 
