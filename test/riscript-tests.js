@@ -1178,6 +1178,7 @@ describe('RiTa.RiScript', function () {
     });
 
     it('Should resolve functions on context symbols', () => { // SYNC:
+      let secsFunction = () => new Date().getSeconds();
       let rs = '$player.name has $time.secs() secs left.';
       let gameState = {
         player: {
@@ -1186,7 +1187,7 @@ describe('RiTa.RiScript', function () {
           traits: []
         },
         time: {
-          secs: () => new Date().getSeconds()
+          secs: secsFunction
         }
       };
       let res = RiTa.evaluate(rs, gameState);
