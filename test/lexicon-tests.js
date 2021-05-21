@@ -18,11 +18,10 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call randomWord', () => {
 
-    expect(() => RiTa.randomWord({ pos: "xxx" })).to.throw;
-
     let result;
     result = RiTa.randomWord();
     expect(result.length > 0, "randomWord: " + result).to.be.true;
+    expect(result === RiTa.randomWord(), "randomWord returned same result '" + result + "'").to.be.false;
 
     result = RiTa.randomWord({ pos: "nn" });
     expect(result.length > 0, "randomWord nn: " + result).to.be.true;
@@ -45,6 +44,7 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.randomWord({ pos: "v" });
     expect(result.length > 0, "randomWord v=" + result).to.be.true;
 
+    expect(() => RiTa.randomWord({ pos: "xxx" })).to.throw;
   });
 
   it("should handle an augmented lexicon", () => {
@@ -178,6 +178,22 @@ describe('RiTa.Lexicon', function () {
       'triumphant',
       'triumphantly'
     ]);
+    expect(RiTa.search({ regex: "phant" })).eql([
+      'elephant',
+      'elephantine',
+      'phantom',
+      'sycophantic',
+      'triumphant',
+      'triumphantly'
+    ]);
+    expect(RiTa.search({ regex: /phant/ })).eql([
+      'elephant',
+      'elephantine',
+      'phantom',
+      'sycophantic',
+      'triumphant',
+      'triumphantly'
+    ]);
   });
 
   it('Should call search with phones, limit', () => {
@@ -206,7 +222,7 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should call search with pos, feature, limit', () => { 
+  it('Should call search with pos, feature, limit', () => {
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }))
       .eql(['abalone', 'abandonment', 'abbreviation', 'abdomen', 'abduction']);
@@ -252,7 +268,7 @@ describe('RiTa.Lexicon', function () {
       .eql(['elephants', 'infants', 'infantries']);
   });
 
-  it('Should call search with stresses, limit', () => { 
+  it('Should call search with stresses, limit', () => {
 
     expect(RiTa.search('010000', { type: 'stresses', limit: 5 })).eql([
       'accountability',
@@ -535,7 +551,7 @@ describe('RiTa.Lexicon', function () {
 
   });
 
-  it('Should call spellsLike.options', () => { 
+  it('Should call spellsLike.options', () => {
     let result;
 
     result = RiTa.spellsLike("banana", { minLength: 6, maxLength: 6 });

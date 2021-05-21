@@ -130,36 +130,36 @@ class Lexicon {
       : this.similarByType(word, opts);
   }
 
-  randomWord(opts = {}) {
-    opts.limit = 1; // delegate to search
-    return this.search(0, opts)[0];
+  randomWord(regex, opts) {
+
+    // no arguments, just return
+    if (!regex && !opts) return this.RiTa.random(Object.keys(this._dict(true)));
+
+    // handle different parameter options
+    if (!(regex instanceof RegExp)) {
+      if (typeof regex === 'object' && !opts) {
+        opts = regex;  // single argument which is opts
+        regex = undefined;
+      }
+    }
+    opts = opts || {};
+    opts.limit = 1; // delegate to search with limit=1
+    return this.search(regex, opts)[0];
   }
 
-  search(regex, opts = {}) {
+  search(pattern, options) {
 
     let dict = this._dict(true);
     let words = Object.keys(dict);
 
-    if (typeof regex === 'string') {
-      if (opts.type === 'stresses' && /^[01]+$/.test(regex)) {
-        /* if we have a stress string without slashes, add them
-           010 -> 0/1/0, ^010$ -> ^0/1/0$, etc. */
-        regex = regex.replace(/([01])(?=([01]))/g, "$1/");
-      }
-      regex = new RegExp(regex);
-    }
-    else if (typeof regex === 'object' && (!(regex instanceof RegExp))) {
-      opts = regex;  // single argument which is opts
-      regex = undefined;
-    }
-    // else a regex object
+    // no arguments, just return
+    if (!pattern && !options) return words;
 
-    if (!regex && !Object.keys(opts).length) return words;
-
+    let { regex, opts } = this._parseRegex(pattern, options);
     this.parseArgs(opts);
 
     let result = [], _silent = opts.silent;
-    opts.silent = true;
+    opts.silent = true; // no warnings
 
     for (let i = 0; i < words.length; i++) {
 
@@ -169,34 +169,20 @@ class Lexicon {
       if (opts.targetPos) {
         word = this.matchPos(word, data, opts, opts.limit === 1);
         if (!word) continue;
-        // Note: we may have changed the word here (e.g. via conjugation)
-        // and it is also may no longer be in the dictionary
         if (word !== words[i]) data = dict[word];
+        /* Note: a) may have changed the word here via conjugation
+           and b) it may no longer be in the dictionary  */
       }
 
-      if (regex) {
-        if (opts.type === 'stresses') {
-          let phones = data ? data[0] : this.rawPhones(word);
-          let stresses = this.analyzer.phonesToStress(phones);
-          if (regex.test(stresses)) result.push(word);
-        }
-        else if (opts.type === 'phones') {
-          let phones = data ? data[0] : this.rawPhones(word);
-          phones = phones.replace(/1/g, '').replace(/ /g, '-');// + ' ';
-          if (regex.test(phones)) result.push(word);
-        }
-        else {
-          if (regex.test(word)) result.push(word);
-        }
-      }
-      else {
+      if (!regex || this._regexMatch(word, data, regex, opts.type)) {
         result.push(word);
       }
 
       if (result.length === opts.limit) break;
     }
 
-    opts.silent = _silent; // reset
+    opts.silent = _silent; // re-enable warnings
+
     return result;
   }
 
@@ -344,7 +330,7 @@ class Lexicon {
     opts.numSyllables = opts.numSyllables || 0;
     opts.maxLength = opts.maxLength || Number.MAX_SAFE_INTEGER;
     opts.minLength = opts.minLength || (opts.limit > 1 ? 3 : 4); // 4 for randomWord
-    
+
     // handle part-of-speech
     let tpos = opts.pos || false;
     if (tpos && tpos.length) {
@@ -406,11 +392,116 @@ class Lexicon {
     return this._intersect(simSound, simLetter).slice(0, opts.limit);
   }
 
-  isMassNoun(w, pos) {
+  rawPhones(word, opts) {
+
+    let noLts = opts && opts.noLts;
+    let fatal = opts && opts.fatal;
+    let rdata = this._lookupRaw(word, fatal);
+    if (rdata && rdata.length) return rdata[0];
+
+    if (!noLts) {
+      let phones = this.RiTa.analyzer.computePhones(word);
+      return Util.syllablesFromPhones(phones); // TODO: bad name
+    }
+  }
+
+  // med for 2 strings (or 2 arrays)
+  minEditDist(source, target) {
+
+    let cost; // cost
+    let i, j, matrix = []; // matrix
+    let sI; // ith character of s
+    let tJ; // jth character of t
+
+    // Step 1 ----------------------------------------------
+
+    for (i = 0; i <= source.length; i++) {
+      matrix[i] = [];
+      matrix[i][0] = i;
+    }
+
+    for (j = 0; j <= target.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    // Step 2 ----------------------------------------------
+
+    for (i = 1; i <= source.length; i++) {
+      sI = source[i - 1];
+
+      // Step 3 --------------------------------------------
+
+      for (j = 1; j <= target.length; j++) {
+        tJ = target[j - 1];
+
+        // Step 4 ------------------------------------------
+
+        cost = (sI == tJ) ? 0 : 1;
+
+        // Step 5 ------------------------------------------
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j - 1] + cost);
+      }
+    }
+
+    // Step 6 ----------------------------------------------
+
+    return matrix[source.length][target.length];
+  }
+
+  isMassNoun(w, pos) { // not used?
     return w.endsWith("ness")
       || w.endsWith("ism")
       || pos.indexOf("vbg") > 0
       || Util.MASS_NOUNS.includes(w);
+  }
+
+  // helpers ---------------------------------------------------------------
+
+  _parseRegex(regex, opts) {
+
+    // handle regex passed as part of opts
+    if (typeof regex === 'string') {
+      if (opts && opts.type === 'stresses') {
+        if (/^[01]+$/.test(regex)) {
+          /* if we have a stress string without slashes, add them
+             010 -> 0/1/0, ^010$ -> ^0/1/0$, etc. */
+          regex = regex.replace(/([01])(?=([01]))/g, "$1/");
+        }
+      }
+      regex = new RegExp(regex);
+    }
+    else if (regex instanceof RegExp) {
+      // RegExp object;
+    }
+    else if (typeof regex === 'object') {
+      if (!opts) {
+        opts = regex;  // have one argument that is opts
+        regex = opts.regex; // do we have regex in opts?
+        if (typeof regex === 'string') regex = new RegExp(regex);
+      }
+    }
+
+    return { regex, opts: opts || {} };
+  }
+
+  _regexMatch(word, data, regex, type) {
+
+    if (type === 'stresses') {
+      let phones = data ? data[0] : this.rawPhones(word);
+      let stresses = this.analyzer.phonesToStress(phones);
+      if (regex.test(stresses)) return true;
+    }
+    else if (type === 'phones') {
+      let phones = data ? data[0] : this.rawPhones(word);
+      phones = phones.replace(/1/g, '').replace(/ /g, '-');// + ' ';
+      if (regex.test(phones)) return true;
+    }
+    else {
+      if (regex.test(word)) return true;
+    }
   }
 
   _toPhoneArray(raw) {
@@ -499,19 +590,6 @@ class Lexicon {
     return this._dict(fatal)[word];
   }
 
-  rawPhones(word, opts) {
-
-    let noLts = opts && opts.noLts;
-    let fatal = opts && opts.fatal;
-    let rdata = this._lookupRaw(word, fatal);
-    if (rdata && rdata.length) return rdata[0];
-
-    if (!noLts) {
-      let phones = this.RiTa.analyzer.computePhones(word);
-      return Util.syllablesFromPhones(phones); // TODO: bad name
-    }
-  }
-
   _dict(fatal) {
     if (!this.data) {
       if (fatal) throw Error('This function requires a lexicon, make sure you'
@@ -525,51 +603,6 @@ class Lexicon {
     return this.data || {};
   }
 
-  // med for 2 strings (or 2 arrays)
-  minEditDist(source, target) {
-
-    let cost; // cost
-    let i, j, matrix = []; // matrix
-    let sI; // ith character of s
-    let tJ; // jth character of t
-
-    // Step 1 ----------------------------------------------
-
-    for (i = 0; i <= source.length; i++) {
-      matrix[i] = [];
-      matrix[i][0] = i;
-    }
-
-    for (j = 0; j <= target.length; j++) {
-      matrix[0][j] = j;
-    }
-
-    // Step 2 ----------------------------------------------
-
-    for (i = 1; i <= source.length; i++) {
-      sI = source[i - 1];
-
-      // Step 3 --------------------------------------------
-
-      for (j = 1; j <= target.length; j++) {
-        tJ = target[j - 1];
-
-        // Step 4 ------------------------------------------
-
-        cost = (sI == tJ) ? 0 : 1;
-
-        // Step 5 ------------------------------------------
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j - 1] + cost);
-      }
-    }
-
-    // Step 6 ----------------------------------------------
-
-    return matrix[source.length][target.length];
-  }
 }
 
 const SILENT = { silent: true };
