@@ -132,7 +132,7 @@ class Lexicon {
 
   randomWord(opts = {}) {
     opts.limit = 1; // delegate to search
-    return this.search(0, opts)[0];
+    return this.search(0, opts)[Math.floor(this.RiTa.random(this.search(0, opts).length))]; // should be random?
   }
 
   search(regex, opts = {}) {
@@ -151,6 +151,10 @@ class Lexicon {
     else if (typeof regex === 'object' && (!(regex instanceof RegExp))) {
       opts = regex;  // single argument which is opts
       regex = undefined;
+    }
+    else if (regex === 0 && opts.regex !== undefined) {
+      // randomWord with stress/phone limit
+      regex = opts.regex instanceof RegExp ? opts.regex : new RegExp(opts.regex);
     }
     // else a regex object
 
