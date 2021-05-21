@@ -126,7 +126,7 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call search without regex', () => {
-    expect(RiTa.search().length).eq(10);
+    expect(RiTa.search().length).gt(20000); // all words
     expect(RiTa.search({ limit: 11 }).length).eq(11);
     expect(RiTa.search({ pos: "n" })).eql([
       'abalone', 'abandonment',

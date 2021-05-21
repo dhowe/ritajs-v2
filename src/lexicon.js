@@ -154,6 +154,8 @@ class Lexicon {
     }
     // else a regex object
 
+    if (!regex && !Object.keys(opts).length) return words;
+
     this.parseArgs(opts);
 
     let result = [], _silent = opts.silent;
@@ -337,12 +339,12 @@ class Lexicon {
   // potentially appends pluralize, conjugate, targetPos
   parseArgs(opts) {
 
+    opts.limit = opts.limit || 10;
     opts.minDistance = opts.minDistance || 1;
     opts.numSyllables = opts.numSyllables || 0;
     opts.maxLength = opts.maxLength || Number.MAX_SAFE_INTEGER;
-    opts.minLength = opts.minLength || 3;
-    opts.limit = opts.limit || 10;
-
+    opts.minLength = opts.minLength || (opts.limit > 1 ? 3 : 4); // 4 for randomWord
+    
     // handle part-of-speech
     let tpos = opts.pos || false;
     if (tpos && tpos.length) {
