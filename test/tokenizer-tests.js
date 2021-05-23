@@ -48,7 +48,7 @@ describe('RiTa.Tokenizer', () => {
       'wrote'
     ]);
 
-    tokens = RiTa.tokens(input, { skipStopWords: true });
+    tokens = RiTa.tokens(input, { ignoreStopWords: true });
     expect(tokens).eql([
       'wrote', 'paint',
       'anymore', 'while',

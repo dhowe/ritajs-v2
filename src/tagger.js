@@ -1,6 +1,6 @@
 import Util from './util';
 
-const MASS_NOUNS  = Util.MASS_NOUNS;
+const MASS_NOUNS = Util.MASS_NOUNS;
 
 class Tagger {
 
@@ -39,7 +39,10 @@ class Tagger {
 
     if (!words || !words.length) return '';
 
-    if (words.length !== tags.length) throw Error('Tagger: invalid state', words);
+    if (words.length !== tags.length) {
+      throw Error('Tagger: invalid state: words(' + words.length
+        + ')=' + words + ' tags(' + tags.length + ')=' + tags);
+    }
 
     delimiter = delimiter || '/';
 
@@ -67,19 +70,16 @@ class Tagger {
     let inline = opts && opts.inline;
     let dbug = 0, result = [], choices2d = [];
 
-    if (!words || !words.length) {
-      return inline ? '' : [];
-    }
+    if (!words || !words.length) return inline ? '' : [];
 
-    if (!Array.isArray(words)) {
-      //if (!words.trim().length) return inline ? '' : [];
+    if (!Array.isArray(words)) { // we have a string
+      if (!words.trim().length) return inline ? '' : [];
       words = this.RiTa.tokenizer.tokenize(words);
     }
 
     for (let i = 0, l = words.length; i < l; i++) {
 
       let word = words[i];
-
       if (!word || !word.length) continue;
 
       if (word.length === 1) {

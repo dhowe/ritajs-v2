@@ -265,6 +265,7 @@ describe('RiTa.Tagger', () => {
     let result, answer, txt;
 
     eql(RiTa.posInline(""), "");
+    eql(RiTa.posInline(" "), "");
     eql(RiTa.posInline("asdfaasd"), "asdfaasd/nn");
 
     result = RiTa.posInline("clothes");

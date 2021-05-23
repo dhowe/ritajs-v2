@@ -8,15 +8,16 @@ class Tokenizer {
     this.splitter = /(\S.+?[.!?]["\u201D]?)(?=\s+|$)/g;
   }
 
-  tokens(text, opts = {}) { // SYNC: (ADD to Java)
-
+  tokens(text, opts = {}) { // SYNC:
+    // opts: {includePunct, caseSensitive, sort, ignoreStopWords} ?
     let words = this.tokenize(text, opts), map = {};
     words.forEach(w => {
       if (!opts.caseSensitive) w = w.toLowerCase();
       if (opts.includePunct || ALPHA_RE.test(w)) map[w] = 1;
     });
     let tokens = Object.keys(map);
-    if (opts.skipStopWords) tokens = tokens.filter(t => !this.RiTa.isStopWord(t));
+    if (opts.ignoreStopWords) tokens = tokens.filter
+      (t => !this.RiTa.isStopWord(t));
     return opts.sort ? tokens.sort() : tokens;
   }
 
@@ -53,7 +54,7 @@ class Tokenizer {
     return arr && arr.length ? unescapeAbbrevs(arr) : [text];
   }
 
-  tokenize(input, opts = {}) { // SYNC:
+  tokenize(input, opts = {}) { // SYNC: Opts: {regex, splitContractions}
 
     if (typeof input !== 'string') return [];
 
