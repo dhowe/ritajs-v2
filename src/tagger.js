@@ -67,11 +67,21 @@ class Tagger {
     let inline = opts && opts.inline;
     let dbug = 0, result = [], choices2d = [];
 
-    if (!words || !words.length) return inline ? '' : [];
-    if (!Array.isArray(words)) words = this.RiTa.tokenizer.tokenize(words);
+    if (!words || !words.length) {
+      return inline ? '' : [];
+    }
+
+    if (!Array.isArray(words)) {
+      //if (!words.trim().length) return inline ? '' : [];
+      words = this.RiTa.tokenizer.tokenize(words);
+    }
+
     for (let i = 0, l = words.length; i < l; i++) {
 
       let word = words[i];
+
+      if (!word || !word.length) continue;
+
       if (word.length === 1) {
         result.push(this._handleSingleLetter(word));
       }
@@ -201,6 +211,8 @@ class Tagger {
     for (let i = 0, l = words.length; i < l; i++) {
 
       let word = words[i], tag = result[i];
+      if (!word || !word.length) continue;
+
       if (typeof tag === 'undefined') {
         tag = '';
         if (!this.RiTa.SILENT) console.warn

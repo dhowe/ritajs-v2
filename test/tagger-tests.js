@@ -85,6 +85,9 @@ describe('RiTa.Tagger', () => {
     let result, answer, resultArr, answerArr, txt;
 
     eql(RiTa.pos(""), []);
+    eql(RiTa.pos(","), [',']);
+    eql(RiTa.pos(" "), []);
+    
     eql(RiTa.pos("freed"), ["jj"]);
     eql(RiTa.pos("biped"), ["nn"]);
     eql(RiTa.pos("greed"), ["nn"]);
@@ -93,7 +96,7 @@ describe('RiTa.Tagger', () => {
 
     eql(RiTa.pos("the top seed"), ["dt", "jj", "nn"]);
     eql(RiTa.pos("by illegal means"), ["in", "jj", "nn"]);
-    eql(RiTa.pos('Joanny Smith ran away'), ['nnp', 'nnp', 'vbd', 'rb']);
+    eql(RiTa.pos('Joannie Smith ran away'), ['nnp', 'nnp', 'vbd', 'rb']);
 
     result = RiTa.pos("mammal");
     answer = ["nn"];

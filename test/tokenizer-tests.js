@@ -100,7 +100,7 @@ describe('RiTa.Tokenizer', () => {
     ];
     let tokens = [
       ["this", "is", "www", ".", "google", ".", "com"],
-      ["it", "is", "'", "hell", "'"]
+      ["it", "is", "'", "hell", "'"],
     ];
     for (let i = 0; i < sentences.length; i++) {
       let usingTokenize = RiTa.tokenize(sentences[i]);
@@ -162,6 +162,7 @@ describe('RiTa.Tokenizer', () => {
   it('Should call tokenize', () => {
 
     expect(RiTa.tokenize("")).eql([""]);
+    expect(RiTa.tokenize(" ")).eql([""]);
     expect(RiTa.tokenize("The dog")).eql(["The", "dog"]);
 
     let input, expected, output;
@@ -334,6 +335,7 @@ describe('RiTa.Tokenizer', () => {
   it('Should call untokenize', () => {
 
     expect(RiTa.untokenize([""])).eq("");
+    expect(RiTa.untokenize([" "])).eq("");
 
     let input, output, expected;
 
