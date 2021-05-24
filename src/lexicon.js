@@ -461,11 +461,10 @@ class Lexicon {
   // helpers ---------------------------------------------------------------
 
   _parseRegex(regex, opts) {
-
     // handle regex passed as part of opts
     if (typeof regex === 'string') {
       if (opts && opts.type === 'stresses') {
-        if (/^[01]+$/.test(regex)) {
+        if (/^\^?[01]+\$?$/.test(regex)) { // keep ^ and $ in regex like "^101$"
           /* if we have a stress string without slashes, add them
              010 -> 0/1/0, ^010$ -> ^0/1/0$, etc. */
           regex = regex.replace(/([01])(?=([01]))/g, "$1/");
@@ -476,14 +475,20 @@ class Lexicon {
     else if (regex instanceof RegExp) {
       // RegExp object;
     }
-    else if (typeof regex === 'object') {
+    else if (typeof regex === 'object' || (regex === undefined && typeof opts === 'object')) {
       if (!opts) {
         opts = regex;  // have one argument that is opts
-        regex = opts.regex; // do we have regex in opts?
-        if (typeof regex === 'string') regex = new RegExp(regex);
+      }
+      regex = opts.regex; // do we have regex in opts?
+      if (typeof regex === 'string') {
+        if (opts && opts.type === 'stresses') {
+          if (/^\^?[01]+\$?$/.test(regex)) {
+            regex = regex.replace(/([01])(?=([01]))/g, "$1/");
+          }
+        }
+        regex = new RegExp(regex);
       }
     }
-
     return { regex, opts: opts || {} };
   }
 
