@@ -354,6 +354,30 @@ describe('RiTa.Lexicon', function () {
       'infantry',
       "oftentimes"
     ]);
+
+    //regex in options
+    result = RiTa.search({ regex: /f-a[eh]-n-t/, type: 'phones', limit: 10 });
+    expect(result).eql([
+      "elephant",
+      "elephantine",
+      "fantasia",
+      "fantasize",
+      "fantastic",
+      "fantastically",
+      "fantasy",
+      "infant",
+      "infantile",
+      "infantry"
+    ]);
+
+    result = RiTa.search({ regex: 'f-ah-n-t', type: 'phones', limit: 5 });
+    expect(result).eql([
+      'elephant',
+      'infant',
+      'infantile',
+      'infantry',
+      "oftentimes"
+    ]);
   });
 
   it('Should call search with pos, feature, limit', () => {
@@ -432,6 +456,43 @@ describe('RiTa.Lexicon', function () {
       'colonialism'
     ]);
     expect(RiTa.search(/0\/1\/0\/0\/0\/0/, { type: 'stresses', limit: 5 })).eql([
+      'accountability',
+      'anticipatory',
+      'appreciatively',
+      'authoritarianism',
+      'colonialism'
+    ]);
+
+    //regex in options
+
+    expect(RiTa.search({ regex: '010000', type: 'stresses', limit: 5 })).eql([
+      'accountability',
+      'anticipatory',
+      'appreciatively',
+      'authoritarianism',
+      'colonialism'
+    ]);
+
+    expect(RiTa.search({ regex: '010000', type: 'stresses', limit: 5, maxLength: 11 })).eql([
+      'colonialism',
+      "imperialism",
+      "materialism"
+    ]);
+    expect(RiTa.search({ regex: '010000', type: 'stresses', limit: 5, minLength: 12 })).eql([
+      'accountability',
+      'anticipatory',
+      'appreciatively',
+      'authoritarianism',
+      "conciliatory"
+    ]);
+    expect(RiTa.search({ regex: '0/1/0/0/0/0', type: 'stresses', limit: 5 })).eql([
+      'accountability',
+      'anticipatory',
+      'appreciatively',
+      'authoritarianism',
+      'colonialism'
+    ]);
+    expect(RiTa.search({ regex: /0\/1\/0\/0\/0\/0/, type: 'stresses', limit: 5 })).eql([
       'accountability',
       'anticipatory',
       'appreciatively',
