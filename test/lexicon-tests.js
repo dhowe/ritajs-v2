@@ -70,7 +70,7 @@ describe('RiTa.Lexicon', function () {
     expect(result.includes("le")).to.be.true;
 
     result = RiTa.randomWord("0/1/0", { type: "stresses" });
-    expect(result.length > 4);
+    expect(result.length > 3);
     expect(RiTa.analyze(result).stresses.includes("0/1/0"));
 
     result = RiTa.randomWord("^0/1/0$", { type: "stresses" });
@@ -89,7 +89,7 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.analyze(result).stresses).eq("0/1/0/0");
 
     result = RiTa.randomWord("^th", { type: "phones" });
-    expect(result.length > 4);
+    expect(result.length > 3);
     expect(/^th/.test(RiTa.analyze(result).phones)).to.be.true;
 
     result = RiTa.randomWord("v$", { type: "phones" });
@@ -102,7 +102,7 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.analyze(result).phones.includes("ae")).to.be.true;
 
     result = RiTa.randomWord(/^th/, { type: "phones" });
-    expect(result.length > 4);
+    expect(result.length > 3);
     expect(/^th/.test(RiTa.analyze(result).phones)).to.be.true;
 
     result = RiTa.randomWord(/v$/, { type: "phones" });
@@ -136,7 +136,7 @@ describe('RiTa.Lexicon', function () {
     expect(result.includes("le")).to.be.true;
 
     result = RiTa.randomWord({ regex: "0/1/0", type: "stresses" });
-    expect(result.length > 4);
+    expect(result.length > 3);
     expect(RiTa.analyze(result).stresses.includes("0/1/0")).to.be.true;
 
     result = RiTa.randomWord({ regex:"^0/1/0$", type: "stresses" });
@@ -155,7 +155,7 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.analyze(result).stresses).eq("0/1/0/0");
 
     result = RiTa.randomWord({ regex:"^th", type: "phones" });
-    expect(result.length > 4);
+    expect(result.length > 3);
     expect(/^th/.test(RiTa.analyze(result).phones)).to.be.true;
 
     result = RiTa.randomWord({ regex:"v$", type: "phones" });
@@ -168,7 +168,7 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.analyze(result).phones.includes("ae")).to.be.true;
 
     result = RiTa.randomWord({ regex:/^th/, type: "phones" });
-    expect(result.length > 4);
+    expect(result.length > 3);
     expect(/^th/.test(RiTa.analyze(result).phones)).to.be.true;
 
     result = RiTa.randomWord({ regex: /v$/, type: "phones" });
