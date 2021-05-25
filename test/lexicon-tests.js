@@ -635,6 +635,12 @@ describe('RiTa.Lexicon', function () {
     for (let i = 0; i < result.length; i++) {
       expect(RiTa.isAlliteration(result[i], "cat"), 'FAIL2: ' + result[i]).to.be.true;
     }
+
+    // for one letter words should return []
+    expect(RiTa.alliterations("a")).eql([]);
+    expect(RiTa.alliterations("I")).eql([]);
+    expect(RiTa.alliterations("K")).eql([]);
+
   });
 
   it('Should call rhymes', () => {
@@ -661,7 +667,13 @@ describe('RiTa.Lexicon', function () {
 
     expect(RiTa.rhymes("bog").includes("fog")).to.be.true;
     expect(RiTa.rhymes("dog").includes("log")).to.be.true;
-
+    
+    // for single letter word return []
+    expect(RiTa.rhymes("a")).eql([]);
+    expect(RiTa.rhymes("I")).eql([]);
+    expect(RiTa.rhymes("Z")).eql([]);
+    expect(RiTa.rhymes("B")).eql([]);
+    expect(RiTa.rhymes("K")).eql([]);
   });
 
   it('Should call rhymes.pos', () => {

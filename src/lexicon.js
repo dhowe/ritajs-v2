@@ -17,7 +17,7 @@ class Lexicon {
   alliterations(theWord, opts = {}) {
 
     this.parseArgs(opts);
-
+    if (!theWord || typeof theWord !== 'string' || theWord.length < 2) return [];
     // only allow consonant inputs
     if (this.RiTa.isVowel(theWord.charAt(0))) {
       if (!opts.silent && !this.RiTa.SILENT) console.warn
@@ -73,7 +73,7 @@ class Lexicon {
 
     this.parseArgs(opts);
 
-    if (!theWord || !theWord.length) return [];
+    if (!theWord || !theWord.length || theWord.length < 2) return [];
 
     const dict = this._dict(true), words = Object.keys(dict);
     const phone = this._lastStressedPhoneToEnd(theWord);
