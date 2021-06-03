@@ -144,6 +144,7 @@ class Lexicon {
     }
     opts = opts || {};
     opts.limit = 1; // delegate to search with limit=1
+    opts.shuffle = true;
     return this.search(regex, opts)[0];
   }
 
@@ -161,15 +162,18 @@ class Lexicon {
     let result = [], _silent = opts.silent;
     opts.silent = true; // no warnings
 
-    for (let i = 0; i < words.length; i++) {
+    let len = words.length;
+    let start = opts.shuffle ? this.RiTa.randomizer.randI(len) : 0;
 
-      let word = words[i], data = dict[word];
+    for (let i = 0; i < len; i++) {
+      let idx = (start + i) % len;
+      let word = words[idx], data = dict[word];
       if (!this.checkCriteria(word, data, opts)) continue;
 
       if (opts.targetPos) {
         word = this.matchPos(word, data, opts, opts.limit === 1);
         if (!word) continue;
-        if (word !== words[i]) data = dict[word];
+        if (word !== words[idx]) data = dict[word];
         /* Note: a) may have changed the word here via conjugation
            and b) it may no longer be in the dictionary  */
       }

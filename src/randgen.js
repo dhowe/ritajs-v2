@@ -17,6 +17,18 @@ class SeededRandom {
     this.seed(new Date().getTime());
   }
 
+  shuffle(arr) { 
+    let newArray = arr.slice(),
+      len = newArray.length,
+      i = len;
+    while (i--) {
+      let p = random(len), t = newArray[i];
+      newArray[i] = newArray[p];
+      newArray[p] = t;
+    }
+    return newArray;
+  }
+
   randomOrdering(arg) {
     if (!(Array.isArray(arg) || Util.isNum(arg))) throw Error('Expects [] or int');
     let o = Array.isArray(arg) ? arg : Array.from(Array(arg).keys());

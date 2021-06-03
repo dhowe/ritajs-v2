@@ -7,10 +7,17 @@ class Inflector {
   }
 
   adjustNumber(word, type, dbug) {
-    if (word && typeof word !== 'string') throw Error(`${type === SING ? 'singularize()' : 'pluralize()'} requires a string as input`); // fix for singularize([1]) and similar calls
-    if (!word || word.length === 0) return '';
+    
+    if (word && typeof word !== 'string') {
+    
+      // TODO: fix for singularize([1]) and similar calls
+      throw Error(`${type === SING ? 'singularize()' : 'pluralize()' }`
+        + ' requires a string as input');
+    }
 
+    if (!word) return '';
     word = word.trim();
+    if (!word.length) return '';
 
     let check = word.toLowerCase();
     if (MASS_NOUNS.includes(check)) {
@@ -27,6 +34,7 @@ class Inflector {
         return rules[i].fire(word);
       }
     }
+
     return word;
   }
 
