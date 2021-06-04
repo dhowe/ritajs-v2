@@ -45,6 +45,22 @@ describe('RiTa.Lexicon', function () {
     expect(result.length > 0, "randomWord v=" + result).to.be.true;
 
     expect(() => RiTa.randomWord({ pos: "xxx" })).to.throw;
+
+    //randomWord should be random
+    let results = [];
+    for (let i = 0; i < 10; i++) {
+      results.push(RiTa.randomWord({ pos: "nns" }));
+    }
+    expect(results.length === 10).to.be.true;
+    let i = 0;
+    while (i < results.length - 1) {
+      if (results[i] === results[i + 1]) {
+        results.splice(i, 1);
+      } else {
+        i++;
+      }
+    }
+    expect(results.length > 1); //10 words not the same
   });
 
   it('Should call randomWord with regex', () => {
@@ -59,6 +75,21 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.randomWord("le");
     expect(result.includes("le")).to.be.true;
 
+    let results = [];
+    for (let i = 0; i < 10; i++) {
+      results.push(RiTa.randomWord("^a"));
+    }
+    expect(results.length === 10).to.be.true;
+    let i = 0;
+    while (i < results.length - 1) {
+      if (results[i] === results[i + 1]) {
+        results.splice(i, 1);
+      } else {
+        i++;
+      }
+    }
+    expect(results.length > 1); //10 words not the same
+
     result = RiTa.randomWord(/^a/);
     expect(/^a/.test(result)).to.be.true;
     expect(result.length > 3).to.be.true;
@@ -68,6 +99,22 @@ describe('RiTa.Lexicon', function () {
 
     result = RiTa.randomWord(/le/);
     expect(result.includes("le")).to.be.true;
+
+    results = [];
+    for (let i = 0; i < 10; i++) {
+      results.push(RiTa.randomWord(/^a/));
+    }
+    expect(results.length === 10).to.be.true;
+    
+    i = 0;
+    while (i < results.length - 1) {
+      if (results[i] === results[i + 1]) {
+        results.splice(i, 1);
+      } else {
+        i++;
+      }
+    }
+    expect(results.length > 1); //10 words not the same
 
     result = RiTa.randomWord("0/1/0", { type: "stresses" });
     expect(result.length > 3);
