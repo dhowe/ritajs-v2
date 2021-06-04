@@ -163,7 +163,11 @@ class Lexicon {
     opts.silent = true; // no warnings
 
     let len = words.length;
-    let start = opts.shuffle ? this.RiTa.randomizer.randI(len) : 0;
+    let start = 0;
+    if (opts.shuffle) {
+      start = this.RiTa.randomizer.randI(len);
+      words = this.RiTa.randomizer.shuffle(words);
+    }
 
     for (let i = 0; i < len; i++) {
       let idx = (start + i) % len;

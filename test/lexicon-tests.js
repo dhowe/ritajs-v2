@@ -60,7 +60,7 @@ describe('RiTa.Lexicon', function () {
         i++;
       }
     }
-    expect(results.length > 1); //10 words not the same
+    expect(results.length > 1).to.be.true; //10 words not the same
   });
 
   it('Should call randomWord with regex', () => {
@@ -88,7 +88,7 @@ describe('RiTa.Lexicon', function () {
         i++;
       }
     }
-    expect(results.length > 1); //10 words not the same
+    expect(results.length > 1).to.be.true; //10 words not the same
 
     result = RiTa.randomWord(/^a/);
     expect(/^a/.test(result)).to.be.true;
@@ -114,7 +114,7 @@ describe('RiTa.Lexicon', function () {
         i++;
       }
     }
-    expect(results.length > 1); //10 words not the same
+    expect(results.length > 1).to.be.true; //10 words not the same
 
     result = RiTa.randomWord("0/1/0", { type: "stresses" });
     expect(result.length > 3);

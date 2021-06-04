@@ -22,7 +22,7 @@ class SeededRandom {
       len = newArray.length,
       i = len;
     while (i--) {
-      let p = random(len), t = newArray[i];
+      let p = Math.floor(this.random(len)), t = newArray[i];
       newArray[i] = newArray[p];
       newArray[p] = t;
     }
