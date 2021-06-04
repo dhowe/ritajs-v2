@@ -53,7 +53,7 @@ describe('RiTa.Lexicon', function () {
     }
     expect(results.length === 10).to.be.true;
     for (let i = 0; i < results.length - 1; i++) {
-      if (results[i] === results[i + 1]) results.shift();
+      if (results[i] === results[i + 1]) results.splice(i, 1);
     }
     expect(results.length > 1); //10 words not the same
   });
@@ -76,7 +76,7 @@ describe('RiTa.Lexicon', function () {
     }
     expect(results.length === 10).to.be.true;
     for (let i = 0; i < results.length - 1; i++) {
-      if (results[i] === results[i + 1]) results.shift();
+      if (results[i] === results[i + 1]) results.splice(i, 1);
     }
     expect(results.length > 1); //10 words not the same
 
@@ -96,7 +96,7 @@ describe('RiTa.Lexicon', function () {
     }
     expect(results.length === 10).to.be.true;
     for (let i = 0; i < results.length - 1; i++) {
-      if (results[i] === results[i + 1]) results.shift();
+      if (results[i] === results[i + 1]) results.splice(i, 1);
     }
     expect(results.length > 1); //10 words not the same
 
