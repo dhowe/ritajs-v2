@@ -52,8 +52,13 @@ describe('RiTa.Lexicon', function () {
       results.push(RiTa.randomWord({ pos: "nns" }));
     }
     expect(results.length === 10).to.be.true;
-    for (let i = 0; i < results.length - 1; i++) {
-      if (results[i] === results[i + 1]) results.splice(i, 1);
+    let i = 0;
+    while (i < results.length - 1) {
+      if (results[i] === results[i + 1]) {
+        results.splice(i, 1);
+      } else {
+        i++;
+      }
     }
     expect(results.length > 1); //10 words not the same
   });
@@ -75,8 +80,13 @@ describe('RiTa.Lexicon', function () {
       results.push(RiTa.randomWord("^a"));
     }
     expect(results.length === 10).to.be.true;
-    for (let i = 0; i < results.length - 1; i++) {
-      if (results[i] === results[i + 1]) results.splice(i, 1);
+    let i = 0;
+    while (i < results.length - 1) {
+      if (results[i] === results[i + 1]) {
+        results.splice(i, 1);
+      } else {
+        i++;
+      }
     }
     expect(results.length > 1); //10 words not the same
 
@@ -95,8 +105,14 @@ describe('RiTa.Lexicon', function () {
       results.push(RiTa.randomWord(/^a/));
     }
     expect(results.length === 10).to.be.true;
-    for (let i = 0; i < results.length - 1; i++) {
-      if (results[i] === results[i + 1]) results.splice(i, 1);
+    
+    i = 0;
+    while (i < results.length - 1) {
+      if (results[i] === results[i + 1]) {
+        results.splice(i, 1);
+      } else {
+        i++;
+      }
     }
     expect(results.length > 1); //10 words not the same
 
