@@ -17,7 +17,10 @@ class Lexicon {
   alliterations(theWord, opts = {}) {
 
     this.parseArgs(opts);
-    if (!theWord || typeof theWord !== 'string' || theWord.length < 2) return [];
+    if (!theWord || typeof theWord !== 'string' || theWord.length < 2) {
+      return [];
+    }
+
     // only allow consonant inputs
     if (this.RiTa.isVowel(theWord.charAt(0))) {
       if (!opts.silent && !this.RiTa.SILENT) console.warn
@@ -38,17 +41,20 @@ class Lexicon {
       return result;
     }
 
-    let _silent = opts.silent;
-    opts.silent = true; // auto-silent
+    const _silent = opts.silent;
+    opts.silent = true; // disable warnings
 
-    //et analyzer = this.RiTa.analyzer();
+    // randomize list order if shuffle is true
+    if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
     for (let i = 0; i < words.length; i++) {
+
       let word = words[i];
       // check word length and syllables
       if (word === theWord || !this.checkCriteria(word, dict[word], opts)) {
         continue;
       }
+
       let data = dict[word];
       if (opts.targetPos) {
         word = this.matchPos(word, data, opts);
@@ -65,7 +71,8 @@ class Lexicon {
 
       if (result.length === opts.limit) break;
     }
-    opts.silent = _silent;
+
+    opts.silent = _silent; // re-enable warnings
     return result;
   }
 
@@ -80,16 +87,15 @@ class Lexicon {
 
     if (!phone) return [];
 
-    let _silent = opts.silent;
-    opts.silent = true;
+    const result = [], _silent = opts.silent;
+    opts.silent = true; // disable warnings
 
-    let result = [];
-    //analyzer = this.RiTa.analyzer();
+    // randomize list order if shuffle is true
+    if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
     for (let i = 0; i < words.length; i++) {
 
-      let word = words[i];
-      let data = dict[word];
+      let word = words[i], data = dict[word];
 
       // check word length and syllables
       if (word === theWord || !this.checkCriteria(word, data, opts)) {
@@ -112,7 +118,8 @@ class Lexicon {
 
       if (result.length === opts.limit) break;
     }
-    opts.silent = _silent;
+
+    opts.silent = _silent; // re-enable warnings
     return result;
   }
 
@@ -133,7 +140,9 @@ class Lexicon {
   randomWord(regex, opts) {
 
     // no arguments, just return
-    if (!regex && !opts) return this.RiTa.random(Object.keys(this._dict(true)));
+    if (!regex && !opts) {
+      return this.RiTa.random(Object.keys(this._dict(true)));
+    }
 
     // handle different parameter options
     if (!(regex instanceof RegExp)) {
@@ -142,9 +151,12 @@ class Lexicon {
         regex = undefined;
       }
     }
+
+    // delegate to search with {limit=1, shuffle=true}    SYNC:
     opts = opts || {};
-    opts.limit = 1; // delegate to search with limit=1
-    opts.shuffle = true;
+    opts.limit = 1;
+    opts.shuffle = true; 
+
     return this.search(regex, opts)[0];
   }
 
@@ -160,24 +172,20 @@ class Lexicon {
     this.parseArgs(opts);
 
     let result = [], _silent = opts.silent;
-    opts.silent = true; // no warnings
+    opts.silent = true; // disable warnings
 
-    let len = words.length;
-    let start = 0;
-    if (opts.shuffle) {
-      start = this.RiTa.randomizer.randI(len);
-      words = this.RiTa.randomizer.shuffle(words);
-    }
+    // randomize list order if shuffle is true
+    if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
-    for (let i = 0; i < len; i++) {
-      let idx = (start + i) % len;
-      let word = words[idx], data = dict[word];
+    for (let i = 0; i < words.length; i++) {
+
+      let word = words[i], data = dict[word];
       if (!this.checkCriteria(word, data, opts)) continue;
 
       if (opts.targetPos) {
         word = this.matchPos(word, data, opts, opts.limit === 1);
         if (!word) continue;
-        if (word !== words[idx]) data = dict[word];
+        if (word !== words[i]) data = dict[word];
         /* Note: a) may have changed the word here via conjugation
            and b) it may no longer be in the dictionary  */
       }
@@ -190,7 +198,6 @@ class Lexicon {
     }
 
     opts.silent = _silent; // re-enable warnings
-
     return result;
   }
 
@@ -222,24 +229,27 @@ class Lexicon {
 
   //////////////////////////// helpers /////////////////////////////////
 
-  similarByType(theWord, opts) { // quite slow
+  similarByType(theWord, opts) { // slow as we need to iterate through all
 
     this.parseArgs(opts);
 
     const dict = this._dict(true);
-    const words = Object.keys(dict);
     const input = theWord.toLowerCase();
     const matchSound = opts.type === 'sound'; // default: letter
     const variations = [input, input + 's', input + 'es'];
     const phonesA = matchSound ? this._toPhoneArray(this.rawPhones(input)) : input;
-    //const analyzer = this.RiTa.analyzer();
 
     if (!phonesA) return result;
 
-    let result = [], minVal = Number.MAX_VALUE;
+    let result = [], minVal = Number.MAX_VALUE, words = Object.keys(dict);
+
+    // randomize list order if shuffle is true
+    if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
+
     for (let i = 0; i < words.length; i++) {
-      let word = words[i];
-      let data = dict[word];
+
+      let word = words[i], data = dict[word];
+
       if (!this.checkCriteria(word, data, opts)) continue;
       if (variations.includes(word)) continue;
 
@@ -257,7 +267,6 @@ class Lexicon {
         phonesB = phones.replace(/1/g, '').replace(/ /g, '-').split('-');
       }
 
-      // TODO: optimise?
       let med = this.minEditDist(phonesA, phonesB);
 
       // found something even closer
@@ -385,15 +394,11 @@ class Lexicon {
 
   similarBySoundAndLetter(word, opts) {
 
-    //const actualLimit = opts.limit;
-
     opts.type = 'letter';
-    //opts.limit = Number.MAX_SAFE_INTEGER;
     const simLetter = this.similarByType(word, opts);
     if (simLetter.length < 1) return [];
 
     opts.type = 'sound';
-    //opts.limit = Number.MAX_SAFE_INTEGER;
     const simSound = this.similarByType(word, opts);
     if (simSound.length < 1) return [];
 

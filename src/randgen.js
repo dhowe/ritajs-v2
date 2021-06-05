@@ -119,7 +119,7 @@ class SeededRandom {
 
   // ////////////////////////////////////////////////////////////////////////////////////
 
-  randI() {
+  randI() { // int between 0 and max value
     let y, kk, mag01 = new Array(0x0, this.MATRIX_A);
     if (this.mti >= this.N) {
       if (this.mti == this.N + 1) this.seed(5489);
@@ -143,7 +143,7 @@ class SeededRandom {
     return y >>> 0;
   }
 
-  randF() {
+  randF() { // float between 0 and 1
     return this.randI() * (1.0 / 4294967296.0);
   }
 
