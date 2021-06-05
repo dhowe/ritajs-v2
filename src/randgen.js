@@ -52,7 +52,7 @@ class SeededRandom {
     probability distribution (with probabilities summing to 1)
   */
   pselect(probs) {
-    let point = this.randF(), cutoff = 0;
+    let point = this._rndf(), cutoff = 0;
     for (let i = 0; i < probs.length - 1; ++i) {
       cutoff += probs[i];
       if (point < cutoff) return i;
@@ -107,7 +107,7 @@ class SeededRandom {
     random(arr, func) -> item from arr, map => func
   */
   random() {
-    let crand = this.randF();
+    let crand = this._rndf();
     if (!arguments.length) return crand;
     if (Array.isArray(arguments[0])) {
       let arr = arguments[0];
@@ -119,7 +119,7 @@ class SeededRandom {
 
   // ////////////////////////////////////////////////////////////////////////////////////
 
-  randI() { // int between 0 and max value
+  _rndi() { // int between 0 and max value
     let y, kk, mag01 = new Array(0x0, this.MATRIX_A);
     if (this.mti >= this.N) {
       if (this.mti == this.N + 1) this.seed(5489);
@@ -143,8 +143,8 @@ class SeededRandom {
     return y >>> 0;
   }
 
-  randF() { // float between 0 and 1
-    return this.randI() * (1.0 / 4294967296.0);
+  _rndf() { // float between 0 and 1
+    return this._rndi() * (1.0 / 4294967296.0);
   }
 
 }
