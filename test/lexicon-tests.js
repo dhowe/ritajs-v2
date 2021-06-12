@@ -16,51 +16,18 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.hasWord("random")).to.be.true;
   });
 
-  it('Should call randomWord', () => {
+  it('Should call randomWord', () => { // SYNC:
 
     let result;
     result = RiTa.randomWord();
     expect(result.length > 0, "randomWord: " + result).to.be.true;
     expect(result === RiTa.randomWord(), "randomWord returned same result '" + result + "'").to.be.false;
 
-    result = RiTa.randomWord({ pos: "nn" });
-    expect(result.length > 0, "randomWord nn: " + result).to.be.true;
-
-    result = RiTa.randomWord({ pos: "nns" });
-    expect(result.length > 0, "randomWord nns=" + result).to.be.true;
-
-    result = RiTa.randomWord({ pos: "n" });
-    expect(result.length > 0, "randomWord n=" + result).to.be.true;
-
-    result = RiTa.randomWord({ pos: "v" });
-    expect(result.length > 0, "randomWord v=" + result).to.be.true;
-
     result = RiTa.randomWord({ numSyllables: 3 });
     expect(result.length > 0, "3 syllables: " + result).to.be.true;
 
     result = RiTa.randomWord({ numSyllables: 5 });
     expect(result.length > 0, "5 syllables: " + result).to.be.true;
-
-    result = RiTa.randomWord({ pos: "v" });
-    expect(result.length > 0, "randomWord v=" + result).to.be.true;
-
-    expect(() => RiTa.randomWord({ pos: "xxx" })).to.throw;
-
-    //randomWord should be random
-    let results = [];
-    for (let i = 0; i < 10; i++) {
-      results.push(RiTa.randomWord({ pos: "nns" }));
-    }
-    expect(results.length === 10).to.be.true;
-    let i = 0;
-    while (i < results.length - 1) {
-      if (results[i] === results[i + 1]) {
-        results.splice(i, 1);
-      } else {
-        i++;
-      }
-    }
-    expect(results.length > 1).to.be.true; //10 words not the same
   });
 
   it('Should call randomWord with regex', () => {
@@ -90,10 +57,10 @@ describe('RiTa.Lexicon', function () {
         i++;
       }
     }
-    expect(results.length > 1).to.be.true; // 10 words not the same
+    // 10 words not the same
+    expect(results.length > 1).to.be.true; 
 
     // regex object as first parameter
-
     result = RiTa.randomWord(/^a/);
     expect(/^a/.test(result)).to.be.true;
     expect(result.length > 3).to.be.true;
@@ -279,11 +246,13 @@ describe('RiTa.Lexicon', function () {
   });
 
 
-  it('Should call randomWord.pos', () => { // SYNC:
+  it('Should call randomWord with pos', () => { // SYNC:
 
-    let pos = ["nn", "jj", "jjr", "wp"];
+    expect(() => RiTa.randomWord({ pos: "xxx" })).to.throw;
+
+    let result, pos = ["nn", "jj", "jjr", "wp"];
     for (let j = 0; j < pos.length; j++) {
-      let result = RiTa.randomWord({ pos: pos[j] });
+      result = RiTa.randomWord({ pos: pos[j] });
       let best = RiTa.tagger.allTags(result)[0];
       //console.log(result+": "+pos[j]+" ?= "+best);
       expect(pos[j]).eq(best, result);
@@ -292,7 +261,7 @@ describe('RiTa.Lexicon', function () {
     ////////////////////////////////////////////////////////////////////////
 
     for (let i = 0; i < 5; i++) {
-      let result = RiTa.randomWord({ pos: "nns" });
+      result = RiTa.randomWord({ pos: "nns" });
       if (!RiTa.inflector.isPlural(result)) {
         // For now, just warn here as there are too many edge cases (see #521)
         console.warn("Pluralize/Singularize problem: randomWord(nns) was '" + result + "' (" +
@@ -308,6 +277,24 @@ describe('RiTa.Lexicon', function () {
     }
 
     ////////////////////////////////////////////////////////////////////////
+
+    result = RiTa.randomWord({ pos: "v" });
+    expect(result.length > 0, "randomWord v=" + result).to.be.true;
+
+    result = RiTa.randomWord({ pos: "nn" });
+    expect(result.length > 0, "randomWord nn: " + result).to.be.true;
+
+    result = RiTa.randomWord({ pos: "nns" });
+    expect(result.length > 0, "randomWord nns=" + result).to.be.true;
+
+    result = RiTa.randomWord({ pos: "n" });
+    expect(result.length > 0, "randomWord n=" + result).to.be.true;
+
+    result = RiTa.randomWord({ pos: "v" });
+    expect(result.length > 0, "randomWord v=" + result).to.be.true;
+
+    result = RiTa.randomWord({ pos: "rp" });
+    expect(result.length > 0, "randomWord rp=" + result).to.be.true;
 
     let results = [];
     for (let i = 0; i < 10; i++) {
@@ -326,7 +313,7 @@ describe('RiTa.Lexicon', function () {
     expect(results.length > 1).to.be.true; // 10 words not the same
   });
 
-  it('Should call randomWord.syls', () => {
+  it('Should call randomWord with syllables', () => {
     let i, result, syllables, num;
     result = RiTa.randomWord({ numSyllables: 3 });
     syllables = RiTa.syllables(result);

@@ -152,12 +152,27 @@ class Lexicon {
       }
     }
 
-    // delegate to search with {limit=1, shuffle=true}    SYNC:
+    // delegate to search {limit=1, shuffle=true, strictPos=true}    SYNC:
     opts = opts || {};
+    opts.strictPos = true;
+    opts.shuffle = true;
     opts.limit = 1;
-    opts.shuffle = true; 
 
-    return this.search(regex, opts)[0];
+    let result = this.search(regex, opts);
+
+    // relax our pos constraints if we got nothing
+    if (result.length < 1 && opts.hasOwnProperty('pos')) {
+      opts.strictPos = false;
+      result = this.search(regex, opts);
+    }
+
+    // we've still got nothing, throw
+    if (result.length < 1) {
+      ['strictPos', 'shuffle', 'targetPos'].forEach(k => delete opts[k]);
+      throw Error("No words matching constraints:\n" + JSON.stringify(opts,0,2));
+    }
+
+    return result[0];
   }
 
   search(pattern, options) {
@@ -183,7 +198,7 @@ class Lexicon {
       if (!this.checkCriteria(word, data, opts)) continue;
 
       if (opts.targetPos) {
-        word = this.matchPos(word, data, opts, opts.limit === 1);
+        word = this.matchPos(word, data, opts, opts.strictPos);
         if (!word) continue;
         if (word !== words[i]) data = dict[word];
         /* Note: a) may have changed the word here via conjugation
