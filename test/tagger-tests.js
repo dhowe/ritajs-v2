@@ -477,11 +477,6 @@ describe('RiTa.Tagger', () => {
     ok(!RiTa.isNoun("deterred"));
   });
 
-  it("tem for dev", () => {
-    ok(!RiTa.isNoun("heard"), "heard: " + RiTa.tagger.allTags("heard"));
-    ok(!RiTa.isNoun("deterred"));
-  })
-
   it('Should call isVerb', () => {
 
     expect(RiTa.isVerb("abandons")).eq(true);
