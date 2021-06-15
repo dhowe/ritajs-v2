@@ -14,7 +14,7 @@ class Tagger {
   }
 
   isNoun(word) {
-    let pos = this.allTags(word);
+    let pos = this.allTags(word, false, true);
     return pos && pos.filter(p => NOUNS.includes(p)).length > 0;
   }
 
@@ -57,10 +57,10 @@ class Tagger {
     return sb.trim();
   }
 
-  allTags(word, noDerivations) { // returns an array of choices
+  allTags(word, noDerivations, noGuessing) { // returns an array of choices
     if (word && typeof word === 'string' && word.length) { // fix error when sth like allTags(['word']) is called
       let posData = this.RiTa.lexicon()._posArr(word);
-      return posData || (noDerivations ? null : this._derivePosData(word));
+      return posData || (noDerivations ? null : this._derivePosData(word, noGuessing));
     }
   }
 
@@ -124,7 +124,8 @@ class Tagger {
     if (b) return b;
   } // ! this function is never used
 
-  _derivePosData(word) {
+  _derivePosData(word, noGuessing) {
+    // JC: noGuessing will disable the final guess, if true, will return an empty array if no rule matched
     /*
       Try for a verb or noun inflection 
       VBD 	Verb, past tense
@@ -187,7 +188,7 @@ class Tagger {
     if (word === 'the' || word === 'a') return ['dt'];
 
     // Give up with a best guess
-    return word.endsWith('ly') ? ['rb'] : (word.endsWith('s') ? ['nns'] : ['nn']);
+    return noGuessing ? [] : word.endsWith('ly') ? ['rb'] : (word.endsWith('s') ? ['nns'] : ['nn']);
   }
 
   isLikelyPlural(word) {

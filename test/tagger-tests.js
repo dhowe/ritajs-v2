@@ -466,12 +466,21 @@ describe('RiTa.Tagger', () => {
     ok(!RiTa.isNoun("excitedly"));
     ok(!RiTa.isNoun("energetically"));
 
-    //bad inputs
+    //bad input
     ok(!RiTa.isNoun(""));
     ok(!RiTa.isNoun());
     ok(!RiTa.isNoun(42));
     ok(!RiTa.isNoun(["rabbit"]));
+    
+    //verbs (esp. past particle)
+    ok(!RiTa.isNoun("heard"), "heard: " + RiTa.tagger.allTags("heard"));
+    ok(!RiTa.isNoun("deterred"));
   });
+
+  it("tem for dev", () => {
+    ok(!RiTa.isNoun("heard"), "heard: " + RiTa.tagger.allTags("heard"));
+    ok(!RiTa.isNoun("deterred"));
+  })
 
   it('Should call isVerb', () => {
 
