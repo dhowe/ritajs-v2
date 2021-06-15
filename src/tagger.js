@@ -188,6 +188,22 @@ class Tagger {
           }
         } 
       }
+    } else if (word.endsWith('ly')) {
+      let stem = word.substring(0, word.length - 2);
+      if (stem) {
+        let pos = lex._posArr(stem);
+        if (pos && pos.includes("jj")) {
+          // beautifully - beautiful
+          return ['rb'];
+        }
+        if (stem.charAt(stem.length - 1) === 'i') {
+          pos = lex._posArr(stem.substring(0, stem.length - 1) + "y");
+          if (pos && pos.includes("jj")) {
+            // happily - happy
+            return ['rb'];
+          }
+        }
+      }
     }
 
     // Check if this could be a plural noun form
