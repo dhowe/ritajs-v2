@@ -161,9 +161,10 @@ class Tagger {
     }
     else if (word.endsWith('ed')) { // simple past or past participle
       let pos = lex._posArr(word.substring(0, word.length - 1))
-        || lex._posArr(word.substring(0, word.length - 2));
+        || lex._posArr(word.substring(0, word.length - 2))
+        || lex._posArr(word.substring(0, word.length - 3)); //e.g deterred
       if (pos && pos.includes('vb')) {
-        return ['vbd', 'vbn']; // hate-> hated || row->rowed
+        return ['vbd', 'vbn']; // hate-> hated || row->rowed || deter -> deterred
       }
     }
     else if (word.endsWith('ing')) {
@@ -179,6 +180,13 @@ class Tagger {
             return ['vbg'];  // hating
           }
         }
+        // else 
+        if (word.charAt(word.length - 4) === word.charAt(word.length - 4)) {
+          pos = lex._posArr(stem.substring(0, stem.length - 1)); // e.g running
+          if (pos && pos.includes('vb')) {
+            return ['vbg'];  // hating
+          }
+        } 
       }
     }
 
@@ -187,7 +195,7 @@ class Tagger {
 
     if (word === 'the' || word === 'a') return ['dt'];
 
-    // Give up with a best guess
+    // Give up 
     return noGuessing ? [] : word.endsWith('ly') ? ['rb'] : (word.endsWith('s') ? ['nns'] : ['nn']);
   }
 
