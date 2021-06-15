@@ -14,6 +14,19 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call hasWord', () => {
     expect(RiTa.hasWord("random")).to.be.true;
+    expect(RiTa.hasWord("dog")).to.be.true;
+    expect(RiTa.hasWord("dogs")).to.be.true;
+    expect(RiTa.hasWord("men")).to.be.true;
+    expect(RiTa.hasWord("happily")).to.be.true;
+    expect(RiTa.hasWord("play")).to.be.true;
+    expect(RiTa.hasWord("plays")).to.be.true;
+    expect(RiTa.hasWord("played")).to.be.true;
+    expect(RiTa.hasWord("written")).to.be.true;
+
+    // strict mode
+    expect(RiTa.lexicon().hasWord("dogs", true, true)).to.not.be.true;
+    expect(RiTa.lexicon().hasWord("played", true, true)).to.not.be.true;
+    expect(RiTa.lexicon().hasWord("cats", true, true)).to.not.be.true;
   });
 
   it('Should call randomWord', () => { // SYNC:
