@@ -620,7 +620,7 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.tagger.allTags('monkeys'), ["nns"]);
     eq(RiTa.tagger.allTags(''), undefined);
     eq(RiTa.tagger.allTags(['monkey']), undefined);
-    eq(RiTa.tagger.allTags("hates", true), null);
+    eq(RiTa.tagger.allTags("hates", {noDerivations: true}), null);
     eql(RiTa.tagger.allTags("satisfies"), ["vbz"]);
     eql(RiTa.tagger.allTags("falsifies"), ["vbz"])
     expect(RiTa.tagger.allTags("hates")).to.include("vbz");

@@ -14,7 +14,7 @@ class Tagger {
   }
 
   isNoun(word) {
-    let pos = this.allTags(word, false, true);
+    let pos = this.allTags(word, {noDerivations: false, noGuessing: true});
     return pos && pos.filter(p => NOUNS.includes(p)).length > 0;
   }
 
@@ -57,7 +57,9 @@ class Tagger {
     return sb.trim();
   }
 
-  allTags(word, noDerivations, noGuessing) { // returns an array of choices
+  allTags(word, opts = {}) { // returns an array of choices
+    let noDerivations = opts.noDerivations || false;
+    let noGuessing = opts.noGuessing || false;
     if (word && typeof word === 'string' && word.length) { // fix error when sth like allTags(['word']) is called
       let posData = this.RiTa.lexicon()._posArr(word);
       return posData || (noDerivations ? null : this._derivePosData(word, noGuessing));
