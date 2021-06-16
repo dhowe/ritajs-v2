@@ -92,6 +92,11 @@ class RiTa {
       (RiTa.tokenize(sentence)[0].toLowerCase());
   }
 
+  static isStem(word) {
+    // return true if 1. it is in the dictionary && 2. it remains the same after stemming
+    return RiTa.lexicon().hasWord(word, true, true) && Stemmer.stem(word) === word;
+  }
+
   static isStopWord(w) {
     return RiTa.STOP_WORDS.includes(w.toLowerCase());
   }

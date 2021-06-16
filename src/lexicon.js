@@ -9,9 +9,18 @@ class Lexicon {
     this.analyzer = parent.analyzer;
   }
 
-  hasWord(word, fatal) {
+  hasWord(word, fatal, strict) {
     if (!word || !word.length) return false;
-    return this._dict(fatal).hasOwnProperty(word.toLowerCase());
+    if (strict) return this._dict(fatal).hasOwnProperty(word.toLowerCase());
+    // not strict: allow plurals and conjugations
+    if (this._dict(fatal).hasOwnProperty(word.toLowerCase())) return true;
+    // plural?
+    word = this.RiTa.singularize(word);
+    if (this._dict(fatal).hasOwnProperty(word.toLowerCase())) return true;
+    // conjugations?
+    word = this.RiTa.stem(word);
+    if (this._dict(fatal).hasOwnProperty(word.toLowerCase())) return true;
+    return false;
   }
 
   alliterations(theWord, opts = {}) {

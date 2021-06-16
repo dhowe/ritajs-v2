@@ -763,6 +763,16 @@ describe('RiTa.Core', () => {
     });
   });
 
+  it('Should call isStem', () => {
+    ok(RiTa.isStem("dog"));
+    ok(RiTa.isStem("cat"));
+    ok(RiTa.isStem("play"));
+    ok(RiTa.isStem("run"));
+    ok(!RiTa.isStem("dogs"));
+    ok(!RiTa.isStem("played"));
+    ok(!RiTa.isStem("writing"));
+  });
+
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }
   function eql(a, b, m) { expect(a).eql(b, m); }
