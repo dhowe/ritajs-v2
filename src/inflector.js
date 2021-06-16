@@ -47,7 +47,12 @@ class Inflector {
   }
 
   isPlural(word, opts) { // add to API?
-    if (word && typeof word !== 'string') throw Error(`isPlural() requires a string as input`); // similar to adjustNumber
+
+    if (word && typeof word !== 'string') {
+
+      // similar to adjustNumber
+      throw Error(`isPlural() requires a string as input`); 
+    }
 
     if (!word || word.length === 0) return false;
 
@@ -62,7 +67,9 @@ class Inflector {
     let sing = this.RiTa.singularize(word);
 
     // Is singularized form is in lexicon as 'nn'?
-    if (sing !== word && dict[sing] && dict[sing].length === 2) { // fix for words like child (mass nouns should have been detected above)
+    if (sing !== word && dict[sing] && dict[sing].length === 2) { 
+      // fix for words like 'child':
+      // mass nouns should have been detected above
       let pos = dict[sing][1].split(' ');
       if (pos.includes('nn')) return true;
     }

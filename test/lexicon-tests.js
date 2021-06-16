@@ -58,7 +58,7 @@ describe('RiTa.Lexicon', function () {
       }
     }
     // 10 words not the same
-    expect(results.length > 1).to.be.true; 
+    expect(results.length > 1).to.be.true;
 
     // regex object as first parameter
     result = RiTa.randomWord(/^a/);
@@ -244,7 +244,6 @@ describe('RiTa.Lexicon', function () {
     expect(lex.isAlliteration("walk", "welcome")).to.be.true;
     lex.data = orig;
   });
-
 
   it('Should call randomWord with pos', () => { // SYNC:
 

@@ -347,6 +347,7 @@ describe('RiTa.Conjugator', () => {
   });
 
   it('Should accept stems', () => {
+
     // https://github.com/dhowe/rita/issues/116
     let stem = RiTa.stem("walking");
     equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST }), "walked", `${stem} => walked`);
@@ -363,6 +364,11 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PRESENT }), "ask", `${stem} => ask`);
     equal(RiTa.conjugate(stem, { number: RiTa.SINGULAR, person: RiTa.THIRD, tense: RiTa.PRESENT }), "asks", `${stem} => asks`);
 
+    stem = RiTa.stem("changed");
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST }), "changed", `${stem} => changed`);
+    equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PRESENT }), "change", `${stem} => change`);
+    equal(RiTa.conjugate(stem, { number: RiTa.SINGULAR, person: RiTa.THIRD, tense: RiTa.PRESENT }), "changes", `${stem} => changes`);
+
     stem = RiTa.stem("admired");
     equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST }), "admired", `${stem} => admired`);
     equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PRESENT }), "admire", `${stem} => admire`);
@@ -378,7 +384,7 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.conjugate(stem, { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PRESENT }), "study", `${stem} => study`);
     equal(RiTa.conjugate(stem, { number: RiTa.SINGULAR, person: RiTa.THIRD, tense: RiTa.PRESENT }), "studies", `${stem} => studies`);
 
-    //more random test
+    // more random tests
     let opts = { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST };
     let pairs = [
       ["accompanying", "accompanied"],
