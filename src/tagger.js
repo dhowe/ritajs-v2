@@ -14,7 +14,7 @@ class Tagger {
   }
 
   isNoun(word) {
-    let pos = this.allTags(word);
+    let pos = this.allTags(word, {noDerivations: false, noGuessing: true});
     return pos && pos.filter(p => NOUNS.includes(p)).length > 0;
   }
 
@@ -57,10 +57,12 @@ class Tagger {
     return sb.trim();
   }
 
-  allTags(word, noDerivations) { // returns an array of choices
+  allTags(word, opts = {}) { // returns an array of choices
+    let noDerivations = opts.noDerivations || false;
+    let noGuessing = opts.noGuessing || false;
     if (word && typeof word === 'string' && word.length) { // fix error when sth like allTags(['word']) is called
       let posData = this.RiTa.lexicon()._posArr(word);
-      return posData || (noDerivations ? null : this._derivePosData(word));
+      return posData || (noDerivations ? null : this._derivePosData(word, noGuessing));
     }
   }
 
@@ -124,7 +126,8 @@ class Tagger {
     if (b) return b;
   } // ! this function is never used
 
-  _derivePosData(word) {
+  _derivePosData(word, noGuessing) {
+    // JC: noGuessing will disable the final guess, if true, will return an empty array if no rule matched
     /*
       Try for a verb or noun inflection 
       VBD 	Verb, past tense
@@ -160,9 +163,10 @@ class Tagger {
     }
     else if (word.endsWith('ed')) { // simple past or past participle
       let pos = lex._posArr(word.substring(0, word.length - 1))
-        || lex._posArr(word.substring(0, word.length - 2));
+        || lex._posArr(word.substring(0, word.length - 2))
+        || lex._posArr(word.substring(0, word.length - 3)); //e.g deterred
       if (pos && pos.includes('vb')) {
-        return ['vbd', 'vbn']; // hate-> hated || row->rowed
+        return ['vbd', 'vbn']; // hate-> hated || row->rowed || deter -> deterred
       }
     }
     else if (word.endsWith('ing')) {
@@ -178,6 +182,29 @@ class Tagger {
             return ['vbg'];  // hating
           }
         }
+        // else 
+        if (word.charAt(word.length - 4) === word.charAt(word.length - 4)) {
+          pos = lex._posArr(stem.substring(0, stem.length - 1)); // e.g running
+          if (pos && pos.includes('vb')) {
+            return ['vbg'];  // hating
+          }
+        } 
+      }
+    } else if (word.endsWith('ly')) {
+      let stem = word.substring(0, word.length - 2);
+      if (stem) {
+        let pos = lex._posArr(stem);
+        if (pos && pos.includes("jj")) {
+          // beautifully - beautiful
+          return ['rb'];
+        }
+        if (stem.charAt(stem.length - 1) === 'i') {
+          pos = lex._posArr(stem.substring(0, stem.length - 1) + "y");
+          if (pos && pos.includes("jj")) {
+            // happily - happy
+            return ['rb'];
+          }
+        }
       }
     }
 
@@ -186,8 +213,8 @@ class Tagger {
 
     if (word === 'the' || word === 'a') return ['dt'];
 
-    // Give up with a best guess
-    return word.endsWith('ly') ? ['rb'] : (word.endsWith('s') ? ['nns'] : ['nn']);
+    // Give up 
+    return noGuessing ? [] : word.endsWith('ly') ? ['rb'] : (word.endsWith('s') ? ['nns'] : ['nn']);
   }
 
   isLikelyPlural(word) {

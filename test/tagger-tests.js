@@ -466,11 +466,15 @@ describe('RiTa.Tagger', () => {
     ok(!RiTa.isNoun("excitedly"));
     ok(!RiTa.isNoun("energetically"));
 
-    //bad inputs
+    //bad input
     ok(!RiTa.isNoun(""));
     ok(!RiTa.isNoun());
     ok(!RiTa.isNoun(42));
     ok(!RiTa.isNoun(["rabbit"]));
+    
+    //verbs (esp. past particle)
+    ok(!RiTa.isNoun("heard"), "heard: " + RiTa.tagger.allTags("heard"));
+    ok(!RiTa.isNoun("deterred"));
   });
 
   it('Should call isVerb', () => {
@@ -616,7 +620,7 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.tagger.allTags('monkeys'), ["nns"]);
     eq(RiTa.tagger.allTags(''), undefined);
     eq(RiTa.tagger.allTags(['monkey']), undefined);
-    eq(RiTa.tagger.allTags("hates", true), null);
+    eq(RiTa.tagger.allTags("hates", {noDerivations: true}), null);
     eql(RiTa.tagger.allTags("satisfies"), ["vbz"]);
     eql(RiTa.tagger.allTags("falsifies"), ["vbz"])
     expect(RiTa.tagger.allTags("hates")).to.include("vbz");
