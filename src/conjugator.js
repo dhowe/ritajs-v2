@@ -67,6 +67,7 @@ class Conjugator {
   }
 
   pastPart(theVerb) {
+    if (this._isPastPart(theVerb)) return theVerb;
     return this._checkRules(PAST_PARTICIPLE_RULESET, theVerb);
   }
 
@@ -154,6 +155,44 @@ class Conjugator {
 
   _doubleFinalConsonant(word) {
     return word + word.charAt(word.length - 1);
+  }
+
+  _isPastPart(word) {
+    const w = word.toLowerCase();
+    // in dict
+    if (this.RiTa.lexicon()._posArr(w) && this.RiTa.lexicon()._posArr(w).includes("vbn")) return true;
+    // ends with ed?
+    if (w.endsWith("ed")) {
+      let pos = this.RiTa.lexicon()._posArr(w.substring(0, w.length - 1)) // created
+        || this.RiTa.lexicon()._posArr(w.substring(0, w.length - 2)); // played
+      if (!pos && w.charAt(w.length - 3) === w.charAt(w.length - 4)) {
+        pos = this.RiTa.lexicon()._posArr(w.substring(0, w.length - 3)); // hopped
+      }
+      if (!pos && w.endsWith("ied")) {
+        pos = this.RiTa.lexicon()._posArr(w.substring(0, w.length - 3) + "y"); // cried
+      }
+      if (pos && pos.includes('vb')) return true;
+    }
+    // ends with en?
+    if (w.endsWith("en")) {
+      let pos = this.RiTa.lexicon()._posArr(w.substring(0, w.length - 1)) // arisen
+        || this.RiTa.lexicon()._posArr(w.substring(0, w.length - 2)); // eaten
+      if (!pos && w.charAt(w.length - 3) === w.charAt(w.length - 4)) {
+        pos = this.RiTa.lexicon()._posArr(w.substring(0, w.length - 3)); // forgotten / bitten ... (past tense + en)? 
+      }
+      if (pos && (pos.includes('vb') || pos.includes("vbd"))) return true;
+      // special cases
+      let stem = w.substring(0, w.length - 2);
+      if (/^(writt|ridd|chidd|swoll)$/.test(stem)) return true;
+    }
+    // ends with n, d, or t?
+    if (w.endsWith("n") || w.endsWith("d") || w.endsWith("t")) {
+      let pos = this.RiTa.lexicon()._posArr(w.substring(0, w.length - 1)) // grown, thrown, heard, learnt...
+      if (pos && (pos.includes('vb'))) return true;
+    }
+    // irregulars
+    if (IRREGULAR_PAST_PART.includes(w)) return true;
+    return false;
   }
 
   _pastTense(theVerb, pers, numb) {
@@ -301,7 +340,7 @@ const PAST_PARTICIPLE_RULES = [
   RE("^brei", 0, "d"),
   RE("^bring$", 3, "ought"),
   RE("^build$", 1, "t"),
-  RE("^come"),
+  RE("^come", 0, ""),
   RE("^catch$", 3, "ught"),
   RE("^chivy$", 1, "vied"),
   RE("^choose$", 3, "sen"),
@@ -884,6 +923,16 @@ const PRESENT_RULESET = {
 };
 
 const TO_BE = ["am", "are", "is", "was", "were"];
+
+const IRREGULAR_PAST_PART = ["done", "gone", "abode", "been", "begotten", "begun", "bent", "bid",
+  "bidden", "bled", "born", "bought", "brought", "built", "caught", "clad", "chlung", "could", "crept",
+  "dove", "drunk", "dug", "dwelt", "fed", "felt", "fled", "flung", "fought", "found", "ground", "had",
+  "held", "hung", "hurt", "kept", "knelt", "laid", "lain", "led", "left", "lent", "lit", "lost", "made",
+  "met", "mown", "paid", "pled", "relaid", "rent", "rung", "said", "sat", "sent", "shod", "shot", "slain",
+  "slept", "slid", "smelt", "sold", "sought", "spat", "sped", "spelt", "spent", "split", "spolit", "sprung",
+  "spun", "stood", "stuck", "struck", "stung", "stunk", "sung", "sunk", "swept", "sworn", "swum", "swung",
+  "taight", "thought", "told", "torn", "undergone", "understood", "wept", "woken", "won", "worn", "wound",
+  "wrung"];
 
 Conjugator.VERB_CONS_DOUBLING = VERB_CONS_DOUBLING; // for scripts
 

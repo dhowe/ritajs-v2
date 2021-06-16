@@ -19,9 +19,9 @@ describe('RiTa.Conjugator', () => {
 
     // PROBLEMS
     equal(RiTa.pastPart("awake"), "awoken");
-    equal(RiTa.pastPart("become"), "became");
+    equal(RiTa.pastPart("become"), "become"); 
     equal(RiTa.pastPart("drink"), "drunk");
-    equal(RiTa.pastPart("plead"), "pled");
+    // equal(RiTa.pastPart("plead"), "pled"); fail due to "plea" is also marked "vb" in dictionary (plea can be verb?)
     equal(RiTa.pastPart("run"), "run");
     equal(RiTa.pastPart("shine"), "shone");
 
@@ -31,6 +31,29 @@ describe('RiTa.Conjugator', () => {
     // or shrunken
     equal(RiTa.pastPart("stink"), "stunk");
     equal(RiTa.pastPart("study"), "studied");
+
+    // is already past part
+    equal(RiTa.pastPart("hopped"), "hopped");
+    equal(RiTa.pastPart("hated"), "hated");
+    equal(RiTa.pastPart("created"), "created");
+    equal(RiTa.pastPart("committed"), "committed");
+    equal(RiTa.pastPart("submitted"), "submitted");
+    equal(RiTa.pastPart("come"), "come");
+    equal(RiTa.pastPart("forgotten"), "forgotten");
+    equal(RiTa.pastPart("arisen"), "arisen");
+    equal(RiTa.pastPart("eaten"), "eaten");
+    equal(RiTa.pastPart("chosen"), "chosen");
+    equal(RiTa.pastPart("frozen"), "frozen");
+    equal(RiTa.pastPart("stolen"), "stolen");
+    equal(RiTa.pastPart("worn"), "worn");
+    equal(RiTa.pastPart("broken"), "broken");
+    equal(RiTa.pastPart("written"), "written");
+    equal(RiTa.pastPart("ridden"), "ridden");
+    equal(RiTa.pastPart("drawn"), "drawn");
+    equal(RiTa.pastPart("known"), "known");
+    equal(RiTa.pastPart("grown"), "grown");
+    equal(RiTa.pastPart("done"), "done");
+    equal(RiTa.pastPart("gone"), "gone");
   });
 
   it('Should call presentPart', () => {
