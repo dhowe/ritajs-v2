@@ -63,7 +63,7 @@ class RiTa {
     if (typeof input === 'string') {
       if (caseSensitive) return RiTa.ABRV.includes(input.trim());
       let check = input.trim().toLowerCase();
-      return RiTa.ABRV.filter(a => a.toLowerCase() === check).length > 0;
+      return RiTa.ABRV.some(a => a.toLowerCase() === check);
     }
   }
 

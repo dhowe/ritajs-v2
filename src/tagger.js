@@ -10,22 +10,23 @@ class Tagger {
 
   isVerb(word) {
     let pos = this.allTags(word);
-    return pos && pos.filter(p => VERBS.includes(p)).length > 0;
+    return pos && pos.some(p => VERBS.includes(p));
   }
 
   isNoun(word) {
-    let pos = this.allTags(word, {noDerivations: false, noGuessing: true});
-    return pos && pos.filter(p => NOUNS.includes(p)).length > 0;
+    // see https://github.com/dhowe/rita/issues/130
+    let pos = this.allTags(word, { noGuessing: true });
+    return pos && pos.some(p => NOUNS.includes(p));
   }
 
   isAdverb(word) {
     let pos = this.allTags(word);
-    return pos && pos.filter(p => ADVS.includes(p)).length > 0;
+    return pos && pos.some(p => ADVS.includes(p));
   }
 
   isAdjective(word) {
     let pos = this.allTags(word);
-    return pos && pos.filter(p => ADJS.includes(p)).length > 0;
+    return pos && pos.some(p => ADJS.includes(p));
   }
 
   hasTag(choices, tag) {
@@ -58,9 +59,11 @@ class Tagger {
   }
 
   allTags(word, opts = {}) { // returns an array of choices
-    let noDerivations = opts.noDerivations || false;
     let noGuessing = opts.noGuessing || false;
-    if (word && typeof word === 'string' && word.length) { // fix error when sth like allTags(['word']) is called
+    let noDerivations = opts.noDerivations || false;
+
+    // fix error when sth like allTags(['word']) is called
+    if (word && typeof word === 'string' && word.length) {
       let posData = this.RiTa.lexicon()._posArr(word);
       return posData || (noDerivations ? null : this._derivePosData(word, noGuessing));
     }
@@ -188,7 +191,7 @@ class Tagger {
           if (pos && pos.includes('vb')) {
             return ['vbg'];  // hating
           }
-        } 
+        }
       }
     } else if (word.endsWith('ly')) {
       let stem = word.substring(0, word.length - 2);

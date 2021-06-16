@@ -9,6 +9,7 @@ class Tokenizer {
   }
 
   tokens(text, opts = {}) { // SYNC:
+
     // opts: {includePunct, caseSensitive, sort, ignoreStopWords} ?
     let words = this.tokenize(text, opts), map = {};
     words.forEach(w => {
