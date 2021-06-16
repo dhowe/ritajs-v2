@@ -1,25 +1,40 @@
+import { existing } from './rita_dict';
 import Util from './util';
 
 class Lexicon {
 
   constructor(parent, dict) {
+
     this.RiTa = parent;
     this.data = dict;
     this.lexWarned = false;
     this.analyzer = parent.analyzer;
   }
 
-  hasWord(word, fatal, strict) {
+  hasWord(word, opts = {}) {
+
     if (!word || !word.length) return false;
-    if (strict) return this._dict(fatal).hasOwnProperty(word.toLowerCase());
-    // not strict: allow plurals and conjugations
-    if (this._dict(fatal).hasOwnProperty(word.toLowerCase())) return true;
-    // plural?
-    word = this.RiTa.singularize(word);
-    if (this._dict(fatal).hasOwnProperty(word.toLowerCase())) return true;
-    // conjugations?
-    word = this.RiTa.stem(word);
-    if (this._dict(fatal).hasOwnProperty(word.toLowerCase())) return true;
+
+    let fatal = opts.fatal;
+    let strict = opts.strict;
+    let dict = this._dict(fatal);
+    let exists = dict.hasOwnProperty(word.toLowerCase());
+
+    if (strict || exists) return exists;
+
+    // not strict, try plural
+    word = this.RiTa.singularize(word).toLowerCase();
+    if (dict.hasOwnProperty(word)) return true;
+
+    // not strict, try conjugations
+    // TODO: this is not correct
+    // we need a func that checks whether the word COULD BE
+    // a conjugation of a word in the dictionary
+    // for examples, 'changed' or 'changes', should return true
+    // bc 'change' is in the dictionary, but the stem ('chang') is not
+    // basically need to implement Conjugator.unconjugate() 
+    word = this.RiTa.stem(word).toLowerCase();
+    if (dict.hasOwnProperty(word)) return true;
     return false;
   }
 
