@@ -141,6 +141,27 @@ class Tagger {
       NNS   Noun, plural
     */
     const lex = this.RiTa.lexicon();
+    if (word.endsWith("ress")) {
+      let pos = lex._posArr(word.substring(0, word.length - 3)); // murderess
+      if (pos && pos.includes("vb")) {
+        //murderess - murder
+        return ["nn"];
+      }
+      pos = lex._posArr(word.substring(0, word.length - 4)) // actress, waitress
+      if (pos && pos.includes("vb")) {
+        //actress - act
+        return ["nn"];
+      }
+    }
+    
+    if (word.endsWith("or")) {
+      let pos = lex._posArr(word.substring(0, word.length - 2)); //actor, waitor
+      if (pos && pos.includes("vb")) {
+        //actress - act
+        return ["nn"];
+      }
+    }
+
     if (word.endsWith('ies')) { // 3rd-person sing. present (satisfies, falsifies)
       let check = word.substring(0, word.length - 3) + "y";
       let pos = lex._posArr(check);
@@ -164,7 +185,8 @@ class Tagger {
 
       if (result.length) return result;
     }
-    else if (word.endsWith('ed')) { // simple past or past participle
+    
+    if (word.endsWith('ed')) { // simple past or past participle
       let pos = lex._posArr(word.substring(0, word.length - 1))
         || lex._posArr(word.substring(0, word.length - 2))
         || lex._posArr(word.substring(0, word.length - 3)); //e.g deterred
@@ -172,7 +194,8 @@ class Tagger {
         return ['vbd', 'vbn']; // hate-> hated || row->rowed || deter -> deterred
       }
     }
-    else if (word.endsWith('ing')) {
+    
+    if (word.endsWith('ing')) {
       let stem = word.substring(0, word.length - 3);
       if (stem) {
         let pos = lex._posArr(stem);
@@ -193,7 +216,9 @@ class Tagger {
           }
         }
       }
-    } else if (word.endsWith('ly')) {
+    }
+    
+    if (word.endsWith('ly')) {
       let stem = word.substring(0, word.length - 2);
       if (stem) {
         let pos = lex._posArr(stem);
@@ -208,26 +233,6 @@ class Tagger {
             return ['rb'];
           }
         }
-      }
-    }
-    if (word.endsWith("ress")) {
-      let pos = lex._posArr(word.substring(0, word.length - 3)); // murderess
-      if (pos && pos.includes("vb")) {
-        //murderess - murder
-        return ["nn"];
-      }
-      pos = lex._posArr(word.substring(0, word.length - 4)) // actress, waitress
-      if (pos && pos.includes("vb")) {
-        //actress - act
-        return ["nn"];
-      }
-    }
-    
-    if (word.endsWith("or")) {
-      let pos = lex._posArr(word.substring(0, word.length - 2)); //actor, waitor
-      if (pos && pos.includes("vb")) {
-        //actress - act
-        return ["nn"];
       }
     }
 

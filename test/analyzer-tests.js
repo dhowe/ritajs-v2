@@ -778,10 +778,6 @@ describe('RiTa.Analyzer', () => {
     //expect(RiTa.analyzer.computePhones("student's", { silent: false })).eql(["s", "t", "uw1", "d", "eh1", "n", "t", "z"]);
   });
 
-  it("temIsPlural", () => {
-   // ok(RiTa.inflector.isPlural("randomwords"));
-  })
-
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }
   function eq(a, b, m) { expect(a).eq(b, m); }
