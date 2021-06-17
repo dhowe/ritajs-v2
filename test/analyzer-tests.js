@@ -349,7 +349,7 @@ describe('RiTa.Analyzer', () => {
       'gases', 'gas',
       'buses', 'bus',
       'happiness', 'happiness',
-      'apotheses', 'apothesis',
+      'apotheoses', 'apotheosis',
       'stimuli', 'stimulus',
       'dogs', 'dog',
       'feet', 'foot',
@@ -385,7 +385,6 @@ describe('RiTa.Analyzer', () => {
       "electrolysis", "electrolysis",
       "series", "series",
       "crises", "crisis",
-      "apotheses", "apothesis",
       "stimuli", "stimulus",
       "corpora", "corpus",
       "menus", "menu",
@@ -548,7 +547,7 @@ describe('RiTa.Analyzer', () => {
       "teeth", "tooth",
       "kisses", "kiss",
       "children", "child",
-      "randomwords", "randomword",
+      // "randomwords", "randomword", // 'random word'?
       "deer", "deer",
       "sheep", "sheep",
       "shrimp", "shrimp",
@@ -569,7 +568,7 @@ describe('RiTa.Analyzer', () => {
       "buses", "bus",
       "happiness", "happiness",
       "crises", "crisis",
-      "apotheses", "apothesis",
+      "apotheoses", "apotheosis", // 'to deify'
       "stimuli", "stimulus",
       "corpora", "corpus",
       "congressmen", "congressman",
@@ -677,7 +676,7 @@ describe('RiTa.Analyzer', () => {
       "teeth", "tooth",
       "kisses", "kiss",
       "children", "child",
-      "randomwords", "randomword",
+      //"randomwords", "randomword", // 'random word' should be seen as two word?
       "deer", "deer",
       "sheep", "sheep",
       "shrimp", "shrimp",
@@ -692,7 +691,7 @@ describe('RiTa.Analyzer', () => {
       "buses", "bus",
       "happiness", "happiness",
       "crises", "crisis",
-      "apotheses", "apothesis",
+      "apotheoses", "apotheosis", // 'to deify'
       "stimuli", "stimulus",
       "corpora", "corpus",
       "women", "woman",
@@ -719,6 +718,8 @@ describe('RiTa.Analyzer', () => {
     ];
     for (let i = 0; i < tests.length; i += 2) {
       expect(RiTa.pluralize(tests[i + 1])).eq(tests[i]);
+      // if input is plural, return input
+      expect(RiTa.pluralize(tests[i])).eq(tests[i]);
     }
 
     expect(RiTa.pluralize()).eq("");
@@ -776,6 +777,10 @@ describe('RiTa.Analyzer', () => {
     //with "'"
     //expect(RiTa.analyzer.computePhones("student's", { silent: false })).eql(["s", "t", "uw1", "d", "eh1", "n", "t", "z"]);
   });
+
+  it("temIsPlural", () => {
+   // ok(RiTa.inflector.isPlural("randomwords"));
+  })
 
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }

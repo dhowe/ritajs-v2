@@ -210,6 +210,26 @@ class Tagger {
         }
       }
     }
+    if (word.endsWith("ress")) {
+      let pos = lex._posArr(word.substring(0, word.length - 3)); // murderess
+      if (pos && pos.includes("vb")) {
+        //murderess - murder
+        return ["nn"];
+      }
+      pos = lex._posArr(word.substring(0, word.length - 4)) // actress, waitress
+      if (pos && pos.includes("vb")) {
+        //actress - act
+        return ["nn"];
+      }
+    }
+    
+    if (word.endsWith("or")) {
+      let pos = lex._posArr(word.substring(0, word.length - 2)); //actor, waitor
+      if (pos && pos.includes("vb")) {
+        //actress - act
+        return ["nn"];
+      }
+    }
 
     // Check if this could be a plural noun form
     if (this.isLikelyPlural(word)) return ['nns'];
@@ -221,7 +241,7 @@ class Tagger {
   }
 
   isLikelyPlural(word) {
-    return this._lexHas("n", this.RiTa.singularize(word)) || this.RiTa.inflector.isPlural(word);
+    return this._lexHas("n", this.RiTa.singularize(word)) //|| this.RiTa.inflector.isPlural(word);
   }
 
   _handleSingleLetter(c) {
