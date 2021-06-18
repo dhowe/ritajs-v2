@@ -155,7 +155,7 @@ class Tagger {
     }
     
     if (word.endsWith("or")) {
-      let pos = lex._posArr(word.substring(0, word.length - 2)); //actor, waitor
+      let pos = lex._posArr(word.substring(0, word.length - 2)); // actor, motor, editor
       if (pos && pos.includes("vb")) {
         //actress - act
         return ["nn"];
