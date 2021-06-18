@@ -38,13 +38,15 @@ class Operator {
   }
 
   invoke(s1, s2) {
-    if (s1 == null) throw Error('No first operand: ' + s1 + ' ' + s2);
+    if (typeof s1 === 'undefined') {
+      throw Error('No first operand: ' + s1 + ' ' + s2);
+    }
     if (this.type === OpType.EQUALITY) {
       if (this === EQ) return s1 === s2;
       if (this === NE) return s1 !== s2;
     }
     else if (this.type === OpType.MATCHING) {
-      if (s2 === null) return false;
+      if (typeof s2 === 'undefined') return false;
       if (this === SW) return s1.startsWith(s2);
       if (this === EW) return s1.endsWith(s2);
       if (this === RE) return new RegExp(s2).test(s1);

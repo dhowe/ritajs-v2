@@ -54,7 +54,7 @@ class Concorder {
 
   count(word) {
     let value = this._lookup(word);
-    return value === null || value === undefined ? 0 : value.indexes.length;
+    return value && value.indexes ? value.indexes.length : 0;
   }
 
   ///////////////////////////////////////////////////////////////////////////
