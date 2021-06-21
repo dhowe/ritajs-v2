@@ -130,7 +130,10 @@ class Tagger {
   } // ! this function is never used
 
   _derivePosData(word, noGuessing) {
-    // JC: noGuessing will disable the final guess, if true, will return an empty array if no rule matched
+
+    // JC: noGuessing arg disables the final guess when true, 
+    // and instead returns an empty array if no rules match
+
     /*
       Try for a verb or noun inflection 
       VBD 	Verb, past tense
@@ -153,7 +156,7 @@ class Tagger {
         return ["nn"];
       }
     }
-    
+
     if (word.endsWith("or")) {
       let pos = lex._posArr(word.substring(0, word.length - 2)); // actor, motor, editor
       if (pos && pos.includes("vb")) {
@@ -167,15 +170,15 @@ class Tagger {
     }
 
     if (word.endsWith("er")) {
-			let pos = lex._posArr(word.substring(0, word.length - 2)); // builder
-			if (pos != null && Arrays.asList(pos).contains("vb")) {
+      let pos = lex._posArr(word.substring(0, word.length - 2)); // builder
+      if (pos != null && Arrays.asList(pos).contains("vb")) {
         return ["nn"];
-			}
-			pos = lex._posArr(word.substring(0, word.length - 1)); // dancer 
-			if (pos != null && Arrays.asList(pos).contains("vb")) {
+      }
+      pos = lex._posArr(word.substring(0, word.length - 1)); // dancer 
+      if (pos != null && Arrays.asList(pos).contains("vb")) {
         return ["nn"];
-			}
-		}
+      }
+    }
 
     if (word.endsWith('ies')) { // 3rd-person sing. present (satisfies, falsifies)
       let check = word.substring(0, word.length - 3) + "y";
@@ -200,7 +203,7 @@ class Tagger {
 
       if (result.length) return result;
     }
-    
+
     if (word.endsWith('ed')) { // simple past or past participle
       let pos = lex._posArr(word.substring(0, word.length - 1))
         || lex._posArr(word.substring(0, word.length - 2))
@@ -209,7 +212,7 @@ class Tagger {
         return ['vbd', 'vbn']; // hate-> hated || row->rowed || deter -> deterred
       }
     }
-    
+
     if (word.endsWith('ing')) {
       let stem = word.substring(0, word.length - 3);
       if (stem) {
@@ -232,7 +235,7 @@ class Tagger {
         }
       }
     }
-    
+
     if (word.endsWith('ly')) {
       let stem = word.substring(0, word.length - 2);
       if (stem) {
@@ -257,11 +260,13 @@ class Tagger {
     if (word === 'the' || word === 'a') return ['dt'];
 
     // Give up 
-    return noGuessing ? [] : word.endsWith('ly') ? ['rb'] : (word.endsWith('s') ? ['nns'] : ['nn']);
+    return noGuessing ? [] : word.endsWith('ly') ? ['rb'] :
+      (word.endsWith('s') ? ['nns'] : ['nn']);
   }
 
   isLikelyPlural(word) {
-    return this._lexHas("n", this.RiTa.singularize(word)) //|| this.RiTa.inflector.isPlural(word);
+    return this._lexHas("n", this.RiTa.singularize(word)) 
+    //|| this.RiTa.inflector.isPlural(word);
   }
 
   _handleSingleLetter(c) {
@@ -272,7 +277,7 @@ class Tagger {
 
   _log(i, frm, to) { // log custom tag
     console.log("\n  Custom(" + i + ") tagged '" + frm + "' -> '" + to + "'\n\n");
-  }// this function will not be avaliable in built version since 'dbug' in tag() is fixed to 0
+  }// debuggin only: not available in built version since 'dbug' in tag() is 0
 
   // Applies a customized subset of the Brill transformations
   _applyContext(words, result, choices, dbug) {
@@ -294,8 +299,8 @@ class Tagger {
 
         if (tag.startsWith("vb")) {
           tag = "nn";
-          // transform 7: if a word has been categorized as a
-          // common noun and it ends with "s", then set its type to plural common noun (NNS)
+          // transform 7: if a word has been categorized as a common noun 
+          // and it ends with "s", then set its type to plural noun (NNS)
           if (word.match(/^.*[^s]s$/)) {
             if (!MASS_NOUNS.includes(word)) {
               tag = "nns";
@@ -349,7 +354,8 @@ class Tagger {
         //dbug && this._log(6, word, tag);
       }
 
-      //transform 7(dch): convert a vb to vbn when following vbz/'has'  (She has ridden, He has rode)
+      //transform 7(dch): convert a vb to vbn when following vbz/'has'  
+      // (She has ridden, He has rode)
       if (tag === "vbd" && i > 0 && result[i - 1].match(/^(vbz)$/)) {
         tag = "vbn";
         //dbug && this._log(7, word, tag);
@@ -386,14 +392,16 @@ class Tagger {
         }
       }
 
-      // transform 11(dch): convert plural nouns (which are also 3sg-verbs) to 3sg-verbs when followed by adverb
+      // transform 11(dch): convert plural nouns (which are also 3sg-verbs) 
+      // to 3sg-verbs when followed by adverb
       if (i < result.length - 1 && tag == "nns" && result[i + 1].startsWith("rb") &&
         this.hasTag(choices[i], "vbz")) {
         tag = "vbz";
         //dbug && this._log(11, word, tag);
       }
 
-      // transform 12(dch): convert plural nouns which have an entry for their base form to vbz
+      // transform 12(dch): convert plural nouns which have an entry
+      // for their base form to vbz
       if (tag === "nns") {
 
         // is preceded by one of the following
@@ -404,7 +412,9 @@ class Tagger {
             //dbug && this._log(12, word, tag);
           }
         } // if only word and not in lexicon
-        else if (words.length === 1 && choices[i].length < 2) { // there is always choices[i][0] which is result[i](when the word is not in lexicon, generated by _derivePosData())
+        else if (words.length === 1 && choices[i].length < 2) { 
+          // there is always choices[i][0] which is result[i] 
+          // (when the word is not in lexicon, generated by _derivePosData())
           // if the stem of a single word could be both nn and vb, return nns
           // only return vbz when the stem is vb but not nn
           let sing = this.RiTa.singularize(word.toLowerCase());
@@ -415,7 +425,8 @@ class Tagger {
         }
       }
 
-      // transform 13(cqx): convert a vb/ potential vb to vbp when following nns (Elephants dance, they dance)
+      // transform 13(cqx): convert a vb/ potential vb to vbp 
+      // when following nns (Elephants dance, they dance)
       if (tag === "vb" || (tag === "nn" && this.hasTag(choices[i], "vb"))) {
         if (i > 0 && result[i - 1].match(/^(nns|nnps|prp)$/)) {
           tag = "vbp";
@@ -423,7 +434,8 @@ class Tagger {
         }
       }
 
-      //webIssue#83 sequential adjectives(jc): (?:dt)? (?:jj)* (nn) (?:jj)* nn && $1 can be tagged as jj-> $1 convert to jj (e.g a light bule sky)
+      // issue#83 sequential adjectives(jc): (?:dt)? (?:jj)* (nn) (?:jj)* nn 
+      // && $1 can be tagged as jj-> $1 convert to jj (e.g a light blue sky)
       if (tag === "nn" && result.slice(i + 1).includes("nn")) {
         let idx = result.slice(i + 1).indexOf("nn");
         let allJJ = true; // between nn and nn are all jj
