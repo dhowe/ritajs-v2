@@ -286,7 +286,6 @@ describe('RiTa.Analyzer', () => {
     });
   });
 
-  // Currently failing (see #https://github.com/dhowe/rita/issues/138)
   it('Should correctly handle singular nouns in Tagger.allTags', () => {
     let dbug = 1;
     let tests = ["tiding", "census", "bonus", "thermos", "circus" ];
