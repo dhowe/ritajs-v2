@@ -148,7 +148,8 @@ class Tagger {
 
     // if (tags && tags.includes('nn')) {
     //   return ['nn']; // check if the word itself exists as 'nn'
-    // } // if it is in the dict, the code would not have come here?
+    // } 
+    // _derivePosData() should be called by allTags(), this is done inside allTags()
 
     if (word.endsWith("ress")) {
       let pos = lex._posArr(word.substring(0, word.length - 3)); // murderess

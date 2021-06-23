@@ -292,7 +292,6 @@ describe('RiTa.Analyzer', () => {
     let tests = ["tiding", "census", "bonus", "thermos", "circus" ];
     tests.forEach((t, i) => {
       let res = RiTa.tagger.allTags(t, false);
-      console.log(RiTa.lexicon()._posArr(t));
       if (!res.includes('nn')) console.error(i + ') Fail: ' + t + ' -> ' + JSON.stringify(res));
       expect(res.includes('nn')).to.be.true;
     });
