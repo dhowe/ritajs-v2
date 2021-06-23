@@ -7,11 +7,11 @@ class Inflector {
   }
 
   adjustNumber(word, type, dbug) {
-    
+
     if (word && typeof word !== 'string') {
-    
+
       // TODO: fix for singularize([1]) and similar calls
-      throw Error(`${type === SING ? 'singularize()' : 'pluralize()' }`
+      throw Error(`${type === SING ? 'singularize()' : 'pluralize()'}`
         + ' requires a string as input');
     }
 
@@ -51,7 +51,7 @@ class Inflector {
 
     if (word && typeof word !== 'string') {
       // similar to adjustNumber
-      throw Error(`isPlural() requires a string as input`); 
+      throw Error(`isPlural() requires a string as input`);
     }
 
     if (!word || word.length === 0) return false;
@@ -61,31 +61,33 @@ class Inflector {
     word = word.toLowerCase();
 
     if (MASS_NOUNS.includes(word)) {
-      dbug && console.log(word + " is mass nouns");
+      dbug && console.log(word + " is mass noun");
       return true;
     }
 
-    const lex = this.RiTa.lexicon();
     let sing = this.RiTa.singularize(word);
 
-    // Is singularized form is in lexicon as 'nn' or tag as nn (noGuessing)?
-    if (sing !== word && 
-      this.RiTa.tagger.allTags(sing, { noGuessing: true }).includes("nn")) {
-      // fix for words like 'child':
-      // mass nouns should have been detected above
-      dbug && console.log(word + "'s singular form " + sing + " is nn");
-      return true;
+    // Is singularized form different 
+    if (sing !== word) {
+      // It it in lexicon as 'nn' (with noGuessing)?
+      let tags = this.RiTa.tagger.allTags(sing, { noGuessing: true });
+      if (tags.includes("nn")) {
+        // fix for words like 'child':
+        // mass nouns should have been detected above
+        dbug && console.log(word + "'s singular form " + sing + " is nn");
+        return true;
+      }
     }
 
     // A general modal form? (for example, ends in 'ness')
     if (/([a-z]+ness)$/.test(word)) {
       dbug && console.log(word + " is general modal form");
       return true;
-    } 
+    }
 
     if (word.endsWith("ae") && word === sing + "e") {
       dbug && console.log(word + ": latin rule -a to -ae");
-        return true;
+      return true;
     }
 
     for (let i = 0; i < IS_PLURAL_RULES.length; i++) {
@@ -95,7 +97,7 @@ class Inflector {
         return true;
       }
     }
-    
+
     dbug && console.log('isPlural: no rules hit for ' + word);
 
     return false;
@@ -183,7 +185,7 @@ const PLUR_RULES = [
   RE("[bcdfghjklmnpqrstvwxyz]o$", 0, "es"),
   RE("[bcdfghjklmnpqrstvwxyz]y$", 1, "ies"),
   RE("^ox$", 0, "en"),
-  RE("^(stimul|alumn|termin)us$", 2, "i"),
+  RE("^(stimul|alumn|termin|emerit)us$", 2, "i"), //SYNC:
   RE("^corpus$", 2, "ora"),
   RE("(xis|sis)$", 2, "es"),
   //RE("(ness)$", 0, "es"),

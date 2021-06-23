@@ -268,8 +268,8 @@ describe('RiTa.Analyzer', () => {
 
   // Currently failing (see #https://github.com/dhowe/rita/issues/138)
   it('Should do nothing when input to pluralize is already plural', () => {
-    let dbug = 1;
-    let tests = ["tidings", "schnapps", "canvases", "census", "bonus", "isthmus", "thermos", "circus", "tongs", "tongs", "emeritus"];
+    let dbug = 1; // same for mass nouns
+    let tests = ["tidings", "schnapps", "canvases", "censuses", "bonuses", "isthmus", "thermoses", "circuses", "tongs", "emeriti"];
     tests.forEach((t, i) => {
       let res = RiTa.pluralize(t, { dbug :0 });
       if (res !== t) console.error(i + ') Fail: ' + t + ' -> ' + res);
@@ -277,6 +277,27 @@ describe('RiTa.Analyzer', () => {
     });
   });
 
+  // Currently failing (see #https://github.com/dhowe/rita/issues/138)
+  it('Should return true for already plural nouns', () => {
+    let dbug = 1;
+    let tests = ["tidings", "schnapps", "canvases", "censuses", "bonuses", "isthmuses", "thermoses", "circuses", "tongs", "emeriti"];
+    tests.forEach((t, i) => {
+      let res = RiTa.inflector.isPlural(t, { dbug: 1 });
+      if (!res) console.error(i + ') Fail: ' + t + ' -> ' + res);
+      expect(res).is.true;
+    });
+  });
+
+  // Currently failing (see #https://github.com/dhowe/rita/issues/138)
+  it('Should correctly handle singular nouns in Tagger._derivePosData', () => {
+    let dbug = 1;
+    let tests = ["tiding", "census", "bonus", "thermos", "circus" ];
+    tests.forEach((t, i) => {
+      let res = RiTa.tagger._derivePosData(t, false);
+      if (!res.includes('nn')) console.error(i + ') Fail: ' + t + ' -> ' + JSON.stringify(res));
+      //expect(res).is.false;
+    });
+  });
 
   it('Should handle number (singular/plural)', () => {
 

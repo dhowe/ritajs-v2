@@ -144,6 +144,9 @@ class Tagger {
       NNS   Noun, plural
     */
     const lex = this.RiTa.lexicon();
+    let tags = lex._posArr(word));
+    if (.includes('nn')) return ['nn']; // check the word itself as 'nn'
+
     if (word.endsWith("ress")) {
       let pos = lex._posArr(word.substring(0, word.length - 3)); // murderess
       if (pos && pos.includes("vb")) {
@@ -185,7 +188,7 @@ class Tagger {
       let pos = lex._posArr(check);
       if (pos && pos.includes('vb')) return ['vbz'];
     }
-    else if (word.endsWith('s')) {  // plural noun or vbz
+    else if (word.endsWith('s')) {  // singular noun ('bonus', 'census'), plural noun or vbz
 
       let result = [];
 
