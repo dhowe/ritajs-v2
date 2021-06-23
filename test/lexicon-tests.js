@@ -25,9 +25,9 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.hasWord("written")).to.be.true;
 
     // strict mode SYNC:
-    expect(RiTa.lexicon().hasWord("dogs", {fatal: true, strict: true})).to.not.be.true;
-    expect(RiTa.lexicon().hasWord("played", {fatal: true, strict: true})).to.not.be.true;
-    expect(RiTa.lexicon().hasWord("cats", {fatal: true, strict: true})).to.not.be.true;
+    expect(RiTa.lexicon().hasWord("dogs", { fatal: true, strict: true })).to.not.be.true;
+    expect(RiTa.lexicon().hasWord("played", { fatal: true, strict: true })).to.not.be.true;
+    expect(RiTa.lexicon().hasWord("cats", { fatal: true, strict: true })).to.not.be.true;
   });
 
   it('Should call randomWord', () => { // SYNC:
