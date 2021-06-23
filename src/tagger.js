@@ -143,9 +143,11 @@ class Tagger {
       VBZ 	Verb, 3rd person singular present
       NNS   Noun, plural
     */
-    const lex = this.RiTa.lexicon();
-    let tags = lex._posArr(word));
-    if (.includes('nn')) return ['nn']; // check the word itself as 'nn'
+    const lex = this.RiTa.lexicon(), tags = lex._posArr(word);
+
+    if (tags && tags.includes('nn')) {
+      return ['nn']; // check if the word itself exists as 'nn'
+    }
 
     if (word.endsWith("ress")) {
       let pos = lex._posArr(word.substring(0, word.length - 3)); // murderess

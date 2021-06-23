@@ -273,7 +273,7 @@ describe('RiTa.Analyzer', () => {
     tests.forEach((t, i) => {
       let res = RiTa.pluralize(t, { dbug :0 });
       if (res !== t) console.error(i + ') Fail: ' + t + ' -> ' + res);
-      //expect(RiTa.pluralize(t)).eq(t);
+      expect(RiTa.pluralize(t)).eq(t);
     });
   });
 
@@ -282,7 +282,7 @@ describe('RiTa.Analyzer', () => {
     let dbug = 1;
     let tests = ["tidings", "schnapps", "canvases", "censuses", "bonuses", "isthmuses", "thermoses", "circuses", "tongs", "emeriti"];
     tests.forEach((t, i) => {
-      let res = RiTa.inflector.isPlural(t, { dbug: 1 });
+      let res = RiTa.inflector.isPlural(t, { dbug: 0 });
       if (!res) console.error(i + ') Fail: ' + t + ' -> ' + res);
       expect(res).is.true;
     });
