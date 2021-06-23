@@ -65,7 +65,8 @@ class Tagger {
     // fix error when sth like allTags(['word']) is called
     if (word && typeof word === 'string' && word.length) {
       let posData = this.RiTa.lexicon()._posArr(word);
-      return posData || (noDerivations ? null : this._derivePosData(word, noGuessing));
+      if (posData && posData.length > 0) return posData;
+      return (noDerivations ? null : this._derivePosData(word, noGuessing));
     }
   }
 
@@ -145,9 +146,9 @@ class Tagger {
     */
     const lex = this.RiTa.lexicon(), tags = lex._posArr(word);
 
-    if (tags && tags.includes('nn')) {
-      return ['nn']; // check if the word itself exists as 'nn'
-    }
+    // if (tags && tags.includes('nn')) {
+    //   return ['nn']; // check if the word itself exists as 'nn'
+    // } // if it is in the dict, the code would not have come here?
 
     if (word.endsWith("ress")) {
       let pos = lex._posArr(word.substring(0, word.length - 3)); // murderess
@@ -223,12 +224,12 @@ class Tagger {
       if (stem) {
         let pos = lex._posArr(stem);
         if (pos && pos.includes('vb')) {
-          return ['vbg']; // assenting
+          return ['vbg', 'nn']; // assenting // vbg can be noun (in some context)
         }
         else {
           pos = lex._posArr(stem + 'e'); // hate
           if (pos && pos.includes('vb')) {
-            return ['vbg'];  // hating
+            return ['vbg', 'nn'];  // hating
           }
         }
         // else 
