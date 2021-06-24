@@ -134,6 +134,8 @@ class Tagger {
 
     // JC: noGuessing arg disables the final guess when true, 
     // and instead returns an empty array if no rules match
+    
+    if (word === 'the' || word === 'a') return ['dt'];
 
     /*
       Try for a verb or noun inflection 
@@ -145,11 +147,6 @@ class Tagger {
       NNS   Noun, plural
     */
     const lex = this.RiTa.lexicon(), tags = lex._posArr(word);
-
-    // if (tags && tags.includes('nn')) {
-    //   return ['nn']; // check if the word itself exists as 'nn'
-    // } 
-    // _derivePosData() should be called by allTags(), this is done inside allTags()
 
     if (word.endsWith("ress")) {
       let pos = lex._posArr(word.substring(0, word.length - 3)); // murderess
@@ -225,19 +222,21 @@ class Tagger {
       if (stem) {
         let pos = lex._posArr(stem);
         if (pos && pos.includes('vb')) {
-          return ['vbg', 'nn']; // assenting // vbg can be noun (in some context)
+          // vbg can be noun (in some context) JC: noun example?
+          return ['vbg', 'nn']; // assenting 
         }
         else {
           pos = lex._posArr(stem + 'e'); // hate
           if (pos && pos.includes('vb')) {
-            return ['vbg', 'nn'];  // hating
+            return ['vbg', 'nn'];  // hating JC: noun example?
           }
         }
-        // else 
+        // else
+        // JC: conditional always true?
         if (word.charAt(word.length - 4) === word.charAt(word.length - 4)) {
           pos = lex._posArr(stem.substring(0, stem.length - 1)); // e.g running
           if (pos && pos.includes('vb')) {
-            return ['vbg'];  // hating
+            return ['vbg'];  // hating  JC: same as above example?
           }
         }
       }
@@ -263,8 +262,6 @@ class Tagger {
 
     // Check if this could be a plural noun form
     if (this.isLikelyPlural(word)) return ['nns'];
-
-    if (word === 'the' || word === 'a') return ['dt'];
 
     // Give up 
     return noGuessing ? [] : word.endsWith('ly') ? ['rb'] :
