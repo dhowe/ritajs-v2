@@ -132,7 +132,7 @@ class Tagger {
 
   _derivePosData(word, noGuessing) {
 
-    // JC: noGuessing arg disables the final guess when true, 
+    // noGuessing arg disables the final guess when true, 
     // and instead returns an empty array if no rules match
     
     if (word === 'the' || word === 'a') return ['dt'];
@@ -222,21 +222,24 @@ class Tagger {
       if (stem) {
         let pos = lex._posArr(stem);
         if (pos && pos.includes('vb')) {
-          // vbg can be noun (in some context) JC: noun example?
+          // vbg can be noun (in some context) 
+          // for example: His acting is good
+          // this is more for getting all 'possible' labels
+          // as in tag() function tags will be re-viewed by 
+          // a set of rules.
           return ['vbg', 'nn']; // assenting 
         }
         else {
           pos = lex._posArr(stem + 'e'); // hate
           if (pos && pos.includes('vb')) {
-            return ['vbg', 'nn'];  // hating JC: noun example?
+            return ['vbg', 'nn'];  //  e.g: let's go hiking
           }
         }
         // else
-        // JC: conditional always true?
-        if (word.charAt(word.length - 4) === word.charAt(word.length - 4)) {
+        if (word.charAt(word.length - 4) === word.charAt(word.length - 5)) {
           pos = lex._posArr(stem.substring(0, stem.length - 1)); // e.g running
           if (pos && pos.includes('vb')) {
-            return ['vbg'];  // hating  JC: same as above example?
+            return ['vbg', 'nn'];  //  e.g. the tripping of an opponent is a foul in football
           }
         }
       }
@@ -370,7 +373,7 @@ class Tagger {
       if (tag.startsWith("nn") && word.endsWith("ing")) {
 
         // DH: fixed here -- add check on choices for any verb: eg. // 'morning'
-        if (this.hasTag(choices[i], "vbg")) { // JC: fixed for 'fishing' and etc
+        if (this.hasTag(choices[i], "vbg")) { // fixed for 'fishing' and etc
           tag = "vbg";
           //dbug && this._log(8, word, tag);
         }
