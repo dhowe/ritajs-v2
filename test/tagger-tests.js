@@ -218,6 +218,11 @@ describe('RiTa.Tagger', () => {
 
     //sequential adjectives
     eql(RiTa.pos('a light blue sky'), ['dt', 'jj', 'jj', 'nn']);
+
+    // vbg will not be wrongly tagged as nn
+    eql(RiTa.pos("He is running toward me"), ["prp", "vbz", "vbg", "in", "prp"]);
+    eql(RiTa.pos("She is riding a bike"), ["prp", "vbz", "vbg", "dt", "nn"]);
+    eql(RiTa.pos("he stands still, thinking about the words"), ["prp", "vbz" ,"rb", ",", "vbg", "in", "dt", "nns"]);
   });
 
   it('Should call pos.simple', () => {
