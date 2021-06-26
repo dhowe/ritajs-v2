@@ -222,7 +222,14 @@ describe('RiTa.Tagger', () => {
     // vbg will not be wrongly tagged as nn
     eql(RiTa.pos("He is running toward me"), ["prp", "vbz", "vbg", "in", "prp"]);
     eql(RiTa.pos("She is riding a bike"), ["prp", "vbz", "vbg", "dt", "nn"]);
-    eql(RiTa.pos("he stands still, thinking about the words"), ["prp", "vbz" ,"rb", ",", "vbg", "in", "dt", "nns"]);
+    eql(RiTa.pos("he stands still, thinking about the words"), ["prp", "vbz", "rb", ",", "vbg", "in", "dt", "nns"]);
+    eql(RiTa.pos("She walked out of the room smoking"),["prp", "vbd", "in", "in", "dt", "nn", "vbg"]);
+    eql(RiTa.pos("He kept saying his adventure story"),["prp", "vbd", "vbg", "prp$", "nn", "nn"]);
+    eql(RiTa.pos("Drinking is his hobby"), ["vbg", "vbz", "prp$", "nn"]);
+    eql(RiTa.pos("The kid playing at the corner is the boss"), ["dt", "nn", "vbg", "in", "dt", "nn", "vbz", "dt", "nn"]);
+    eql(RiTa.pos("She is the leader of the reading group"), ["prp", "vbz", "dt", "nn", "in", "dt", "vbg", "nn"]);
+    eql(RiTa.pos("I love working"), ["prp", "vbp", "vbg"]);
+    eql(RiTa.pos("I was thinking about buying a car"), ["prp", "vbd", "vbg", "in", "vbg", "dt", "nn"]);
   });
 
   it('Should call pos.simple', () => {
