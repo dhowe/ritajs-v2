@@ -28,6 +28,17 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.lexicon().hasWord("dogs", { fatal: true, strict: true })).to.not.be.true;
     expect(RiTa.lexicon().hasWord("played", { fatal: true, strict: true })).to.not.be.true;
     expect(RiTa.lexicon().hasWord("cats", { fatal: true, strict: true })).to.not.be.true;
+
+    // https://github.com/dhowe/rita/issues/139 
+    expect(RiTa.hasWord("bunning")).to.not.be.true;
+    expect(RiTa.hasWord("coyes")).to.not.be.true;
+    expect(RiTa.hasWord("soes")).to.not.be.true;
+    expect(RiTa.hasWord("knews")).to.not.be.true;
+    // expect(RiTa.hasWord("barkness")).to.not.be.true; fail: barkness after stem() is bark, need unconjugate that not based on stem()
+    expect(RiTa.hasWord("fastering")).to.not.be.true;
+    // expect(RiTa.hasWord("horne")).to.not.be.true; similar to barkness
+    expect(RiTa.hasWord("loosering")).to.not.be.true;
+    expect(RiTa.hasWord("knews")).to.not.be.true;
   });
 
   it('Should call randomWord', () => { // SYNC:
