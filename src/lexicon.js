@@ -1,4 +1,3 @@
-import { existing } from './rita_dict';
 import Util from './util';
 
 class Lexicon {
@@ -23,8 +22,11 @@ class Lexicon {
     if (strict || exists) return exists;
 
     // not strict, try plural
-    word = this.RiTa.singularize(word).toLowerCase();
-    if (dict.hasOwnProperty(word)) return true;
+    let sing = this.RiTa.singularize(word).toLowerCase();
+    if (dict.hasOwnProperty(sing) && this.RiTa.tagger.allTags(sing).includes("nn")) {
+      // console.log(word + " sing: " + sing + " is in dict");
+      return true;
+    }
 
     // not strict, try conjugations
     // TODO: this is not correct
@@ -33,8 +35,13 @@ class Lexicon {
     // for examples, 'changed' or 'changes', should return true
     // bc 'change' is in the dictionary, but the stem ('chang') is not
     // basically need to implement Conjugator.unconjugate() 
-    word = this.RiTa.stem(word).toLowerCase();
-    if (dict.hasOwnProperty(word)) return true;
+    // word = this.RiTa.stem(word).toLowerCase();
+    // using stem() here will cause weird results, need to implement unconjugate();
+    let unconj = this.RiTa.conjugator.unconjugate(word);
+    if (unconj && dict.hasOwnProperty(unconj)) {
+      // console.log(word + " unconj: " + unconj + " is in dict");
+      return true;
+    }
     return false;
   }
 

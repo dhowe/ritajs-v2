@@ -71,6 +71,19 @@ class Conjugator {
     return this._checkRules(PAST_PARTICIPLE_RULESET, theVerb);
   }
 
+  // TODO: add to API ?
+  // TODO: not using stem but a set of rules? (as stem() is not
+  // designed for verbs) e.g. barkness
+  unconjugate(word, dbug) {
+    const stem = this.RiTa.stem(word);
+    const guess = this._handleStem(stem);
+    if (this.RiTa.tagger.allTags(guess).includes("vb")) {
+      return guess;
+    }
+    if (dbug) console.log("Unable to unconjugate " + word);
+    return undefined;
+  }
+
   toString() {
     return "  ---------------------" + "\n" + "  Passive = " + this.passive +
       '\n' + "  Perfect = " + this.perfect + '\n' + "  Progressive = " +
@@ -260,7 +273,7 @@ class Conjugator {
 
   _handleStem = function (word) {
 
-    if (this.RiTa.hasWord(word) && this.RiTa.isVerb(word)) {
+    if (this.RiTa.lexicon()._dict(true).hasOwnProperty(word) && this.RiTa.tagger.allTags(word).includes("vb")) {
       return word;
     }
 
