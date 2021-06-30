@@ -37,7 +37,7 @@ class Lexicon {
     let unconj = this.RiTa.conjugator.unconjugate(token);
     if (unconj && dict.hasOwnProperty(unconj)) {
       let tags = this.RiTa.tagger.allTags(unconj);
-      if (tags.includes('vb')) return true;
+      if (tags.includes('vb')) return true; // SYNC:
     }
 
     return false;
