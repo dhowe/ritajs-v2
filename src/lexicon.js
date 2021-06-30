@@ -17,31 +17,29 @@ class Lexicon {
     let fatal = opts.fatal;
     let strict = opts.strict;
     let dict = this._dict(fatal);
-    let exists = dict.hasOwnProperty(word.toLowerCase());
+    let token = word.toLowerCase();
+    let exists = dict.hasOwnProperty(token);
 
     if (strict || exists) return exists;
 
-    // not strict, try plural
-    let sing = this.RiTa.singularize(word).toLowerCase();
-    if (dict.hasOwnProperty(sing) && this.RiTa.tagger.allTags(sing).includes("nn")) {
-      // console.log(word + " sing: " + sing + " is in dict");
-      return true;
+    // Not strict - check for plurals forms and conjugations
+
+    // 1) Check if word might be a plural form of a noun
+    // in the lexicon - for example, 'dogs' or 'oxen'
+    let sing = this.RiTa.singularize(token);
+    if (dict.hasOwnProperty(sing)) {
+      let tags = this.RiTa.tagger.allTags(sing);
+      if (tags.includes('nn')) return true;
     }
 
-    // not strict, try conjugations
-    // TODO: this is not correct
-    // we need a func that checks whether the word COULD BE
-    // a conjugation of a word in the dictionary
-    // for examples, 'changed' or 'changes', should return true
-    // bc 'change' is in the dictionary, but the stem ('chang') is not
-    // basically need to implement Conjugator.unconjugate() 
-    // word = this.RiTa.stem(word).toLowerCase();
-    // using stem() here will cause weird results, need to implement unconjugate();
-    let unconj = this.RiTa.conjugator.unconjugate(word);
+    // 2) Check if word might be a conjugated form of a verb 
+    // in the lexicon - for example, 'changed' or 'changes'
+    let unconj = this.RiTa.conjugator.unconjugate(token);
     if (unconj && dict.hasOwnProperty(unconj)) {
-      // console.log(word + " unconj: " + unconj + " is in dict");
-      return true;
+      let tags = this.RiTa.tagger.allTags(unconj);
+      if (tags.includes('vb')) return true;
     }
+
     return false;
   }
 
@@ -200,7 +198,7 @@ class Lexicon {
     // we've still got nothing, throw
     if (result.length < 1) {
       ['strictPos', 'shuffle', 'targetPos'].forEach(k => delete opts[k]);
-      throw Error("No words matching constraints:\n" + JSON.stringify(opts,0,2));
+      throw Error("No words matching constraints:\n" + JSON.stringify(opts, 0, 2));
     }
 
     return result[0];
