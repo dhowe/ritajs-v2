@@ -18,6 +18,18 @@ export default class RiScriptParserVisitor extends antlr4.tree.ParseTreeVisitor 
 	}
 
 
+	// Visit a parse tree produced by RiScriptParser#meta.
+	visitMeta(ctx) {
+	  return this.visitChildren(ctx);
+	}
+
+
+	// Visit a parse tree produced by RiScriptParser#kval.
+	visitKval(ctx) {
+	  return this.visitChildren(ctx);
+	}
+
+
 	// Visit a parse tree produced by RiScriptParser#expr.
 	visitExpr(ctx) {
 	  return this.visitChildren(ctx);

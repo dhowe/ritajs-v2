@@ -3,16 +3,22 @@ import { RiTa, expect } from './before';
 
 describe('RiTa.RiScript', function () {
 
-  const ST = { silent: 1 }, TP = { trace: 1 },
+  let ST = { silent: 1 }, TP = { trace: 1 },
     TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
-  const SKIP_FOR_NOW = true;
-  let RiScript;
+
+  let SKIP_FOR_NOW = true, RiScript;
+
   this.slow(100);
 
   before(function () {
-    while (!RiTa) {
-    }
+    while (!RiTa) {}
     RiScript = RiTa.RiScript;
+  });
+
+  describe('Metatags', () => {
+    it('Should support metadata tags', () => {
+      expect(RiTa.evaluate('$foo=bar\nbaz {tag:h1}',{},TLP)).eq('baz');
+    });
   });
 
   describe('Sequences', () => {

@@ -237,6 +237,12 @@ class Visitor extends RiScriptParserVisitor {
     return this.visitChildren(ctx);
   }
 
+  visitMeta(ctx) {
+    if (this.trace) console.log("visitMeta: '"
+      + ctx.getText() + "'\t" + stack(ctx));
+    return '';//this.visitChildren(ctx);
+  }
+
   visitWexpr(ctx) {
     if (this.trace) console.log("visitWexpr: '"
       + ctx.getText() + "'\t" + stack(ctx));

@@ -5,8 +5,7 @@ lexer grammar RiScriptLexer;
  
  Rule Priority --------------------------------------------------------------------------------
  First, select the lexer rule which matches the longest input If the text matches an implicitly
- defined token (like '{'), use the implicit rule If several lexer rules match the same input length,
- choose the first one, based on definition order
+ defined token (like '{'), use the implicit rule. If several lexer rules match the same input length, choose the first one, based on definition order.
  */
 
 LCOMM: '/*' .*? '*/' -> channel(HIDDEN);
