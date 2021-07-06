@@ -11,13 +11,15 @@ describe('RiTa.RiScript', function () {
   this.slow(100);
 
   before(function () {
-    while (!RiTa) {}
+    while (!RiTa) { }
     RiScript = RiTa.RiScript;
   });
 
   describe('Metatags', () => {
+
     it('Should support metadata tags', () => {
-      expect(RiTa.evaluate('$foo=bar\nbaz {tag:h1}',{},TLP)).eq('baz');
+      let opts = TLP; opts.nopre = true;
+      expect(RiTa.evaluate('baz{tag=h1}', {}, TLP)).eq('baz');
     });
   });
 
@@ -1591,6 +1593,16 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate('$a=helloell\n{$a$=ell}? foo', {})).eq('foo');
       expect(RiTa.evaluate('$a=helloellx\n{$a$=ell}? foo', {})).eq('');
     });
+
+    it('Should handle conditional with Chinese characters', () => {
+      expect(RiTa.evaluate('$a=繁體\n{$a=繁體}? $a')).eq('繁體');
+      expect(RiTa.evaluate('$a=繁體\n{$a=中文}? $a')).eq('');
+      expect(RiTa.evaluate('$a=繁體\n{$a!=中文}? $a')).eq('繁體');
+      expect(RiTa.evaluate('$a=簡體和繁體中文\n{$a*=中文}? $a')).eq('簡體和繁體中文');
+      expect(RiTa.evaluate('$a=繁體和簡體\n{$a^=繁體}? $a')).eq('繁體和簡體');
+      expect(RiTa.evaluate('$a=簡體繁體\n{$a$=繁體}? $a')).eq('簡體繁體');
+
+    });
   });
 
   describe('Characters', () => {
@@ -1619,16 +1631,6 @@ describe('RiTa.RiScript', function () {
       expect(RiTa.evaluate('$foo=(前半段句子\\\n後半段句子)\n$foo')).eq('前半段句子後半段句子');
       expect(RiTa.evaluate('$foo=前半段\n$foo句子   \\\n後半段句子')).eq('前半段句子   後半段句子');
       expect(RiTa.evaluate('$foo=前半段\n$foo句子\\\n   後半段句子')).eq('前半段句子   後半段句子');
-    });
-
-    it('Should handle conditional with Chinese characters', () => {
-      expect(RiTa.evaluate('$a=繁體\n{$a=繁體}? $a')).eq('繁體');
-      expect(RiTa.evaluate('$a=繁體\n{$a=中文}? $a')).eq('');
-      expect(RiTa.evaluate('$a=繁體\n{$a!=中文}? $a')).eq('繁體');
-      expect(RiTa.evaluate('$a=簡體和繁體中文\n{$a*=中文}? $a')).eq('簡體和繁體中文');
-      expect(RiTa.evaluate('$a=繁體和簡體\n{$a^=繁體}? $a')).eq('繁體和簡體');
-      expect(RiTa.evaluate('$a=簡體繁體\n{$a$=繁體}? $a')).eq('簡體繁體');
-
     });
   });
 

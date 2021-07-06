@@ -11,8 +11,11 @@ lexer grammar RiScriptLexer;
 LCOMM: '/*' .*? '*/' -> channel(HIDDEN);
 BCOMM: '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 
-Q: {this._input.LA(-1)=='}'.charCodeAt(0)}? '?';
-MDS: {this._input.LA(-1)==']'.charCodeAt(0)}? '(' -> pushMode(MD);
+LCBQ: RCB '?'; // question mark after } for cexpr
+MDLS: RB LP -> pushMode(MDL); // start md link: ']()'
+
+//MDLS: {this._input.LA(-1)==']'.charCodeAt(0)}? '(' -> pushMode(MDL); // start md link: ]()
+// MTS: {this._input.LA(-1)=='{'.charCodeAt(0)}? '{' -> pushMode(MT);
 // Java: Q: {_input.LA(-1)=='}'}? '?'; MDS: {_input.LA(-1)==']'}? '(' -> pushMode(MD) ;
 
 LP: '(';
@@ -45,6 +48,12 @@ CONT: '\\' NL -> channel(HIDDEN);
 
 fragment NIDENT: [A-Za-z_0-9] [A-Za-z_0-9-]*;
 
-mode MD;
-MDT: ~(')')+;
-MDE: ')' -> popMode;
+// markdown
+mode MDL;
+MDLT: ~(')')+;
+MDLE: ')' -> popMode;
+
+// metatag
+mode MT; 
+MTT: ~('}')+;
+MTE: '}' -> popMode;
