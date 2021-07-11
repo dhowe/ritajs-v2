@@ -79,7 +79,7 @@ describe('RiTa.KnownIssues', () => {
   it('Failing to pluralize correctly', () => {
 
     let testPairs = [ // also in java
-
+      'knives', 'knife'
       // NOTHING NOW
     ];
 

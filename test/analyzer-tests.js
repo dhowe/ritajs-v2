@@ -268,9 +268,9 @@ describe('RiTa.Analyzer', () => {
 
   it('Should do nothing when input to pluralize is already plural', () => {
     let dbug = 0; // same for mass nouns
-    let tests = ["tidings", "schnapps", "canvases", "censuses", "bonuses", "isthmuses", "thermoses", "circuses", "tongs", "emeriti"]; 
+    let tests = ["tidings", "schnapps", "canvases", "censuses", "bonuses", "isthmuses", "thermoses", "circuses", "tongs", "emeriti"];
     tests.forEach((t, i) => {
-      let res = RiTa.pluralize(t, { dbug :0 });
+      let res = RiTa.pluralize(t, { dbug: 0 });
       if (res !== t) console.error(i + ') Fail: ' + t + ' -> ' + res);
       expect(RiTa.pluralize(t)).eq(t);
     });
@@ -288,7 +288,7 @@ describe('RiTa.Analyzer', () => {
 
   it('Should correctly handle singular nouns in Tagger.allTags', () => {
     let dbug = 1;
-    let tests = ["tiding", "census", "bonus", "thermos", "circus" ];
+    let tests = ["tiding", "census", "bonus", "thermos", "circus"];
     tests.forEach((t, i) => {
       let res = RiTa.tagger.allTags(t, false);
       if (!res.includes('nn')) console.error(i + ') Fail: ' + t + ' -> ' + JSON.stringify(res));
@@ -298,7 +298,9 @@ describe('RiTa.Analyzer', () => {
 
   it('Should handle number (singular/plural)', () => {
 
-    let testPairs = [
+    let testPairs = [ // JC: combine into one const list  ?
+      // "knives", "knife", // JC:
+      "lives", "life",
       "dazes", "daze",
       "hives", "hive",
       "dives", "dive",
@@ -514,7 +516,10 @@ describe('RiTa.Analyzer', () => {
   });
 
   it('Should correctly call singularize', () => {
-    let test = [
+    let test = [    // JC: combine into one const list  ?
+
+      // "knives", "knife", // JC:
+      "lives", "life",
       "media", "medium",
       "millennia", "millennium",
       "consortia", "consortium",
@@ -636,7 +641,10 @@ describe('RiTa.Analyzer', () => {
   });
 
   it('Should correctly call pluralize', () => {
-    let tests = [
+    let tests = [  // JC: combine into one const list  ?
+
+      //"knives", "knife", // JC:
+      "lives", "life",
       "media", "medium",
       "millennia", "millennium",
       "consortia", "consortium",

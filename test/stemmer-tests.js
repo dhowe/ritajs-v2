@@ -4553,7 +4553,6 @@ describe('RiTa.Stemmer', () => {
     test("clasp", "clasp");
     test("clasped", "clasp");
     test("clasping", "clasp");
-    test("claspknife", "claspknif");
     test("clasps", "clasp");
     test("class", "class");
     test("classed", "class");
