@@ -148,7 +148,7 @@ const SING_RULES = [
   RE("^(whizzes)$", 3),
   RE("^(" + NOUNS_ENDING_IN_E + ")s$", 1, ""),
   RE("^(" + NOUNS_ENDING_IN_S + ")es$", 2, ""),
-  RE("(l|w)ives$", 3, "fe"),
+  RE("(l|w|kn)ives$", 3, "fe"),
   RE("(men|women)$", 2, "an"),
   RE("ves$", 3, "f"),
   RE("^(appendices|matrices)$", 3, "x"),
