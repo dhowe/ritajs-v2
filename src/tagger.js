@@ -175,13 +175,10 @@ class Tagger {
 
     if (word.endsWith("er")) {
       let pos = lex._posArr(word.substring(0, word.length - 2)); // builder
-      if (pos != null && Arrays.asList(pos).contains("vb")) {
-        return ["nn"];
-      }
+      if (pos && pos.includes("vb")) return ["nn"];
+      
       pos = lex._posArr(word.substring(0, word.length - 1)); // dancer 
-      if (pos != null && Arrays.asList(pos).contains("vb")) {
-        return ["nn"];
-      }
+      if (pos && pos.includes("vb")) return ["nn"];
     }
 
     if (word.endsWith('ies')) { // 3rd-person sing. present (satisfies, falsifies)
