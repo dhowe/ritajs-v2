@@ -180,6 +180,11 @@ class Tagger {
       
       pos = lex._posArr(word.substring(0, word.length - 1)); // dancer 
       if (pos && pos.includes("vb")) return ["nn"];
+
+      if (word.charAt(word.length - 3) === word.charAt(word.length - 4)) {
+        pos = lex._posArr(word.substring(0, word.length - 3)); // programmer
+        if (pos && pos.includes("vb")) return ["nn"];
+      }
     }
 
     if (word.endsWith('ies')) { // 3rd-person sing. present (satisfies, falsifies)

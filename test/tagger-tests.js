@@ -84,7 +84,6 @@ describe('RiTa.Tagger', () => {
   it('Should call pos', () => {
     let result, answer, resultArr, answerArr, txt;
 
-    eql(RiTa.pos("lancer"), ["nn"]);
     eql(RiTa.pos(""), []);
     eql(RiTa.pos(","), [',']);
     eql(RiTa.pos(" "), []);
@@ -231,6 +230,16 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos("She is the leader of the reading group"), ["prp", "vbz", "dt", "nn", "in", "dt", "vbg", "nn"]);
     eql(RiTa.pos("I love working"), ["prp", "vbp", "vbg"]);
     eql(RiTa.pos("I was thinking about buying a car"), ["prp", "vbd", "vbg", "in", "vbg", "dt", "nn"]);
+
+    // #179
+    eql(RiTa.pos("lancer"), ["nn"]);
+    eql(RiTa.pos("dancer"), ["nn"]);
+    eql(RiTa.pos("builder"), ["nn"]);
+    eql(RiTa.pos("programmer"), ["nn"]);
+    eql(RiTa.pos("mixer"), ["nn"]);
+    eql(RiTa.pos("He is a dancer"), ["prp", "vbz", "dt", "nn"]);
+    eql(RiTa.pos("She is a body bulider"), ["prp", "vbz", "dt", "nn", "nn"]);
+    eql(RiTa.pos("I am a programmer"), ["prp", "vbp", "dt", "nn"]);
   });
 
   it('Should call pos.simple', () => {
