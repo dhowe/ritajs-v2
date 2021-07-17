@@ -84,6 +84,7 @@ describe('RiTa.Tagger', () => {
   it('Should call pos', () => {
     let result, answer, resultArr, answerArr, txt;
 
+    eql(RiTa.pos("lancer"), ["nn"]);
     eql(RiTa.pos(""), []);
     eql(RiTa.pos(","), [',']);
     eql(RiTa.pos(" "), []);
