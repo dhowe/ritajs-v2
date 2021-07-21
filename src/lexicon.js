@@ -14,12 +14,12 @@ class Lexicon {
 
     if (!word || !word.length) return false;
 
-    let strict = opts.strict;
     let dict = this._dict(true);
     let token = word.toLowerCase();
     let exists = dict.hasOwnProperty(token);
+    let noDerivations = opts.noDerivations; // SYNC:
 
-    if (strict || exists) return exists;
+    if (noDerivations || exists) return exists;
 
     // Not strict - check for plurals forms and conjugations
 

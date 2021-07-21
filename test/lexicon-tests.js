@@ -26,9 +26,9 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.hasWord("mice")).to.be.true;
 
     // strict mode SYNC:
-    expect(RiTa.hasWord("dogs", { strict: true })).to.be.false;
-    expect(RiTa.hasWord("played", { strict: true })).to.be.false;
-    expect(RiTa.hasWord("cats", { strict: true })).to.be.false;
+    expect(RiTa.hasWord("dogs", { noDerivations: true })).to.be.false;
+    expect(RiTa.hasWord("played", { noDerivations: true })).to.be.false;
+    expect(RiTa.hasWord("cats", { noDerivations: true })).to.be.false;
 
     // https://github.com/dhowe/rita/issues/139 
     expect(RiTa.hasWord("bunning")).to.be.false;
