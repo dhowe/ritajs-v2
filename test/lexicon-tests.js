@@ -7,8 +7,7 @@ describe('RiTa.Lexicon', function () {
 
   let lex;
   before(function () {
-    while (!RiTa) {
-    }
+    while (!RiTa) { /* no-op */ }
     lex = RiTa.lexicon(); // first load
   });
 
@@ -27,26 +26,28 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.hasWord("mice")).to.be.true;
 
     // strict mode SYNC:
-    expect(RiTa.lexicon().hasWord("dogs", { fatal: true, strict: true })).to.not.be.true;
-    expect(RiTa.lexicon().hasWord("played", { fatal: true, strict: true })).to.not.be.true;
-    expect(RiTa.lexicon().hasWord("cats", { fatal: true, strict: true })).to.not.be.true;
+    expect(RiTa.hasWord("dogs", { strict: true })).to.be.false;
+    expect(RiTa.hasWord("played", { strict: true })).to.be.false;
+    expect(RiTa.hasWord("cats", { strict: true })).to.be.false;
 
     // https://github.com/dhowe/rita/issues/139 
-    expect(RiTa.hasWord("bunning")).to.not.be.true;
-    expect(RiTa.hasWord("coyes")).to.not.be.true;
-    expect(RiTa.hasWord("soes")).to.not.be.true;
-    expect(RiTa.hasWord("knews")).to.not.be.true;
-    // expect(RiTa.hasWord("barkness")).to.not.be.true; fail: barkness after stem() is bark, need unconjugate that not based on stem()
-    expect(RiTa.hasWord("fastering")).to.not.be.true;
-    // expect(RiTa.hasWord("horne")).to.not.be.true; similar to barkness
-    expect(RiTa.hasWord("loosering")).to.not.be.true;
-    expect(RiTa.hasWord("knews")).to.not.be.true;
+    expect(RiTa.hasWord("bunning")).to.be.false;
+    expect(RiTa.hasWord("coyes")).to.be.false;
+    expect(RiTa.hasWord("soes")).to.be.false;
+    expect(RiTa.hasWord("knews")).to.be.false;
+    expect(RiTa.hasWord("fastering")).to.be.false;
+    expect(RiTa.hasWord("loosering")).to.be.false;
+    expect(RiTa.hasWord("knews")).to.be.false;  // SYNC:
+
+    // expect(RiTa.hasWord("barkness")).to.be.false; fail: barkness after stem() is bark, need unconjugate that not based on stem()
+    // expect(RiTa.hasWord("horne")).to.be.false; // similar to barkness
   });
 
   it('Should call randomWord', () => { // SYNC:
 
     let result;
     result = RiTa.randomWord();
+
     expect(result.length > 0, "randomWord: " + result).to.be.true;
     expect(result === RiTa.randomWord(), "randomWord returned same result '" + result + "'").to.be.false;
 
@@ -676,7 +677,6 @@ describe('RiTa.Lexicon', function () {
     expect(res).eql([
       'featherbeddings',
       'fundamentalists',
-      'malfunctionings',
       'pharmaceuticals',
       'photosyntheses',
       'reconfigurations',

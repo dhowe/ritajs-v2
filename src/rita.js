@@ -52,11 +52,11 @@ class RiTa {
   }
 
   static getTransforms() {
-    return RiScript.transforms; // according to Java
+    return RiScript.transforms; // according to Java ?
   }
 
-  static hasWord(word) {
-    return RiTa.lexicon().hasWord(word, {fatal: true});
+  static hasWord() {
+    return RiTa.lexicon().hasWord(...arguments);
   }
 
   static isAbbrev(input, { caseSensitive = false } = {}) {

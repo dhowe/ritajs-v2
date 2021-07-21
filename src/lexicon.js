@@ -14,9 +14,8 @@ class Lexicon {
 
     if (!word || !word.length) return false;
 
-    let fatal = opts.fatal;
     let strict = opts.strict;
-    let dict = this._dict(fatal);
+    let dict = this._dict(true);
     let token = word.toLowerCase();
     let exists = dict.hasOwnProperty(token);
 
