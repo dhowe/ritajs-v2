@@ -39,8 +39,8 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.hasWord("loosering")).to.be.false;
     expect(RiTa.hasWord("knews")).to.be.false;  // SYNC:
 
-    // expect(RiTa.hasWord("barkness")).to.be.false; fail: barkness after stem() is bark, need unconjugate that not based on stem()
-    // expect(RiTa.hasWord("horne")).to.be.false; // similar to barkness
+    expect(RiTa.hasWord("barkness")).to.be.false; 
+    expect(RiTa.hasWord("horne")).to.be.false; 
   });
 
   it('Should call randomWord', () => { // SYNC:
