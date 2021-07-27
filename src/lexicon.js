@@ -33,9 +33,9 @@ class Lexicon {
 
     // 2) Check if word might be a conjugated form of a verb 
     // in the lexicon - for example, 'changed' or 'changes'
-    let unconj = this.RiTa.conjugator.unconjugate(token);
-    if (unconj && dict.hasOwnProperty(unconj)) {
-      let tags = this.RiTa.tagger.allTags(unconj);
+    let vlemma = this.RiTa.conjugator.unconjugate(token, opts);
+    if (vlemma && dict.hasOwnProperty(vlemma)) {
+      let tags = this.RiTa.tagger.allTags(vlemma);
       if (tags.includes('vb')) return true; // SYNC:
     }
 
