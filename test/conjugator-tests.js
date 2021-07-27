@@ -429,6 +429,51 @@ describe('RiTa.Conjugator', () => {
     });
   });
 
+  it("Should correctly call unconjugate", () => {
+    // regular words
+    // 3rd person singular
+    expect(RiTa.conjugator.unconjugate("plays")).eq("play");
+    expect(RiTa.conjugator.unconjugate("takes")).eq("take");
+    expect(RiTa.conjugator.unconjugate("gets")).eq("get");
+    expect(RiTa.conjugator.unconjugate("comes")).eq("come");
+    expect(RiTa.conjugator.unconjugate("goes")).eq("go");
+    expect(RiTa.conjugator.unconjugate("teaches")).eq("teach");
+    expect(RiTa.conjugator.unconjugate("fixes")).eq("fix");
+    expect(RiTa.conjugator.unconjugate("misses")).eq("miss");
+    expect(RiTa.conjugator.unconjugate("studies")).eq("study");
+    expect(RiTa.conjugator.unconjugate("tries")).eq("try");
+    expect(RiTa.conjugator.unconjugate("carries")).eq("carry");
+    // ed
+    expect(RiTa.conjugator.unconjugate("watched")).eq("watch");
+    expect(RiTa.conjugator.unconjugate("planted")).eq("plant");
+    expect(RiTa.conjugator.unconjugate("watered")).eq("water");
+    expect(RiTa.conjugator.unconjugate("pulled")).eq("pull");
+    expect(RiTa.conjugator.unconjugate("picked")).eq("pick");
+    expect(RiTa.conjugator.unconjugate("liked")).eq("like");
+    expect(RiTa.conjugator.unconjugate("moved")).eq("move");
+    expect(RiTa.conjugator.unconjugate("tasted")).eq("taste");
+    expect(RiTa.conjugator.unconjugate("tried")).eq("try");
+    expect(RiTa.conjugator.unconjugate("studied")).eq("study");
+    expect(RiTa.conjugator.unconjugate("carried")).eq("carry");
+    // ing
+    expect(RiTa.conjugator.unconjugate("blowing")).eq("blow");
+    expect(RiTa.conjugator.unconjugate("raining")).eq("rain");
+    expect(RiTa.conjugator.unconjugate("coming")).eq("come");
+    expect(RiTa.conjugator.unconjugate("having")).eq("have");
+    expect(RiTa.conjugator.unconjugate("running")).eq("run");
+    expect(RiTa.conjugator.unconjugate("putting")).eq("put");
+    expect(RiTa.conjugator.unconjugate("sitting")).eq("sit");
+
+    //irregular
+    expect(RiTa.conjugator.unconjugate("has")).eq("have");
+    expect(RiTa.conjugator.unconjugate("had")).eq("have");
+    expect(RiTa.conjugator.unconjugate("sat")).eq("sit");
+    expect(RiTa.conjugator.unconjugate("shown")).eq("show");
+    expect(RiTa.conjugator.unconjugate("ate")).eq("eat");
+    expect(RiTa.conjugator.unconjugate("went")).eq("go");
+    expect(RiTa.conjugator.unconjugate("met")).eq("meet");
+  });
+
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }
   function equal(a, b, m) { expect(a).eq(b, m); }
