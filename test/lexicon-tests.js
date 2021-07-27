@@ -41,6 +41,7 @@ describe('RiTa.Lexicon', function () {
 
     expect(RiTa.hasWord("barkness")).to.be.false; 
     expect(RiTa.hasWord("horne")).to.be.false; 
+    expect(RiTa.hasWord("haye")).to.be.false; 
   });
 
   it('Should call randomWord', () => { // SYNC:
