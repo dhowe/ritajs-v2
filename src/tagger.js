@@ -59,6 +59,7 @@ class Tagger {
   }
 
   allTags(word, opts = {}) { // returns an array of choices
+
     let noGuessing = opts.noGuessing || false;
     let noDerivations = opts.noDerivations || false;
 

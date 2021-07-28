@@ -15,15 +15,17 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.pastPart("run"), "run");
     equal(RiTa.pastPart("speak"), "spoken");
     equal(RiTa.pastPart("break"), "broken");
+    equal(RiTa.pastPart("plead"), "pled");
     equal(RiTa.pastPart(""), "");
 
     // PROBLEMS
     equal(RiTa.pastPart("awake"), "awoken");
-    equal(RiTa.pastPart("become"), "become"); 
+    equal(RiTa.pastPart("become"), "become");
     equal(RiTa.pastPart("drink"), "drunk");
-    // equal(RiTa.pastPart("plead"), "pled"); fail due to "plea" is also marked "vb" in dictionary (plea can be verb?)
     equal(RiTa.pastPart("run"), "run");
     equal(RiTa.pastPart("shine"), "shone");
+
+
 
     // or shined
     equal(RiTa.pastPart("shrink"), "shrunk");
@@ -108,7 +110,7 @@ describe('RiTa.Conjugator', () => {
     equal("swum", RiTa.pastPart("swim"));
 
     equal(RiTa.conjugate("be", { form: RiTa.GERUND, }), "being");
-    equal(RiTa.conjugate("are", { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST}), "were");
+    equal(RiTa.conjugate("are", { number: RiTa.PLURAL, person: RiTa.SECOND, tense: RiTa.PAST }), "were");
 
     s = ["swim", "need", "open"];
     a = ["swims", "needs", "opens"];
@@ -304,68 +306,68 @@ describe('RiTa.Conjugator', () => {
     let original = ["run", "walk", "swim", "create"];
     // passive
     let expected = ["is run", "is walked", "is swum", "is created"];
-    original.forEach((w,i) => {
+    original.forEach((w, i) => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, passive: true })).eq(expected[i]);
     });
     // progressive
     expected = ["is running", "is walking", "is swimming", "is creating"];
-    original.forEach((w,i) => {
+    original.forEach((w, i) => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, progressive: true })).eq(expected[i]);
     });
     // interrogative
     expected = ["run", "walk", "swim", "create"];
-    original.forEach((w,i) => {
+    original.forEach((w, i) => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, interrogative: true })).eq(expected[i]);
     });
     // perfect
     expected = ["has run", "has walked", "has swum", "has created"];
-    original.forEach((w,i) => {
+    original.forEach((w, i) => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, perfect: true })).eq(expected[i]);
     });
     // gerund passive
     expected = ["being run", "being walked", "being swum", "being created"];
-    original.forEach((w,i) => {
+    original.forEach((w, i) => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, passive: true, form: RiTa.GERUND })).eq(expected[i]);
     });
     // gerund progressive 
     expected = ["being running", "being walking", "being swimming", "being creating"];
-    original.forEach((w,i) => {
+    original.forEach((w, i) => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, progressive: true, form: RiTa.GERUND })).eq(expected[i]);
     });
     // gerund interrogative
     expected = ["running", "walking", "swimming", "creating"];
-    original.forEach((w,i) => {
+    original.forEach((w, i) => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, interrogative: true, form: RiTa.GERUND })).eq(expected[i]);
     });
     // gerund perfect
     expected = ["having run", "having walked", "having swum", "having created"];
-    original.forEach((w,i) => {
+    original.forEach((w, i) => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, perfect: true, form: RiTa.GERUND })).eq(expected[i]);
     });
     // infinitive passive
     expected = ["to be run", "to be walked", "to be swum", "to be created"];
-    original.forEach((w,i) => {
+    original.forEach((w, i) => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, passive: true, form: RiTa.INFINITIVE })).eq(expected[i]);
     });
     // infinitive progressive
     expected = ["to be running", "to be walking", "to be swimming", "to be creating"];
-    original.forEach((w,i) => {
+    original.forEach((w, i) => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, progressive: true, form: RiTa.INFINITIVE })).eq(expected[i]);
     });
     // infinitive interrogative
     expected = ["to run", "to walk", "to swim", "to create"];
-    original.forEach((w,i) => {
+    original.forEach((w, i) => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, interrogative: true, form: RiTa.INFINITIVE })).eq(expected[i]);
     });
     // infinitive perfect
     expected = ["to have run", "to have walked", "to have swum", "to have created"];
-    original.forEach((w,i) => {
+    original.forEach((w, i) => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, perfect: true, form: RiTa.INFINITIVE })).eq(expected[i]);
     });
     RiTa.conjugate("swim", "2PPa")
   });
 
-  it('Should call toString', () => { 
+  it('Should call toString', () => {
     equal(RiTa.conjugator.toString(), '  ---------------------\n  Passive = false\n  Perfect = false\n  Progressive = false\n  ---------------------\n  Number = 8\n  Person = 2\n  Tense = 4\n  ---------------------\n');
   });
 
@@ -413,7 +415,7 @@ describe('RiTa.Conjugator', () => {
       ["accompanying", "accompanied"],
       ["feeling", "felt"],
       ["placating", "placated"],
-      ["centralizing", "centralized"], 
+      ["centralizing", "centralized"],
       ["humanized", "humanized"],
       ["boosted", "boosted"],
       ["wearing", "wore"],
@@ -425,13 +427,14 @@ describe('RiTa.Conjugator', () => {
       ["vibration", "vibrated"],
     ];
     pairs.forEach(p => {
-      equal(RiTa.conjugate(RiTa.stem(p[0]), opts), p[1], p[0] + " => " + RiTa.stem(p[0]) + " => " + p[1]);
+      equal(RiTa.conjugate(RiTa.stem(p[0]), opts), p[1], p[0]
+        + " => " + RiTa.stem(p[0]) + " => " + p[1]);
     });
   });
 
-  it("Should correctly call unconjugate", () => {
-    // regular words
-    // 3rd person singular
+  it("Should call unconjugate", () => {
+
+    // 3rd person singular (regular)
     expect(RiTa.conjugator.unconjugate("plays")).eq("play");
     expect(RiTa.conjugator.unconjugate("takes")).eq("take");
     expect(RiTa.conjugator.unconjugate("gets")).eq("get");
@@ -443,7 +446,8 @@ describe('RiTa.Conjugator', () => {
     expect(RiTa.conjugator.unconjugate("studies")).eq("study");
     expect(RiTa.conjugator.unconjugate("tries")).eq("try");
     expect(RiTa.conjugator.unconjugate("carries")).eq("carry");
-    // ed
+
+    // -ed (regular)
     expect(RiTa.conjugator.unconjugate("watched")).eq("watch");
     expect(RiTa.conjugator.unconjugate("planted")).eq("plant");
     expect(RiTa.conjugator.unconjugate("watered")).eq("water");
@@ -455,7 +459,8 @@ describe('RiTa.Conjugator', () => {
     expect(RiTa.conjugator.unconjugate("tried")).eq("try");
     expect(RiTa.conjugator.unconjugate("studied")).eq("study");
     expect(RiTa.conjugator.unconjugate("carried")).eq("carry");
-    // ing
+
+    // -ing (regular)
     expect(RiTa.conjugator.unconjugate("blowing")).eq("blow");
     expect(RiTa.conjugator.unconjugate("raining")).eq("rain");
     expect(RiTa.conjugator.unconjugate("coming")).eq("come");
@@ -464,7 +469,7 @@ describe('RiTa.Conjugator', () => {
     expect(RiTa.conjugator.unconjugate("putting")).eq("put");
     expect(RiTa.conjugator.unconjugate("sitting")).eq("sit");
 
-    //irregular
+    // irregular
     expect(RiTa.conjugator.unconjugate("has")).eq("have");
     expect(RiTa.conjugator.unconjugate("had")).eq("have");
     expect(RiTa.conjugator.unconjugate("sat")).eq("sit");

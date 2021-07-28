@@ -121,7 +121,7 @@ class Visitor extends RiScriptParserVisitor {
     if (!tn) {
       this.trace && console.log("emptyTransform: " + ctx.getText());
       let applied = this.applyTransforms('', txs);
-      return applied !== null ? applied : result;
+      return applied !== null ? applied : result; // keep null
     }
 
     let ident = symbolName(tn.getText());
