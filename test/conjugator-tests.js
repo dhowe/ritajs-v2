@@ -472,6 +472,13 @@ describe('RiTa.Conjugator', () => {
     expect(RiTa.conjugator.unconjugate("ate")).eq("eat");
     expect(RiTa.conjugator.unconjugate("went")).eq("go");
     expect(RiTa.conjugator.unconjugate("met")).eq("meet");
+
+    // for base form verbs, return input
+    expect(RiTa.conjugator.unconjugate("have")).eq("have");
+    expect(RiTa.conjugator.unconjugate("eat")).eq("eat");
+    expect(RiTa.conjugator.unconjugate("play")).eq("play");
+    expect(RiTa.conjugator.unconjugate("go")).eq("go");
+    expect(RiTa.conjugator.unconjugate("do")).eq("do");
   });
 
   function ok(a, m) { expect(a, m).to.be.true; }

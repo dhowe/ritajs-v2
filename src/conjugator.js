@@ -96,13 +96,13 @@ class Conjugator {
     let tags = this.RiTa.tagger.allTags(word, { noGuessing: true });
     let notAVerb = tags.length > 0;
     for (let i = 0; i < tags.length; i++){
-      if (/^vb/.test(tags[i])) {
-        notAVerb = false;
-        break;
-      }
       if (/^vb$/.test(tags[i])) {
         dbug && console.log(word + " is a base form.");
         return word;
+      }
+      if (/^vb/.test(tags[i])) {
+        notAVerb = false;
+        break;
       }
     }
     if (notAVerb) {
