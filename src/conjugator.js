@@ -70,11 +70,17 @@ class Conjugator {
     if (VERB_LEMMATIZER_EXCEPTIONS_IN_DICT.hasOwnProperty(word)) {
       dbug && console.log(word + " is in exceptions list 1.");
       return VERB_LEMMATIZER_EXCEPTIONS_IN_DICT[word];
+    } else if (Object.values(VERB_LEMMATIZER_EXCEPTIONS_IN_DICT).includes(word)) {
+      dbug && console.log(word + " is base form in exceptions list 1.");
+      return word;
     }
 
     if (VERB_LEMMATIZER_EXCEPTIONS_NOT_IN_DICT.hasOwnProperty(word)) {
       dbug && console.log(word + " is in exceptions list 2.");
       return VERB_LEMMATIZER_EXCEPTIONS_NOT_IN_DICT[word];
+    } else if (Object.values(VERB_LEMMATIZER_EXCEPTIONS_NOT_IN_DICT).includes(word)) {
+      dbug && console.log(word + " is base form in exceptions list 2.");
+      return word;
     }
 
     let tags = this.RiTa.tagger.allTags(word, { noGuessing: true });
