@@ -29,7 +29,7 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos("Elephants dance".split(/ /), { simple: true }), ["n", "v"]);
     eql(RiTa.pos("the boy dances".split(/ /), { simple: true }), ["-", "n", "v"]);
   });
-  
+
   it('Should call pos.array.inline.simple', () => {
     let result, answer, txt;
 
@@ -87,7 +87,7 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos(""), []);
     eql(RiTa.pos(","), [',']);
     eql(RiTa.pos(" "), []);
-    
+
     eql(RiTa.pos("freed"), ["jj"]);
     eql(RiTa.pos("biped"), ["nn"]);
     eql(RiTa.pos("greed"), ["nn"]);
@@ -223,8 +223,8 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos("He is running toward me"), ["prp", "vbz", "vbg", "in", "prp"]);
     eql(RiTa.pos("She is riding a bike"), ["prp", "vbz", "vbg", "dt", "nn"]);
     eql(RiTa.pos("he stands still, thinking about the words"), ["prp", "vbz", "rb", ",", "vbg", "in", "dt", "nns"]);
-    eql(RiTa.pos("She walked out of the room smoking"),["prp", "vbd", "in", "in", "dt", "nn", "vbg"]);
-    eql(RiTa.pos("He kept saying his adventure story"),["prp", "vbd", "vbg", "prp$", "nn", "nn"]);
+    eql(RiTa.pos("She walked out of the room smoking"), ["prp", "vbd", "in", "in", "dt", "nn", "vbg"]);
+    eql(RiTa.pos("He kept saying his adventure story"), ["prp", "vbd", "vbg", "prp$", "nn", "nn"]);
     eql(RiTa.pos("Drinking is his hobby"), ["vbg", "vbz", "prp$", "nn"]);
     eql(RiTa.pos("The kid playing at the corner is the boss"), ["dt", "nn", "vbg", "in", "dt", "nn", "vbz", "dt", "nn"]);
     eql(RiTa.pos("She is the leader of the reading group"), ["prp", "vbz", "dt", "nn", "in", "dt", "vbg", "nn"]);
@@ -493,7 +493,7 @@ describe('RiTa.Tagger', () => {
     ok(!RiTa.isNoun());
     ok(!RiTa.isNoun(42));
     ok(!RiTa.isNoun(["rabbit"]));
-    
+
     //verbs (esp. past particle)
     ok(!RiTa.isNoun("heard"), "heard: " + RiTa.tagger.allTags("heard"));
     ok(!RiTa.isNoun("deterred"));
@@ -550,6 +550,8 @@ describe('RiTa.Tagger', () => {
     //n
     ok(!RiTa.isVerb("dolls"));
     ok(!RiTa.isVerb("frogs"));
+    ok(RiTa.isVerb("flowers"));
+    ok(RiTa.isVerb("ducks"));
 
     //adv
     ok(!RiTa.isVerb("truthfully"));
@@ -559,10 +561,6 @@ describe('RiTa.Tagger', () => {
     ok(!RiTa.isVerb("sleepily"));
     ok(!RiTa.isVerb("excitedly"));
     ok(!RiTa.isVerb("energetically"));
-
-    // failing
-    ok(RiTa.isVerb("flowers"));
-    ok(RiTa.isVerb("ducks"));
 
     // inflections
     ok(RiTa.isVerb("hates"));
@@ -575,6 +573,18 @@ describe('RiTa.Tagger', () => {
     ok(RiTa.isVerb("hates"));
     ok(RiTa.isVerb("hated"));
     ok(RiTa.isVerb("ridden"));
+    ok(RiTa.isVerb("rode"));
+
+    ok(RiTa.isVerb("abetted"));
+    ok(RiTa.isVerb("abetting"));
+    ok(RiTa.isVerb("abutted"));
+    ok(RiTa.isVerb("abutting"));
+    ok(RiTa.isVerb("abuts"));
+    ok(RiTa.isVerb("abut"));
+
+    ok(RiTa.isVerb("misdeal"));
+    ok(RiTa.isVerb("misdeals"));
+    ok(RiTa.isVerb("misdealt"));
 
     // bad inputs
     ok(!RiTa.isVerb(""));
@@ -642,7 +652,7 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.tagger.allTags('monkeys'), ["nns"]);
     eq(RiTa.tagger.allTags(''), undefined);
     eq(RiTa.tagger.allTags(['monkey']), undefined);
-    eq(RiTa.tagger.allTags("hates", {noDerivations: true}), null);
+    eq(RiTa.tagger.allTags("hates", { noDerivations: true }), null);
     eql(RiTa.tagger.allTags("satisfies"), ["vbz"]);
     eql(RiTa.tagger.allTags("falsifies"), ["vbz"])
     expect(RiTa.tagger.allTags("hates")).to.include("vbz");
