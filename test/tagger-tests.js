@@ -569,7 +569,7 @@ describe('RiTa.Tagger', () => {
     ok(RiTa.isVerb("dancing"));
     ok(RiTa.isVerb("flowers"));
 
-    // irregular inflections
+    // irregular inflections (SYNC:)
     ok(RiTa.isVerb("hates"));
     ok(RiTa.isVerb("hated"));
     ok(RiTa.isVerb("ridden"));
