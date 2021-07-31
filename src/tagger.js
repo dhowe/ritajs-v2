@@ -8,8 +8,8 @@ class Tagger {
     this.RiTa = parent;
   }
 
-  isVerb(word) {
-    let pos = this.allTags(word);
+  isVerb(word, opts) {
+    let pos = this.allTags(word, opts);
     return pos && pos.some(p => VERBS.includes(p));
   }
 
