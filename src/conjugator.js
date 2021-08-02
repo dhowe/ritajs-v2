@@ -401,6 +401,7 @@ class Conjugator {
       for (let i = 0; i < guess.length; i++) {
         if (word === guess[i]) return word;
         if (this.RiTa.stem(guess[i]) === word) return guess[i];
+        if (this.unconjugate(this.RiTa.stem(guess[i])) === word) return guess[i];
       }
 
       w = w.slice(0, -1);
