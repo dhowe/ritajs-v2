@@ -13,6 +13,10 @@ class Conjugator {
     if (!args) return verb;
 
     verb = verb.toLowerCase();
+    //make sure verb is in base form
+    if (!this.RiTa.tagger.allTags(verb).includes("vb")) {
+      verb = this.unconjugate(verb) || verb;
+    }
     args = this._parseArgs(args);
 
     // handle 'to be' verbs and stemming
