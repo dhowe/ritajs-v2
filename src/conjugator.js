@@ -13,6 +13,10 @@ class Conjugator {
     if (!args) return verb;
 
     verb = verb.toLowerCase();
+    //make sure verb is in base form
+    if (!this.RiTa.tagger.allTags(verb).includes("vb")) {
+      verb = this.unconjugate(verb) || verb;
+    }
     args = this._parseArgs(args);
 
     // handle 'to be' verbs and stemming
@@ -397,6 +401,7 @@ class Conjugator {
       for (let i = 0; i < guess.length; i++) {
         if (word === guess[i]) return word;
         if (this.RiTa.stem(guess[i]) === word) return guess[i];
+        if (this.unconjugate(this.RiTa.stem(guess[i])) === word) return guess[i];
       }
 
       w = w.slice(0, -1);

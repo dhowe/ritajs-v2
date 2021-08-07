@@ -365,6 +365,13 @@ describe('RiTa.Conjugator', () => {
       expect(RiTa.conjugate(w, { person: RiTa.THIRD, perfect: true, form: RiTa.INFINITIVE })).eq(expected[i]);
     });
     RiTa.conjugate("swim", "2PPa")
+
+    // deal with non-base form
+    expect(RiTa.conjugate("walked", "3SPr")).eq("walks");
+    expect(RiTa.conjugate("changed", "3SPr")).eq("changes");
+    expect(RiTa.conjugate("spent", "3SPr")).eq("spends");
+    expect(RiTa.conjugate("eaten", "3SPr")).eq("eats");
+    RiTa.conjugate("swim", "2PPa")
   });
 
   it('Should call toString', () => {
