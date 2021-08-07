@@ -15,7 +15,7 @@ class Tagger {
     
     // check irregular verbs (added 7/31/21) 
     if (this._isNoLexIrregularVerb(word)) return true;        // SYNC:
-    if (conj.IRREG_VERBS_LEX.hasOwnProperty(word)) return true; // SYNC:
+    if (conj.IRREG_VERBS_LEX_VB.hasOwnProperty(word)) return true; // SYNC:
     if (conj.IRREG_VERBS_NOLEX.hasOwnProperty(word)) return true; // SYNC:
 
     // any verbs (vb*) in lexicon
