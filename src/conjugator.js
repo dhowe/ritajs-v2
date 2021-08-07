@@ -13,7 +13,8 @@ class Conjugator {
     if (!args) return verb;
 
     verb = verb.toLowerCase();
-    //make sure verb is in base form
+
+    // make sure verb is in base form
     if (!this.RiTa.tagger.allTags(verb).includes("vb")) {
       verb = this.unconjugate(verb) || verb;
     }
@@ -66,7 +67,7 @@ class Conjugator {
   }
 
 
-  unconjugate(word, opts = {}) { // NAPI
+  unconjugate(word, opts = {}) { // NAPI (perhaps should be added?)
 
     if (typeof word !== 'string') return;
 
