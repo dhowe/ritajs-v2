@@ -241,6 +241,7 @@ class Lexicon {
     }
 
     opts.silent = _silent; // re-enable warnings
+
     return result;
   }
 
@@ -390,6 +391,8 @@ class Lexicon {
     opts.numSyllables = opts.numSyllables || 0;
     opts.maxLength = opts.maxLength || Number.MAX_SAFE_INTEGER;
     opts.minLength = opts.minLength || (opts.limit > 1 ? 3 : 4); // 4 for randomWord
+
+    if (opts.limit && opts.limit < 1) delete opts.limit; // 0,1 = no limit (SYNC:)
 
     // handle part-of-speech
     let tpos = opts.pos || false;

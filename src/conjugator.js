@@ -1,11 +1,10 @@
 import Util from "./util";
+
 class Conjugator {
 
   constructor(parent) {
     this.RiTa = parent;
     this._reset();
-    this.VB_ENDS_IN_E = this.RiTa.search(/e$/, { limit: 999999, minLength: 1, pos: "vb" });
-    this.VB_ENDS_IN_DOUBLE = this.RiTa.search(/([a-z])\1+$/, { limit: 999999, minLength: 1, pos: 'vb' });
   }
 
   // TODO: add handling of past tense modals.
@@ -68,28 +67,33 @@ class Conjugator {
     return conjs.reduce((acc, cur) => cur + ' ' + acc).trim();
   }
 
-
-  unconjugate(word, opts = {}) { // NAPI (perhaps should be added?)
+  unconjugate(word, opts = {}) { // NAPI (perhaps should be added?)  SYNC:
 
     if (typeof word !== 'string') return;
 
     let dbug = opts && opts.dbug;
 
+    this.verbsEndingInE = this.verbsEndingInE // lazy-load
+      || this.RiTa.search(/e$/, { limit: -1, minLength: 1, pos: "vb" });
+
+    this.verbsEndingInDoubles = this.verbsEndingInDoubles // lazy-load
+      || this.RiTa.search(/([a-z])\1+$/, { limit: -1, minLength: 1, pos: 'vb' });
+
     if (IRREG_VERBS_LEX.hasOwnProperty(word)) {
-      dbug && console.log(word + " in exceptions list 1 (in lex)");
+      dbug && console.log(word + " in exceptions1 (in lex)");
       return IRREG_VERBS_LEX[word];
     }
     else if (Object.values(IRREG_VERBS_LEX).includes(word)) {
-      dbug && console.log(word + " is base form in exceptions list 1 (in lex)");
+      dbug && console.log(word + " is base form in exceptions1 (in lex)");
       return word;
     }
 
     if (IRREG_VERBS_NOLEX.hasOwnProperty(word)) {
-      dbug && console.log(word + " is in exceptions list 2");
+      dbug && console.log(word + " is in exceptions2");
       return IRREG_VERBS_NOLEX[word];
     }
     else if (Object.values(IRREG_VERBS_NOLEX).includes(word)) {
-      dbug && console.log(word + " is base form in exceptions list 2 (not in lex)");
+      dbug && console.log(word + " is base form in exceptions2 (not in lex)");
       return word;
     }
 
@@ -101,86 +105,91 @@ class Conjugator {
       return word;
     }
 
-    // if its not a verb, give up
-    if (!tags.some(t => t.startsWith('vb'))) {
-      dbug && console.log(word + " is not a known verb");
-      return;
-    }
-
-    // Now check our lemmatization rules
+    // Now check lemmatization rules /////////////////////////////////
 
     // 1) 3rd person present (-s)
     if (word.endsWith("s")) {
 
       if (word.endsWith("ies")) {
         dbug && console.log("'" + word + "' hit rule: ends with -ies");
-        return word.replace(/ies$/, "y");
+        return word.slice(0, -3) + "y";
       }
       else if (/(ch|s|sh|x|z|o)es$/.test(word)) {
         dbug && console.log("'" + word + "' hit rule: ends with -(ch|s|sh|x|z|o)es");
-        return word.replace(/es$/, "");
+        return word.slice(0, -2);
       }
       dbug && console.log("'" + word + "' hit rule: ends with -s");
-      return word.replace(/s$/, "");
+      return word.slice(0, -1);
     }
 
     // 2) past forms (-ed)
-    if (word.endsWith("ed")) {
+    else if (word.endsWith("ed")) {
 
       if (word.endsWith("ied")) {
         dbug && console.log("'" + word + "' hit rule: ends with -ied");
-        return word.replace(/ied$/, "y");
+        return word.slice(0, -3) + "y";
       }
-      else if (word.endsWith("ed") && word.charAt(word.length - 3) === word.charAt(word.length - 4)) {
-
-        if (this.VB_ENDS_IN_DOUBLE.includes(word.replace(/ed$/, ""))) {
+      else if (/([a-z])\1ed$/.test(word)) { // SYNC:
+        if (this.verbsEndingInDoubles.includes(word.replace(/ed$/, ""))) {
           dbug && console.log("'" + word + "' hit rule: ends with -ed");
-          return word.replace(/ed$/, "")
+          return word.slice(0, -2);
         }
         dbug && console.log("'" + word + "' hit rule: ends with -..ed");
-        return word.replace(/[a-z]ed$/, "");
+        return word.slice(0, -3);
       }
       else if (word.endsWith("ed")) {
-        if (this.VB_ENDS_IN_E.includes(word.replace(/d$/, ""))) {
+        if (this.verbsEndingInE.includes(word.replace(/d$/, ""))) {
           dbug && console.log("'" + word + "' hit rule: ends with -(e)d");
-          return word.replace(/d$/, "")
+          return word.slice(0, -1);
         }
         else {
           dbug && console.log("'" + word + "' hit rule: ends with -ed");
-          return word.replace(/ed$/, "")
+          return word.slice(0, -2);
         }
       }
     }
 
     // 3) ends with -ing
-    if (word.endsWith("ing")) {
+    else if (word.endsWith("ing")) {
 
-      if (word.charAt(word.length - 4) === word.charAt(word.length - 5)) {
-        if (this.VB_ENDS_IN_DOUBLE.includes(word.replace(/ing$/, ""))) {
-          dbug && console.log("'" + word + "' hit rule: ends with -ing");
-          return word.replace(/ing$/, "")
+      if (/([a-z])\1ing$/.test(word)) { // SYNC:
+        if (this.verbsEndingInDoubles.includes(word.slice(0, -3))) {
+          dbug && console.log("'" + word + "' hit rule: ends with -(XX)ing [in-list]");
+          return word.slice(0, -3);
         }
-        dbug && console.log("'" + word + "' hit rule: ends with -..ing");
-        return word.replace(/[a-z]ing$/, "");
+
+        dbug && console.log("'" + word + "' hit rule: ends with -XXing [no-list]");
+        return word.slice(0, -4);// TODO: needs test
       }
 
-      if (word.charAt(word.length - 4) === 'y') {
-        if (this.VB_ENDS_IN_E.includes(word.replace(/ying$/, "ie"))) {
-          dbug && console.log("'" + word + "' hit rule: ends with -ying");
-          return word.replace(/ying$/, "ie")
+      if (word.endsWith('ying')) {
+        if (this.verbsEndingInE.includes(word.replace(/ying$/, "ie"))) {
+          dbug && console.log("'" + word + "' hit rule: base ends with -ying");
+          return word.slice(0, -4) + "ie";
         }
       }
 
-      if (this.VB_ENDS_IN_E.includes(word.replace(/ing$/, "e"))) {
-        dbug && console.log("'" + word + "' hit rule: ends with -(e)ing");
-        return word.replace(/ing$/, "e")
+      if (this.verbsEndingInE.includes(word.replace(/ing$/, "e"))) {
+        dbug && console.log("'" + word + "' hit rule: base ends with -(e)ing");
+        return word.slice(0, -3) + "e";
       }
 
       dbug && console.log("'" + word + "' hit rule: ends with -ing");
-      return word.replace(/ing$/, "")
+
+      return  word.slice(0, -3);
+    }
+
+    else { // SYNC: moved from above
+
+      // if it hasn't matched anything AND is not a verb in lex, give up
+      if (!tags.some(t => t.startsWith('vb'))) {
+        dbug && console.log(word + " is not a known verb");
+        return word;
+      }
     }
 
     dbug && console.log("'" + word + "' hit no rules");
+
     return word;
   }
 

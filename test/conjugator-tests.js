@@ -441,6 +441,9 @@ describe('RiTa.Conjugator', () => {
 
   it("Should call unconjugate", () => {
 
+expect(RiTa.conjugator.unconjugate("trepanning")).eq("trepan");
+
+
     // 3rd person singular (regular)
     expect(RiTa.conjugator.unconjugate("plays")).eq("play");
     expect(RiTa.conjugator.unconjugate("takes")).eq("take");
@@ -491,6 +494,14 @@ describe('RiTa.Conjugator', () => {
     expect(RiTa.conjugator.unconjugate("play")).eq("play");
     expect(RiTa.conjugator.unconjugate("go")).eq("go");
     expect(RiTa.conjugator.unconjugate("do")).eq("do");
+
+    // not in lexicon (SYNC:)
+    expect(RiTa.conjugator.unconjugate("spooning")).eq("spoon");
+    expect(RiTa.conjugator.unconjugate("mepanning")).eq("mepan");
+    expect(RiTa.conjugator.unconjugate("muddling")).eq("muddle");
+
+    // (TODO) tests without lexicon ** 
+
   });
 
   function ok(a, m) { expect(a, m).to.be.true; }
