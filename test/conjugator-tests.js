@@ -456,6 +456,8 @@ expect(RiTa.conjugator.unconjugate("trepanning")).eq("trepan");
     expect(RiTa.conjugator.unconjugate("studies")).eq("study");
     expect(RiTa.conjugator.unconjugate("tries")).eq("try");
     expect(RiTa.conjugator.unconjugate("carries")).eq("carry");
+    expect(RiTa.conjugator.unconjugate("wishes")).eq("wish");
+    expect(RiTa.conjugator.unconjugate("blitzes")).eq("blitz");
 
     // -ed (regular)
     expect(RiTa.conjugator.unconjugate("watched")).eq("watch");
@@ -469,6 +471,8 @@ expect(RiTa.conjugator.unconjugate("trepanning")).eq("trepan");
     expect(RiTa.conjugator.unconjugate("tried")).eq("try");
     expect(RiTa.conjugator.unconjugate("studied")).eq("study");
     expect(RiTa.conjugator.unconjugate("carried")).eq("carry");
+    expect(RiTa.conjugator.unconjugate("digged")).eq("dig");
+    expect(RiTa.conjugator.unconjugate("flagged")).eq("flag");
 
     // -ing (regular)
     expect(RiTa.conjugator.unconjugate("blowing")).eq("blow");
@@ -478,6 +482,7 @@ expect(RiTa.conjugator.unconjugate("trepanning")).eq("trepan");
     expect(RiTa.conjugator.unconjugate("running")).eq("run");
     expect(RiTa.conjugator.unconjugate("putting")).eq("put");
     expect(RiTa.conjugator.unconjugate("sitting")).eq("sit");
+    expect(RiTa.conjugator.unconjugate("pulling")).eq("pull");
 
     // irregular
     expect(RiTa.conjugator.unconjugate("has")).eq("have");
@@ -500,8 +505,38 @@ expect(RiTa.conjugator.unconjugate("trepanning")).eq("trepan");
     expect(RiTa.conjugator.unconjugate("mepanning")).eq("mepan");
     expect(RiTa.conjugator.unconjugate("muddling")).eq("muddle");
 
-    // (TODO) tests without lexicon ** 
-
+    if (typeof NOLEX !== 'undefined') {
+      // when no lex, rules should work
+      expect(RiTa.conjugator.unconjugate("gets")).eq("get");
+      expect(RiTa.conjugator.unconjugate("comes")).eq("come");
+      expect(RiTa.conjugator.unconjugate("goes")).eq("go");
+      expect(RiTa.conjugator.unconjugate("teaches")).eq("teach");
+      expect(RiTa.conjugator.unconjugate("fixes")).eq("fix");
+      expect(RiTa.conjugator.unconjugate("misses")).eq("miss");
+      expect(RiTa.conjugator.unconjugate("studies")).eq("study");
+      expect(RiTa.conjugator.unconjugate("tries")).eq("try");
+      expect(RiTa.conjugator.unconjugate("carries")).eq("carry");
+      expect(RiTa.conjugator.unconjugate("wishes")).eq("wish");
+      expect(RiTa.conjugator.unconjugate("blitzes")).eq("blitz");
+      expect(RiTa.conjugator.unconjugate("watered")).eq("water");
+      expect(RiTa.conjugator.unconjugate("pulled")).eq("pull");
+      expect(RiTa.conjugator.unconjugate("picked")).eq("pick");
+      expect(RiTa.conjugator.unconjugate("liked")).eq("like");
+      expect(RiTa.conjugator.unconjugate("moved")).eq("move");
+      expect(RiTa.conjugator.unconjugate("tasted")).eq("taste");
+      expect(RiTa.conjugator.unconjugate("tried")).eq("try");
+      expect(RiTa.conjugator.unconjugate("studied")).eq("study");
+      expect(RiTa.conjugator.unconjugate("carried")).eq("carry");
+      expect(RiTa.conjugator.unconjugate("digged")).eq("dig");
+      expect(RiTa.conjugator.unconjugate("flagged")).eq("flag");
+      expect(RiTa.conjugator.unconjugate("raining")).eq("rain");
+      expect(RiTa.conjugator.unconjugate("coming")).eq("come");
+      expect(RiTa.conjugator.unconjugate("having")).eq("have");
+      expect(RiTa.conjugator.unconjugate("running")).eq("run");
+      expect(RiTa.conjugator.unconjugate("putting")).eq("put");
+      expect(RiTa.conjugator.unconjugate("sitting")).eq("sit");
+      expect(RiTa.conjugator.unconjugate("pulling")).eq("pull");
+    }
   });
 
   function ok(a, m) { expect(a, m).to.be.true; }
