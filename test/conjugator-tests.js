@@ -500,7 +500,7 @@ expect(RiTa.conjugator.unconjugate("trepanning")).eq("trepan");
     expect(RiTa.conjugator.unconjugate("go")).eq("go");
     expect(RiTa.conjugator.unconjugate("do")).eq("do");
 
-    // not in lexicon (SYNC:)
+    // not in lexicon 
     expect(RiTa.conjugator.unconjugate("spooning")).eq("spoon");
     expect(RiTa.conjugator.unconjugate("mepanning")).eq("mepan");
     expect(RiTa.conjugator.unconjugate("muddling")).eq("muddle");
