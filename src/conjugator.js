@@ -67,7 +67,7 @@ class Conjugator {
     return conjs.reduce((acc, cur) => cur + ' ' + acc).trim();
   }
 
-  unconjugate(word, opts = {}) { // NAPI (perhaps should be added?)  SYNC:
+  unconjugate(word, opts = {}) { // NAPI (perhaps should be added?)  
 
     if (typeof word !== 'string') return;
 
@@ -129,7 +129,7 @@ class Conjugator {
         dbug && console.log("'" + word + "' hit rule: ends with -ied");
         return word.slice(0, -3) + "y";
       }
-      else if (/([a-z])\1ed$/.test(word)) { // SYNC:
+      else if (/([a-z])\1ed$/.test(word)) { 
         if (this.verbsEndingInDoubles.includes(word.replace(/ed$/, ""))) {
           dbug && console.log("'" + word + "' hit rule: ends with -ed");
           return word.slice(0, -2);
@@ -152,7 +152,7 @@ class Conjugator {
     // 3) ends with -ing
     else if (word.endsWith("ing")) {
 
-      if (/([a-z])\1ing$/.test(word)) { // SYNC:
+      if (/([a-z])\1ing$/.test(word)) { 
         if (this.verbsEndingInDoubles.includes(word.slice(0, -3))) {
           dbug && console.log("'" + word + "' hit rule: ends with -(XX)ing [in-list]");
           return word.slice(0, -3);
@@ -179,7 +179,7 @@ class Conjugator {
       return  word.slice(0, -3);
     }
 
-    else { // SYNC: moved from above
+    else { 
 
       // if it hasn't matched anything AND is not a verb in lex, give up
       if (!tags.some(t => t.startsWith('vb'))) {
