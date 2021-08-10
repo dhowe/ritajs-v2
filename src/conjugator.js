@@ -159,7 +159,7 @@ class Conjugator {
         }
 
         dbug && console.log("'" + word + "' hit rule: ends with -XXing [no-list]");
-        return word.slice(0, -4);// TODO: needs test
+        return word.slice(0, -4);
       }
 
       if (word.endsWith('ying')) {
