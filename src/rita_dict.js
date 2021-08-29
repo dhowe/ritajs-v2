@@ -16482,7 +16482,7 @@ module && (module.exports = {
   "rice":["r-ay1-s","nn"],
   "rich":["r-ih1-ch","jj"],
   "richer":["r-ih1 ch-er","jjr"],
-  "riches":["r-ih1 ch-ah-z","nn"],
+  "riches":["r-ih1 ch-ah-z","nns"],
   "richest":["r-ih1 ch-ah-s-t","jjs"],
   "richly":["r-ih1-ch l-iy","rb"],
   "richness":["r-ih1-ch n-ah-s","nn"],
