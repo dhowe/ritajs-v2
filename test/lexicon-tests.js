@@ -1071,6 +1071,17 @@ describe('RiTa.Lexicon', function () {
     }
   });
 
+  it("Should call isStem", () => {
+    expect(RiTa.lexicon().isStem("chang")).to.be.true;
+    expect(RiTa.lexicon().isStem("accid")).to.be.true;
+    expect(RiTa.lexicon().isStem("accept")).to.be.true;
+    expect(RiTa.lexicon().isStem("bear")).to.be.true;
+    expect(RiTa.lexicon().isStem("bodi")).to.be.true;
+    expect(RiTa.lexicon().isStem("book")).to.be.true;
+    expect(RiTa.lexicon().isStem("box")).to.be.true;
+    expect(RiTa.lexicon().isStem("change")).to.not.be.true;
+  });
+
   it('Should correctly call _toPhoneArray', () => { // private-js only
     let raw = RiTa.lexicon().rawPhones("tornado", false)
     let result = RiTa.lexicon()._toPhoneArray(raw);
