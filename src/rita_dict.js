@@ -19608,7 +19608,7 @@ module && (module.exports = {
   "therapeutic":["th-eh r-ah p-y-uw1 t-ih-k","jj nn"],
   "therapist":["th-eh1 r-ah p-ah-s-t","nn"],
   "therapy":["th-eh1 r-ah p-iy","nn"],
-  "there":["dh-eh1-r","ex rb uh"],
+  "there":["dh-eh1-r","rb uh nn ex"],
   "thermal":["th-er1 m-ah-l","jj"],
   "thermometer":["th-er m-aa1 m-ah t-er","nn"],
   "thermonuclear":["th-er m-ow n-uw1 k-l-iy er","jj"],

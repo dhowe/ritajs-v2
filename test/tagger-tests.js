@@ -240,6 +240,12 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos("He is a dancer"), ["prp", "vbz", "dt", "nn"]);
     eql(RiTa.pos("She is a body bulider"), ["prp", "vbz", "dt", "nn", "nn"]);
     eql(RiTa.pos("I am a programmer"), ["prp", "vbp", "dt", "nn"]);
+
+    // rita#148
+    eql(RiTa.pos("I have gone alone in there"), ["prp", "vbp", "vbn", "rb", "in", "nn"]);
+    eql(RiTa.pos("We stopped and went on from there"), ["prp", "vbd", "cc", "vbd", "in", "in", "nn"]);
+    eql(RiTa.pos("She lives there"), ["prp", "vbz", "rb"])
+    eql(RiTa.pos("There is a pig"), ["ex", "vbz", "dt", "nn"])
   });
 
   it('Should call pos.simple', () => {
