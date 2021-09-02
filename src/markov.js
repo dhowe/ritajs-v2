@@ -9,10 +9,12 @@ class RiMarkov {
     this.trace = opts.trace;
     this.mlm = opts.maxLengthMatch;
     this.maxAttempts = opts.maxAttempts || 999;
-    
+
     this.tokenize = opts.tokenize || RiTa().tokenize;
     this.untokenize = opts.untokenize || RiTa().untokenize;
     this.disableInputChecks = opts.disableInputChecks;
+    this.endSentencePattern = /[.?!]/;
+    this.sentenceStarts = [];
 
     if (this.mlm && this.mlm < this.n) {
       throw Error('maxLengthMatch(mlm) must be >= N');
@@ -20,11 +22,16 @@ class RiMarkov {
 
     // we store inputs to verify we don't duplicate sentences
     if (!this.disableInputChecks || this.mlm) this.input = [];
+
+    // add text if supplied as opt SYNC:
+    if (opts.text) this.addText(opts.text);
   }
 
   toJSON() {
-    return stringify(Object.keys(this).reduce
-      ((acc, k) => Object.assign(acc, { [k]: this[k] }), {}));
+    let data = Object.keys(this).reduce
+      ((acc, k) => Object.assign(acc, { [k]: this[k] }), {})
+    let json = stringify(data);
+    return json;
   }
 
   static fromJSON(json) {
@@ -53,7 +60,8 @@ class RiMarkov {
       for (let i = 0; i < sents.length; i++) {
         //let sentence = sentences[i].replace(/\s+/, ' ').trim();
         let words = this.tokenize(sents[i]);
-        tokens.push(RiMarkov.SS, ...words, RiMarkov.SE);
+        this.sentenceStarts.push(words[0]);
+        tokens.push(/*RiMarkov.SS,*/ ...words/* RiMarkov.SE*/);
       }
       this.treeify(tokens);
     }
@@ -62,6 +70,8 @@ class RiMarkov {
   }
 
   generate(count, opts = {}) {
+
+    this.trace = true;
 
     if (arguments.length === 1 && typeof count === 'object') {
       opts = count;
@@ -73,13 +83,22 @@ class RiMarkov {
     const minLength = opts.minLength || 5;
     const maxLength = opts.maxLength || 35;
     let seed = opts.seed || opts.startTokens; // dep
-
     let result = [], tokens, tries = 0;
+
     let fail = (msg) => {
+
       this._logError(++tries, tokens, msg);
-      if (tries >= this.maxAttempts) throwError(tries);
+      if (++tries >= this.maxAttempts) throwError(tries);
       tokens = undefined;
       return 1;
+    }
+
+    let success = (sent, that) => {
+
+      that.trace && console.log('-- OK', sent);
+      result.push(sent);
+      tokens = tokens.splice(-that.n);
+      console.log('post', that._flatten(tokens));
     }
 
     if (typeof seed === 'string') seed = this.tokenize(seed);
@@ -98,7 +117,7 @@ class RiMarkov {
         if (!next && fail('no next')) break; // possible if all children excluded
 
         tokens.push(next);
-        if (next.token === RiMarkov.SE) {
+        if (this.endSentencePattern.test(next.token)) {// === RiMarkov.SE) {
 
           tokens.pop();
           if (tokens.length >= minLength) {
@@ -107,24 +126,26 @@ class RiMarkov {
 
             // Here we check if the output sentence occurs in the input
             if (!this.disableInputChecks && isSubArray(rawtoks, this.input)) {
-               fail('in input'); 
-               break;
+              fail('in input');
+              break;
             }
 
             let sent = this._flatten(tokens);
             if (!opts.allowDuplicates && result.includes(sent) && fail('is dup')) break;
-            this.trace && console.log('-- OK', sent.replace(MULTI_SP_RE, ' '));
-            result.push(sent.replace(MULTI_SP_RE, ' '));
+            success(sent, this);
             break;
           }
+
           if (fail('too short')) break;
         }
       }
       if (tokens && tokens.length >= maxLength) fail('too long');
     }
 
-    return typeof count === 'number' ? result : result[0];
+    return (typeof count === 'number') ? result : result[0];
   }
+
+
 
   /* returns array of possible tokens after pre and (optionally) before post */
   completions(pre, post) {
@@ -191,7 +212,7 @@ class RiMarkov {
       return parent.pselect();
     }
 
-    const validateMlms = (word, nodes) => {
+    const validateMlms = (word, nodes) => { // FAILING?
       let check = nodes.slice().map(n => n.token);
       check.push(word.token); // string
       return !isSubArray(check.slice(-(this.mlm + 1)), this.input);
@@ -219,16 +240,28 @@ class RiMarkov {
   _initSentence(initWith, root) {
 
     root = root || this.root;
+    /*     let tokens = [], node = root;
+        let start = RiTa().random(this.sentenceStarts);
+        if (this.n >= 2) {
+          node = root.child(start);
+          tokens.push(node);
+        }
+        if (!node) throw Error('model is empty, call addText() first');
+    
+        tokens.push(node.pselect()); */
 
-    let tokens = this.n < 2 ? [root.pselect()] : [root.child(RiMarkov.SS).pselect()];
+    let tokens = [];
     if (initWith) {
-      tokens = [];
       let st = this._pathTo(initWith, root);
       if (!st) return false; // fail
       while (!st.isRoot()) {
         tokens.unshift(st);
         st = st.parent;
       }
+    }
+    else {
+      let first = RiTa().random(this.sentenceStarts);
+      tokens.push(root.child(first));
     }
     return tokens;
   }
@@ -269,7 +302,8 @@ class RiMarkov {
   _flatten(nodes) {
     if (!nodes || (Array.isArray(nodes) && !nodes.length)) return '';
     if (nodes.token) return nodes.token; // single-node
-    return this.untokenize(nodes.map(n => n.token));
+    let sent = this.untokenize(nodes.map(n => n.token));
+    return sent.replace(MULTI_SP_RE, ' ');
   }
 
   _logError(tries, toks, msg) {
@@ -278,8 +312,8 @@ class RiMarkov {
   }
 }
 
-RiMarkov.SS = '<s>';
-RiMarkov.SE = '</s>';
+/* RiMarkov.SS = '<s>';
+RiMarkov.SE = '</s>'; */
 
 class Node {
 
@@ -303,7 +337,7 @@ class Node {
     const children = this.childNodes();
     const weights = children.map(n => n.count);
     const pdist = rand.ndist(weights);
-    return children[ rand.pselect(pdist) ];
+    return children[rand.pselect(pdist)];
   }
 
   isLeaf() { return this.childCount() < 1; }
@@ -318,13 +352,13 @@ class Node {
     return kids;
   }
 
-  childCount(excludeMetaTags) {
+  childCount(/* excludeMetaTags */) {
     if (this.numChildren === -1) {
       let sum = 0; // a sort of cache
       for (let k in this.children) {
-        if (excludeMetaTags && (k === RiMarkov.SS || k === RiMarkov.SE)) {
-          continue;
-        }
+        /*   if (excludeMetaTags && (k === RiMarkov.SS || k === RiMarkov.SE)) {
+            continue;
+          } */
         sum += this.children[k].count;
       }
       this.numChildren = sum;
@@ -408,9 +442,9 @@ function populate(objNode, jsonNode) {
 function RiTa() { return RiMarkov.parent; }
 
 function throwError(tries, oks) {
-  throw Error('\nFailed after ' + tries + ' tries'
+  throw Error('Failed after ' + tries + ' tries'
     + (oks ? ' and ' + oks.length + ' successes' : '')
-    + ', you may need to adjust options or add more text:\n');
+    + ', you may need to adjust options or add more text');
 }
 
 function isSubArray(find, arr) {
