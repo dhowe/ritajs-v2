@@ -28,11 +28,10 @@ class RiMarkov {
   }
 
   toJSON() {
-    let data = Object.keys(this).reduce
-      ((acc, k) => Object.assign(acc, { [k]: this[k] }), {})
-    let json = stringify(data);
-    return json;
+    return stringify(Object.keys(this).reduce
+      ((acc, k) => Object.assign(acc, { [k]: this[k] }), {}));
   }
+
 
   static fromJSON(json) {
 

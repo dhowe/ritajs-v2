@@ -369,12 +369,12 @@ describe('RiTa.RiMarkov', () => {
     }
 
     // All sequences of len=mlms+1 must NOT  be in text
-  /*   for (let j = 0; j <= toks.length - (mlms + 1); j++) {
-      let part = toks.slice(j, j + (mlms + 1));
-      let res = RiTa.untokenize(part);
-      ok(sample3.indexOf(res) < 0, 'Got "' + sent + '"\n\nBut "' 
-        + res + '" was found in input:\n\n' + sample + '\n\n' + rm.input);
-    } */
+    /*   for (let j = 0; j <= toks.length - (mlms + 1); j++) {
+        let part = toks.slice(j, j + (mlms + 1));
+        let res = RiTa.untokenize(part);
+        ok(sample3.indexOf(res) < 0, 'Got "' + sent + '"\n\nBut "' 
+          + res + '" was found in input:\n\n' + sample + '\n\n' + rm.input);
+      } */
   });
 
   it('should call generate.mlm.1', () => {
@@ -620,7 +620,7 @@ describe('RiTa.RiMarkov', () => {
   it('should call addText', () => {
     let rm = new RiMarkov(4);
     let sents = RiTa.sentences(sample);
-    let count = 0; 
+    let count = 0;
     for (let i = 0; i < sents.length; i++) {
       let words = RiTa.tokenize(sents[i]);
       count += words.length;
@@ -644,35 +644,66 @@ describe('RiTa.RiMarkov', () => {
 
 
   it('should call toString', () => {
-    let rm, exp;
-
-    rm = new RiMarkov(2);
-    exp = "ROOT {   'The' [1,p=0.333]  {     '</s>' [1,p=1.000]   }   '<s>' [1,p=0.333]  {     'The' [1,p=1.000]   }   '</s>' [1,p=0.333] }";
+    let rm = new RiMarkov(2);
     rm.addText('The');
-    let s = rm.toString();
-    console.log(s);
-return;
-    expect(exp).eq(rm.toString().replace(/\n/g, ' '));
+    expect(`ROOT {
+  'The' [1,p=1.000]
+}`).eq(rm.toString())
 
     rm = new RiMarkov(2);
-    exp = "ROOT {   'The' [1,p=0.143]  {     'dog' [1,p=1.000]   }   'the' [1,p=0.143]  {     'cat' [1,p=1.000]   }   'dog' [1,p=0.143]  {     'ate' [1,p=1.000]   }   'cat' [1,p=0.143]  {     '</s>' [1,p=1.000]   }   'ate' [1,p=0.143]  {     'the' [1,p=1.000]   }   '<s>' [1,p=0.143]  {     'The' [1,p=1.000]   }   '</s>' [1,p=0.143] }";
     rm.addText('The dog ate the cat');
-    //console.log(rm.toString());
-    expect(exp).eq(rm.toString().replace(/\n/g, ' '));
+    expect(`ROOT {
+  'The' [1,p=0.200]  {
+    'dog' [1,p=1.000]
+  }
+  'the' [1,p=0.200]  {
+    'cat' [1,p=1.000]
+  }
+  'dog' [1,p=0.200]  {
+    'ate' [1,p=1.000]
+  }
+  'cat' [1,p=0.200]
+  'ate' [1,p=0.200]  {
+    'the' [1,p=1.000]
+  }
+}`).eq(rm.toString());
 
     rm = new RiMarkov(2);
-    eq(rm.toString(), "ROOT ")
-    exp = "ROOT {\n  'you' [1,p=0.200]  {\n    '?' [1,p=1.000]\n  }\n  'Can' [1,p=0.200]  {\n    'you' [1,p=1.000]\n  }\n  '<s>' [1,p=0.200]  {\n    'Can' [1,p=1.000]\n  }\n  '</s>' [1,p=0.200]\n  '?' [1,p=0.200]  {\n    '</s>' [1,p=1.000]\n  }\n}"
+    eq(rm.toString(), "ROOT ");
+
     rm.addText("Can you?");
-    eq(rm.toString(), exp);
+    eq(rm.toString(), `ROOT {
+  'you' [1,p=0.333]  {
+    '?' [1,p=1.000]
+  }
+  'Can' [1,p=0.333]  {
+    'you' [1,p=1.000]
+  }
+  '?' [1,p=0.333]
+}`);
 
     eq(rm.root.toString(), "Root");
-    eq(rm.root.child("Can").toString(), "Can(1/0.200%)");
+    eq(rm.root.child("Can").toString(), "Can(1/0.333%)");
 
     rm = new RiMarkov(2);
     rm.addText("\\n and \\t and \\r and \\r\\n");
-    exp = "ROOT {\n  'and' [3,p=0.333]  {\n    '\\t' [1,p=0.333]\n    '\\r\\n' [1,p=0.333]\n    '\\r' [1,p=0.333]\n  }\n  '<s>' [1,p=0.111]  {\n    '\\n' [1,p=1.000]\n  }\n  '</s>' [1,p=0.111]\n  '\\t' [1,p=0.111]  {\n    'and' [1,p=1.000]\n  }\n  '\\r\\n' [1,p=0.111]  {\n    '</s>' [1,p=1.000]\n  }\n  '\\r' [1,p=0.111]  {\n    'and' [1,p=1.000]\n  }\n  '\\n' [1,p=0.111]  {\n    'and' [1,p=1.000]\n  }\n}";
-    eq(rm.toString(), exp);
+    eq(rm.toString(), `ROOT {
+  'and' [3,p=0.429]  {
+    '\\t' [1,p=0.333]
+    '\\r\\n' [1,p=0.333]
+    '\\r' [1,p=0.333]
+  }
+  '\\t' [1,p=0.143]  {
+    'and' [1,p=1.000]
+  }
+  '\\r\\n' [1,p=0.143]
+  '\\r' [1,p=0.143]  {
+    'and' [1,p=1.000]
+  }
+  '\\n' [1,p=0.143]  {
+    'and' [1,p=1.000]
+  }
+}`);
   });
 
   it('should call size', () => {
@@ -712,7 +743,7 @@ return;
     rm = new RiMarkov(4);
     let json = rm.toJSON();
     console.log(json);
-return;
+    return;
     copy = RiMarkov.fromJSON();
     markovEquals(rm, copy);
 
