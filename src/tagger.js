@@ -480,6 +480,17 @@ class Tagger {
         }
       }
 
+      // https://github.com/dhowe/rita/issues/148 
+      // "there"
+      if (word.toLowerCase() === "there") {
+        if (words[i + 1] && EX_BE.includes(words[i + 1])) {
+          tag = "ex";
+        }
+        if (i > 0 && result[i - 1] === "in") {
+          tag = "nn"
+        }
+      } 
+
       result[i] = tag;
     }
 
@@ -507,5 +518,6 @@ const ADJS = ['jj', 'jjr', 'jjs'];
 const ADVS = ['rb', 'rbr', 'rbs', 'rp'];
 const NOUNS = ['nn', 'nns', 'nnp', 'nnps'];
 const VERBS = ['vb', 'vbd', 'vbg', 'vbn', 'vbp', 'vbz'];
+const EX_BE = ["is", "are", "was", "were", "isn't", "aren't", "wasn't", "weren't"];
 
 export default Tagger;
