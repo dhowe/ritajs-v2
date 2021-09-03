@@ -71,7 +71,7 @@ class RiMarkov {
 
   generate(count, opts = {}) {
 
-    //this.trace = true;
+    this.trace = true;
 
     if (arguments.length === 1 && typeof count === 'object') {
       opts = count;
