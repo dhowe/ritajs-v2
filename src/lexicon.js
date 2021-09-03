@@ -43,23 +43,30 @@ class Lexicon {
   }
 
   isStem(word) {
-    let w = word;
-    while (w.length > 1) {
 
-      let guess = this.RiTa.search(new RegExp('^' + w), {limit: 999999});
-      if (!guess || guess.length < 1) {
-        w = w.slice(0, -1);
-        continue;
-      }
-      // always look for shorter words first
-      guess.sort((a, b) => a.length - b.length);
+    let part = word;
+    let dict = this._dict(true);
+    let words = Object.keys(dict);
 
-      // look for words stem(b)===a
-      for (let i = 0; i < guess.length; i++) {
-        if (this.RiTa.stem(guess[i]) === word) return true;
+    while (part.length > 1) {
+
+      let pattern = new RegExp('^' + part);
+      let guess = words.filter(w => pattern.test(w));
+      if (guess && guess.length) {
+
+        // always look for shorter words first
+        guess.sort((a, b) => a.length - b.length);
+
+        // look for words stem(b)===a
+        for (let i = 0; i < guess.length; i++) {
+          if (this.RiTa.stem(guess[i]) === word) {
+            return true;
+          }
+        }
       }
-      w = w.slice(0, -1);
+      part = part.slice(0, -1);
     }
+
     return false;
   }
 
