@@ -13,7 +13,7 @@ class RiMarkov {
     this.tokenize = opts.tokenize || RiTa().tokenize;
     this.untokenize = opts.untokenize || RiTa().untokenize;
     this.disableInputChecks = opts.disableInputChecks;
-    this.endSentencePattern = /[.?!]/;
+    this.endSentencePattern = '[.?!]';
     this.sentenceStarts = [];
 
     if (this.mlm && this.mlm < this.n) {
@@ -28,8 +28,9 @@ class RiMarkov {
   }
 
   toJSON() {
-    return stringify(Object.keys(this).reduce
-      ((acc, k) => Object.assign(acc, { [k]: this[k] }), {}));
+    let data = Object.keys(this).reduce
+      ((acc, k) => Object.assign(acc, { [k]: this[k] }), {});
+    return stringify(data);
   }
 
 
@@ -70,7 +71,7 @@ class RiMarkov {
 
   generate(count, opts = {}) {
 
-    this.trace = true;
+    //this.trace = true;
 
     if (arguments.length === 1 && typeof count === 'object') {
       opts = count;
@@ -82,6 +83,7 @@ class RiMarkov {
     const minLength = opts.minLength || 5;
     const maxLength = opts.maxLength || 35;
     let seed = opts.seed || opts.startTokens; // dep
+    let endSentenceRE = new RegExp(this.endSentencePattern);
     let result = [], tokens, tries = 0;
 
     let fail = (msg) => {
@@ -97,7 +99,7 @@ class RiMarkov {
       that.trace && console.log('-- OK', sent);
       result.push(sent);
       tokens = tokens.splice(-that.n);
-      console.log('post', that._flatten(tokens));
+      //console.log('post', that._flatten(tokens));
     }
 
     if (typeof seed === 'string') seed = this.tokenize(seed);
@@ -116,7 +118,7 @@ class RiMarkov {
         if (!next && fail('no next')) break; // possible if all children excluded
 
         tokens.push(next);
-        if (this.endSentencePattern.test(next.token)) {// === RiMarkov.SE) {
+        if (endSentenceRE.test(next.token)) {// === RiMarkov.SE) {
 
           tokens.pop();
           if (tokens.length >= minLength) {
