@@ -1,4 +1,5 @@
 import { RiTa, expect } from './before';
+import { parse, stringify, fromJSON, toJSON as tojson } from 'flatted';
 
 describe('RiTa.RiMarkov', () => {
 
@@ -14,12 +15,13 @@ describe('RiTa.RiMarkov', () => {
     Random = RiTa.randomizer;
   });
 
+
   it('should call RiMarkov', () => {
     let rm = RiTa.markov(3);
     ok(typeof rm === 'object');
     eq(rm.size(), 0);
 
-    //should throw when options conflict
+    // should throw when options conflict
     expect(() => { let rm = new RiMarkov(3, { maxLengthMatch: 2 }) }).to.throw();
   });
 
@@ -178,30 +180,59 @@ describe('RiTa.RiMarkov', () => {
   });
 
   it('should apply custom tokenizers', () => {
-    let text = '家安春夢家安春夢！家安春夢德安春夢？家安春夢安安春夢。';
-    let sentArray = text.match(/[^，；。？！]+[，；。？！]/g);
 
+    let sents = ['asdfasdf-', 'aqwerqwer+', 'asdfasdf*'];
     let tokenize = (sent) => sent.split("");
     let untokenize = (sents) => sents.join("");
 
     let rm = new RiMarkov(4, { tokenize, untokenize });
-    rm.addText(sentArray);
+    rm.addText(sents);
+    let result = rm.generate(5, { seed: 'as' });
+    console.log(result);
+
+    /* eq(result.length, 5);
+    result.forEach(r => ok(/^家[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'")); */
+  });
+
+  it('should apply custom chinese tokenizers ', () => {
+    let text = '家安春夢家安春夢！家安春夢德安春夢？家安春夢安安春夢。';
+    let sents = text.match(/[^，；。？！]+[，；。？！]/g);
+    
+    let tokenize = (sent) => sent.split("");
+    let untokenize = (sents) => sents.join("");
+
+    let rm = new RiMarkov(4, { tokenize, untokenize });
+    rm.addText(sents);
     let result = rm.generate(5, { seed: '家' });
-    //console.log(result);
 
     eq(result.length, 5);
     result.forEach(r => ok(/^家[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
   });
 
+  it('XX', () => {
+
+    let rm = new RiMarkov(4, { disableInputChecks: true });
+    rm.addText(RiTa.sentences(sample));
+
+    let sent = rm.generate(2);
+    console.log(sent);
+    ok(sent.length === 2);
+    ok(typeof sent[0] === 'string');
+    eq(sent[1][0], sent[1][0].toUpperCase());
+  });
+
   it('should call generate', () => {
-    //will not crash when n = 1
-    let rm = new RiMarkov(1);
+
+    // will not crash when n = 1
+    let rm;
+    rm = new RiMarkov(1);
     rm.addText(RiTa.sentences(sample));
     let res = rm.generate(2);
     eq(res.length, 2);
     ok(typeof res[0] === 'string' && res[0].length > 0);
     ok(typeof res[1] === 'string' && res[1].length > 0);
-    //with no count
+
+    // with no count
     rm = new RiMarkov(4, { disableInputChecks: true });
     rm.addText(RiTa.sentences(sample));
 
@@ -218,10 +249,12 @@ describe('RiTa.RiMarkov', () => {
     rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
     let sents = rm.generate(5);
+    //expect(1).eq(2);
+
     eq(sents.length, 5);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
-      //console.log(i + ") " + s);
+      console.log(i + ") " + s);
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
     }
@@ -245,22 +278,24 @@ describe('RiTa.RiMarkov', () => {
     eq(sents.length, 5);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
+      console.log(i + ") " + s);
+
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
       let num = RiTa.tokenize(s).length;
-      ok(num >= minLength && num <= maxLength);
+      expect(num >= minLength && num <= maxLength, (num + ' not within ' + minLength + '-' + maxLength)).to.be.true;
     }
-
+return;
     rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
       minLength = (3 + i), maxLength = (10 + i);
       let s = rm.generate({ minLength, maxLength });
-      //console.log(i+") "+s);
+      console.log(i+") "+s);
       ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
       let num = RiTa.tokenize(s).length;
-      ok(num >= minLength && num <= maxLength);
+      expect(num >= minLength && num <= maxLength, (num+' not within '+minLength+'-'+maxLength)).to.be.true;
     }
   });
 
@@ -739,27 +774,24 @@ describe('RiTa.RiMarkov', () => {
   });
 
   it('should serialize and deserialize', () => {
+
     let rm, copy;
-   /*  rm = new RiMarkov(4);
+    rm = new RiMarkov(4);
     let json = rm.toJSON();
     copy = RiMarkov.fromJSON(json);
     markovEquals(rm, copy);
-    
+
     rm = new RiMarkov(4, { disableInputChecks: 0 });
     rm.addText(['I ate the dog.']);
     copy = RiMarkov.fromJSON(rm.toJSON());
-    markovEquals(rm, copy); */
+    markovEquals(rm, copy);
 
     rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(['I ate the dog.']);
-    //copy = RiMarkov.fromJSON(rm.toJSON());
-    
-    //markovEquals(rm, copy);
-    console.log(rm.toString());
+    copy = RiMarkov.fromJSON(rm.toJSON());
+    markovEquals(rm, copy);
 
-    console.log(rm.generate());
-    // WORKING HERE: fails
-    //expect(copy.generate()).eql(rm.generate());
+    expect(copy.generate()).eql(rm.generate());
   });
 
   0 && it('Should output log with trace option', () => {
@@ -773,6 +805,7 @@ describe('RiTa.RiMarkov', () => {
   });
 
   /////////////////////////// helpers ////////////////////////////
+
   function distribution(res, dump) {
     let dist = {};
     for (var i = 0; i < res.length; i++) {
@@ -787,18 +820,25 @@ describe('RiTa.RiMarkov', () => {
     dump && console.log();
     return dist;
   }
+
   function markovEquals(rm, copy) {
-   false && Object.keys(rm) // check each non-object key
-      .filter(k => !/(root|input|sentenceStarts)/.test(k))
-      .forEach(k => console.log(k, '\n  ',rm[k],'\n  ',copy[k]));
+    false && Object.keys(rm) // check each non-object key
+      .filter(k => !/(root|input|sentenceStarts|sentenceEnds)/.test(k))
+      .forEach(k => console.log(k, '\n  ', rm[k], '\n  ', copy[k]));
     Object.keys(rm) // check each non-object key
-      .filter(k => !/(root|input|sentenceStarts)/.test(k))
+      .filter(k => !/(root|input|sentenceStarts|sentenceEnds)/.test(k))
       .forEach(k => expect(rm[k], 'failed on ' + k).eq(copy[k]));
+
     expect(rm.toString()).eq(copy.toString());
+    expect(rm.toJSON()).eq(copy.toJSON());
+
     expect(rm.root.toString()).eq(copy.root.toString());
-    expect(rm.sentenceStarts.toString()).eq(copy.sentenceStarts.toString());
     expect(rm.input).eql(copy.input);
     expect(rm.size()).eql(copy.size());
+
+    expect(rm.sentenceStarts.toString()).eq(copy.sentenceStarts.toString());
+    expect(rm.sentenceEnds.toString()).eq(copy.sentenceEnds.toString());
+
   }
   function eql(a, b, c) { expect(a).eql(b, c); }
   function eq(a, b, c) { expect(a).eq(b, c); }

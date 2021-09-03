@@ -3,7 +3,7 @@ import { RiTa, expect } from './before';
 describe('RiTa.Core', () => {
 
   it('Should have access to statics', () => {
-    //console.log(process.env.NODE_ENV, process.env.npm_package_version, RiTa.VERSION);
+    console.log(process.env.NODE_ENV, process.env.npm_package_version, RiTa.VERSION);
     if (typeof process === 'undefined') return; // TODO:
     if (process.env.NODE_ENV === 'dev') {
       eql(RiTa.VERSION, 'DEV');
