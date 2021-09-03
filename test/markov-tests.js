@@ -391,10 +391,14 @@ return;
 
   it('should generate across sentences', () => {
 
-    let mlms = 7, rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
+    let rm = new RiMarkov(3, { trace: 0 });
+    rm.addText(RiTa.sentences(sample));
+    rm.addText(RiTa.sentences(sample2));
     rm.addText(RiTa.sentences(sample3));
-    let sents = rm.generate(2).join(' ');
-    let toks = RiTa.tokenize(sents);
+    let sents = rm.generate(2);//.join(' ');
+    sents.forEach((s,i) => console.log(i,s));
+    //console.log(sents);
+    let toks = RiTa.tokenize(sents.join(' '));
 
     // All sequences of len=N are (by def.) in the input text
     for (let j = 0; j <= toks.length - rm.n; j++) {
