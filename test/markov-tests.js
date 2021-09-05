@@ -1,5 +1,4 @@
 import { RiTa, expect } from './before';
-import { parse, stringify, fromJSON, toJSON as tojson } from 'flatted';
 
 describe('RiTa.RiMarkov', () => {
 
@@ -406,14 +405,6 @@ return;
       let res = RiTa.untokenize(part);
       ok(sample3.indexOf(res) > -1, 'output not found in text: "' + res + '"');
     }
-
-    // All sequences of len=mlms+1 must NOT  be in text
-    /*   for (let j = 0; j <= toks.length - (mlms + 1); j++) {
-        let part = toks.slice(j, j + (mlms + 1));
-        let res = RiTa.untokenize(part);
-        ok(sample3.indexOf(res) < 0, 'Got "' + sent + '"\n\nBut "' 
-          + res + '" was found in input:\n\n' + sample + '\n\n' + rm.input);
-      } */
   });
 
   it('should call generate.mlm.1', () => {
