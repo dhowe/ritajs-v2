@@ -4,6 +4,9 @@ describe('RiTa.Conjugator', () => {
 
   it('Should call pastPart', () => {
 
+    equal(RiTa.pastPart("pen"), "penned"); // rita #150
+    equal(RiTa.pastPart("red"), "red");
+
     equal(RiTa.pastPart("sleep"), "slept");
     equal(RiTa.pastPart("withhold"), "withheld");
 

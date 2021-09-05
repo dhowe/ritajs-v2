@@ -307,6 +307,7 @@ class Conjugator {
 
       let pos = lex._posArr(w.substring(0, w.length - 1)) // created
         || lex._posArr(w.substring(0, w.length - 2));     // played
+        
       if (!pos && w.charAt(w.length - 3) === w.charAt(w.length - 4)) {
         pos = lex._posArr(w.substring(0, w.length - 3)); // hopped
       }
