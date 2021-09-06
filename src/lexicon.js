@@ -60,14 +60,14 @@ class Lexicon {
         // look for words stem(b)===a
         for (let i = 0; i < guess.length; i++) {
           if (this.RiTa.stem(guess[i]) === word) {
-            return true;
+            return guess[i];
           }
         }
       }
       part = part.slice(0, -1);
     }
 
-    return false;
+    return undefined;
   }
 
   alliterations(theWord, opts = {}) {

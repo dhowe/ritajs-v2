@@ -401,9 +401,10 @@ class Conjugator {
     }
 
     let w = word;
+    let allVerb = this.RiTa.search({ pos: 'v', limit: 999999});
     while (w.length > 1) {
-
-      let guess = this.RiTa.search(new RegExp('^' + w), { pos: 'v' });
+      let pattern = new RegExp("^" + w);
+      let guess = allVerb.filter(item => pattern.test(item));
       if (!guess || guess.length < 1) {
         w = w.slice(0, -1);
         continue;
