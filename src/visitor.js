@@ -81,7 +81,7 @@ class Visitor extends RiScriptParserVisitor {
   }
 
   visitChoice(ctx) {
-
+   
     let text = ctx.getText().replace(TX_RE, '');
     let choice = this.choices[text];
     if (!choice) {
@@ -408,6 +408,7 @@ class ChoiceState {
   }
 
   selectNoRepeat() {
+    if (this.options.length === 1) return this.options[0];
     let cand;
     do {
       cand = this.rand.random(this.options);

@@ -41,6 +41,14 @@ describe('RiTa.RiScript', function () {
       expect(fail).false;
     });
 
+    it('Should support single norepeat choices', () => { // FIX FOR rita#157
+      let res;
+      for (let i = 0; i < 10; i++) {
+        res = RiTa.evaluate("$b $b.nr", { '$$b': '(a (b | c | d) e).nr' }, { trace: 0 });
+        //console.log(i,res);
+      }
+      expect(/a[ bdca]+e/.test(res)).true;
+    });
 
     it('Should support norepeat symbol transforms', () => {
       let fail = false;
