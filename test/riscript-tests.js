@@ -47,7 +47,7 @@ describe('RiTa.RiScript', function () {
         res = RiTa.evaluate("$b $b.nr", { '$$b': '(a (b | c | d) e).nr' }, { trace: 0 });
         //console.log(i,res);
       }
-      expect(/a[ bdca]+e/.test(res)).true;
+      expect(/a[ bdcae]+e/.test(res)).true;
     });
 
     it('Should support norepeat symbol transforms', () => {

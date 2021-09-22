@@ -395,6 +395,8 @@ class ChoiceState {
 
   select(txStr) {
     if (!this.options.length) throw Error('no options');
+    if (this.options.length === 1) return this.options[0];
+
     let res;
     /*  if (this.type == SEQUENCE) res = this.selectSequence();
         if (this.type == RSEQUENCE) res = this.selectRandSequence(); */
@@ -408,7 +410,6 @@ class ChoiceState {
   }
 
   selectNoRepeat() {
-    if (this.options.length === 1) return this.options[0];
     let cand;
     do {
       cand = this.rand.random(this.options);
