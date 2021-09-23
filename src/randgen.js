@@ -52,6 +52,7 @@ class SeededRandom {
     probability distribution (with probabilities summing to 1)
   */
   pselect(probs) {
+    if (!probs || !probs.length) throw Error('arg required');
     let point = this._rndf(), cutoff = 0;
     for (let i = 0; i < probs.length - 1; ++i) {
       cutoff += probs[i];
@@ -61,7 +62,7 @@ class SeededRandom {
   }
 
   /*
-   *  Returns the selected index from a probability distribution
+   * Returns the selected index from a probability distribution
    * (probabilities do NOT need to sum to 1)
    * TODO: test (more general version)
    */

@@ -1,18 +1,24 @@
-import { parse, stringify } from 'flatted';
+import { parse, stringify/*  fromJSON, toJSON */ } from 'flatted';
 
 class RiMarkov {
 
   constructor(n, opts = {}) {
+
     this.n = n;
     this.root = new Node(null, 'ROOT');
 
     this.trace = opts.trace;
     this.mlm = opts.maxLengthMatch;
     this.maxAttempts = opts.maxAttempts || 999;
-    
+
     this.tokenize = opts.tokenize || RiTa().tokenize;
     this.untokenize = opts.untokenize || RiTa().untokenize;
     this.disableInputChecks = opts.disableInputChecks;
+
+    //this.endSentencePattern = '[.?!]';
+    //this.sentenceEnds = '[.?!]';//['.', '?', '!'];
+    this.sentenceStarts = []; // allow duplicates
+    this.sentenceEnds = new Set(); // no duplicates    
 
     if (this.mlm && this.mlm < this.n) {
       throw Error('maxLengthMatch(mlm) must be >= N');
@@ -20,27 +26,9 @@ class RiMarkov {
 
     // we store inputs to verify we don't duplicate sentences
     if (!this.disableInputChecks || this.mlm) this.input = [];
-  }
 
-  toJSON() {
-    return stringify(Object.keys(this).reduce
-      ((acc, k) => Object.assign(acc, { [k]: this[k] }), {}));
-  }
-
-  static fromJSON(json) {
-
-    // parse the json and merge with new object
-    let parsed = parse(json);
-    let rm = Object.assign(new RiMarkov(), parsed);
-
-    // handle json converting undefined [] to empty []
-    if (!parsed.input) rm.input = undefined;
-
-    // then recreate the n-gram tree with Node objects
-    let jsonRoot = rm.root;
-    populate(rm.root = new Node(null, 'ROOT'), jsonRoot);
-
-    return rm;
+    // add text if supplied as opt SYNC:
+    if (opts.text) this.addText(opts.text);
   }
 
   addText(text, multiplier = 1) {
@@ -48,38 +36,117 @@ class RiMarkov {
     let sents = Array.isArray(text) ? text : RiTa().sentences(text);
 
     // add new tokens for each sentence start/end
-    let tokens = [];
+    let allWords = [];
     for (let k = 0; k < multiplier; k++) {
       for (let i = 0; i < sents.length; i++) {
         //let sentence = sentences[i].replace(/\s+/, ' ').trim();
         let words = this.tokenize(sents[i]);
-        tokens.push(RiMarkov.SS, ...words, RiMarkov.SE);
+        this.sentenceStarts.push(words[0]);
+        this.sentenceEnds.add(words[words.length - 1]);
+        allWords.push(...words);
       }
-      this.treeify(tokens);
+      //console.log('treeify: ',JSON.stringify(allWords).replace(/"/g,''));
+      this.treeify(allWords);
     }
 
-    if (!this.disableInputChecks || this.mlm) this.input.push(...tokens);
+    if (!this.disableInputChecks || this.mlm) this.input.push(...allWords);
   }
 
   generate(count, opts = {}) {
-
+    
     if (arguments.length === 1 && typeof count === 'object') {
       opts = count;
       count = null;
     }
 
+    const self = this;
     const num = count || 1;
-    const temp = opts.temperature;
+    const strict = opts.strict;
     const minLength = opts.minLength || 5;
     const maxLength = opts.maxLength || 35;
-    let seed = opts.seed || opts.startTokens; // dep
+    let seed = opts.seed || opts.startTokens; // startTokens is deprecated
+    let tokens, tries = 0, cursor = 0, softFails, hardFails, result = [];
 
-    let result = [], tokens, tries = 0;
-    let fail = (msg) => {
-      this._logError(++tries, tokens, msg);
-      if (tries >= this.maxAttempts) throwError(tries);
-      tokens = undefined;
+    // store only tokens (is this still correct?)
+    // cursor (start=0) is where we have generated to successfully
+    // on fail we splice back to cursor and retry
+    // on hard=fail we clear tokens and set cursor = 0 (use history?)
+    // on success: update cursor, add sent to result
+    // if (result.length === num) return;
+
+    let fail = (msg) => { // TODO: fix, this is awful
+
+      tries++;
+      softFails = softFails || {};
+      hardFails = hardFails || {};
+
+      //toks = (toks || tokens).slice(cursor);
+
+      let toks = tokens.slice(cursor);
+
+      this.trace && console.log('FAIL#' + tries
+        + (msg ? ' (' + msg + ')' : '') + ': "'
+        + this._flatten(toks) + '" cursor=' + cursor);
+
+      if (tries >= this.maxAttempts) throwError(tries, result);
+      //console.log('LAST: ', tokens[tokens.length - 1].token);
+
+      // fail() CASES: 
+      // result=0: hard restart
+      // result>0: 
+      // if numFails < 5: 
+      //   refresh, same first word
+      // if numFails > 5
+      //   refresh, new first word
+      //   if strict then hard-restart
+
+      let reset = function () {
+        cursor = 0;
+        let num = result.length;
+        result = []; // clear results
+        softFails = {}; // clear fails
+        hardFails = {};
+        self.trace && console.log('RESET #' + tries + ' (with ' + num + ' results)\n');
+        tokens = self._initSentence(seed);
+        return 1;
+      }
+
+      if (!result.length || msg.startsWith('at-input-end')) { // TMP HACK
+        return reset(self);
+      }
+
+      let failFlat = this._flatten(toks);
+      if (!softFails.hasOwnProperty(failFlat)) softFails[failFlat] = 0;
+      if (!hardFails.hasOwnProperty(failFlat)) hardFails[failFlat] = 0;
+
+      if (++softFails[failFlat] < 5) { // less than 5 numFails
+
+        tokens = tokens.slice(0, cursor + 1);
+        this.trace && console.log('SOFT-REFRESH(keep first word='
+          + tokens[tokens.length - 1].token + ') numFails='
+          + softFails[failFlat] + ' tries=' + tries);
+        return 1;
+      }
+
+      if (++hardFails[failFlat] < 5) {  // >= 5 numFails
+        softFails[failFlat] = 0;
+        tokens = tokens.slice(0, cursor);
+        this.trace && console.log('HARD-REFRESH (new first word) numFails=' + hardFails[failFlat] + ' tries=' + tries);
+        return 1;
+      }
+      else if (!strict) {
+        this.trace && console.log('numFails=' + hardFails[failFlat] + ' tries=' + tries);
+        return reset(this); // > 5 
+      }
+
       return 1;
+
+    } // end fail
+
+    let success = (sent) => {
+      cursor = tokens.length;
+      result.push(sent);
+      self.trace && console.log('OK* (' + result.length + ')', sent, '\n');
     }
 
     if (typeof seed === 'string') seed = this.tokenize(seed);
@@ -89,41 +156,80 @@ class RiMarkov {
       tokens = tokens || this._initSentence(seed);
       if (!tokens) throw Error('No sentence starts with: "' + seed + '"');
 
-      while (tokens && tokens.length < maxLength) {
+      let numWords = tokens.length - cursor;
+      while (numWords < maxLength) {
 
-        let parent = this._pathTo(tokens);
-        if ((!parent || parent.isLeaf()) && fail('no parent')) break;
+        let parent = this._pathTo(tokens); // end of last sentence ?
+        if ((!parent || parent.isLeaf()) && fail('at-input-end("' + this._flatten(tokens) + '")')) break;
 
-        let next = this._selectNext(parent, temp, tokens);
-        if (!next && fail('no next')) break; // possible if all children excluded
+        let next = this._selectNext(parent, opts.temperature, tokens);
+        if (!next) {
+          fail('mlm: "' + this._flatten(tokens) + '"');
+          break; // possible if all children excluded due to mlm
+        }
 
         tokens.push(next);
-        if (next.token === RiMarkov.SE) {
+        numWords = tokens.length - cursor;
 
-          tokens.pop();
-          if (tokens.length >= minLength) {
+        //console.log(numWords, next.token); // print every token
 
-            let rawtoks = tokens.map(t => t.token); // to string array
+        if (this.sentenceEnds.has(next.token)) { // sentence-end
 
-            // Here we check if the output sentence occurs in the input
-            if (!this.disableInputChecks && isSubArray(rawtoks, this.input)) {
-               fail('in input'); 
-               break;
-            }
+          if (numWords < minLength) {
+            fail('too short'); break;
+          }
 
-            let sent = this._flatten(tokens);
-            if (!opts.allowDuplicates && result.includes(sent) && fail('is dup')) break;
-            this.trace && console.log('-- OK', sent.replace(MULTI_SP_RE, ' '));
-            result.push(sent.replace(MULTI_SP_RE, ' '));
+          let sentokens = tokens.slice(cursor);
+          let rawtoks = sentokens.map(t => t.token); // to string array
+          this.trace && console.log("CHECK? " + this._flatten(sentokens));
+
+          if (!this.disableInputChecks && isSubArray(rawtoks, this.input)) {
+            fail('in input');
             break;
           }
-          if (fail('too short')) break;
+
+          let sent = this._flatten(sentokens);
+          if (!opts.allowDuplicates && result.includes(sent) && fail('duplicate')) break;
+          success(sent);
+          break;
         }
       }
-      if (tokens && tokens.length >= maxLength) fail('too long');
+
+      if (tokens) {
+        numWords = tokens.length - cursor;
+        if (numWords >= maxLength) {
+          fail('too long');
+        }
+      }
     }
 
-    return typeof count === 'number' ? result : result[0];
+    return (typeof count === 'number') ? result : result[0];
+  }
+
+  toJSON() {
+    let data = Object.keys(this).reduce
+      ((acc, k) => Object.assign(acc, { [k]: this[k] }), {});
+    data.sentenceEnds = [...data.sentenceEnds]; // set -> []
+    return stringify(data);
+  }
+
+  static fromJSON(json) {
+
+    // parse the json and merge with new object
+    let parsed = parse(json);
+    let rm = Object.assign(new RiMarkov(), parsed);
+
+    // convert our json array back to a set
+    rm.sentenceEnds = new Set(...parsed.sentenceEnds);
+
+    // handle json converting undefined [] to empty []
+    if (!parsed.input) rm.input = undefined;
+
+    // then recreate the n-gram tree with Node objects
+    let jsonRoot = rm.root;
+    populate(rm.root = new Node(null, 'ROOT'), jsonRoot);
+
+    return rm;
   }
 
   /* returns array of possible tokens after pre and (optionally) before post */
@@ -192,9 +298,11 @@ class RiMarkov {
     }
 
     const validateMlms = (word, nodes) => {
-      let check = nodes.slice().map(n => n.token);
-      check.push(word.token); // string
-      return !isSubArray(check.slice(-(this.mlm + 1)), this.input);
+      let check = nodes.slice(-this.mlm).map(n => n.token);
+      check.push(word.token);
+      let res = !isSubArray(check, this.input);
+      //console.log('validateMlms: ' + sub, '->', res);
+      return res;
     }
 
     const rand = RiMarkov.parent.randomizer;
@@ -204,25 +312,35 @@ class RiMarkov {
     const tries = children.length * 2;
     const selector = rand.random();
 
-    // loop 2x here as selector may skip earlier nodes
+    /* console.log('selectNext:'+
+      this._flatten(tokens.slice(this.cursor, tokens.length)), 
+      children.length, this._flatten(children)); */
+
+    // loop 2x here as we may skip earlier nodes
+    // but keep track of the tries to avoid dups
+    const tried = [];
     for (let i = 0, pTotal = 0; i < tries; i++) {
       let idx = i % children.length;
       pTotal += pdist[idx];
       let next = children[idx];
-      if (selector < pTotal && validateMlms(next, tokens)) {
-        return next;
+      //console.log('  try#' + idx + ': ' + next.token);
+      if (selector < pTotal) {
+        if (!tried.includes(next.token)) {
+          tried.push(next.token);
+          if (validateMlms(next, tokens)) {
+            return next;
+          }
+        }
       }
     }
-    return undefined;
   }
 
   _initSentence(initWith, root) {
 
     root = root || this.root;
 
-    let tokens = this.n < 2 ? [root.pselect()] : [root.child(RiMarkov.SS).pselect()];
+    let tokens = [];
     if (initWith) {
-      tokens = [];
       let st = this._pathTo(initWith, root);
       if (!st) return false; // fail
       while (!st.isRoot()) {
@@ -230,6 +348,11 @@ class RiMarkov {
         st = st.parent;
       }
     }
+    else {
+      let first = RiTa().random(this.sentenceStarts);
+      tokens.push(root.child(first));
+    }
+    this.trace && console.log('\nSTART "' + this._flatten(tokens) + '"');
     return tokens;
   }
 
@@ -238,16 +361,18 @@ class RiMarkov {
    * the node for the last element if it exists, otherwise undefined
    * @param  {string[]} path
    * @param  {node} root of tree to search
-   * @return {Node} or undefined
+   * @return {node} or undefined
    */
   _pathTo(path, root) {
     root = root || this.root;
+    if (typeof path === 'string') path = [path];
     if (!path || !path.length || this.n < 2) return root;
     let idx = Math.max(0, path.length - (this.n - 1));
     let node = root.child(path[idx++]);
     for (let i = idx; i < path.length; i++) {
       if (node) node = node.child(path[i]);
     }
+    //console.log('_pathTo(' + RiTa().untokenize(path) + ') => '+(node ? node.token : 'undefined'));
     return node; // can be undefined
   }
 
@@ -268,18 +393,15 @@ class RiMarkov {
   /* create a sentence string from an array of nodes */
   _flatten(nodes) {
     if (!nodes || (Array.isArray(nodes) && !nodes.length)) return '';
-    if (nodes.token) return nodes.token; // single-node
-    return this.untokenize(nodes.map(n => n.token));
+    if (nodes.token) return nodes.token; // single-node 
+    let sent = this.untokenize(nodes.map(n => n ? n.token : typeof n));
+    return sent.replace(MULTI_SP_RE, ' ');
   }
 
-  _logError(tries, toks, msg) {
-    this.trace && console.log(tries + ' FAIL' +
-      (msg ? '(' + msg + ')' : '') + ': ' + this._flatten(toks));
-  }
 }
 
-RiMarkov.SS = '<s>';
-RiMarkov.SE = '</s>';
+/* RiMarkov.SS = '<s>';
+RiMarkov.SE = '</s>'; */
 
 class Node {
 
@@ -303,7 +425,8 @@ class Node {
     const children = this.childNodes();
     const weights = children.map(n => n.count);
     const pdist = rand.ndist(weights);
-    return children[ rand.pselect(pdist) ];
+    const idx = rand.pselect(pdist);
+    return children[idx];
   }
 
   isLeaf() { return this.childCount() < 1; }
@@ -318,13 +441,13 @@ class Node {
     return kids;
   }
 
-  childCount(excludeMetaTags) {
+  childCount(/* excludeMetaTags */) {
     if (this.numChildren === -1) {
       let sum = 0; // a sort of cache
       for (let k in this.children) {
-        if (excludeMetaTags && (k === RiMarkov.SS || k === RiMarkov.SE)) {
-          continue;
-        }
+        /*   if (excludeMetaTags && (k === RiMarkov.SS || k === RiMarkov.SE)) {
+            continue;
+          } */
         sum += this.children[k].count;
       }
       this.numChildren = sum;
@@ -351,9 +474,9 @@ class Node {
     return node;
   }
 
-  toString() { // TODO: add opt to skip SE/SS
-    return this.parent ? this.token + '(' + this.count +
-      '/' + this.nodeProb().toFixed(3) + '%)' : 'Root'
+  toString() {
+    return this.parent ? '\'' + this.token + '\' [' + this.count
+      + ',p=' + this.nodeProb().toFixed(3) + ']' : 'Root'
   }
 
   asTree(sort) {
@@ -408,9 +531,9 @@ function populate(objNode, jsonNode) {
 function RiTa() { return RiMarkov.parent; }
 
 function throwError(tries, oks) {
-  throw Error('\nFailed after ' + tries + ' tries'
+  throw Error('Failed after ' + tries + ' tries'
     + (oks ? ' and ' + oks.length + ' successes' : '')
-    + ', you may need to adjust options or add more text:\n');
+    + ', you may need to adjust options or add more text');
 }
 
 function isSubArray(find, arr) {

@@ -1,30 +1,49 @@
+import { assert } from 'chai';
 import { RiTa, expect } from './before';
 
 describe('RiTa.RiMarkov', () => {
+
+  // TODO: optimize selectNext
+  // remove hard/soft fails, replace with mark children
 
   let RiMarkov, Random;
   let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
   let sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself. After all, I did occasionally want to be embarrassed.";
   let sample3 = sample + ' One reason people are dishonest is to achieve power.';
 
-  before(function() {
+  before(function () {
     while (!RiTa) {
     }
     RiMarkov = RiTa.RiMarkov;
     Random = RiTa.randomizer;
   });
 
+
   it('should call RiMarkov', () => {
-    ok(typeof new RiMarkov(3) !== 'undefined');
-    //should throw when options conflict
+    let rm = RiTa.markov(3);
+    ok(typeof rm === 'object');
+    eq(rm.size(), 0);
+
+    // should throw when options conflict
     expect(() => { let rm = new RiMarkov(3, { maxLengthMatch: 2 }) }).to.throw();
   });
 
-  it('should call createRiMarkov', () => {
-    ok(typeof RiTa.markov(3) !== 'undefined');
+  it('should call RiTa.markov', () => {
+    let rm = RiTa.markov(3);
+    ok(typeof rm === 'object');
+    eq(rm.size(), 0);
+
+    rm = RiTa.markov(3, { text: "The dog ran away" });
+    eq(rm.size(), 4);
   });
 
   it('should call Random.pSelect', () => {
+    // should throw when options conflict
+    expect(() => { Random.pselect() }).to.throw();
+    expect(Random.pselect([1])).equal(0);
+
+    //console.log(res)
+    //////////////////////////////////////////
     let weights = [1.0, 2, 6, -2.5, 0];
     let expected = [2, 2, 1.75, 1.55];
     let temps = [.5, 1, 2, 10];
@@ -43,14 +62,13 @@ describe('RiTa.RiMarkov', () => {
     expect(results[i = 2], 'failed #' + i + ' temp=' + temps[i]).to.be.closeTo(expected[i], .4);
     expect(results[i = 3], 'failed #' + i + ' temp=' + temps[i]).to.be.closeTo(expected[i], 1);
     //expect(results[i = 4], 'failed #' + i + ' temp=' + temps[i]).to.be.closeTo(expected[i], .75);
-  });
 
-  it('Should call Random.pSelect2', () => { 
     let distr = [[1, 2, 3, 4], [0.1, 0.2, 0.3, 0.4], [0.2, 0.3, 0.4, 0.5]];
-    let expected = [3, 0.3, 0.3857]; //should pselect2 return index or return the value (which is what is returned now)
+    expected = [3, 0.3, 0.3857];
+    //should pselect2 return index or return the value (which is what is returned now)
     for (let k = 0; k < 10; k++) {
-      let results = []
-      distr.forEach(sm => { 
+      let results = [];
+      distr.forEach(sm => {
         let sum = 0;
         for (let j = 0; j < 1000; j++) {
           sum += Random.pselect2(sm);
@@ -119,10 +137,8 @@ describe('RiTa.RiMarkov', () => {
   // });
 
   it('should call initSentence', () => { // remove?
-    let rm, txt;
-    rm = new RiMarkov(4);
-    txt = "The young boy ate it. The fat boy gave up.";
-    rm.addText(txt);
+    let rm = new RiMarkov(4);
+    rm.addText("The young boy ate it. The fat boy gave up.");
     let toks = rm._initSentence();
     eq(toks.length, 1);
     eq(rm._flatten(toks), "The");
@@ -134,22 +150,51 @@ describe('RiTa.RiMarkov', () => {
 
     rm = new RiMarkov(4);
     rm.addText(RiTa.sentences(sample));
-    eq(rm._flatten(rm._initSentence('I')), "I");
+    eq(rm._flatten(rm._initSentence(['I'])), "I");
     eq(rm._flatten(), "");
   });
 
+  it('should throw on generate for empty model', () => {
+    let rm = new RiMarkov(4, { maxLengthMatch: 6 });
+    expect(() => rm.generate(5)).to.throw;
+  });
+
   it('should throw on failed generate', () => {
-    let rm = new RiMarkov(4);
+    let rm = new RiMarkov(4, { maxLengthMatch: 6 });
     rm.addText(RiTa.sentences(sample));
     expect(() => rm.generate(5)).to.throw;
 
     rm = new RiMarkov(4, { maxLengthMatch: 5 });
     rm.addText(RiTa.sentences(sample));
     expect(() => rm.generate(5)).to.throw;
-    
+
     rm = new RiMarkov(4, { maxAttempts: 1 });
     rm.addText("This is a text that is too short.");
     expect(() => rm.generate(5)).to.throw;
+  });
+
+  it('should apply custom tokenizers', () => {
+
+    let sents = ['asdfasdf-', 'aqwerqwer+', 'asdfasdf*'];
+    let tokenize = (sent) => sent.split("");
+    let untokenize = (sents) => sents.join("");
+
+    let rm = new RiMarkov(4, { tokenize, untokenize });
+    rm.addText(sents);
+
+    eql(rm.sentenceStarts, ['a', 'a', 'a']);
+    expect(rm.sentenceEnds.size === 3).true;
+    expect(rm.sentenceEnds.has('-')).true;
+    expect(rm.sentenceEnds.has('+')).true;
+    expect(rm.sentenceEnds.has('*')).true;
+    //rm.trace=1;
+    let result = rm.generate(5, { seed: 'as' });
+    /*     for (let i = 0; i < result.length; i++) {
+          console.log(i, result[i]);
+        } */
+
+    eq(result.length, 5);
+    ok(/^as.*[-=*]$/.test(result[0]), "FAIL: '" + result[0] + "'");
   });
 
   it('should generate non-english sentences', () => {
@@ -160,34 +205,50 @@ describe('RiTa.RiMarkov', () => {
     rm.addText(sentArray);
     let result = rm.generate(5, { seed: '家' });
     eq(result.length, 5);
-    result.forEach(r => ok(/^家[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
+    expect(/^[^，；。？！]+[，；。？！]$/.test(result[0]), "FAIL: '" + result[0] + "'").is.true;
+    result.forEach(r => ok(/^[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
   });
 
-  it('should apply custom tokenizers', () => {
+  it('should apply custom chinese tokenizers ', () => {
     let text = '家安春夢家安春夢！家安春夢德安春夢？家安春夢安安春夢。';
-    let sentArray = text.match(/[^，；。？！]+[，；。？！]/g);
+    let sents = text.match(/[^，；。？！]+[，；。？！]/g);
 
     let tokenize = (sent) => sent.split("");
     let untokenize = (sents) => sents.join("");
 
     let rm = new RiMarkov(4, { tokenize, untokenize });
-    rm.addText(sentArray);
+    rm.addText(sents);
     let result = rm.generate(5, { seed: '家' });
-    //console.log(result);
 
     eq(result.length, 5);
-    result.forEach(r => ok(/^家[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
+    expect(/^[^，；。？！]+[，；。？！]$/.test(result[0]), "FAIL: '" + result[0] + "'").is.true;
+    result.forEach(r => ok(/^[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
   });
 
+  /*   it('XX', () => {
+  
+      let rm = new RiMarkov(4, { disableInputChecks: true });
+      rm.addText(RiTa.sentences(sample));
+  
+      let sent = rm.generate(2);
+      console.log(sent);
+      ok(sent.length === 2);
+      ok(typeof sent[0] === 'string');
+      eq(sent[1][0], sent[1][0].toUpperCase());
+    });
+   */
   it('should call generate', () => {
-    //will not crash when n = 1
-    let rm = new RiMarkov(1);
+
+    // will not crash when n = 1
+    let rm;
+    rm = new RiMarkov(1);
     rm.addText(RiTa.sentences(sample));
     let res = rm.generate(2);
     eq(res.length, 2);
     ok(typeof res[0] === 'string' && res[0].length > 0);
     ok(typeof res[1] === 'string' && res[1].length > 0);
-    //with no count
+
+    // with no count
     rm = new RiMarkov(4, { disableInputChecks: true });
     rm.addText(RiTa.sentences(sample));
 
@@ -204,6 +265,8 @@ describe('RiTa.RiMarkov', () => {
     rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
     let sents = rm.generate(5);
+    //expect(1).eq(2);
+
     eq(sents.length, 5);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
@@ -226,27 +289,30 @@ describe('RiTa.RiMarkov', () => {
 
     let rm = new RiMarkov(4, { disableInputChecks: 1 }), minLength = 7, maxLength = 20;
     rm.addText(RiTa.sentences(sample));
-
     let sents = rm.generate(5, { minLength, maxLength });
     eq(sents.length, 5);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
+      //console.log(i + ") " + s);
+
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
       let num = RiTa.tokenize(s).length;
-      ok(num >= minLength && num <= maxLength);
+      expect(num >= minLength && num <= maxLength, (num + ' not within ' + minLength + '-' + maxLength)).to.be.true;
     }
+
+    return;
 
     rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
       minLength = (3 + i), maxLength = (10 + i);
       let s = rm.generate({ minLength, maxLength });
-      //console.log(i+") "+s);
+      //console.log(i + ") " + s);
       ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
       let num = RiTa.tokenize(s).length;
-      ok(num >= minLength && num <= maxLength);
+      expect(num >= minLength && num <= maxLength, (num + ' not within ' + minLength + '-' + maxLength)).to.be.true;
     }
   });
 
@@ -340,13 +406,31 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
+  it('should generate across sentences', () => {
+
+    let rm = new RiMarkov(3, { trace: 0 });
+    rm.addText(RiTa.sentences(sample2));
+
+    let sents = rm.generate(3, { strict: true });
+    //sents.forEach((s, i) => console.log(i, s));
+    let toks = RiTa.tokenize(sents.join(' '));
+
+    // All sequences of len=N are (by def.) in the input text
+    for (let j = 0; j <= toks.length - rm.n; j++) {
+      let part = toks.slice(j, j + rm.n);
+      let res = RiTa.untokenize(part);
+      ok(sample2.indexOf(res) > -1, 'output not found in text: "' + res + '"\n' + sample2);
+    }
+  });
 
   it('should call generate.mlm', () => {
 
-    let mlms = 7, rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
+    let mlms = 8, rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
     expect(typeof rm.input === 'object').to.be.true;
     rm.addText(RiTa.sentences(sample3));
-    let sents = rm.generate(5);
+    //rm.trace = true;
+
+    let sents = rm.generate(3);
     for (let i = 0; i < sents.length; i++) {
       let sent = sents[i];
       let toks = RiTa.tokenize(sent);
@@ -363,15 +447,16 @@ describe('RiTa.RiMarkov', () => {
       for (let j = 0; j <= toks.length - (mlms + 1); j++) {
         let part = toks.slice(j, j + (mlms + 1));
         let res = RiTa.untokenize(part);
-        ok(sample3.indexOf(res) < 0, 'Got "' + sent + '"\n\nBut "' + res + '" was found in input:\n\n' + sample + '\n\n' + rm.input);
+        ok(sample3.indexOf(res) < 0, 'Got "' + sent + '"\n\nBut "'
+          + res + '" was found in input:\n\n' + sample + '\n\n' + rm.input);
       }
     }
-    
+
     mlms = 9
     rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
     expect(typeof rm.input === 'object').to.be.true;
     rm.addText(RiTa.sentences(sample2));
-    sents = rm.generate(5);
+    sents = rm.generate(3);
     for (let i = 0; i < sents.length; i++) {
       let sent = sents[i];
       let toks = RiTa.tokenize(sent);
@@ -450,7 +535,7 @@ describe('RiTa.RiMarkov', () => {
 
     res = rm.completions(['I', 'non-exist'], ['want']);
     eq(res, undefined);
-    
+
     RiTa.SILENT = tmp;
   });
 
@@ -584,20 +669,17 @@ describe('RiTa.RiMarkov', () => {
   it('should call addText', () => {
     let rm = new RiMarkov(4);
     let sents = RiTa.sentences(sample);
-    let count = sents.length; // sentence-end tokens
+    let count = 0;
     for (let i = 0; i < sents.length; i++) {
       let words = RiTa.tokenize(sents[i]);
       count += words.length;
     }
     rm.addText(sents);
 
-    eq(rm.size(), count + sents.length);
+    eq(rm.size(), count);
 
-    let ss = rm.root.child(RiMarkov.SS);
-    eql(Object.keys(ss.children), ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although']);
-
-    let se = rm.root.child(RiMarkov.SE);
-    eql(Object.keys(se.children), [RiMarkov.SS]);
+    // unique sentence starts
+    eql([...new Set(rm.sentenceStarts)], ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although']);
   });
 
   it('should call Node.childCount', () => {
@@ -605,38 +687,73 @@ describe('RiTa.RiMarkov', () => {
     expect(rm.root.childCount()).eq(0);
     rm = new RiMarkov(2);
     rm.addText('The');
-    expect(rm.root.childCount()).eq(3);
-    expect(rm.root.child("The").childCount()).eq(1);
+    expect(rm.root.childCount()).eq(1);
+    expect(rm.root.child("The").childCount()).eq(0);
   });
 
 
   it('should call toString', () => {
-    let rm, exp;
-    rm = new RiMarkov(2);
-    exp = "ROOT {   'The' [1,p=0.333]  {     '</s>' [1,p=1.000]   }   '<s>' [1,p=0.333]  {     'The' [1,p=1.000]   }   '</s>' [1,p=0.333] }";
+    let rm = new RiMarkov(2);
     rm.addText('The');
-    //console.log(rm.toString());
-    expect(exp).eq(rm.toString().replace(/\n/g, ' '));
+    expect(`ROOT {
+  'The' [1,p=1.000]
+}`).eq(rm.toString())
 
     rm = new RiMarkov(2);
-    exp = "ROOT {   'The' [1,p=0.143]  {     'dog' [1,p=1.000]   }   'the' [1,p=0.143]  {     'cat' [1,p=1.000]   }   'dog' [1,p=0.143]  {     'ate' [1,p=1.000]   }   'cat' [1,p=0.143]  {     '</s>' [1,p=1.000]   }   'ate' [1,p=0.143]  {     'the' [1,p=1.000]   }   '<s>' [1,p=0.143]  {     'The' [1,p=1.000]   }   '</s>' [1,p=0.143] }";
     rm.addText('The dog ate the cat');
-    //console.log(rm.toString());
-    expect(exp).eq(rm.toString().replace(/\n/g, ' '));
+    expect(`ROOT {
+  'The' [1,p=0.200]  {
+    'dog' [1,p=1.000]
+  }
+  'the' [1,p=0.200]  {
+    'cat' [1,p=1.000]
+  }
+  'dog' [1,p=0.200]  {
+    'ate' [1,p=1.000]
+  }
+  'cat' [1,p=0.200]
+  'ate' [1,p=0.200]  {
+    'the' [1,p=1.000]
+  }
+}`).eq(rm.toString());
 
     rm = new RiMarkov(2);
-    eq(rm.toString(), "ROOT ")
-    exp = "ROOT {\n  'you' [1,p=0.200]  {\n    '?' [1,p=1.000]\n  }\n  'Can' [1,p=0.200]  {\n    'you' [1,p=1.000]\n  }\n  '<s>' [1,p=0.200]  {\n    'Can' [1,p=1.000]\n  }\n  '</s>' [1,p=0.200]\n  '?' [1,p=0.200]  {\n    '</s>' [1,p=1.000]\n  }\n}"
+    eq(rm.toString(), "ROOT ");
+
     rm.addText("Can you?");
-    eq(rm.toString(), exp);
+    eq(rm.toString(), `ROOT {
+  'you' [1,p=0.333]  {
+    '?' [1,p=1.000]
+  }
+  'Can' [1,p=0.333]  {
+    'you' [1,p=1.000]
+  }
+  '?' [1,p=0.333]
+}`);
 
     eq(rm.root.toString(), "Root");
-    eq(rm.root.child("Can").toString(), "Can(1/0.200%)");
+    //eq(rm.root.child("Can").toString(), "Can(1/0.333%)");
+    eq(rm.root.child("Can").toString(), "'Can' [1,p=0.333]");
 
     rm = new RiMarkov(2);
     rm.addText("\\n and \\t and \\r and \\r\\n");
-    exp = "ROOT {\n  'and' [3,p=0.333]  {\n    '\\t' [1,p=0.333]\n    '\\r\\n' [1,p=0.333]\n    '\\r' [1,p=0.333]\n  }\n  '<s>' [1,p=0.111]  {\n    '\\n' [1,p=1.000]\n  }\n  '</s>' [1,p=0.111]\n  '\\t' [1,p=0.111]  {\n    'and' [1,p=1.000]\n  }\n  '\\r\\n' [1,p=0.111]  {\n    '</s>' [1,p=1.000]\n  }\n  '\\r' [1,p=0.111]  {\n    'and' [1,p=1.000]\n  }\n  '\\n' [1,p=0.111]  {\n    'and' [1,p=1.000]\n  }\n}";
-    eq(rm.toString(), exp);
+    eq(rm.toString(), `ROOT {
+  'and' [3,p=0.429]  {
+    '\\t' [1,p=0.333]
+    '\\r\\n' [1,p=0.333]
+    '\\r' [1,p=0.333]
+  }
+  '\\t' [1,p=0.143]  {
+    'and' [1,p=1.000]
+  }
+  '\\r\\n' [1,p=0.143]
+  '\\r' [1,p=0.143]  {
+    'and' [1,p=1.000]
+  }
+  '\\n' [1,p=0.143]  {
+    'and' [1,p=1.000]
+  }
+}`);
   });
 
   it('should call size', () => {
@@ -647,7 +764,7 @@ describe('RiTa.RiMarkov', () => {
     let sents = RiTa.sentences(sample);
     rm = new RiMarkov(3);
     rm.addText(sample);
-    eq(rm.size(), tokens.length + sents.length * 2);
+    eq(rm.size(), tokens.length);
 
     let rm2 = new RiMarkov(4);
     rm2 = new RiMarkov(3);
@@ -672,9 +789,11 @@ describe('RiTa.RiMarkov', () => {
   });
 
   it('should serialize and deserialize', () => {
+
     let rm, copy;
     rm = new RiMarkov(4);
-    copy = RiMarkov.fromJSON(rm.toJSON());
+    let json = rm.toJSON();
+    copy = RiMarkov.fromJSON(json);
     markovEquals(rm, copy);
 
     rm = new RiMarkov(4, { disableInputChecks: 0 });
@@ -686,6 +805,7 @@ describe('RiTa.RiMarkov', () => {
     rm.addText(['I ate the dog.']);
     copy = RiMarkov.fromJSON(rm.toJSON());
     markovEquals(rm, copy);
+
     expect(copy.generate()).eql(rm.generate());
   });
 
@@ -700,6 +820,7 @@ describe('RiTa.RiMarkov', () => {
   });
 
   /////////////////////////// helpers ////////////////////////////
+
   function distribution(res, dump) {
     let dist = {};
     for (var i = 0; i < res.length; i++) {
@@ -714,14 +835,25 @@ describe('RiTa.RiMarkov', () => {
     dump && console.log();
     return dist;
   }
+
   function markovEquals(rm, copy) {
+    false && Object.keys(rm) // check each non-object key
+      .filter(k => !/(root|input|sentenceStarts|sentenceEnds)/.test(k))
+      .forEach(k => console.log(k, '\n  ', rm[k], '\n  ', copy[k]));
     Object.keys(rm) // check each non-object key
-      .filter(k => !/(root|input|inverse)/.test(k))
+      .filter(k => !/(root|input|sentenceStarts|sentenceEnds)/.test(k))
       .forEach(k => expect(rm[k], 'failed on ' + k).eq(copy[k]));
+
     expect(rm.toString()).eq(copy.toString());
+    expect(rm.toJSON()).eq(copy.toJSON());
+
     expect(rm.root.toString()).eq(copy.root.toString());
     expect(rm.input).eql(copy.input);
     expect(rm.size()).eql(copy.size());
+
+    expect(rm.sentenceStarts.toString()).eq(copy.sentenceStarts.toString());
+    expect(rm.sentenceEnds.toString()).eq(copy.sentenceEnds.toString());
+
   }
   function eql(a, b, c) { expect(a).eql(b, c); }
   function eq(a, b, c) { expect(a).eq(b, c); }
