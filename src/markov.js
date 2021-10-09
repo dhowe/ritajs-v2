@@ -52,8 +52,109 @@ class RiMarkov {
     if (!this.disableInputChecks || this.mlm) this.input.push(...allWords);
   }
 
-  generate(count, opts = {}) {
+  generateNew(count, opts = {}) {
+    if (arguments.length === 1 && typeof count === 'object') {
+      opts = count;
+      count = null;
+    }
     
+    const self = this;
+    const seed = opts.seed;
+    const num = count || 1;
+    const strict = opts.strict;
+    const minLength = opts.minLength || 5;
+    const maxLength = opts.maxLength || 35;
+
+    const fail = (msg) => {
+      console.error('Error:', msg);
+      // do backtracking ?
+    }
+
+    let success = (sent) => {
+      result.push(sent);
+      console.log('OK* (' + result.length + ')', sent, '\n');
+    }
+     
+    let tokens = this.createSeed(seed, opts);
+    if (!tokens) throw Error('No sentence starts with: "' + seed + '"');
+
+    let result = []; // tokens.length = n-1
+    while (result.length < num) {
+
+      if (tokens.length >= maxLength) {
+        fail('too long');
+        break;
+      }
+
+      let next = this._selectNext(parent, opts.temperature, tokens);
+      if (!next) {
+        fail('mlm: "' + this._flatten(tokens) + '"');
+        break; // all children excluded due to mlm
+      }
+
+      tokens.push(next);
+      console.log(numWords, next.token); // print every token
+      
+      if (this.sentenceEnds.has(next.token)) {
+
+        if (numWords < minLength) {
+          fail('too short'); 
+          break;
+        }
+
+        let rawtoks = tokens.map(t => t.token);
+
+        this.trace && console.log("CHECK? " + this._flatten(rawtoks));
+        if (!this.disableInputChecks && isSubArray(rawtoks, this.input)) {
+          fail('in input');
+          break;
+        }
+
+        let sent = this._flatten(rawtoks);
+        if (!opts.allowDuplicates && result.includes(sent)) {
+           fail('duplicate');
+           break;
+        }
+
+        success(sent);
+      }
+    }
+  }
+
+  /*
+   * Returns n-1 nodes from a seed (string or string[]) or a sentence-start
+   */
+  createSeed(seed, opts) {
+
+    if (typeof seed === 'string') seed = this.tokenize(seed);
+
+    let tokens = [];
+    if (!seed) {
+      let node = RiTa().random(this.sentenceStarts);
+      tokens.push(this.root.child(node));
+      //console.log('path-no-seed:', this._flatten(tokens));
+    }
+    else {
+      let node = this._pathTo(seed, this.root);
+      while (!node.isRoot()) {
+        tokens.unshift(node);
+        node = node.parent;
+      }
+      //console.log('path-seed:', this._flatten(tokens));
+    }
+
+    let tries = 0;
+    while (tokens.length < this.n - 1 && ++tries < 100) {
+      let parent = this._pathTo(tokens); 
+      let next = this._selectNext(parent, opts.temp, tokens);
+      tokens.push(next);
+    }
+
+    return tokens;
+  }
+
+  generate(count, opts = {}) {
+
     if (arguments.length === 1 && typeof count === 'object') {
       opts = count;
       count = null;

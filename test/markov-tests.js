@@ -1,6 +1,10 @@
 import { assert } from 'chai';
 import { RiTa, expect } from './before';
 
+
+// TODO:
+//   what to do if a seed is not a sentence start
+
 describe('RiTa.RiMarkov', () => {
 
   // TODO: optimize selectNext
@@ -136,6 +140,59 @@ describe('RiTa.RiMarkov', () => {
   //  // }
   // });
 
+  it('should call createSeed', () => {
+    let rm, toks;
+    
+    rm = new RiMarkov(4);
+    rm.addText("The young boy ate it. The young girl gave up.");
+
+    toks = rm.createSeed();
+    expect(toks.length).eq(rm.n-1)
+    expect(["The young boy", "The young girl"]
+      .includes(rm._flatten(toks))).true;
+
+    toks = rm.createSeed('The');
+    expect(toks.length).eq(rm.n - 1);
+    expect(["The young boy", "The young girl"]
+      .includes(rm._flatten(toks))).true;
+
+    toks = rm.createSeed('The young');
+    expect(toks.length).eq(rm.n - 1);
+    expect(["The young boy", "The young girl"]
+      .includes(rm._flatten(toks))).true;
+
+    toks = rm.createSeed(['The','young']);
+    expect(toks.length).eq(rm.n - 1);
+    expect(["The young boy", "The young girl"]
+      .includes(rm._flatten(toks))).true;
+
+    toks = rm.createSeed('The young boy');
+    expect(toks.length).eq(rm.n - 1);
+    expect(rm._flatten(toks)).eq('The young boy');
+
+    toks = rm.createSeed('The young girl');
+    expect(toks.length).eq(rm.n - 1);
+    expect(rm._flatten(toks)).eq('The young girl');
+
+    // TODO:
+    //toks = rm.createSeed('The young girl gave');
+    //expect(toks.length).eq(rm.n - 1);
+    //expect(rm._flatten(toks)).eq('The young girl');
+
+    rm = new RiMarkov(3);
+    rm.addText(RiTa.sentences(sample));
+    expect(rm.createSeed().length).eq(2);
+    eq(rm._flatten(rm.createSeed(['I', 'also'])), "I also");
+
+    rm = new RiMarkov(4);
+    rm.addText(RiTa.sentences(sample));
+    expect(rm.createSeed().length).eq(3);
+    eq(rm._flatten(rm.createSeed('I also')), "I also told");
+    eq(rm._flatten(rm.createSeed('I also told')), "I also told");
+    eq(rm._flatten(rm.createSeed(['I', 'also'])), "I also told");
+    eq(rm._flatten(rm.createSeed(['I', 'also', 'told'])), "I also told");
+  });
+
   it('should call initSentence', () => { // remove?
     let rm = new RiMarkov(4);
     rm.addText("The young boy ate it. The fat boy gave up.");
@@ -151,7 +208,7 @@ describe('RiTa.RiMarkov', () => {
     rm = new RiMarkov(4);
     rm.addText(RiTa.sentences(sample));
     eq(rm._flatten(rm._initSentence(['I'])), "I");
-    eq(rm._flatten(), "");
+    eq(rm._flatten(), ""); //?
   });
 
   it('should throw on generate for empty model', () => {
