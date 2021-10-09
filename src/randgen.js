@@ -118,6 +118,17 @@ class SeededRandom {
       crand * (arguments[1] - arguments[0]) + arguments[0];
   }
 
+  /*
+    Returns a random float between min and max, centered around bias
+    @bias - the center point of the distribution (min => x < max)
+    @influence - how close result is likely to be to bias (0-1)
+  */
+  randomBias(min, max, bias, influence = 0.5) { // @TODO: test/doc
+    const base = this._rndf() * max + min;
+    const mix = this._rndf() * influence;
+    return base * (1 - mix) + bias * mix;
+  } // adapted from: https://github.com/georgedoescode/generative-utils
+
   // ////////////////////////////////////////////////////////////////////////////////////
 
   _rndi() { // int between 0 and max value
