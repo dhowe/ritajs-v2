@@ -49,7 +49,7 @@ class RiMarkov {
       this.treeify(allWords);
     }
 
-    if (!this.disableInputChecks || this.mlm) this.input.push(...allWords);
+    if (!this.disableInputChecks || this.mlm) this.input = allWords.slice();
   }
 
   generateNew(count, opts = {}) {
@@ -228,6 +228,9 @@ class RiMarkov {
           + softFails[failFlat] + ' tries=' + tries);
         return 1;
       }
+      else {
+        this.trace && console.log('5 soft-fails ****')
+      }
 
       if (++hardFails[failFlat] < 5) {  // >= 5 numFails
         softFails[failFlat] = 0;
@@ -235,8 +238,8 @@ class RiMarkov {
         this.trace && console.log('HARD-REFRESH (new first word) numFails=' + hardFails[failFlat] + ' tries=' + tries);
         return 1;
       }
-      else if (!strict) {
-        this.trace && console.log('numFails=' + hardFails[failFlat] + ' tries=' + tries);
+      else {
+        this.trace && console.log('numFails=' + hardFails[failFlat] + ' tries=' + tries+' strict='+strict);
         return reset(this); // > 5 
       }
 
@@ -270,6 +273,7 @@ class RiMarkov {
         }
 
         tokens.push(next);
+        if (!numWords) this.trace && console.log('\nSTART "' + this._flatten(tokens[tokens.length-1]) + '"');
         numWords = tokens.length - cursor;
 
         //console.log(numWords, next.token); // print every token
