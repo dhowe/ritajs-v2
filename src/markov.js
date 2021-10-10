@@ -49,7 +49,11 @@ class RiMarkov {
       this.treeify(allWords);
     }
 
-    if (!this.disableInputChecks || this.mlm) this.input = allWords.slice();
+    if (!this.disableInputChecks || this.mlm) {
+      for (let i = 0; i < allWords.length; i++) {
+        this.input.push(allWords[i]);
+      }
+    }
   }
 
   generate(count, opts = {}) {
