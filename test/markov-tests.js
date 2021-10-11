@@ -344,10 +344,11 @@ describe('RiTa.RiMarkov', () => {
 
   it('should call generate.minMaxLength', () => {
 
-    let rm = new RiMarkov(4, { disableInputChecks: 1 }), minLength = 7, maxLength = 20;
+    let rm = new RiMarkov(4, { disableInputChecks: 0 }), minLength = 7, maxLength = 20;
     rm.addText(RiTa.sentences(sample));
     let sents = rm.generate(5, { minLength, maxLength });
     eq(sents.length, 5);
+console.log(sents);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
       //console.log(i + ") " + s);

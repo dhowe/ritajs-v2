@@ -9,7 +9,7 @@ class RiMarkov {
 
     this.trace = opts.trace;
     this.mlm = opts.maxLengthMatch;
-    this.maxAttempts = opts.maxAttempts || 999;
+    this.maxAttempts = opts.maxAttempts || 99;// TODO: replace 999 
 
     this.tokenize = opts.tokenize || RiTa().tokenize;
     this.untokenize = opts.untokenize || RiTa().untokenize;
@@ -56,108 +56,216 @@ class RiMarkov {
     }
   }
 
-  generateNew(count, opts = {}) {
+  generate(count, opts = {}) {
     if (arguments.length === 1 && typeof count === 'object') {
       opts = count;
       count = null;
     }
-    
+
+    this.trace = 1; // REMOVE
+
     const self = this;
     const seed = opts.seed;
     const num = count || 1;
     const strict = opts.strict;
+    const temp = opts.temperature;
     const minLength = opts.minLength || 5;
     const maxLength = opts.maxLength || 35;
 
+    let tries = 0, result = [], tokens;
+    let usedStarts = [];
+
     const fail = (msg) => {
-      console.error('Error:', msg);
-      // do backtracking ?
+      tries++;
+
+      console.error('Fail:', msg, '\n  ->' + self._flatten(tokens),
+        '#' + tries + ' tries', '#' + result.length + ' successes');
+
+      if (++tries >= this.maxAttempts) throwError(tries, result);
+
+      tokens.pop().marked = true;// remove last
+      console.log('backtrack1', self._flatten(tokens));
+      let parent = this._pathTo(tokens);
+
+      let filter = (cn) => !cn.marked;
+      for (let i = 2; i < 100; i++) {
+
+        let options = parent.childNodes({ filter });
+        console.log('  "' + parent.token + '" children=[' + options.map(t => t.token)
+          + '] all = [' + parent.childNodes().map(t => t.token) + ']');
+
+        if (!options.length) {
+          tokens.pop().marked = true;
+          if (tokens.length === 0) {
+            console.log('BACK AT START');
+            // TODO: unmark everything here ??
+            selectStart();
+            console.log('NEW SEED: ' + self._flatten(tokens));
+            break;
+          }
+          parent = this._pathTo(tokens);
+          console.log('backtrack' + i, self._flatten(tokens));
+
+        }
+        else {
+          let next = self._selectNext(parent, temp, tokens, filter);
+          tokens.push(next);
+          console.log('hit\n' + tokens.length, next.token);
+          break;
+        }
+      }
     }
 
-    let success = (sent) => {
+    const success = (sent) => {
       result.push(sent);
       console.log('OK* (' + result.length + ')', sent, '\n');
     }
-     
-    let tokens = this.createSeed(seed, opts);
-    if (!tokens) throw Error('No sentence starts with: "' + seed + '"');
 
-    let result = []; // tokens.length = n-1
+    const selectStart = () => {
+
+      //console.log('selectStart', self._flatten(toks));
+      if (tokens.length) { // Needed?
+        let parent = this._pathTo(tokens); // end of last sentence ?
+        if (!parent || parent.isLeaf()) {
+          fail('input-end2');
+          return;
+        }
+      }
+
+      let needed = (this.n - 1) * 2;
+      for (let i = 0; tokens.length < needed && i < 100; i++) {
+
+        if (!tokens.length) {
+          let goodStarts = this.sentenceStarts.filter(ss => !usedStarts.includes(ss));
+          if (!goodStarts.length) throw Error('No more starts to try');
+          let start = RiTa().random(goodStarts);
+          console.log('START:', start);
+          tokens.push(this.root.child(start));
+          usedStarts.push(start);
+        }
+
+        let next, parent = this._pathTo(tokens);
+
+        // is it a sentence-end (if so, we need a start)
+        if (this.sentenceEnds.has(parent.token)) {
+          next = this._selectNext(parent, opts.temperature, tokens,
+            child => this.sentenceStarts.includes(child.token));
+        }
+        else { // otherwise pick from all children
+          next = this._selectNext(parent, opts.temperature, tokens);
+        }
+        tokens.push(next);
+        //console.log('added "'+next.token+'"');
+      }
+      return tokens;
+    }
+
+    if (seed) {
+      tokens = this.createSeed(seed, opts);
+      if (!tokens) throw Error('No sentence starts with: "' + seed + '"');
+    }
+    else {
+      tokens = [];
+      selectStart();
+    }
+
+    this.trace && console.log("START: " + this._flatten(tokens));
+
     while (result.length < num) {
 
       if (tokens.length >= maxLength) {
-        fail('too long');
-        break;
+        fail('too-long');
+        continue;
+      }
+
+      let parent = this._pathTo(tokens); // end of last sentence ?
+      if (!parent || parent.isLeaf()) {
+        fail('input-end1');
+        continue;
       }
 
       let next = this._selectNext(parent, opts.temperature, tokens);
       if (!next) {
-        fail('mlm: "' + this._flatten(tokens) + '"');
-        break; // all children excluded due to mlm
+        fail('mlm-fail');
+        continue; // all children excluded due to mlm
       }
 
       tokens.push(next);
-      console.log(numWords, next.token); // print every token
-      
+      console.log(tokens.length, next.token); // print every token
+
       if (this.sentenceEnds.has(next.token)) {
 
-        if (numWords < minLength) {
-          fail('too short'); 
-          break;
+        if (tokens.length < minLength) {
+          fail('too-short');
+          continue;
         }
 
-        let rawtoks = tokens.map(t => t.token);
-
-        this.trace && console.log("CHECK? " + this._flatten(rawtoks));
-        if (!this.disableInputChecks && isSubArray(rawtoks, this.input)) {
-          fail('in input');
-          break;
+        this.trace && console.log("CHECK? " + this._flatten(tokens));
+        if (!this.disableInputChecks && isSubArray(tokens.map(t => t.token), this.input)) {
+          fail('in-input');
+          continue;
         }
 
-        let sent = this._flatten(rawtoks);
+        let sent = this._flatten(tokens);
         if (!opts.allowDuplicates && result.includes(sent)) {
-           fail('duplicate');
-           break;
+          fail('duplicate');
+          continue;
         }
 
         success(sent);
+        //tokens = this.createSeed(0, opts);
+        tokens = tokens.slice(-(this.n - 1));
+        selectStart();
+        console.log('START(' + result.length + '):', this._flatten(tokens));
+
+        //throw Error('DONE: ' + this._flatten(tmp2));
+        //TODO: call createSeed from previous sentence
       }
     }
+
+    // TODO: unmark everything
+
+    return result;
   }
+
 
   /*
    * Returns n-1 nodes from a seed (string or string[]) or a sentence-start
    */
-  createSeed(seed, opts) {
+  createSeed(seed, opts = {}) {
 
+    if (typeof seed === 'undefined') throw Error('seed required');
     if (typeof seed === 'string') seed = this.tokenize(seed);
 
     let tokens = [];
-    if (!seed) {
-      let node = RiTa().random(this.sentenceStarts);
-      tokens.push(this.root.child(node));
-      //console.log('path-no-seed:', this._flatten(tokens));
+    /*     if (!seed) {
+    
+          // TODO: need to mark these in generate
+          let node = RiTa().random(this.sentenceStarts);
+          tokens.push(this.root.child(node));
+          //console.log('path-no-seed:', this._flatten(tokens));
+        }
+        else { */
+    let node = this._pathTo(seed, this.root);
+    while (!node.isRoot()) {
+      tokens.unshift(node);
+      node = node.parent;
     }
-    else {
-      let node = this._pathTo(seed, this.root);
-      while (!node.isRoot()) {
-        tokens.unshift(node);
-        node = node.parent;
-      }
-      //console.log('path-seed:', this._flatten(tokens));
-    }
+    //console.log('path-seed:', this._flatten(tokens));
+    //}
 
     let tries = 0;
     while (tokens.length < this.n - 1 && ++tries < 100) {
-      let parent = this._pathTo(tokens); 
-      let next = this._selectNext(parent, opts.temp, tokens);
+      let parent = this._pathTo(tokens);
+      let next = this._selectNext(parent, opts.temperature, tokens);
       tokens.push(next);
     }
 
     return tokens;
   }
 
-  generate(count, opts = {}) {
+
+  generateX(count, opts = {}) {
 
     if (arguments.length === 1 && typeof count === 'object') {
       opts = count;
@@ -243,7 +351,7 @@ class RiMarkov {
         return 1;
       }
       else {
-        this.trace && console.log('numFails=' + hardFails[failFlat] + ' tries=' + tries+' strict='+strict);
+        this.trace && console.log('numFails=' + hardFails[failFlat] + ' tries=' + tries + ' strict=' + strict);
         return reset(this); // > 5 
       }
 
@@ -277,7 +385,7 @@ class RiMarkov {
         }
 
         tokens.push(next);
-        if (!numWords) this.trace && console.log('\nSTART "' + this._flatten(tokens[tokens.length-1]) + '"');
+        if (!numWords) this.trace && console.log('\nSTART "' + this._flatten(tokens[tokens.length - 1]) + '"');
         numWords = tokens.length - cursor;
 
         //console.log(numWords, next.token); // print every token
@@ -399,11 +507,11 @@ class RiMarkov {
 
   ////////////////////////////// end API ////////////////////////////////
 
-  _selectNext(parent, temp, tokens) {
+  _selectNext(parent, temp, tokens, filter) {
 
     // basic case: just prob. select from children
     if (!this.mlm || this.mlm > tokens.length) {
-      return parent.pselect();
+      return parent.pselect(filter);
     }
 
     const validateMlms = (word, nodes) => {
@@ -415,7 +523,7 @@ class RiMarkov {
     }
 
     const rand = RiMarkov.parent.randomizer;
-    const children = parent.childNodes();
+    const children = parent.childNodes({ filter });
     const weights = children.map(n => n.count);
     const pdist = rand.ndist(weights, temp);
     const tries = children.length * 2;
@@ -520,6 +628,7 @@ class Node {
     this.token = word;
     this.count = count || 0;
     this.numChildren = -1; // for cache
+    this.marked = false;
   }
 
   // Find a (direct) child node with matching token, given a word or node
@@ -529,9 +638,13 @@ class Node {
     return this.children[lookup];
   }
 
-  pselect() {
+  pselect(filter) {
     const rand = RiMarkov.parent.randomizer;
-    const children = this.childNodes();
+    const children = this.childNodes({ filter });
+    if (!children.length) {
+      throw Error('no eligible child for ' + this.token
+        + " [" + this.childNodes().map(t => t.token) + "]");
+    }
     const weights = children.map(n => n.count);
     const pdist = rand.ndist(weights);
     const idx = rand.pselect(pdist);
@@ -542,9 +655,14 @@ class Node {
 
   isRoot() { return !this.parent; }
 
-  childNodes(sort) {
+  childNodes(opts = {}) {
+    let sort = opts.sort;
+    let filter = opts.filter;
     let kids = Object.values(this.children);
-    sort && kids.sort((a, b) => b.count !== a.count
+    if (filter) {
+      kids = kids.filter(filter);
+    }
+    if (sort) kids.sort((a, b) => b.count !== a.count
       ? b.count - a.count
       : b.token.localeCompare(a.token));
     return kids;
@@ -601,7 +719,7 @@ class Node {
 function stringulate(mn, str, depth, sort) {
 
   sort = sort || false;
-  let l = mn.childNodes(true), indent = '\n';
+  let l = mn.childNodes({ sort: true }), indent = '\n';
   if (!l.length) return str;
   for (let j = 0; j < depth; j++) indent += "  ";
   for (let i = 0; i < l.length; i++) {
