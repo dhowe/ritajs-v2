@@ -79,6 +79,21 @@ class RiMarkov {
     let tries = 0, result = [], tokens = [];
     let usedStarts = [], leader = 0;
 
+    const backtrack = (i) => {
+      tokens.pop().marked = true;
+      if (tokens.length <= leader) {
+        console.log('BACK AT START');//, this.sentenceStarts.filter
+        //(ss => !usedStarts.includes(ss)), usedStarts);
+        // TODO: unmark everything here ??
+        selectStart();
+        //console.log('NEW SEED: ' + this._flatten(tokens));
+        return;
+      }
+      let parent = this._pathTo(tokens);
+      console.log('[backtrack' + i + ']', this._flatten(tokens));
+      return parent;
+    }
+
     const fail = (msg, reset) => {
       tries++;
 
@@ -88,7 +103,7 @@ class RiMarkov {
       if (tries >= this.maxAttempts) throwError(tries, result);
 
       // don't backtrack onto the seed
-      if (!result.length && tokens.length === this.n - 1) {
+      if (!result.length && tokens.length <= this.n - 1) {
         console.log('[FORCE]');
         reset = true;
       }
@@ -115,17 +130,10 @@ class RiMarkov {
           + '] all=[' + parent.childNodes().map(t => t.token) + ']');
 
         if (!children.length) {
-          tokens.pop().marked = true;
-          if (tokens.length === leader) {
-            console.log('BACK AT START');//, this.sentenceStarts.filter
-            //(ss => !usedStarts.includes(ss)), usedStarts);
-            // TODO: unmark everything here ??
-            selectStart();
-            //console.log('NEW SEED: ' + this._flatten(tokens));
-            break;
-          }
-          parent = this._pathTo(tokens);
-          console.log('[backtrack' + i + ']', this._flatten(tokens));
+
+          parent = backtrack(i);
+          if (!parent) break;
+          
         }
         else {
           let next = this._selectNext(parent, temp, tokens, filter);
