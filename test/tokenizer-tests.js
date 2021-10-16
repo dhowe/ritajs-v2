@@ -189,7 +189,7 @@ describe('RiTa.Tokenizer', () => {
     expect(output).eql(expected);
 
     input = "123 123 1 2 3 1,1 1.1 23.45.67 22/05/2012 12th May,2012";
-    expected = ["123", "123", "1", "2", "3", "1", ",", "1", "1", ".", "1", "23", ".", "45", ".", "67", "22/05/2012", "12th", "May", ",", "2012"];
+    expected = ["123", "123", "1", "2", "3", "1", ",", "1", "1.1", "23.45", ".", "67", "22/05/2012", "12th", "May", ",", "2012"];
     output = RiTa.tokenize(input);
     expect(output).eql(expected);
 
@@ -585,6 +585,19 @@ describe('RiTa.Tokenizer', () => {
     eql(output, expected);
 
     eql(RiTa.sentences(""), [""]);
+  });
+
+  it('Should handle decimal numbers', () => {
+    // Support number formats:  	3.14529, 1.9e10, 123,340.00, -255.34
+    expect(RiTa.tokenize("27.3")).eql(["27.3"]);
+    expect(RiTa.tokenize("-27.3")).eql(["-27.3"]);
+    expect(RiTa.tokenize("1.9e10")).eql(["1.9e10"]);
+    expect(RiTa.tokenize("200,000.51")).eql(["200,000.51"]);
+    expect(RiTa.tokenize("-200,000.51")).eql(["-200,000.51"]);
+    expect(RiTa.tokenize("His score was 91.2")).eql(["His", "score", "was", "91.2"]);
+    expect(RiTa.tokenize("He owed 200,000 dollars.")).eql(['He', 'owed', '200,000', 'dollars', '.']);
+    expect(RiTa.tokenize("He owed 200,000.")).eql(['He', 'owed', '200,000', '.']);
+    expect(RiTa.tokenize("He owed 200,000.50.")).eql(['He', 'owed', '200,000.50', '.']);
   });
 
   function eql(a, b, m) { expect(a).eql(b, m); }
