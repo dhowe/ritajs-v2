@@ -14,6 +14,7 @@ describe('RiTa.RiMarkov', () => {
   let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
   let sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself. After all, I did occasionally want to be embarrassed.";
   let sample3 = sample + ' One reason people are dishonest is to achieve power.';
+  let sample4 = "The Sun is a barren, rocky world without air and water. It has dark lava Sun on its surface. The Sun is filled with craters. It has no light of its own. It gets its light from the Sun. The Sun keeps changing its shape as it moves around the Sun. It spins on its Sun in 273 days. The Sun was named after the Sun and was the first one to set foot on the Sun on 21 July 1969. They reached the Sun in their space craft named the Sun. The Sun is a huge ball of gases. It has a diameter of two km. It is so huge that it can hold millions of planets inside it. The Sun is mainly made up of hydrogen and helium gas. The surface of the Sun is known as the Sun surface. The Sun is surrounded by a thin layer of gas known as the chromospheres. Without the Sun, there would be no life on the Sun. There would be no plants, no animals and no Sun. All the living things on the Sun get their energy from the Sun for their survival. The Sun is a person who looks after the sick people and prescribes medicines so that the patient recovers fast. In order to become a Sun, a person has to study medicine. The Sun lead a hard life. Its life is very busy. The Sun gets up early in the morning and goes in circle. The Sun works without taking a break. The Sun always remain polite so that we feel comfortable with it. Since the Sun works so hard we should realise its value. The Sun is an agricultural country. Most of the people on the Sun live in villages and are farmers. The Sun grows cereal, vegetables and fruits. The Sun leads a tough life. The Sun gets up early in the morning and goes in circles. The Sun stays and work in the sky until late evening. The Sun usually lives in a dark house. Though the Sun works hard it remains poor. The Sun eats simple food; wears simple clothes and talks to animals like cows, buffaloes and oxen. Without the Sun there would be no cereals for us to eat. The Sun plays an important role in the growth and economy of the sky.";
 
   before(function () {
     while (!RiTa) {
@@ -42,11 +43,11 @@ describe('RiTa.RiMarkov', () => {
   });
 
   it('should call Random.pSelect', () => {
+
     // should throw when options conflict
     expect(() => { Random.pselect() }).to.throw();
     expect(Random.pselect([1])).equal(0);
 
-    //console.log(res)
     //////////////////////////////////////////
     let weights = [1.0, 2, 6, -2.5, 0];
     let expected = [2, 2, 1.75, 1.55];
@@ -61,6 +62,7 @@ describe('RiTa.RiMarkov', () => {
       }
       results.push(sum / numTests);
     });
+
     expect(results[i = 0], 'failed #' + i + ' temp=' + temps[i]).to.be.closeTo(expected[i], .1);
     expect(results[i = 1], 'failed #' + i + ' temp=' + temps[i]).to.be.closeTo(expected[i], .2);
     expect(results[i = 2], 'failed #' + i + ' temp=' + temps[i]).to.be.closeTo(expected[i], .4);
@@ -142,14 +144,22 @@ describe('RiTa.RiMarkov', () => {
 
   it('should call createSeed', () => {
     let rm, toks;
-    
+
+    rm = new RiMarkov(3);
+    rm.addText(RiTa.sentences(sample));
+    eq(rm._flatten(rm.createSeed(['I', 'also'])), "I also");
+
+    rm = new RiMarkov(4);
+    rm.addText(RiTa.sentences(sample));
+    eq(rm._flatten(rm.createSeed('I also')), "I also told");
+    eq(rm._flatten(rm.createSeed('I also told')), "I also told");
+    eq(rm._flatten(rm.createSeed(['I', 'also'])), "I also told");
+    eq(rm._flatten(rm.createSeed(['I', 'also', 'told'])), "I also told");
+
+     ////////////////////////////////////////////////////////
+
     rm = new RiMarkov(4);
     rm.addText("The young boy ate it. The young girl gave up.");
-
-    toks = rm.createSeed();
-    expect(toks.length).eq(rm.n-1)
-    expect(["The young boy", "The young girl"]
-      .includes(rm._flatten(toks))).true;
 
     toks = rm.createSeed('The');
     expect(toks.length).eq(rm.n - 1);
@@ -161,7 +171,7 @@ describe('RiTa.RiMarkov', () => {
     expect(["The young boy", "The young girl"]
       .includes(rm._flatten(toks))).true;
 
-    toks = rm.createSeed(['The','young']);
+    toks = rm.createSeed(['The', 'young']);
     expect(toks.length).eq(rm.n - 1);
     expect(["The young boy", "The young girl"]
       .includes(rm._flatten(toks))).true;
@@ -174,23 +184,12 @@ describe('RiTa.RiMarkov', () => {
     expect(toks.length).eq(rm.n - 1);
     expect(rm._flatten(toks)).eq('The young girl');
 
-    // TODO:
-    //toks = rm.createSeed('The young girl gave');
-    //expect(toks.length).eq(rm.n - 1);
-    //expect(rm._flatten(toks)).eq('The young girl');
+    // TODO: allow longer seeds
+    toks = rm.createSeed('The young girl gave');
+    expect(toks.length).eq(rm.n - 1);
+    expect(rm._flatten(toks)).eq('The young girl');
 
-    rm = new RiMarkov(3);
-    rm.addText(RiTa.sentences(sample));
-    expect(rm.createSeed().length).eq(2);
-    eq(rm._flatten(rm.createSeed(['I', 'also'])), "I also");
-
-    rm = new RiMarkov(4);
-    rm.addText(RiTa.sentences(sample));
-    expect(rm.createSeed().length).eq(3);
-    eq(rm._flatten(rm.createSeed('I also')), "I also told");
-    eq(rm._flatten(rm.createSeed('I also told')), "I also told");
-    eq(rm._flatten(rm.createSeed(['I', 'also'])), "I also told");
-    eq(rm._flatten(rm.createSeed(['I', 'also', 'told'])), "I also told");
+    ////////////////////////////////////////////////////////
   });
 
   it('should call initSentence', () => { // remove?
@@ -296,16 +295,7 @@ describe('RiTa.RiMarkov', () => {
    */
   it('should call generate', () => {
 
-    // will not crash when n = 1
     let rm;
-    rm = new RiMarkov(1);
-    rm.addText(RiTa.sentences(sample));
-    let res = rm.generate(2);
-    eq(res.length, 2);
-    ok(typeof res[0] === 'string' && res[0].length > 0);
-    ok(typeof res[1] === 'string' && res[1].length > 0);
-
-    // with no count
     rm = new RiMarkov(4, { disableInputChecks: true });
     rm.addText(RiTa.sentences(sample));
 
@@ -322,8 +312,6 @@ describe('RiTa.RiMarkov', () => {
     rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
     let sents = rm.generate(5);
-    //expect(1).eq(2);
-
     eq(sents.length, 5);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
@@ -332,7 +320,7 @@ describe('RiTa.RiMarkov', () => {
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
     }
 
-    rm = new RiMarkov(4);
+    rm = new RiMarkov(3); // 3 is max for sample, with input checking
     rm.addText(sample);
     let s = rm.generate();
     //console.log(s);
@@ -344,11 +332,11 @@ describe('RiTa.RiMarkov', () => {
 
   it('should call generate.minMaxLength', () => {
 
-    let rm = new RiMarkov(4, { disableInputChecks: 0 }), minLength = 7, maxLength = 20;
+    let rm = new RiMarkov(3, { disableInputChecks: 0 }), minLength = 7, maxLength = 20;
     rm.addText(RiTa.sentences(sample));
     let sents = rm.generate(5, { minLength, maxLength });
     eq(sents.length, 5);
-console.log(sents);
+    console.log(sents);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
       //console.log(i + ") " + s);
@@ -358,8 +346,6 @@ console.log(sents);
       let num = RiTa.tokenize(s).length;
       expect(num >= minLength && num <= maxLength, (num + ' not within ' + minLength + '-' + maxLength)).to.be.true;
     }
-
-    return;
 
     rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
@@ -381,7 +367,7 @@ console.log(sents);
     rm.addText(RiTa.sentences(sample));
     for (let i = 0; i < 5; i++) {
       let s = rm.generate({ seed: start });
-      //console.log(i + ") " + s);
+      console.log(i + ")", s);
       ok(s.startsWith(start));
     }
 
@@ -481,14 +467,27 @@ console.log(sents);
     }
   });
 
+  it('XXX', () => {
+    
+    let rm = new RiMarkov(3, { maxLengthMatch: 9, trace: 0 });
+    rm.addText(RiTa.sentences(sample2));
+    //One reason people lie is to achieve personal power
+    let res = rm.generate(1, { seed: "One reason" });
+    console.log(res);
+    ok(res.startsWith("One reason"));
+    ok(/[!?.]$/.test(res));
+  });
+
   it('should call generate.mlm', () => {
 
-    let mlms = 8, rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
+    let mlms = 8, theText = sample4, rm;
+
+    rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
     expect(typeof rm.input === 'object').to.be.true;
-    rm.addText(RiTa.sentences(sample3));
+    rm.addText(RiTa.sentences(theText));
     //rm.trace = true;
 
-    let sents = rm.generate(3);
+    let sents = rm.generate(2);
     for (let i = 0; i < sents.length; i++) {
       let sent = sents[i];
       let toks = RiTa.tokenize(sent);
@@ -498,14 +497,14 @@ console.log(sents);
       for (let j = 0; j <= toks.length - rm.n; j++) {
         let part = toks.slice(j, j + rm.n);
         let res = RiTa.untokenize(part);
-        ok(sample3.indexOf(res) > -1, 'output not found in text: "' + res + '"');
+        ok(theText.indexOf(res) > -1, 'output not found in text: "' + res + '"');
       }
 
       // All sequences of len=mlms+1 must NOT  be in text
       for (let j = 0; j <= toks.length - (mlms + 1); j++) {
         let part = toks.slice(j, j + (mlms + 1));
         let res = RiTa.untokenize(part);
-        ok(sample3.indexOf(res) < 0, 'Got "' + sent + '"\n\nBut "'
+        ok(theText.indexOf(res) < 0, 'Got "' + sent + '"\n\nBut "'
           + res + '" was found in input:\n\n' + sample + '\n\n' + rm.input);
       }
     }
