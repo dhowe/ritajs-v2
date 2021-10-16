@@ -130,7 +130,7 @@ class RiMarkov {
         else {
           let next = this._selectNext(parent, temp, tokens, filter);
           if (!next) {
-            fail('mlm-fail2');
+            fail('mlm-fail2 *******');
             
             // WORKING HERE: backtracking past leader
 
