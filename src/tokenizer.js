@@ -291,7 +291,10 @@ const TOKENIZE_RE = [
   /([Cc])([Oo])([Rr]?)([Pp]?)[\.]/g, "_$1$2$3$4_",// Corp. and Co.
   /([Ll])([Tt])([Dd])[\.]/g, "_$1$2$3_", // ltd.
   /(prof|Prof|PROF)[\.]/g, "_$1_", //Prof.
-
+  //decimal #
+  /([\-]?[0-9]+)\.([0-9]+)/g,"$1DECIMALDOT$2_",//(-)27.3
+  /([\-]?[0-9]+)\.([0-9]+)e([\-]?[0-9]+)/g, "_$1DECIMALDOT$2POWERE$3_",//(-)1.2e10
+  /([0-9]{3}),([0-9]{3})/g, "$1_DECIMALCOMMA_$2", // large numbers like 200,000,000.13
   //--------------------------
   /\.\.\.\s/g, "_elipsisDDD_ ",
   /([\?!\"\u201C\.,;:@#$%&])/g, " $1 ",
@@ -335,7 +338,10 @@ const TOKENIZE_RE = [
   /_([Ll])([Tt])([Dd])_/g, "$1$2$3.", // ltd.
   /_([Cc])([Oo])dcs([Ll])([Tt])([Dd])_/g, "$1$2.,_$3$4$5.", // co., ltd.
   /_([Cc])([Oo])ds([Ll])([Tt])([Dd])_/g, "$1$2._$3$4$5.", // co. ltd.
-  /_(prof|PROF|Prof)_/g, "$1." //Prof.
+  /_(prof|PROF|Prof)_/g, "$1.", //Prof.
+  /([\-]?[0-9]+)DECIMALDOT([0-9]+)_/g,"$1.$2", //(-)27.3
+  /_([\-]?[0-9]+)\DECIMALDOT([0-9]+)POWERE([\-]?[0-9]+)_/g, "$1.$2e$3", //(-)1.2e(-)9
+  /_DECIMALCOMMA_/g,",",// large numbers like 200,000,000.13
 ];
 
 const CONTRACTS_RE = [ // SYNC:
