@@ -78,20 +78,31 @@ class RiMarkov {
 
     let tries = 0, result = [], tokens = [];
     let usedStarts = [], leader = 0;
+    const notMarked = (cn) => !cn.marked;
 
-    const backtrack = (i) => {
-      tokens.pop().marked = true;
-      if (tokens.length <= leader) {
-        console.log('BACK AT START');//, this.sentenceStarts.filter
-        //(ss => !usedStarts.includes(ss)), usedStarts);
-        // TODO: unmark everything here ??
-        selectStart();
-        //console.log('NEW SEED: ' + this._flatten(tokens));
-        return;
+    // step back until we have a parent with children
+    // or we have reached our start
+    // if we find an option, return true
+    const backtrack = () => {
+      let parent, tc;
+      for (let i = 0; i < 100; i++) {
+        let last = tokens.pop();
+        last.marked = true;
+        console.log('backtrack#' + tokens.length, 'pop "' + last.token);
+        if (!result.length) console.log('seed-length:' + seed.length);
+        if (tokens.length <= leader || (!result.length && tokens.length <= seed.length)) {
+          console.log('BACK AT START: ' + this._flatten(tokens));
+          return selectStart();
+        }
+        parent = this._pathTo(tokens);
+        tc = parent.childNodes({ filter: notMarked });
+        if (tc.length) {
+          console.log(this._flatten(tokens) + '\n  ok=[' + tc.map(t => t.token) + ']',
+            'all=[' + parent.childNodes().map(t => t.token) + ']');
+          return parent;
+        }
       }
-      let parent = this._pathTo(tokens);
-      console.log('[backtrack' + i + ']', this._flatten(tokens));
-      return parent;
+      throw Error('Invalid state in backtrack() [' + tokens.map(t => t.token) + ']');
     }
 
     const fail = (msg, reset) => {
@@ -106,7 +117,7 @@ class RiMarkov {
       if (!result.length && tokens.length <= this.n - 1) {
         console.log('[FORCE]');
         reset = true;
-      }
+      } // remove?
 
       if (reset) {
         console.log('[RESET]');
@@ -114,49 +125,11 @@ class RiMarkov {
         tokens = [];
         result = [];
         usedStarts = [];
-        selectStart();
-        return;
-      }
+        return selectStart();
+        ///return false;
+      }// remove?
 
-      tokens.pop().marked = true;// remove last
-      console.log('[backtrack1]', this._flatten(tokens));
-      let parent = this._pathTo(tokens);
-
-      let filter = (cn) => !cn.marked;
-      for (let i = tokens.length; i < 100; i++) {
-
-        let children = parent.childNodes({ filter });
-        console.log('  "' + parent.token + '" children=[' + children.map(t => t.token)
-          + '] all=[' + parent.childNodes().map(t => t.token) + ']');
-
-        if (!children.length) {
-
-          parent = backtrack(i);
-          if (!parent) break;
-          
-        }
-        else {
-          let next = this._selectNext(parent, temp, tokens, filter);
-          if (!next) {
-            fail('mlm-fail2 *******');
-            
-            // WORKING HERE: backtracking past leader
-
-            continue; // all children excluded due to mlm
-          }
-
-          tokens.push(next);
-          console.log(tokens.length - leader, next.token, ' (*hit*)');
-
-          if (this.sentenceEnds.has(next.token)) { // end during backtracking
-            let sentence = tokens.slice(leader).map(t => t.token);
-            if (validate(sentence)) {
-              success(this.untokenize(sentence)); // else fail
-            }
-          }
-          break;
-        }
-      }
+      return backtrack();
     }
 
     const validate = (sentence) => {
@@ -195,9 +168,22 @@ class RiMarkov {
 
       if (seed && !result.length) { // use seed
         tokens = this.createSeed(seed, opts);
-        this.trace && console.log('\nSTART "' + this._flatten(tokens) + '"');
+        //leader = tokens.length; // ?
         if (!tokens) throw Error('No sentence starts with: "' + seed + '"');
-        return;
+
+        let parent = this._pathTo(tokens);
+        let tc = parent.childNodes({ filter: notMarked });
+        if (tc.length) {
+          this.trace && console.log('\nSTART "' + this._flatten(tokens)
+            + '" (ok=[' + tc.map(t => t.token) + '] all=['
+            + parent.childNodes().map(t => t.token) + '])');
+          return parent;
+        }
+
+        // WORKING HERE: This could be valid if no other starts
+
+        throw Error('failed in selectStart with seed="' + seed + '"\n'
+          + this.sentenceStarts + "\n" + usedStarts, '[' + parent.childNodes().map(t => t.token) + ']');
       }
 
       let needed = (this.n - 1) + tokens.length; // need n-1 *new* tokens
@@ -212,26 +198,14 @@ class RiMarkov {
         }
 
         let parent = this._pathTo(tokens);
-        /*if (!parent.children.length) {
-          fail('end-input2',true);
-          return;
-        } */
-
-        //console.log('parent', parent.token, Object.keys(parent.children));
-
-        let args = [parent, opts.temperature, tokens];
-        if (this.sentenceEnds.has(parent.token)) {
-          // add filter: if its a sentence-end, then we need a start next
-          args.push(child => this.sentenceStarts.includes(child.token));
+        let tc = parent.childNodes({ filter: notMarked });
+        if (tc.length) {
+          console.log('START2 ok=[' + tc.map(t => t.token) + ']',
+            'all=[' + parent.childNodes().map(t => t.token) + ']');
+          return parent;
         }
-        let next = this._selectNext(...args)
-        tokens.push(next);
-        //console.log('added "'+next.token+'"');
       }
-
-      console.log('START(' + result.length + '):', this._flatten(tokens));
-
-      return tokens;
+      throw Error('Invalid state in selectStart [' + tokens.map(t => t.token) + ']');
     }
 
     selectStart();
@@ -249,14 +223,21 @@ class RiMarkov {
         continue;
       }
 
-      let next = this._selectNext(parent, opts.temperature, tokens);
+      let next = this._selectNext(parent, opts.temperature, tokens, notMarked);
       if (!next) {
-        fail('mlm-fail1');
-        continue; // all children excluded due to mlm
+        parent = fail('mlm-fail-all');
+        if (!parent) {
+          fail('mlm-fail-reset', true);
+          continue;
+        }
+        next = this._selectNext(parent, opts.temperature, tokens, notMarked);
+        if (!next) throw Error('cant recover');
+        // all children excluded due to mlm
       }
 
       tokens.push(next);
-      console.log(tokens.length - leader, next.token); // print every token
+      console.log(tokens.length - leader, next.token, '[' + parent.childNodes().filter
+        (t => t !== next).map(t => t.token) + ']'); // print every token
 
       if (this.sentenceEnds.has(next.token)) {
         let sentence = tokens.slice(leader).map(t => t.token);
@@ -383,10 +364,16 @@ class RiMarkov {
 
   ////////////////////////////// end API ////////////////////////////////
 
-  // selects child based on temp, filter and probability (can throw)
+  // selects child based on temp, filter and probability (throws)
   _selectNext(parent, temp, tokens, filter) {
 
     if (!parent) throw Error('no parent:' + this._flatten(tokens));
+
+    let children = parent.childNodes({ filter });
+    if (!children.length) {
+      console.log('No children to select');
+      return;
+    }
 
     // basic case: just prob. select from children
     if (!this.mlm || this.mlm > tokens.length) {
@@ -397,14 +384,14 @@ class RiMarkov {
       let check = nodes.slice(-this.mlm).map(n => n.token);
       check.push(word.token);
       let res = !isSubArray(check, this.input);
-      //console.log('validateMlms: ' + sub, '->', res);
+      if (!res) console.log('Fail: mlm-fail("' + word.token + '")');
       return res;
     }
 
     const rand = RiMarkov.parent.randomizer;
-    const children = parent.childNodes({ filter });
-    if (!children.length) throw Error('No children for "'
-      + parent.token + '" in ' + this._flatten(tokens));
+    //const children = parent.childNodes({ filter });
+/*     if (!children.length) throw Error('No children for "'
+      + parent.token + '" in ' + this._flatten(tokens)); */
     const weights = children.map(n => n.count);
     const pdist = rand.ndist(weights, temp);
     const tries = children.length * 2;
@@ -431,7 +418,7 @@ class RiMarkov {
       + parent.token + '" in "' + this._flatten(tokens) + '"'); */
   }
 
-  _initSentence(initWith, root) {
+  /*_initSentence(initWith, root) {
 
     root = root || this.root;
 
@@ -450,7 +437,7 @@ class RiMarkov {
     }
     this.trace && console.log('\nSTART "' + this._flatten(tokens) + '"');
     return tokens;
-  }
+  }*/
 
   /*
    * Follows 'path' (using only the last n-1 tokens) from root and returns
@@ -520,8 +507,8 @@ class Node {
     const rand = RiMarkov.parent.randomizer;
     const children = this.childNodes({ filter });
     if (!children.length) {
-      throw Error('No eligible child for ' + this.token
-        + " children=[" + this.childNodes().map(t => t.token) + "]");
+      throw Error('No eligible child for "' + this.token
+        + "\" children=[" + this.childNodes().map(t => t.token) + "]");
     }
     const weights = children.map(n => n.count);
     const pdist = rand.ndist(weights);
@@ -533,9 +520,9 @@ class Node {
 
   isRoot() { return !this.parent; }
 
-  childNodes(opts = {}) {
-    let sort = opts.sort;
-    let filter = opts.filter;
+  childNodes(opts) {
+    let sort = opts && opts.sort;
+    let filter = opts && opts.filter;
     let kids = Object.values(this.children);
     if (filter) {
       kids = kids.filter(filter);
@@ -546,18 +533,11 @@ class Node {
     return kids;
   }
 
-  childCount(/* excludeMetaTags */) {
+  childCount() {
     if (this.numChildren === -1) {
-      let sum = 0; // a sort of cache
-      for (let k in this.children) {
-        /*   if (excludeMetaTags && (k === RiMarkov.SS || k === RiMarkov.SE)) {
-            continue;
-          } */
-        sum += this.children[k].count;
-      }
-      this.numChildren = sum;
+      this.numChildren = this.childNodes()
+        .reduce((a, c) => a + c.count, 0);
     }
-    //console.log(this.token+' '+this.numChildren);
     return this.numChildren;
   }
 
