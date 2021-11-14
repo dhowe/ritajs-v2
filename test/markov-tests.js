@@ -305,24 +305,35 @@ describe('RiTa.RiMarkov', () => {
     ok(typeof sent === 'string');
     eq(sent[0], sent[0].toUpperCase());
     ok(/[!?.]$/.test(sent));
+  });
 
+  it('should call generate2', () => {
+    let rm;
+    rm = new RiMarkov(4, { disableInputChecks: true });
+    rm.addText(RiTa.sentences(sample));
     sent = rm.generate({ seed: "I" });
     ok(typeof sent === 'string');
     eq(sent[0], "I");
     ok(/[!?.]$/.test(sent));
+  });
 
+  it('should call generate3', () => {
+
+    let rm;
     rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
-    let sents = rm.generate(5);
-    eq(sents.length, 5);
+    let sents = rm.generate(3);
+    eq(sents.length, 3);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
       //console.log(i + ") " + s);
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
     }
+  });
 
-    rm = new RiMarkov(3); // 3 is max for sample, with input checking
+  it('should call generate4', () => {
+    let rm = new RiMarkov(3); // 3 is max for sample, with input checking
     rm.addText(sample);
     let s = rm.generate();
     //console.log(s);
@@ -465,10 +476,37 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
+
+  it('YYY', () => {
+
+    let rm = new RiMarkov(3, { trace: 1 });
+    rm.addText(RiTa.sentences(sample2));
+    //One reason people lie is to achieve personal power
+    let res = rm.generate(1);
+    console.log(res);
+    ok(/^[A-Z]/.test(res));
+    ok(/[!?.]$/.test(res));
+  });
+
+  it('ZZZ', () => {
+
+    let rm = new RiMarkov(3, { trace: 1 });
+    rm.addText(RiTa.sentences(sample2));
+    let res = rm.generate(2, { maxLength: 20 });
+    ok(res.length === 2);
+    res.forEach((r, i) => {
+      console.log(i, r);
+      ok(/^[A-Z]/.test(r));
+      ok(/[!?.]$/.test(r));
+    });
+
+  });
+
   it('XXX', () => {
 
-    let rm = new RiMarkov(3, { maxLengthMatch: 9, trace: 0 });
+    let rm = new RiMarkov(3, { maxLengthMatch: 19, trace: 0 });
     rm.addText(RiTa.sentences(sample2));
+    console.log(rm.leaves.length+' leaves');
     //One reason people lie is to achieve personal power
     let res = rm.generate(1, { seed: "One reason" });
     console.log(res);
@@ -476,7 +514,7 @@ describe('RiTa.RiMarkov', () => {
     ok(/[!?.]$/.test(res));
   });
 
-  it('should call generate.mlm', () => {
+  it('should call generate.mlm1', () => {
 
     let mlms = 8, theText = sample4, rm;
 
@@ -506,14 +544,18 @@ describe('RiTa.RiMarkov', () => {
           + res + '" was found in input:\n\n' + sample + '\n\n' + rm.input);
       }
     }
+  });
 
-    mlms = 9
-    rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
+  it('should call generate.mlm2', () => {
+
+    let mlms = 8;
+    let rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
     expect(typeof rm.input === 'object').to.be.true;
     rm.addText(RiTa.sentences(sample2));
-    sents = rm.generate(3);
+    let sents = rm.generate(3);
     for (let i = 0; i < sents.length; i++) {
       let sent = sents[i];
+      console.log(i, sent);
       let toks = RiTa.tokenize(sent);
       for (let j = 0; j <= toks.length - rm.n; j++) {
         let part = toks.slice(j, j + rm.n);
@@ -523,7 +565,8 @@ describe('RiTa.RiMarkov', () => {
       for (let j = 0; j <= toks.length - (mlms + 1); j++) {
         let part = toks.slice(j, j + (mlms + 1));
         let res = RiTa.untokenize(part);
-        ok(sample2.indexOf(res) < 0, 'Got "' + sent + '"\n\nBut "' + res + '" was found in input:\n\n' + sample + '\n\n' + rm.input);
+        ok(sample2.indexOf(res) < 0, 'Got "' + sent + '"\n\nBut "'
+          + res + '" was found in input:\n\n' + sample + '\n\n' + rm.input);
       }
     }
   });
