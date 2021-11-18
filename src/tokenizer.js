@@ -91,11 +91,11 @@ class Tokenizer {
       let lastToken = arr[i - 1];
 
       let thisComma = thisToken === ',', lastComma = lastToken === ',';
-      let thisNBPunct = NOSP_BF_PUNCT_RE.test(thisToken) || UNTAG_RE[2].test(thisToken); // NB -> no space before the punctuation (add closing tag)
+      let thisNBPunct = NOSP_BF_PUNCT_RE.test(thisToken) || UNTAG_RE[2].test(thisToken) || LINEBREAK_RE.test(thisToken); // NB -> no space before the punctuation (add closing tag)
       let thisLBracket = LB_RE.test(thisToken); // LBracket -> left bracket
       let thisRBracket = RB_RE.test(thisToken); // RBracket -> right bracket
-      let lastNBPunct = NOSP_BF_PUNCT_RE.test(lastToken); // NB -> no space before
-      let lastNAPunct = NOSP_AF_PUNCT_RE.test(lastToken) || UNTAG_RE[1].test(lastToken)// NA -> no space after (add opening tag)
+      let lastNBPunct = NOSP_BF_PUNCT_RE.test(lastToken) || LINEBREAK_RE.test(lastToken); // NB -> no space before
+      let lastNAPunct = NOSP_AF_PUNCT_RE.test(lastToken) || UNTAG_RE[1].test(lastToken) || LINEBREAK_RE.test(lastToken);// NA -> no space after (add opening tag)
       let lastLB = LB_RE.test(lastToken), lastRB = RB_RE.test(lastToken);
       let lastEndWithS = (lastToken[lastToken.length - 1] === 's'
         && lastToken != "is" && lastToken != "Is" && lastToken != "IS");
@@ -103,6 +103,7 @@ class Tokenizer {
       let nextIsS = i == arr.length - 1 ? false : (arr[i + 1] === "s" || arr[i + 1] === "S");
       let lastQuote = QUOTE_RE.test(lastToken), isLast = (i == arr.length - 1);
       let thisQuote = QUOTE_RE.test(thisToken);
+      let thisLineBreak = LINEBREAK_RE.test(thisToken);
 
       if ((lastToken === "." && isDomain) || nextNoSpace) {
         nextNoSpace = false;
@@ -146,7 +147,7 @@ class Tokenizer {
 
       } else if ((!thisNBPunct && !lastQuote && !lastNAPunct && !lastLB && !thisRBracket)
         || (!isLast && thisNBPunct && lastNBPunct && !lastNAPunct
-          && !lastQuote && !lastLB && !thisRBracket)) {
+          && !lastQuote && !lastLB && !thisRBracket) && !thisLineBreak) {
         result += delim;
       }
 
@@ -261,9 +262,10 @@ const TAG = "TAG", UNDER_RE = /([a-zA-z]|[\.\,])_([a-zA-Z])/g;
 const LB_RE = /^[\[\(\{\u27e8]+$/, RB_RE = /^[\)\]\}\u27e9]+$/;
 const QUOTE_RE = /^[""\u201c\u201d\u2019\u2018`''\u00ab\u00bb]+$/;
 const DOMAIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|ch|fr)$/;
-const SQUOTE_RE = /^[\u2019\u2018`']+$/, ALPHA_RE = /^[A-Za-z’']+$/, WS_RE = /\s+/;
+const SQUOTE_RE = /^[\u2019\u2018`']+$/, ALPHA_RE = /^[A-Za-z’']+$/, WS_RE = / +/;
 const APOS_RE = /^[\u2019']+$/, NL_RE = /(\r?\n)+/g, WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
 const NOSP_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""\u201c\u201d\u2019\u2018`'%\u2026\u2103\^\*\u00b0\/\u2044\-@]+$/;
+const LINEBREAK_RE = /[\n\r\036]/;
 
 const TOKENIZE_RE = [
 
@@ -295,6 +297,12 @@ const TOKENIZE_RE = [
   /([\-]?[0-9]+)\.([0-9]+)/g,"$1DECIMALDOT$2_",//(-)27.3
   /([\-]?[0-9]+)\.([0-9]+)e([\-]?[0-9]+)/g, "_$1DECIMALDOT$2POWERE$3_",//(-)1.2e10
   /([0-9]{3}),([0-9]{3})/g, "$1_DECIMALCOMMA_$2", // large numbers like 200,000,000.13
+  //escape sequences of line breaks in ASCII
+  /\r\n/g, " _CARRIAGERETURNLINEFEED_ ", // CR LF
+  /\n\r/g, " _LINEFEEDCARRIAGERETURN_ ", // LF CR
+  /\n/g, " _LINEFEED_ ", // LF
+  /\r/g, " _CARRIAGERETURN_ ", // CR
+  /\036/g, " _RECORDSEPARATOR_ ", // RS
   //--------------------------
   /\.\.\.\s/g, "_elipsisDDD_ ",
   /([\?!\"\u201C\.,;:@#$%&])/g, " $1 ",
@@ -342,6 +350,11 @@ const TOKENIZE_RE = [
   /([\-]?[0-9]+)DECIMALDOT([0-9]+)_/g,"$1.$2", //(-)27.3
   /_([\-]?[0-9]+)\DECIMALDOT([0-9]+)POWERE([\-]?[0-9]+)_/g, "$1.$2e$3", //(-)1.2e(-)9
   /_DECIMALCOMMA_/g,",",// large numbers like 200,000,000.13
+  /_LINEFEED_/g, "\n", // LF
+  /_CARRIAGERETURN_/g, "\r", // CR
+  /_CARRIAGERETURNLINEFEED_/g, "\r\n", // CR LF
+  /_LINEFEEDCARRIAGERETURN_/g, "\n\r", // LF CR
+  /_RECORDSEPARATOR_/g, "\\036", // RS
 ];
 
 const CONTRACTS_RE = [ // SYNC:
