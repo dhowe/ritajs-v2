@@ -613,6 +613,28 @@ describe('RiTa.Tokenizer', () => {
     expect(RiTa.untokenize(['He', 'owed', '200,000.50', '.'])).eq("He owed 200,000.50.");
   });
 
+  it('Should handle line breaks', () => {
+    expect(RiTa.tokenize('A CARAFE, THAT IS A BLIND GLASS.\nA kind in glass and a cousin.')).eql([
+      'A', 'CARAFE', ',',
+      'THAT', 'IS', 'A',
+      'BLIND', 'GLASS', '.', '\n',
+      'A', 'kind', 'in',
+      'glass', 'and', 'a',
+      'cousin', '.'
+    ]);
+    expect(RiTa.tokenize('A CARAFE, THAT IS A BLIND GLASS.\r\nA kind in glass and a cousin.')).eql([
+      'A', 'CARAFE', ',',
+      'THAT', 'IS', 'A',
+      'BLIND', 'GLASS', '.', '\r\n',
+      'A', 'kind', 'in',
+      'glass', 'and', 'a',
+      'cousin', '.'
+    ]);
+    expect(RiTa.untokenize(RiTa.tokenize('A CARAFE, THAT IS A BLIND GLASS.\nA kind in glass and a cousin.'))).eq("A CARAFE, THAT IS A BLIND GLASS.\nA kind in glass and a cousin.");
+    expect(RiTa.untokenize(RiTa.tokenize('A CARAFE, THAT IS A BLIND GLASS.\r\nA kind in glass and a cousin.'))).eq("A CARAFE, THAT IS A BLIND GLASS.\r\nA kind in glass and a cousin.");
+
+  });
+
   function eql(a, b, m) { expect(a).eql(b, m); }
   function eq(a, b, m) { expect(a).eq(b, m); }
   function ok(a, m) { expect(a, m).to.be.true; }
