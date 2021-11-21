@@ -5,6 +5,12 @@ import { RiTa, expect } from './before';
 // TODO:
 //   what to do if a seed is not a sentence start
 
+
+// WORKING: on 'should apply custom tokenizers'
+// MUST GET:
+// 0 asdfasdfasdfasdf-
+// 1 asqwer +
+
 describe('RiTa.RiMarkov', () => {
 
   // TODO: optimize selectNext
@@ -14,7 +20,7 @@ describe('RiTa.RiMarkov', () => {
   let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
   let sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself. After all, I did occasionally want to be embarrassed.";
   let sample3 = sample + ' One reason people are dishonest is to achieve power.';
-  let sample4 = "The Sun is a barren, rocky world without air and water. It has dark lava Sun on its surface. The Sun is filled with craters. It has no light of its own. It gets its light from the Sun. The Sun keeps changing its shape as it moves around the Sun. It spins on its Sun in 273 days. The Sun was named after the Sun and was the first one to set foot on the Sun on 21 July 1969. They reached the Sun in their space craft named the Sun. The Sun is a huge ball of gases. It has a diameter of two km. It is so huge that it can hold millions of planets inside it. The Sun is mainly made up of hydrogen and helium gas. The surface of the Sun is known as the Sun surface. The Sun is surrounded by a thin layer of gas known as the chromospheres. Without the Sun, there would be no life on the Sun. There would be no plants, no animals and no Sun. All the living things on the Sun get their energy from the Sun for their survival. The Sun is a person who looks after the sick people and prescribes medicines so that the patient recovers fast. In order to become a Sun, a person has to study medicine. The Sun lead a hard life. Its life is very busy. The Sun gets up early in the morning and goes in circle. The Sun works without taking a break. The Sun always remain polite so that we feel comfortable with it. Since the Sun works so hard we should realise its value. The Sun is an agricultural country. Most of the people on the Sun live in villages and are farmers. The Sun grows cereal, vegetables and fruits. The Sun leads a tough life. The Sun gets up early in the morning and goes in circles. The Sun stays and work in the sky until late evening. The Sun usually lives in a dark house. Though the Sun works hard it remains poor. The Sun eats simple food; wears simple clothes and talks to animals like cows, buffaloes and oxen. Without the Sun there would be no cereals for us to eat. The Sun plays an important role in the growth and economy of the sky.";
+  let sample4 = "The Sun is a barren, rocky world without air and water. It has dark lava Sun on its surface. The Sun is filled with craters. It has no light of its own. It gets its light from the Sun. The Sun keeps changing its shape as it moves around the Sun. It spins on its Sun in 273 days. The Sun was named after the Sun and was the first one to set foot on the Sun on 21 July 1969. They reached the Sun in their space craft named the Sun. The Sun is a huge ball of gases. It has a diameter of two km. It is so huge that it can hold millions of planets inside it. The Sun is mainly made up of hydrogen and helium gas. The surface of the Sun is known as the Sun surface. The Sun is surrounded by a thin layer of gas known as the chromospheres. Without the Sun, there would be no life on the Sun. There would be no plants, no animals and no Sun. All the living things on the Sun get their energy from the Sun for their survival. The Sun is a person who looks after the sick people and prescribes medicines so that the patient recovers fast. In order to become a Sun, a person has to study medicine. The Sun lead a hard life. Its life is very busy. The Sun gets up early in the morning and goes in circle. The Sun works without taking a break. The Sun always remains polite so that we feel comfortable with it. Since the Sun works so hard we should realise its value. The Sun is an agricultural country. Most of the people on the Sun live in villages and are farmers. The Sun grows cereal, vegetables and fruits. The Sun leads a tough life. The Sun gets up early in the morning and goes in circles. The Sun stays and work in the sky until late evening. The Sun usually lives in a dark house. Though the Sun works hard it remains poor. The Sun eats simple food; wears simple clothes and talks to animals like cows, buffaloes and oxen. Without the Sun there would be no cereals for us to eat. The Sun plays an important role in the growth and economy of the sky.";
 
   before(function () {
     while (!RiTa) {
@@ -231,9 +237,25 @@ describe('RiTa.RiMarkov', () => {
     expect(() => rm.generate(5)).to.throw;
   });
 
-  it('should apply custom tokenizers', () => {
+  it('should split on custom tokenizers', () => {
 
     let sents = ['asdfasdf-', 'aqwerqwer+', 'asdfasdf*'];
+    let tokenize = (sent) => sent.split("");
+    let untokenize = (sents) => sents.join("");
+
+    let rm = new RiMarkov(4, { tokenize, untokenize });
+    rm.addText(sents);
+
+    let se = [...rm.sentenceEnds];
+    eql(se, ['-', '+', '*']);
+
+    let res = rm._splitEnds(sents.join(''));
+    eql(res, sents);
+  });
+  
+  it('should apply custom tokenizers', () => {
+
+    let sents = ['asdfasdf-', 'asqwerqwer+', 'asadaqdf*'];
     let tokenize = (sent) => sent.split("");
     let untokenize = (sents) => sents.join("");
 
@@ -246,12 +268,14 @@ describe('RiTa.RiMarkov', () => {
     expect(rm.sentenceEnds.has('+')).true;
     expect(rm.sentenceEnds.has('*')).true;
     //rm.trace=1;
-    let result = rm.generate(5, { seed: 'as' });
-    /*     for (let i = 0; i < result.length; i++) {
-          console.log(i, result[i]);
-        } */
+    let result = rm.generate(2, { seed: 'as', maxLength: 20 });
 
-    eq(result.length, 5);
+    console.log('got ', result);
+    for (let i = 0; i < result.length; i++) {
+      console.log(i, result[i]);
+    }
+
+    eq(result.length, 2);
     ok(/^as.*[-=*]$/.test(result[0]), "FAIL: '" + result[0] + "'");
   });
 
@@ -311,7 +335,7 @@ describe('RiTa.RiMarkov', () => {
     let rm;
     rm = new RiMarkov(4, { disableInputChecks: true });
     rm.addText(RiTa.sentences(sample));
-    sent = rm.generate({ seed: "I" });
+    let sent = rm.generate({ seed: "I" });
     ok(typeof sent === 'string');
     eq(sent[0], "I");
     ok(/[!?.]$/.test(sent));
@@ -347,8 +371,8 @@ describe('RiTa.RiMarkov', () => {
 
     let rm = new RiMarkov(3, { disableInputChecks: 0 }), minLength = 7, maxLength = 20;
     rm.addText(RiTa.sentences(sample));
-    let sents = rm.generate(5, { minLength, maxLength });
-    eq(sents.length, 5);
+    let sents = rm.generate(3, { minLength, maxLength });
+    eq(sents.length, 3);
     console.log(sents);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
@@ -359,11 +383,14 @@ describe('RiTa.RiMarkov', () => {
       let num = RiTa.tokenize(s).length;
       expect(num >= minLength && num <= maxLength, (num + ' not within ' + minLength + '-' + maxLength)).to.be.true;
     }
+  });
 
-    rm = new RiMarkov(4, { disableInputChecks: 1 });
+  it('should call generate.minMaxLengthDIC', () => {
+
+    let rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
-    for (let i = 0; i < 5; i++) {
-      minLength = (3 + i), maxLength = (10 + i);
+    for (let i = 0; i < 3; i++) {
+      let minLength = (3 + i), maxLength = (10 + i);
       let s = rm.generate({ minLength, maxLength });
       //console.log(i + ") " + s);
       ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
@@ -504,7 +531,7 @@ describe('RiTa.RiMarkov', () => {
     rm.addText(RiTa.sentences(sample2));
     console.log(rm.size() + ' size', rm.leaves.length + ' leaves');
 
-    let s = ['embarrassed','.'];
+    let s = ['embarrassed', '.'];
     let parent = rm._pathTo(s);
     console.log(parent.token, parent.childNodes());
     return;
@@ -563,7 +590,7 @@ describe('RiTa.RiMarkov', () => {
 
   it('should call generate.mlm2', () => {
 
-    let mlms = 8;
+    let mlms = 9; // 10 ?
     let rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
     expect(typeof rm.input === 'object').to.be.true;
     rm.addText(RiTa.sentences(sample2));
@@ -875,7 +902,7 @@ describe('RiTa.RiMarkov', () => {
     eq(rm.size(), 0);
 
     let tokens = RiTa.tokenize(sample);
-    console.log(tokens.length+' tokens')
+    console.log(tokens.length + ' tokens')
     let sents = RiTa.sentences(sample);
     rm = new RiMarkov(3);
     rm.addText(sample);
@@ -954,7 +981,7 @@ describe('RiTa.RiMarkov', () => {
   }
 
   function markovEquals(rm, copy) {
-    
+
     false && Object.keys(rm) // check each non-object key
       .filter(k => !/(root|input|sentenceStarts|sentenceEnds)/.test(k))
       .forEach(k => console.log(k, '\n  ', rm[k], '\n  ', copy[k]));
