@@ -903,7 +903,7 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.spellsLike("ice", {
       minLength: 4, maxLength: 4, pos: 'nns', minDistance: 3, limit: 5
     });
-
+    
     result.forEach(r => expect(r.length === 4).to.be.true);
     eql(result, ['axes', 'beef', 'deer', 'dibs', 'fame']);
 
