@@ -905,7 +905,7 @@ describe('RiTa.Lexicon', function () {
     });
 
     result.forEach(r => expect(r.length === 4).to.be.true);
-    eql(result, ['axes', 'beef', 'deer', 'dibs', 'fish']);
+    eql(result, ['axes', 'beef', 'deer', 'dibs', 'fame']);
 
     // special case, where word is not in dictionary
     result = RiTa.spellsLike("abated", { pos: 'vbd' });

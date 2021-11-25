@@ -10,7 +10,6 @@ class Tagger {
 
   isVerb(word, opts) {
 
-
     let conj = this.RiTa.conjugator;
     
     // check irregular verbs (added 7/31/21) 

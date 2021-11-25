@@ -17,9 +17,9 @@ class Visitor extends RiScriptParserVisitor {
 
   init(context, opts) {
     this.pendingSymbols = [];
-    this.context = context || {};
     this.trace = opts && opts.trace;
     this.silent = opts && opts.silent;
+    this.context = context || {};//Object.assign({}, context); // clone
     return this;
   }
 
@@ -81,7 +81,7 @@ class Visitor extends RiScriptParserVisitor {
   }
 
   visitChoice(ctx) {
-   
+
     let text = ctx.getText().replace(TX_RE, '');
     let choice = this.choices[text];
     if (!choice) {
@@ -381,7 +381,7 @@ class ChoiceState {
     this.options = []
     this.rand = parent.RiTa.randomizer;
 
-    ctx.wexpr().map((w, k) => {
+    ctx.wexpr().forEach((w, k) => {
       let wctx = w.weight();
       let weight = wctx ? parseInt(wctx.INT()) : 1;
       let expr = w.expr() || Visitor.EC;

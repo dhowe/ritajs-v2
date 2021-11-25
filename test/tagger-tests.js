@@ -3,7 +3,7 @@ import { RiTa, expect } from './before';
 describe('RiTa.Tagger', () => {
 
   it('Should call pos.array', () => {
-    //eql(RiTa.pos([]), []);
+    eql(RiTa.pos([]), []);
     eql(RiTa.pos(["deal"]), ["nn"]);
     eql(RiTa.pos(["freed"]), ["jj"]);
     eql(RiTa.pos(["the"]), ["dt"]);

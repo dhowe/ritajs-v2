@@ -10,7 +10,6 @@ class Errors extends antlr4.error.ErrorListener {
     super();
   }
   syntaxError(recognizer, offendingSymbol, line, column, msg, err) {
-    //console.error(`${offendingSymbol} line ${line}, col ${column}: ${msg}`);
     throw Error(`${offendingSymbol} line ${line}, col ${column}: ${msg}`);
   }
 }
@@ -29,6 +28,8 @@ class RiScript {
   }
 
   evaluate(input, ctx, opts = {}) {
+    const orig = {};
+    Object.assign(orig, ctx);
 
     ctx = ctx || {};
 
@@ -39,6 +40,9 @@ class RiScript {
       last = expr;
       trace && console.log('-'.repeat(20) + ' Pass#' + i + ' ' + '-'.repeat(20));
       expr = this.lexParseVisit(expr, ctx, opts);
+      if (orig.syn1 !== ctx.syn1) {
+        console.log('HIT#'+i);
+      };
       if (trace) this.passInfo(ctx, last, expr, i);
       if (onepass || !this.isParseable(expr)) break;
     }

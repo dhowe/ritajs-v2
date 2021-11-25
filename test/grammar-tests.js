@@ -47,6 +47,22 @@ describe('RiTa.RiGrammar', function() {
         ok(typeof new RiGrammar() !== 'undefined');
     });
 
+    it('Should never modify context', () => { // FIX FOR rita#157
+        let data = [["anarchy", "bourgeoisie", "civilization", "communism", "conservatism", "democracy", "despotism", "dictatorship", "economics", "economy", "fascism", "feudalism", "ideology", "imperialism", "individualism", "liberalism", "materialism", "militarism", "monarchy"], ["bread", "coffee", "cook", "declaimer", "diet", "dinner", "dish", "drink", "emotion", "feast", "fish", "flour"]]
+        //let syn1 = data[1].join('|');
+        //console.log(syn1);
+        let rg = RiTa.grammar({
+            start: '$line0 $line1', 
+            line0: 'It is $syn1.art(), $syn0.art() and $syn1.nr().art().',
+            line1: 'It is $syn0.art(), $syn1.art() and $syn0.nr().art().',
+            syn0: data[0].join('|'),
+            syn1: data[1].join('|'),
+        });
+        for (let i = 0; i < 10; i++) {
+            console.log(i, rg.expand());
+        }
+    });
+
     it('Should support norepeat rules', () => {
         let fail = false, names = "a|b|c|d|e";
         let g = { start: "$names $names.norepeat()", names };
