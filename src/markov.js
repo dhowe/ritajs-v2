@@ -1,5 +1,7 @@
 import { parse, stringify } from 'flatted';
 
+// CURRENT: does not backtrack beyond OK sent [?]
+
 // TODO: unmarking of nodes
 class RiMarkov {
 
@@ -69,22 +71,31 @@ class RiMarkov {
     }
 
     this.trace = 1; // REMOVE
-    const num = count || 1;
-    const seed = opts.seed;
+
+    const num = count || 1;    
     const minLength = opts.minLength || 5;
     const maxLength = opts.maxLength || 35;
-    const notMarked = (cn) => !cn.marked;
-
+    
     let tries = 0, tokens = [], usedStarts = [];
     let minIdx = 0, sentenceIdxs = [];
+
+    const notMarked = (cn) => {
+      let tmap = tokens.reduce((acc, e) => acc + e.token, '');
+      //console.log(cn.token+'.marked=' + cn.marked + ' ?= ' + tmap + ' -> ' + (cn.marked !== tmap));
+      return cn.marked !== tmap;
+    }
 
     const resultCount = () => {
       return tokens.filter(t => this.isEnd(t)).length;
     }
 
+    const markNode = (node) => {
+      node.marked = tokens.reduce((acc, e) => acc + e.token, '');
+    }
+
     const validateSentence = (next) => {
 
-      next.marked = true;
+      markNode(next);
       let sentIdx = sentenceIdx();
       if (this.trace) console.log(1 + (tokens.length - sentIdx),
         next.token, '[' + next.parent.childNodes().filter
@@ -121,7 +132,7 @@ class RiMarkov {
         let parent = this._pathTo(tokens);
         // don't end on input-end, unless this is the last result
         if (!parent || parent.isLeaf()) {
-          tokens.pop().marked = true;
+          markNode(tokens.pop());
           throw Error('Unexpected input-end with wraparound');
           fail('input-end'); // wrap?
           return false;
@@ -129,7 +140,7 @@ class RiMarkov {
       }
 
       sentenceIdxs.push(tokens.length);
-      if (this.trace) console.log('OK (' + resultCount() + '/' + num + ') "',
+      if (this.trace) console.log('OK (' + resultCount() + '/' + num + ') "' +
         flatSent + '" sidxs=[' + sentenceIdxs + ']\n');
 
       return true;
@@ -159,14 +170,14 @@ class RiMarkov {
       //      console.log('backtrack['+tokens[tokens.length-1].childNodes().map(t => token)+']')
       for (let i = 0; i < 500; i++) { // tmp-remove
         let last = tokens.pop();
-        last.marked = true;
+        markNode(last);
 
         if (this.isEnd(last)) sentenceIdxs.pop();
 
         let sentIdx = sentenceIdx();
         let backtrackUntil = Math.max(sentIdx, minIdx);
         if (this.trace) console.log('backtrack#' + tokens.length, 'pop "' + last.token + '" '
-          + (tokens.length - sentIdx) + "/" + backtrackUntil);
+          + (tokens.length - sentIdx) + "/" + backtrackUntil + ' ' + this._flatten(tokens));
 
         parent = this._pathTo(tokens);
         tc = parent.childNodes({ filter: notMarked });
@@ -189,9 +200,7 @@ class RiMarkov {
           */
 
           //console.log('tokens.length=' + tokens.length + ' <= minIdx=' + minIdx);
-          if (this.trace) console.log('BACK AT START: "' + this._flatten(tokens) + '" sentenceIdxs=' + sentenceIdxs
-            + ' ok=[' + parent.childNodes({ filter: notMarked }).map(t => t.token) + ']'
-            + ' all=[' + parent.childNodes().map(t => t.token) + ']');
+
 
           if (minIdx > 0) { // have seed
             if (tokens.length <= minIdx) { // back at seed
@@ -201,11 +210,17 @@ class RiMarkov {
             }
             else { // back at sentence-start
               if (!tc.length) {
-                if (this.trace) console.log('case 2');
-                tokens = tokens.slice(0, minIdx);
-                sentenceIdxs = [];
+                if (this.trace) console.log('case 2: back at SENT-START: "'
+                  + this._flatten(tokens) + '" sentenceIdxs=' + sentenceIdxs
+                  + ' ok=[' + parent.childNodes({ filter: notMarked }).map(t => t.token) + ']'
+                  + ' all=[' + parent.childNodes().map(t => t.token) + ']');
+                //if (this.trace) console.log('case 2');
+                sentenceIdxs.pop();
+                console.log('sentenceIdxs=' + sentenceIdxs);
+                //tokens = tokens.slice(0, minIdx);
+                //sentenceIdxs = [];
                 // need to unmark all?
-                if (this.trace) console.log('hard-fail: "' + this._flatten(tokens) + '" sentenceIdxs=' + sentenceIdxs);
+                //if (this.trace) console.log('hard-fail: "' + this._flatten(tokens) + '" sentenceIdxs=' + sentenceIdxs);
               }
               else {
                 if (this.trace) console.log('case 3');
@@ -237,6 +252,7 @@ class RiMarkov {
 
     const createSeed = (theSeed) => { // duplicate code? remove
 
+      
       if (typeof theSeed === 'string') theSeed = this.tokenize(theSeed);
       theSeed = theSeed || seed; // use seed if not passed ?
       minIdx = theSeed.length;
@@ -254,7 +270,7 @@ class RiMarkov {
         parent = this._pathTo(tokens);
         next = this._selectNext(parent, opts.temperature, tokens);
         tokens.push(next);
-        next.marked = true;
+        markNode(next);
       }
 
       if (this.trace) console.log('SEED: "'
@@ -266,9 +282,19 @@ class RiMarkov {
     }
 
     const selectStart = () => {
-
+      let seed = opts.seed;
+      if (seed && seed.length) {
+        if (typeof seed === 'string') seed = this.tokenize(seed);
+        let node = this._pathTo(seed, this.root);
+        while (!node.isRoot()) {
+          tokens.unshift(node);
+          node = node.parent;
+        }
+        console.log('seed: '+this._flatten(tokens));
+      }
+        
       // we need a new sentence-start
-      if (!tokens.length || this.isEnd(tokens[tokens.length - 1])) {
+      else if (!tokens.length || this.isEnd(tokens[tokens.length - 1])) {
         let usableStarts = this.sentenceStarts.filter(ss => !usedStarts.includes(ss)); // do marked instead?
         if (!usableStarts.length) throw Error('No valid sentence-start to try');
         let start = RiTa().random(usableStarts);
@@ -281,23 +307,21 @@ class RiMarkov {
       }
     }
 
-    if (seed && seed.length) { // move to selectStart
-      createSeed(seed);
+/*     if (seed && seed.length) { // move to selectStart
+      //createSeed(seed);
+      theSeed
+    
     }
-    else {
+    else { */
       selectStart();
-    }
+    //}
 
     while (resultCount() < num) {
 
       let sentIdx = sentenceIdx();
       //console.log('LEN? '+(tokens.length - sentIdx) + ' <= ' + maxLength)
       if (tokens.length - sentIdx >= maxLength) {
-        /*      let last = tokens.pop();
-             if (last) last.marked = true; */
         fail('too-long', 0, true);
-        /*         console.log('too-long, pop: ' + last);
-                if (last) last.marked = true; */
         continue;
       }
 
@@ -305,12 +329,7 @@ class RiMarkov {
       let next = this._selectNext(parent, opts.temperature, tokens, notMarked);
 
       if (!next) { // no valid children, pop and continue;
-        /*         let last = tokens.pop();
-                //console.log('no-child, pop: ' + last);
-                if (last) last.marked = true; */
         fail('no-children');
-
-        //fail('fail ???');
         continue;
       }
 

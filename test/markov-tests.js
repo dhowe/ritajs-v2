@@ -252,10 +252,14 @@ describe('RiTa.RiMarkov', () => {
     let res = rm._splitEnds(sents.join(''));
     eql(res, sents);
   });
-  
+
   it('should apply custom tokenizers', () => {
 
-    let sents = ['asdfasdf-', 'asqwerqwer+', 'asadaqdf*'];
+    // WORKING HERE: a set of options that can succeed MUST succeed
+
+    let answers = ["asdfasdfasdf-", "asqwerqwerqwer+", 'asdfasdfasdfasdf-', 'asqwer+'];
+
+    let sents = ['asdfasdf-', 'asqwerqwer+', 'aqadaqdf*'];
     let tokenize = (sent) => sent.split("");
     let untokenize = (sents) => sents.join("");
 
