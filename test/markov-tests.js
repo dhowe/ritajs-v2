@@ -274,10 +274,10 @@ describe('RiTa.RiMarkov', () => {
     //rm.trace=1;
     let result = rm.generate(2, { seed: 'as', maxLength: 20 });
 
-    console.log('got ', result);
-    for (let i = 0; i < result.length; i++) {
-      console.log(i, result[i]);
-    }
+    /*   console.log('got ', result);
+      for (let i = 0; i < result.length; i++) {
+        console.log(i, result[i]);
+      } */
 
     eq(result.length, 2);
     ok(/^as.*[-=*]$/.test(result[0]), "FAIL: '" + result[0] + "'");
@@ -377,7 +377,7 @@ describe('RiTa.RiMarkov', () => {
     rm.addText(RiTa.sentences(sample));
     let sents = rm.generate(3, { minLength, maxLength });
     eq(sents.length, 3);
-    console.log(sents);
+    //console.log(sents);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
       //console.log(i + ") " + s);
@@ -385,7 +385,8 @@ describe('RiTa.RiMarkov', () => {
       eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
       let num = RiTa.tokenize(s).length;
-      expect(num >= minLength && num <= maxLength, (num + ' not within ' + minLength + '-' + maxLength)).to.be.true;
+      expect(num >= minLength && num <= maxLength,
+        (num + ' not within ' + minLength + '-' + maxLength)).to.be.true;
     }
   });
 
@@ -410,7 +411,7 @@ describe('RiTa.RiMarkov', () => {
     let start = 'One';
     rm.addText(RiTa.sentences(sample));
     let s = rm.generate({ seed: start });
-    console.log(s);
+    //console.log(s);
     ok(s.startsWith(start));
 
     start = 'Achieving';
@@ -505,31 +506,17 @@ describe('RiTa.RiMarkov', () => {
     for (let j = 0; j <= toks.length - rm.n; j++) {
       let part = toks.slice(j, j + rm.n);
       let res = RiTa.untokenize(part);
-      //console.log(j, 'check: ' + res);
       ok(includesWithWrap(res, sample2), 'output not found in text: "' + res + '"\n' + sample2);
     }
   });
 
   function includesWithWrap(part, whole) {
-    //console.log('includesWithWrap: "' + part + '" in "' + whole + '"');
     let wrappedCheck = whole + ' ' + whole; // handle wrapping case
     return wrappedCheck.includes(part);
   }
 
-
-  it('YYY', () => {
-
-    let rm = new RiMarkov(3, { trace: 1 });
-    rm.addText(RiTa.sentences(sample2));
-    //One reason people lie is to achieve personal power
-    let res = rm.generate(1);
-    console.log(res);
-    ok(/^[A-Z]/.test(res));
-    ok(/[!?.]$/.test(res));
-  });
-
   it('should add tokens to wraparound', () => {
-    let rm = new RiMarkov(3, { trace: 1 });
+    let rm = new RiMarkov(3, { trace: 0 });
     rm.addText(RiTa.sentences('The dog ate the cat. A girl ate a mat.'));
     let s = ['mat', '.'];
     let parent = rm._pathTo(s);
@@ -538,35 +525,48 @@ describe('RiTa.RiMarkov', () => {
     ok(parent.childNodes()[0].token === 'The');
   });
 
-  it('ZZZ', () => {
-
-    let rm = new RiMarkov(3, { trace: 1 });
-    rm.addText(RiTa.sentences(sample2));
-    console.log(rm.size() + ' size', rm.leaves.length + ' leaves');
-
-    let s = ['embarrassed', '.'];
-    let parent = rm._pathTo(s);
-    console.log(parent.token, parent.childNodes());
-    return;
-    let res = rm.generate(2, { maxLength: 20 });
-    ok(res.length === 2);
-    res.forEach((r, i) => {
-      console.log(i, r);
-      ok(/^[A-Z]/.test(r));
-      ok(/[!?.]$/.test(r));
-    });
-
-  });
-
   it('XXX', () => {
 
     let rm = new RiMarkov(3, { maxLengthMatch: 19, trace: 0 });
     rm.addText(RiTa.sentences(sample2));
     //One reason people lie is to achieve personal power
     let res = rm.generate(1, { seed: "One reason", maxLength: 20 });
-    console.log(res);
+    //console.log(res);
     ok(res.startsWith("One reason"));
     ok(/[!?.]$/.test(res));
+  });
+
+  it('YYY', () => {
+
+    let rm = new RiMarkov(3, { trace: 0 });
+    rm.addText(RiTa.sentences(sample2));
+    //One reason people lie is to achieve personal power
+    let res = rm.generate(1);
+    //console.log(res);
+    ok(/^[A-Z]/.test(res));
+    ok(/[!?.]$/.test(res));
+  });
+
+  it('ZZZ', () => {
+
+    let rm = new RiMarkov(3, { trace: 0 });
+    rm.addText(RiTa.sentences(sample2));
+    //console.log(rm.size() + ' size', rm.leaves.length + ' leaves');
+
+    let s = ['embarrassed', '.'];
+    let parent = rm._pathTo(s);
+    //console.log(parent.token, parent.childNodes());
+
+    // TODO: failing
+    return;
+    let res = rm.generate(2, { maxLength: 20 });
+    ok(res.length === 2);
+    res.forEach((r, i) => {
+      //console.log(i, r);
+      ok(/^[A-Z]/.test(r));
+      ok(/[!?.]$/.test(r));
+    });
+
   });
 
   it('should call generate.mlm1', () => {
@@ -610,7 +610,7 @@ describe('RiTa.RiMarkov', () => {
     let sents = rm.generate(3);
     for (let i = 0; i < sents.length; i++) {
       let sent = sents[i];
-      console.log(i, sent);
+      //console.log(i, sent);
       let toks = RiTa.tokenize(sent);
       for (let j = 0; j <= toks.length - rm.n; j++) {
         let part = toks.slice(j, j + rm.n);
@@ -915,7 +915,7 @@ describe('RiTa.RiMarkov', () => {
     eq(rm.size(), 0);
 
     let tokens = RiTa.tokenize(sample);
-    console.log(tokens.length + ' tokens')
+    //console.log(tokens.length + ' tokens')
     let sents = RiTa.sentences(sample);
     rm = new RiMarkov(3);
     rm.addText(sample);
@@ -995,17 +995,15 @@ describe('RiTa.RiMarkov', () => {
 
   function markovEquals(rm, copy) {
 
-    false && Object.keys(rm) // check each non-object key
-      .filter(k => !/(root|input|sentenceStarts|sentenceEnds)/.test(k))
-      .forEach(k => console.log(k, '\n  ', rm[k], '\n  ', copy[k]));
-
     Object.keys(rm) // check each non-object key
       .filter(k => !/(root|input|sentenceStarts|sentenceEnds|leaves)/.test(k))
       .forEach(k => expect(rm[k], 'failed on ' + k).eq(copy[k]));
 
-    console.log('rm', rm.toString());
-    console.log('cp', copy.toString());
+    //console.log('rm', rm.toString());
+    //console.log('cp', copy.toString());
     return;
+
+    // TODO: ??
     expect(rm.toString()).eq(copy.toString());
     expect(rm.toJSON()).eq(copy.toJSON());
 
