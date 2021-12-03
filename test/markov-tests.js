@@ -492,6 +492,8 @@ describe('RiTa.RiMarkov', () => {
 
   it('should generate across sentences', () => {
 
+    // NEXT: occasionally failing when sentence wraps around
+
     let rm = new RiMarkov(3, { trace: 0 });
     rm.addText(RiTa.sentences(sample2));
 
@@ -503,9 +505,16 @@ describe('RiTa.RiMarkov', () => {
     for (let j = 0; j <= toks.length - rm.n; j++) {
       let part = toks.slice(j, j + rm.n);
       let res = RiTa.untokenize(part);
-      ok(sample2.indexOf(res) > -1, 'output not found in text: "' + res + '"\n' + sample2);
+      //console.log(j, 'check: ' + res);
+      ok(includesWithWrap(res, sample2), 'output not found in text: "' + res + '"\n' + sample2);
     }
   });
+
+  function includesWithWrap(part, whole) {
+    //console.log('includesWithWrap: "' + part + '" in "' + whole + '"');
+    let wrappedCheck = whole + ' ' + whole; // handle wrapping case
+    return wrappedCheck.includes(part);
+  }
 
 
   it('YYY', () => {

@@ -1,7 +1,5 @@
 import { parse, stringify } from 'flatted';
 
-// CURRENT: does not backtrack beyond OK sent [?]
-
 // TODO: unmarking of nodes
 class RiMarkov {
 
@@ -129,6 +127,12 @@ class RiMarkov {
         return false;
       }
 
+      if (!this.mlm && !this._validateMlms(next, sentence)) {
+        throw Error('mlm-fail2 -- should never happen!');
+        fail('mlm-fail#2', 0, tokens); // recheck mlm?
+        return false;
+      }
+
       tokens.push(next);
 
       // TMP: remove (shouldnt ever happen with wraparound)
@@ -253,38 +257,8 @@ class RiMarkov {
       return sentenceIdxs.length ? sentenceIdxs[sentenceIdxs.length - 1] : 0;
     }
 
-    const createSeed = (theSeed) => { // duplicate code? remove
-
-
-      if (typeof theSeed === 'string') theSeed = this.tokenize(theSeed);
-      theSeed = theSeed || seed; // use seed if not passed ?
-      minIdx = theSeed.length;
-      //console.log('minIdx=' + minIdx + ' seed.length=' + seed.length);
-
-      // TODO: allow for longer seeds
-      let node = this._pathTo(theSeed, this.root);
-      while (!node.isRoot()) {
-        tokens.unshift(node);
-        node = node.parent;
-      }
-
-      let parent, next, max = 0;
-      while (tokens.length < this.n - 1 && ++max < 100) {
-        parent = this._pathTo(tokens);
-        next = this._selectNext(parent, opts.temperature, tokens);
-        tokens.push(next);
-        markNode(next);
-      }
-
-      if (this.trace) console.log('SEED: "'
-        + this._flatten(tokens.slice(0, -1)) + '" ok=['
-        + parent.childNodes({ filter: notMarked }).map(t => t.token) + ']'
-        + ' all=[' + parent.childNodes().map(t => t.token) + ']\n'
-        + tokens.length, next.token, '[' + parent.childNodes().filter
-          (t => t !== next).map(t => t.token) + ']'); // print every child      
-    }
-
     const selectStart = () => {
+
       let seed = opts.seed;
       if (seed && seed.length) {
         if (typeof seed === 'string') seed = this.tokenize(seed);
@@ -303,12 +277,12 @@ class RiMarkov {
         if (!usableStarts.length) throw Error('No valid sentence-starts remaining');
         let start = RiTa().random(usableStarts);
         let startTok = this.root.child(start);
-        console.log('prestart: '+startTok.marked);
+        console.log('prestart: ' + startTok.marked);
         markNode(startTok);
-        console.log('poststart: "'+startTok.marked+'"');
+        console.log('poststart: "' + startTok.marked + '"');
         usableStarts = this.sentenceStarts.filter(ss => notMarked(this.root.child(ss)));
-        if (this.trace) console.log(tokens.length + ' ' + start, '\nusablePost: ' + JSON.stringify(usableStarts));
         tokens.push(startTok);
+        if (this.trace) console.log(tokens.length + ' ' + start, '\nusablePost: ' + JSON.stringify(usableStarts));
         //usedStarts.push(start);
       }
       else {
@@ -338,8 +312,8 @@ class RiMarkov {
       let next = this._selectNext(parent, opts.temperature, tokens, notMarked);
 
       if (!next) { // no valid children, pop and continue;
-        tokens.pop();
-        fail('mlm-fail', 0, true);
+        //tokens.pop();
+        fail('mlm-fail('+this.mlm+')', /*was: 0*/ this._flatten(tokens), true);
         continue;
       }
 
@@ -446,6 +420,16 @@ class RiMarkov {
 
   ////////////////////////////// end API ////////////////////////////////
 
+  _validateMlms(word, nodes) {
+    if (!nodes.length) return true;
+    let check = nodes.slice(-this.mlm);
+    if (check[0].hasOwnProperty('token')) {
+      check = check.map(n => n.token);
+    }
+    check.push(word.token);
+    return !isSubArray(check, this.input);
+  }
+
   // selects child based on temp, filter and probability (throws)
   _selectNext(parent, temp, tokens, filter) {
 
@@ -463,17 +447,11 @@ class RiMarkov {
       return parent.pselect(filter);
     }
 
-    const validateMlms = (word, nodes) => {
+    /*const validateMlms = (word, nodes) => {
       let check = nodes.slice(-this.mlm).map(n => n.token);
       check.push(word.token);
-      let res = !isSubArray(check, this.input);
-      /*       if (!res) {
-              console.log("PRE", res, check);
-              if (this.trace) console.log('Fail: mlm-fail("'
-                + this.untokenize(check) + '" -> "' + word.token + '")');
-            } */
-      return res;
-    }
+      return!isSubArray(check, this.input);
+    }*/
 
     const rand = RiMarkov.parent.randomizer;
     const weights = children.map(n => n.count);
@@ -492,7 +470,7 @@ class RiMarkov {
       if (selector < pTotal) {
         if (!tried.includes(next.token)) {
           tried.push(next.token);
-          if (validateMlms(next, tokens)) {
+          if (this._validateMlms(next, tokens)) {
             return next;
           }
           else {
