@@ -2,7 +2,7 @@ import { RiTa, expect } from './before';
 
 describe('RiTa.Tokenizer', () => {
 
-  it('Should call tokens()', () => { // SYNC:
+  it('Should call tokens', () => { // SYNC:
 
     let tokens, input = "She wrote: \"I don't paint anymore. For a while she thought it was just a phase that she'd get over.\"";
 

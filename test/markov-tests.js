@@ -392,7 +392,7 @@ describe('RiTa.RiMarkov', () => {
     res = rm.generate(2, { maxLength: 20 });
     ok(res.length === 2);
     res.forEach((r, i) => {
-      console.log(i, r);
+      //console.log(i, r);
       ok(/^[A-Z]/.test(r));
       ok(/[!?.]$/.test(r));
     });
