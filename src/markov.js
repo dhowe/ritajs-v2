@@ -195,7 +195,7 @@ class RiMarkov {
             }
           }
 
-          return true; 
+          return true;
         }
 
         if (tc.length) {
@@ -353,9 +353,9 @@ class RiMarkov {
     return p;
   }
 
-  toString(root) {
+  toString(root, sort) {
     root = root || this.root;
-    return root.asTree().replace(/{}/g, '');
+    return root.asTree(sort).replace(/{}/g, '');
   }
 
   size() {
@@ -395,7 +395,7 @@ class RiMarkov {
     const validateMlms = (word, nodes) => {
       let check = nodes.slice(-this.mlm).map(n => n.token);
       check.push(word.token);
-      return!isSubArray(check, this.input);
+      return !isSubArray(check, this.input);
     }
 
     const rand = RiMarkov.parent.randomizer;
@@ -468,7 +468,9 @@ class RiMarkov {
   }
 
 
-  _splitEnds(str) { // must be a better way
+  _splitEnds(str) {
+    // split on sentence ends, keeping delims
+    // yuk: there must be a better way to do this
     let se = [...this.sentenceEnds];
     let re = '(' + se.reduce((acc, w) => acc + w + '|', '')
       .slice(0, -1).replace(/[.*+?^${}()[\]\\]/g, '\\$&') + ")";
@@ -482,7 +484,7 @@ class RiMarkov {
         arr[arr.length - 1] += parts[i];
       }
     }
-    return arr;
+    return arr.map(a => a.trim());
   }
 
   /* create a sentence string from an array of nodes */

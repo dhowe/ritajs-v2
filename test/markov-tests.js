@@ -371,6 +371,33 @@ describe('RiTa.RiMarkov', () => {
     ok(num >= 5 && num <= 35);
   });
 
+  it('should call generate5', () => { // misc
+
+    let rm = new RiMarkov(3, { maxLengthMatch: 19, trace: 0 });
+    rm.addText(RiTa.sentences(sample2));
+    let res = rm.generate(1, { seed: "One reason", maxLength: 20 });
+    ok(res.startsWith("One reason"));
+    ok(/[!?.]$/.test(res));
+
+    rm = new RiMarkov(3, { trace: 0 });
+    rm.addText(RiTa.sentences(sample2));
+    //One reason people lie is to achieve personal power
+    res = rm.generate(1);
+    //console.log(res);
+    ok(/^[A-Z]/.test(res));
+    ok(/[!?.]$/.test(res));
+
+    rm = new RiMarkov(3, { trace: 0 });
+    rm.addText(RiTa.sentences(sample2));
+    res = rm.generate(2, { maxLength: 20 });
+    ok(res.length === 2);
+    res.forEach((r, i) => {
+      console.log(i, r);
+      ok(/^[A-Z]/.test(r));
+      ok(/[!?.]$/.test(r));
+    });
+  });
+
   it('should call generate.minMaxLength', () => {
 
     let rm = new RiMarkov(3, { disableInputChecks: 0 }), minLength = 7, maxLength = 20;
@@ -523,50 +550,6 @@ describe('RiTa.RiMarkov', () => {
     ok(parent.token === '.');
     ok(parent.childCount() === 1);
     ok(parent.childNodes()[0].token === 'The');
-  });
-
-  it('XXX', () => {
-
-    let rm = new RiMarkov(3, { maxLengthMatch: 19, trace: 0 });
-    rm.addText(RiTa.sentences(sample2));
-    //One reason people lie is to achieve personal power
-    let res = rm.generate(1, { seed: "One reason", maxLength: 20 });
-    //console.log(res);
-    ok(res.startsWith("One reason"));
-    ok(/[!?.]$/.test(res));
-  });
-
-  it('YYY', () => {
-
-    let rm = new RiMarkov(3, { trace: 0 });
-    rm.addText(RiTa.sentences(sample2));
-    //One reason people lie is to achieve personal power
-    let res = rm.generate(1);
-    //console.log(res);
-    ok(/^[A-Z]/.test(res));
-    ok(/[!?.]$/.test(res));
-  });
-
-  it('ZZZ', () => {
-
-    let rm = new RiMarkov(3, { trace: 0 });
-    rm.addText(RiTa.sentences(sample2));
-    //console.log(rm.size() + ' size', rm.leaves.length + ' leaves');
-
-    let s = ['embarrassed', '.'];
-    let parent = rm._pathTo(s);
-    //console.log(parent.token, parent.childNodes());
-
-    // TODO: failing
-    return;
-    let res = rm.generate(2, { maxLength: 20 });
-    ok(res.length === 2);
-    res.forEach((r, i) => {
-      //console.log(i, r);
-      ok(/^[A-Z]/.test(r));
-      ok(/[!?.]$/.test(r));
-    });
-
   });
 
   it('should call generate.mlm1', () => {
@@ -999,21 +982,22 @@ describe('RiTa.RiMarkov', () => {
       .filter(k => !/(root|input|sentenceStarts|sentenceEnds|leaves)/.test(k))
       .forEach(k => expect(rm[k], 'failed on ' + k).eq(copy[k]));
 
-    //console.log('rm', rm.toString());
-    //console.log('cp', copy.toString());
-    return;
-
-    // TODO: ??
-    expect(rm.toString()).eq(copy.toString());
-    expect(rm.toJSON()).eq(copy.toJSON());
-
-    expect(rm.root.toString()).eq(copy.root.toString());
     expect(rm.input).eql(copy.input);
     expect(rm.size()).eql(copy.size());
-
     expect(rm.sentenceStarts.toString()).eq(copy.sentenceStarts.toString());
     expect(rm.sentenceEnds.toString()).eq(copy.sentenceEnds.toString());
+    expect(rm.root.toString()).eq(copy.root.toString());
+    //console.log('rm', rm.toString());
+    //console.log('cp', copy.toString());
 
+    return;
+
+    // TODO: toString needs to sort children to match ??
+    expect(rm.toString(0, true)).eq(copy.toString(0, true));
+    //expect(rm.toString()).eq(copy.toString());
+    expect(rm.toJSON()).eq(copy.toJSON());
+
+    
   }
   function eql(a, b, c) { expect(a).eql(b, c); }
   function eq(a, b, c) { expect(a).eq(b, c); }
