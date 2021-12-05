@@ -1,6 +1,10 @@
 import { parse, stringify } from 'flatted';
 
-class RiMarkov {
+/*
+ * See full set of options for RiMarkov (https://rednoise.org/rita/reference/RiTa/markov/index.html)
+ * and RiMarkov.generate (https://rednoise.org/rita/reference/RiMarkov/generate/index.html)
+ */
+class RiMarkov { //SYNC:
 
   constructor(n, opts = {}) {
 
@@ -50,15 +54,6 @@ class RiMarkov {
     }
   }
 
-  isEnd(node) {
-    if (node) {
-      let check = node;
-      if ('token' in node) check = node.token; // needed?
-      return this.sentenceEnds.has(node.token);
-    }
-    return false;
-  }
-
   generate(count, opts = {}) {
 
     if (arguments.length === 1 && typeof count === 'object') {
@@ -74,7 +69,7 @@ class RiMarkov {
     let minIdx = 0, sentenceIdxs = [];
 
     const resultCount = () => {
-      return tokens.filter(t => this.isEnd(t)).length;
+      return tokens.filter(t => this._isEnd(t)).length;
     }
 
     const markNode = (node) => {
@@ -152,7 +147,7 @@ class RiMarkov {
         let last = tokens.pop();
         markNode(last);
 
-        if (this.isEnd(last)) sentenceIdxs.pop();
+        if (this._isEnd(last)) sentenceIdxs.pop();
 
         let sentIdx = sentenceIdx();
         let backtrackUntil = Math.max(sentIdx, minIdx);
@@ -227,7 +222,7 @@ class RiMarkov {
       }
 
       // we need a new sentence-start
-      else if (!tokens.length || this.isEnd(tokens[tokens.length - 1])) {
+      else if (!tokens.length || this._isEnd(tokens[tokens.length - 1])) {
         let usableStarts = this.sentenceStarts.filter(ss => notMarked(this.root.child(ss)));
         //console.log('usablePre: ' + JSON.stringify(usableStarts));
         if (!usableStarts.length) throw Error('No valid sentence-starts remaining');
@@ -262,7 +257,7 @@ class RiMarkov {
         continue;
       }
 
-      if (this.isEnd(next)) {
+      if (this._isEnd(next)) {
         validateSentence(next);
         continue;
       }
@@ -277,7 +272,6 @@ class RiMarkov {
     let str = this.untokenize(tokens.map(t => t.token));
     return num > 1 ? this._splitEnds(str) : str;
   }
-
 
   toJSON() {
     //console.log('  toJSON() ', Object.keys(this));
@@ -365,16 +359,6 @@ class RiMarkov {
 
   ////////////////////////////// end API ////////////////////////////////
 
-  /*_validateMlms(word, nodes) {
-    if (!nodes.length) return true;
-    let check = nodes.slice(-this.mlm);
-    if (check[0].hasOwnProperty('token')) {
-      check = check.map(n => n.token);
-    }
-    check.push(word.token);
-    return !isSubArray(check, this.input);
-  }*/
-
   // selects child based on temp, filter and probability (throws)
   _selectNext(parent, temp, tokens, filter) {
 
@@ -418,6 +402,18 @@ class RiMarkov {
         }
       }
     }
+  }
+
+  /*
+   * Returns true if node (or string) is a sentence end
+   */
+  _isEnd(node) {
+    if (node) {
+      let check = node;
+      if ('token' in node) check = node.token; // needed?
+      return this.sentenceEnds.has(check);
+    }
+    return false;
   }
 
   /*
@@ -467,10 +463,12 @@ class RiMarkov {
     }
   }
 
-
+  /*
+   * Split string of sentences on sentence-ends, keeping delims
+   * hack: there _must_ be a better way to do thisn
+   */
   _splitEnds(str) {
-    // split on sentence ends, keeping delims
-    // yuk: there must be a better way to do this
+
     let se = [...this.sentenceEnds];
     let re = '(' + se.reduce((acc, w) => acc + w + '|', '')
       .slice(0, -1).replace(/[.*+?^${}()[\]\\]/g, '\\$&') + ")";
