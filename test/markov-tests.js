@@ -46,6 +46,32 @@ describe('RiTa.RiMarkov', () => {
 
     rm = RiTa.markov(3, { text: "The dog ran away" });
     eq(rm.size(), 4);
+
+    rm = RiTa.markov(3, { text: ""});
+    eq(rm.size(), 0);
+    expect(() => {rm.generate()}).to.throw();
+
+    rm = RiTa.markov(3, { text: sample });
+    expect(rm.generate().length > 0);
+
+
+    rm = RiTa.markov(3, { text: "Too short."});
+    expect(() => {rm.generate()}).to.throw();
+    
+    rm = RiTa.markov(3, { text: 1 });
+    expect(() =>{rm.generate()}).to.throw();
+
+    rm = RiTa.markov(3, { text: false });
+    expect(() =>{rm.generate()}).to.throw();
+
+    rm = RiTa.markov(3, { text: ["Sentence one.", "Sentence two."] });
+    eq(rm.size(), 6);
+    
+    rm = RiTa.markov(3, { text: RiTa.sentences(sample) });
+    expect(rm.generate().length > 0);
+
+    expect(() => {rm = RiTa.markov(1)}).to.throw();
+    expect(() => {rm = RiTa.markov(3, {maxLengthMatch: 2})}).to.throw();
   });
 
   it('should call Random.pSelect', () => {
@@ -432,7 +458,7 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  it('should call generate.start', () => {
+  it('should call generate.seed', () => {
 
     let rm = new RiMarkov(4, { disableInputChecks: 1 });
     let start = 'One';
@@ -470,7 +496,7 @@ describe('RiTa.RiMarkov', () => {
     expect(rm.generate({ seed: start })[0].toLowerCase()).eq("a");
   });
 
-  it('should call generate.startArray', () => {
+  it('should call generate.seedArray', () => {
 
     let rm = new RiMarkov(4, { disableInputChecks: 1 });
     let start = ['One'];
@@ -516,6 +542,30 @@ describe('RiTa.RiMarkov', () => {
       ok(typeof res === 'string');
       ok(res.startsWith(start.join(' ')));
     }
+  });
+
+  it('Should call generate.allowDuplicates', () => {
+    let rm = RiTa.markov(3, { text: sample3 });
+    let res;
+    for (let index = 0; index < 10; index++) {
+      res = rm.generate({ allowDuplicates: false });
+      ok(!sample3.includes(res))
+    }
+  });
+
+  it('Should call generate.temperature', () => {
+    let rm = RiTa.markov(3, { text: sample3 });
+    for (let index = 0; index < 10; index++) {
+      let res = rm.generate({ temperture: 1 });
+      ok(res.length > 0);
+      res = rm.generate({ temperture: 0.1 });
+      ok(res.length > 0);
+      res = rm.generate({ temperture: 100 });
+      ok(res.length > 0);
+    }
+    expect(() => rm.generate({ temperature: 0 })).to.throw()
+
+    expect(() => rm.generate({ temperature: -1 })).to.throw()
   });
 
   it('should generate across sentences', () => {

@@ -65,15 +65,27 @@ class RiMarkov { //SYNC:
     const minLength = opts.minLength || 5;
     const maxLength = opts.maxLength || 35;
 
+    if (opts.temperature !== undefined && opts.temperature <= 0) throw Error("Temperature should between 0 and positive infinity (excluding both)");
+
     let tries = 0, tokens = [], usedStarts = [];
     let minIdx = 0, sentenceIdxs = [];
+    let markedNodes = [];
+
+    const eraseMarks = () => {
+      markedNodes.forEach(node => {
+        node.marked = false;
+      })
+    }
 
     const resultCount = () => {
       return tokens.filter(t => this._isEnd(t)).length;
     }
 
     const markNode = (node) => {
-      if (node) node.marked = tokens.reduce((acc, e) => acc + e.token, '');
+      if (node) {
+        node.marked = tokens.reduce((acc, e) => acc + e.token, '');
+        markedNodes.push(node);
+      }
     }
 
     const notMarked = (cn) => {
@@ -268,7 +280,8 @@ class RiMarkov { //SYNC:
           (t => t !== next).map(t => t.token) + ']'); // print every unmarked child
     }
 
-    this.leaves.forEach(l => l.marked = false); // clear our marks
+    //this.leaves.forEach(l => l.marked = false); // clear our marks
+    eraseMarks();
     let str = this.untokenize(tokens.map(t => t.token));
     return num > 1 ? this._splitEnds(str) : str;
   }
