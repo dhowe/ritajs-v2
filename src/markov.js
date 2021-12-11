@@ -18,7 +18,6 @@ class RiMarkov { //SYNC:
     this.disableInputChecks = opts.disableInputChecks;
     this.sentenceStarts = []; // allow duplicates for prob
     this.sentenceEnds = new Set(); // no duplicates    
-    this.leaves = [];
 
     if (this.n < 2) throw Error('minimum N is 2');
 
@@ -65,16 +64,16 @@ class RiMarkov { //SYNC:
     const minLength = opts.minLength || 5;
     const maxLength = opts.maxLength || 35;
 
-    if (opts.temperature !== undefined && opts.temperature <= 0) throw Error("Temperature should between 0 and positive infinity (excluding both)");
+    if (typeof opts.temperature !== 'undefined' && opts.temperature <= 0) {
+      throw Error("Temperature option must be greater than 0");
+    }
 
     let tries = 0, tokens = [], usedStarts = [];
     let minIdx = 0, sentenceIdxs = [];
     let markedNodes = [];
 
-    const eraseMarks = () => {
-      markedNodes.forEach(node => {
-        node.marked = false;
-      })
+    const unmarkNodes = () => {
+      markedNodes.forEach(n => n.marked = false);
     }
 
     const resultCount = () => {
@@ -83,6 +82,7 @@ class RiMarkov { //SYNC:
 
     const markNode = (node) => {
       if (node) {
+        // save current tokens as a sort of hash of current state
         node.marked = tokens.reduce((acc, e) => acc + e.token, '');
         markedNodes.push(node);
       }
@@ -97,13 +97,13 @@ class RiMarkov { //SYNC:
 
       markNode(next);
       let sentIdx = sentenceIdx();
+
       if (this.trace) console.log(1 + (tokens.length - sentIdx),
         next.token, '[' + next.parent.childNodes().filter
-          (t => t !== next).map(t => t.token) + ']'); // print every child
+          (t => t !== next).map(t => t.token) + ']'); // print each child
 
       let sentence = tokens.slice(sentIdx).map(t => t.token);
       sentence.push(next.token);
-      this.trace && console.log("CHECK? " + sentence);
 
       if (sentence.length < minLength) {
         fail('too-short (pop: ' + next.token + ')');
@@ -113,20 +113,18 @@ class RiMarkov { //SYNC:
 
       if (!this.disableInputChecks && isSubArray(sentence, this.input)) {
         fail('in-input (pop: ' + next.token + ')');
-        //console.log('pop: ' + next.token);
         return false;
       }
 
       let flatSent = this.untokenize(sentence);
       if (!opts.allowDuplicates && isSubArray(sentence, tokens.slice(0, sentIdx))) {
         fail('duplicate (pop: ' + next.token + ')');
-        //console.log('pop: ' + next.token);
         return false;
       }
 
       tokens.push(next);
-
       sentenceIdxs.push(tokens.length);
+
       if (this.trace) console.log('OK (' + resultCount() + '/' + num + ') "' +
         flatSent + '" sidxs=[' + sentenceIdxs + ']\n');
 
@@ -141,11 +139,16 @@ class RiMarkov { //SYNC:
       if (tokens.length >= this.maxAttempts) throwError(tries, resultCount());
       let parent = this._pathTo(tokens);
       let numChildren = parent ? parent.childNodes({ filter: notMarked }).length : 0;
-      if (this.trace) console.log('Fail:', msg, '\n  -> "' + sentence + '" ', tries + ' tries, ' + resultCount()
-        + ' successes, numChildren=' + numChildren + (forceBacktrack ? ' forceBacktrack*' : (' parent="'
-          + parent.token + '" goodKids=[' + parent.childNodes({ filter: notMarked }).map(t => t.token) + ']'
+
+      if (this.trace) console.log('Fail:', msg, '\n  -> "' + sentence + '" ',
+        tries + ' tries, ' + resultCount() + ' successes, numChildren=' + numChildren
+        + (forceBacktrack ? ' forceBacktrack*' : (' parent="' + parent.token
+          + '" goodKids=[' + parent.childNodes({ filter: notMarked }).map(t => t.token) + ']'
           + '" allKids=[' + parent.childNodes().map(t => t.token) + ']')));
-      if (forceBacktrack || numChildren === 0) backtrack();
+
+      if (forceBacktrack || numChildren === 0) {
+        backtrack();
+      }
     }
 
     // step back until we have a parent with children
@@ -154,8 +157,7 @@ class RiMarkov { //SYNC:
     const backtrack = () => {
 
       let parent, tc;
-      //      console.log('backtrack['+tokens[tokens.length-1].childNodes().map(t => token)+']')
-      for (let i = 0; i < 500; i++) { // tmp-remove
+      for (let i = 0; i < 99; i++) { // tmp-remove?
         let last = tokens.pop();
         markNode(last);
 
@@ -163,8 +165,10 @@ class RiMarkov { //SYNC:
 
         let sentIdx = sentenceIdx();
         let backtrackUntil = Math.max(sentIdx, minIdx);
-        if (this.trace) console.log('backtrack#' + tokens.length, 'pop "' + last.token + '" '
-          + (tokens.length - sentIdx) + "/" + backtrackUntil + ' ' + this._flatten(tokens));
+
+        if (this.trace) console.log('backtrack#' + tokens.length,
+          'pop "' + last.token + '" ' + (tokens.length - sentIdx)
+          + "/" + backtrackUntil + ' ' + this._flatten(tokens));
 
         parent = this._pathTo(tokens);
         tc = parent.childNodes({ filter: notMarked });
@@ -175,27 +179,26 @@ class RiMarkov { //SYNC:
             if (tokens.length <= minIdx) { // back at seed
               if (!tc.length) throw Error('back at barren-seed1: case 0');
               if (this.trace) console.log('case 1');
-              return true;// createSeed();
+              return true;
             }
             else { // back at sentence-start with seed
               if (!tc.length) {
                 if (this.trace) console.log('case 2: back at SENT-START: "'
                   + this._flatten(tokens) + '" sentenceIdxs=' + sentenceIdxs
-                  + ' ok=[' + parent.childNodes({ filter: notMarked }).map(t => t.token) + ']'
-                  + ' all=[' + parent.childNodes().map(t => t.token) + ']');
-                //if (this.trace) console.log('case 2');
+                  + ' ok=[' + parent.childNodes({ filter: notMarked }).map(t => t.token)
+                  + '] all=[' + parent.childNodes().map(t => t.token) + ']');
                 sentenceIdxs.pop();
-                console.log('sentenceIdxs=' + sentenceIdxs);
               }
-              else {
+              else {  // continue
                 if (this.trace) console.log('case 3');
-                // continue
               }
             }
           }
-          else {
-            // TODO: recheck this...
-            if (this.trace) console.log('cases 4: back at start of sentence or 0: ' + tokens.length, sentenceIdxs);
+          else {             // TODO: recheck
+
+            if (this.trace) console.log('case 4: back at start of sentence'
+              + ' or 0: ' + tokens.length, sentenceIdxs);
+              
             if (!tokens.length) {
               sentenceIdxs = [];
               return selectStart();
@@ -207,22 +210,29 @@ class RiMarkov { //SYNC:
 
         if (tc.length) {
           sentIdx = sentenceIdx();
-          if (this.trace) console.log((tokens.length - sentIdx) + ' ' + this._flatten(tokens)
-            + '\n  ok=[' + tc.map(t => t.token) + '] all=['
-            + parent.childNodes({ filter: notMarked }).map(t => t.token) + ']');
+
+          if (this.trace) console.log((tokens.length - sentIdx)
+            + ' ' + this._flatten(tokens) + '\n  ok=['
+            + tc.map(t => t.token) + '] all=[' + parent.childNodes
+              ({ filter: notMarked }).map(t => t.token) + ']');
+
           return parent;
         }
       }
-      throw Error('Invalid state in backtrack() [' + tokens.map(t => t.token) + ']');
+
+      throw Error('Invalid state in backtrack() ['
+        + tokens.map(t => t.token) + ']');
     }
 
     const sentenceIdx = () => {
-      return sentenceIdxs.length ? sentenceIdxs[sentenceIdxs.length - 1] : 0;
+      let len = sentenceIdxs.length;
+      return len ? sentenceIdxs[len - 1] : 0;
     }
 
     const selectStart = () => {
 
       let seed = opts.seed;
+
       if (seed && seed.length) {
         if (typeof seed === 'string') seed = this.tokenize(seed);
         let node = this._pathTo(seed, this.root);
@@ -230,20 +240,18 @@ class RiMarkov { //SYNC:
           tokens.unshift(node);
           node = node.parent;
         }
-        //console.log('seed: ' + this._flatten(tokens));
       }
 
       // we need a new sentence-start
       else if (!tokens.length || this._isEnd(tokens[tokens.length - 1])) {
+        
         let usableStarts = this.sentenceStarts.filter(ss => notMarked(this.root.child(ss)));
-        //console.log('usablePre: ' + JSON.stringify(usableStarts));
         if (!usableStarts.length) throw Error('No valid sentence-starts remaining');
         let start = RiTa().random(usableStarts);
         let startTok = this.root.child(start);
         markNode(startTok);
         usableStarts = this.sentenceStarts.filter(ss => notMarked(this.root.child(ss)));
         tokens.push(startTok);
-        //if (this.trace) console.log(tokens.length + ' ' + start, '\nusablePost: ' + JSON.stringify(usableStarts));
       }
       else {
         throw Error('Invalid call to selectStart: ' + this._flatten(tokens));
@@ -265,7 +273,7 @@ class RiMarkov { //SYNC:
       let next = this._selectNext(parent, opts.temperature, tokens, notMarked);
 
       if (!next) { // no valid children, pop and continue;
-        fail('mlm-fail(' + this.mlm + ')', /*was: 0*/ this._flatten(tokens), true);
+        fail('mlm-fail(' + this.mlm + ')', this._flatten(tokens), true);
         continue;
       }
 
@@ -277,17 +285,16 @@ class RiMarkov { //SYNC:
       tokens.push(next);
       if (this.trace) console.log(tokens.length - sentIdx, next.token, '['
         + parent.childNodes({ filter: notMarked }).filter
-          (t => t !== next).map(t => t.token) + ']'); // print every unmarked child
+          (t => t !== next).map(t => t.token) + ']'); // print unmarked children
     }
 
-    //this.leaves.forEach(l => l.marked = false); // clear our marks
-    eraseMarks();
+    unmarkNodes();
+
     let str = this.untokenize(tokens.map(t => t.token));
     return num > 1 ? this._splitEnds(str) : str;
   }
 
   toJSON() {
-    //console.log('  toJSON() ', Object.keys(this));
     let data = Object.keys(this).reduce
       ((acc, k) => Object.assign(acc, { [k]: this[k] }), {});
     data.sentenceEnds = [...data.sentenceEnds]; // set -> []
@@ -366,8 +373,7 @@ class RiMarkov { //SYNC:
   }
 
   size() {
-    return this.leaves.filter(t => !t.hidden).length;
-    //Math.max(0, this.leaves.length - (this.n - 1)); 
+    return this.root.childCount(true);
   }
 
   ////////////////////////////// end API ////////////////////////////////
@@ -402,7 +408,7 @@ class RiMarkov { //SYNC:
     const selector = rand.random();
 
     // loop 2x here as we may skip earlier nodes
-    // but keep track of tries to avoid dups
+    // but keep track of tries to avoid duplicates
     const tried = [];
     for (let i = 0, pTotal = 0; i < tries; i++) {
       let idx = i % children.length;
@@ -454,11 +460,6 @@ class RiMarkov { //SYNC:
     for (let i = 0; i < tokens.length; i++) {
       let node = root;
       let words = tokens.slice(i, i + this.n);
-      /* let diff = this.n - words.length;
-      for (let w = 0; w < diff; w++) {
-        words.push
-      } */
-      //console.log('noding='+words.length);
       let wrap = 0;
       for (let j = 0; j < this.n; j++) {
         let hidden = false;
@@ -468,10 +469,6 @@ class RiMarkov { //SYNC:
         }
         node = node.addChild(words[j]);
         if (hidden) node.hidden = true;
-        // keep track of leaves
-        if (j === words.length - 1) {
-          this.leaves.push(node);
-        }
       }
     }
   }

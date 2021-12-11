@@ -1,20 +1,7 @@
 import { assert } from 'chai';
 import { RiTa, expect } from './before';
 
-
-// TODO:
-//   what to do if a seed is not a sentence start
-
-
-// WORKING: on 'should apply custom tokenizers'
-// MUST GET:
-// 0 asdfasdfasdfasdf-
-// 1 asqwer +
-
 describe('RiTa.RiMarkov', () => {
-
-  // TODO: optimize selectNext
-  // remove hard/soft fails, replace with mark children
 
   let RiMarkov, Random;
   let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
@@ -47,31 +34,31 @@ describe('RiTa.RiMarkov', () => {
     rm = RiTa.markov(3, { text: "The dog ran away" });
     eq(rm.size(), 4);
 
-    rm = RiTa.markov(3, { text: ""});
+    rm = RiTa.markov(3, { text: "" });
     eq(rm.size(), 0);
-    expect(() => {rm.generate()}).to.throw();
+    expect(() => { rm.generate() }).to.throw();
 
     rm = RiTa.markov(3, { text: sample });
     expect(rm.generate().length > 0);
 
 
-    rm = RiTa.markov(3, { text: "Too short."});
-    expect(() => {rm.generate()}).to.throw();
-    
+    rm = RiTa.markov(3, { text: "Too short." });
+    expect(() => { rm.generate() }).to.throw();
+
     rm = RiTa.markov(3, { text: 1 });
-    expect(() =>{rm.generate()}).to.throw();
+    expect(() => { rm.generate() }).to.throw();
 
     rm = RiTa.markov(3, { text: false });
-    expect(() =>{rm.generate()}).to.throw();
+    expect(() => { rm.generate() }).to.throw();
 
     rm = RiTa.markov(3, { text: ["Sentence one.", "Sentence two."] });
     eq(rm.size(), 6);
-    
+
     rm = RiTa.markov(3, { text: RiTa.sentences(sample) });
     expect(rm.generate().length > 0);
 
-    expect(() => {rm = RiTa.markov(1)}).to.throw();
-    expect(() => {rm = RiTa.markov(3, {maxLengthMatch: 2})}).to.throw();
+    expect(() => { rm = RiTa.markov(1) }).to.throw();
+    expect(() => { rm = RiTa.markov(3, { maxLengthMatch: 2 }) }).to.throw();
   });
 
   it('should call Random.pSelect', () => {
@@ -160,20 +147,6 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  // it('should load a large model', async () => {
-  //   let rm = new RiMarkov(4, { optimizeMemory: true });
-  //   let content = fs.readFileSync('/Users/dhowe/Desktop/dracula.txt', 'utf8');
-  //   rm.addText(content);//.then(console.log('done'));
-  //   console.log('loaded');
-  //   //try {
-  //      var result = await rm.generateAsync();
-  //      ok(result);
-  //  //     done();
-  //  // } catch(err) {
-  //  //     done(err);
-  //  // }
-  // });
-
   0 && it('should call createSeed', () => { // no longer used
     let rm, toks;
 
@@ -215,34 +188,7 @@ describe('RiTa.RiMarkov', () => {
     toks = rm.createSeed('The young girl');
     expect(toks.length).eq(rm.n - 1);
     expect(rm._flatten(toks)).eq('The young girl');
-
-    // TODO: allow longer seeds
-    if (false) {
-      toks = rm.createSeed('The young girl gave');
-      expect(toks.length).eq(rm.n - 1);
-      expect(rm._flatten(toks)).eq('The young girl');
-    }
-
-    ////////////////////////////////////////////////////////
   });
-
-  /*it('should call initSentence', () => { // remove?
-    let rm = new RiMarkov(4);
-    rm.addText("The young boy ate it. The fat boy gave up.");
-    let toks = rm._initSentence();
-    eq(toks.length, 1);
-    eq(rm._flatten(toks), "The");
-    eq(rm._flatten(toks[0]), "The");
-
-    rm = new RiMarkov(4);
-    rm.addText(RiTa.sentences(sample));
-    eq(rm._flatten(rm._initSentence(['I', 'also'])), "I also");
-
-    rm = new RiMarkov(4);
-    rm.addText(RiTa.sentences(sample));
-    eq(rm._flatten(rm._initSentence(['I'])), "I");
-    eq(rm._flatten(), ""); //?
-  });*/
 
   it('should throw on generate for empty model', () => {
     let rm = new RiMarkov(4, { maxLengthMatch: 6 });
@@ -280,10 +226,6 @@ describe('RiTa.RiMarkov', () => {
   });
 
   it('should apply custom tokenizers', () => {
-
-    // WORKING HERE: a set of options that can succeed MUST succeed
-
-    let answers = ["asdfasdfasdf-", "asqwerqwerqwer+", 'asdfasdfasdfasdf-', 'asqwer+'];
 
     let sents = ['asdfasdf-', 'asqwerqwer+', 'aqadaqdf*'];
     let tokenize = (sent) => sent.split("");
@@ -337,19 +279,7 @@ describe('RiTa.RiMarkov', () => {
     result.forEach(r => ok(/^[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
   });
 
-  /*   it('XX', () => {
-  
-      let rm = new RiMarkov(4, { disableInputChecks: true });
-      rm.addText(RiTa.sentences(sample));
-  
-      let sent = rm.generate(2);
-      console.log(sent);
-      ok(sent.length === 2);
-      ok(typeof sent[0] === 'string');
-      eq(sent[1][0], sent[1][0].toUpperCase());
-    });
-   */
-  it('should call generate', () => {
+  it('should call generate1', () => {
 
     let rm;
     rm = new RiMarkov(4, { disableInputChecks: true });
@@ -390,7 +320,6 @@ describe('RiTa.RiMarkov', () => {
     let rm = new RiMarkov(3); // 3 is max for sample, with input checking
     rm.addText(sample);
     let s = rm.generate();
-    //console.log(s);
     ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
     ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
     let num = RiTa.tokenize(s).length;
@@ -407,9 +336,7 @@ describe('RiTa.RiMarkov', () => {
 
     rm = new RiMarkov(3, { trace: 0 });
     rm.addText(RiTa.sentences(sample2));
-    //One reason people lie is to achieve personal power
     res = rm.generate(1);
-    //console.log(res);
     ok(/^[A-Z]/.test(res));
     ok(/[!?.]$/.test(res));
 
@@ -430,12 +357,10 @@ describe('RiTa.RiMarkov', () => {
     rm.addText(RiTa.sentences(sample));
     let sents = rm.generate(3, { minLength, maxLength });
     eq(sents.length, 3);
-    //console.log(sents);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
       //console.log(i + ") " + s);
-
-      eq(s[0], s[0].toUpperCase()); // "FAIL: bad first char in '" + s + "' -> " + s[0]);
+      eq(s[0], s[0].toUpperCase());
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
       let num = RiTa.tokenize(s).length;
       expect(num >= minLength && num <= maxLength,
@@ -454,7 +379,8 @@ describe('RiTa.RiMarkov', () => {
       ok(s && s[0] === s[0].toUpperCase(), "FAIL: bad first char in '" + s + "'");
       ok(/[!?.]$/.test(s), "FAIL: bad last char in '" + s + "'");
       let num = RiTa.tokenize(s).length;
-      expect(num >= minLength && num <= maxLength, (num + ' not within ' + minLength + '-' + maxLength)).to.be.true;
+      expect(num >= minLength && num <= maxLength, (num + ' not within '
+        + minLength + '-' + maxLength)).to.be.true;
     }
   });
 
@@ -464,7 +390,6 @@ describe('RiTa.RiMarkov', () => {
     let start = 'One';
     rm.addText(RiTa.sentences(sample));
     let s = rm.generate({ seed: start });
-    //console.log(s);
     ok(s.startsWith(start));
 
     start = 'Achieving';
@@ -472,25 +397,24 @@ describe('RiTa.RiMarkov', () => {
     ok(typeof res === 'string');
     ok(res.startsWith(start));
 
-    // WORKING HERE: backtracking past seed **
     start = 'I';
     let arr = rm.generate(2, { seed: start });
     ok(Array.isArray(arr));
     eq(arr.length, 2);
     ok(arr[0].startsWith(start));
 
-    //should throw when sentence start is not found
+    // should throw when sentence start is not found
     start = "Not-exist";
     expect(() => { rm.generate(2, { seed: start }) }).to.throw();
     start = "I and she";
     expect(() => { rm.generate(2, { seed: start }) }).to.throw();
-    //if startToken is empty string, equal to not have start token
+    // if startToken is empty string, equal to not have start token
     start = "";
     ok(rm.generate(2, { seed: start }).length === 2);
-    //if startToken is just space, throw
+    // if startToken is just space, throw
     start = " ";
     expect(() => { rm.generate(2, { seed: start }) }).to.throw();
-    //if startToken is an array
+    // if startToken is an array
     start = ["a"]
     expect(rm.generate(2, { seed: start }).length).eq(2);
     expect(rm.generate({ seed: start })[0].toLowerCase()).eq("a");
@@ -570,8 +494,6 @@ describe('RiTa.RiMarkov', () => {
 
   it('should generate across sentences', () => {
 
-    // NEXT: occasionally failing when sentence wraps around
-
     let rm = new RiMarkov(3, { trace: 0 });
     rm.addText(RiTa.sentences(sample2));
 
@@ -609,7 +531,6 @@ describe('RiTa.RiMarkov', () => {
     rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
     expect(typeof rm.input === 'object').to.be.true;
     rm.addText(RiTa.sentences(theText));
-    //rm.trace = true;
 
     let sents = rm.generate(2);
     for (let i = 0; i < sents.length; i++) {
@@ -636,7 +557,7 @@ describe('RiTa.RiMarkov', () => {
 
   it('should call generate.mlm2', () => {
 
-    let mlms = 9; // 10 ?
+    let mlms = 9;
     let rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
     expect(typeof rm.input === 'object').to.be.true;
     rm.addText(RiTa.sentences(sample2));
@@ -708,13 +629,15 @@ describe('RiTa.RiMarkov', () => {
     res = rm.completions(['I', 'did'], ['want']);
     eql(res, ["not", "occasionally"]);
 
-    //should throw at bad inputs
-    expect(() => { rm.completions(['I', 'did', 'not', 'occasionally'], ['want']); }).to.throw();
+    //should throw with bad inputs
+    expect(() => {
+      rm.completions(['I', 'did', 'not', 'occasionally'], ['want']);
+    }).to.throw();
 
     let tmp = RiTa.SILENT;
     RiTa.SILENT = true;
 
-    //should return undefined if completions not found
+    // should return undefined if no completions are found
     res = rm.completions(['I', 'non-exist'], ['want']);
     eq(res, undefined);
 
@@ -865,7 +788,8 @@ describe('RiTa.RiMarkov', () => {
     eq(rm.size(), count);
 
     // unique sentence starts
-    eql([...new Set(rm.sentenceStarts)], ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although']);
+    eql([...new Set(rm.sentenceStarts)],
+      ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although']);
   });
 
   it('should call Node.childCount', () => {
@@ -918,7 +842,6 @@ describe('RiTa.RiMarkov', () => {
 }`);
 
     eq(rm.root.toString(), "Root");
-    //eq(rm.root.child("Can").toString(), "Can(1/0.333%)");
     eq(rm.root.child("Can").toString(), "'Can' [1,p=0.333]");
 
     rm = new RiMarkov(2);
@@ -986,7 +909,6 @@ describe('RiTa.RiMarkov', () => {
 
     rm = new RiMarkov(4, { disableInputChecks: 0 });
     rm.addText(['I ate the dog.']);
-    //console.log(rm.leaves.map(t => t.token));
     copy = RiMarkov.fromJSON(rm.toJSON());
     //console.log(copy.leaves.map(t => t.token));
     markovEquals(rm, copy);
@@ -1037,9 +959,6 @@ describe('RiTa.RiMarkov', () => {
     expect(rm.sentenceStarts.toString()).eq(copy.sentenceStarts.toString());
     expect(rm.sentenceEnds.toString()).eq(copy.sentenceEnds.toString());
     expect(rm.root.toString()).eq(copy.root.toString());
-    //console.log('rm', rm.toString());
-    //console.log('cp', copy.toString());
-
     return;
 
     // TODO: toString needs to sort children to match ??
@@ -1047,7 +966,7 @@ describe('RiTa.RiMarkov', () => {
     //expect(rm.toString()).eq(copy.toString());
     expect(rm.toJSON()).eq(copy.toJSON());
 
-    
+
   }
   function eql(a, b, c) { expect(a).eql(b, c); }
   function eq(a, b, c) { expect(a).eq(b, c); }
