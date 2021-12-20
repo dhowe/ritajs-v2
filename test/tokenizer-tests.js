@@ -478,7 +478,7 @@ describe('RiTa.Tokenizer', () => {
 
     let inputs = [
       ["1", "<", "2"],
-      ["<","a",">"],
+      ["<", "a", ">"],
       ["<", "a", ">", "link", "<", "/", "a", ">"],
       ["<", "span", ">", "some", "text", "here", "<", "/", "span", ">"],
       ["<", "p", ">", "some", "text", "<", "br", "/", ">", "new", "line", "<", "/", "p", ">"],
@@ -585,6 +585,9 @@ describe('RiTa.Tokenizer', () => {
     eql(output, expected);
 
     eql(RiTa.sentences(""), [""]);
+
+    eql(RiTa.sentences("Today I would make something. A 4.7 inch gun. It was noon."),
+      ["Today I would make something.", "A 4.7 inch gun.", "It was noon."]);
   });
 
   it('Should handle decimal numbers', () => {
@@ -598,6 +601,8 @@ describe('RiTa.Tokenizer', () => {
     expect(RiTa.tokenize("He owed 200,000 dollars.")).eql(['He', 'owed', '200,000', 'dollars', '.']);
     expect(RiTa.tokenize("He owed 200,000.")).eql(['He', 'owed', '200,000', '.']);
     expect(RiTa.tokenize("He owed 200,000.50.")).eql(['He', 'owed', '200,000.50', '.']);
+
+    expect(RiTa.tokenize("A 4.7 inch gun.")).eql(['A', '4.7', 'inch', 'gun', '.']);
   });
 
   it('Should handle decimal numbers in untokenize', () => {
