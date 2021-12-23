@@ -141,6 +141,8 @@ $ npm run test
 ```
 If all goes according to plan, you should see a list of successful tests and find the library built in 'dist'
 
+&nbsp;
+
 ### Visual Studio Code
 
 Once you have things running with npm/mocha, you might also try VSCode.
