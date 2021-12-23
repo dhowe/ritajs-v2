@@ -145,12 +145,12 @@ If all goes according to plan, you should see a list of successful tests and fin
 
 Once you have things running with npm/mocha, you might also try VSCode.
 
-Some of the following extensions may be helpful:
-* esbenp.prettier-vscode
-* ms-vscode.atom-keybindings
-* hbenl.vscode-test-explorer
+Some of the following extensions may be useful:
+
 * hbenl.vscode-mocha-test-adapter
+* hbenl.vscode-test-explorer
 * ms-vscode.test-adapter-converter
+* esbenp.prettier-vscode
 
 &nbsp;
 
