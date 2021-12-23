@@ -143,6 +143,16 @@ If all goes according to plan, you should see a list of successful tests and fin
 
 &nbsp;
 
+### Visual Studio Code
+
+Once you have things running with npm/mocha, you may also want with to develop with VSCode.
+Some of the following extensions may be helpful:
+* esbenp.prettier-vscode
+* ms-vscode.atom-keybindings
+* hbenl.vscode-test-explorer
+* hbenl.vscode-mocha-test-adapter
+* ms-vscode.test-adapter-converter
+
 
 ## About
 
