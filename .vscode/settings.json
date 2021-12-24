@@ -1,7 +1,6 @@
 {
-      "mochaExplorer.files": "test/*-tests.js",
-      "mochaExplorer.require": "esm",
-      "mochaExplorer.env": {
-        "NODE_ENV: dev"
-      }
+  "mochaExplorer.require": "esm",
+  "mochaExplorer.env": {
+    "NODE_ENV": "dev"
+  }
 }
