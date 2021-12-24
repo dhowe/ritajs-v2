@@ -150,8 +150,8 @@ Once you have things running with npm/mocha, you might also try VSCode.
 Some of the following extensions may be useful:
 
 * hbenl.vscode-mocha-test-adapter
-** hbenl.vscode-test-explorer
-** ms-vscode.test-adapter-converter
+* hbenl.vscode-test-explorer
+* ms-vscode.test-adapter-converter
 
 &nbsp;
 
