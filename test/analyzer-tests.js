@@ -1,4 +1,5 @@
 import { RiTa, expect } from './before';
+import Util from '../src/util';
 
 describe('RiTa.Analyzer', () => {
 
@@ -222,20 +223,24 @@ describe('RiTa.Analyzer', () => {
     RiTa.SILENCE_LTS = silent;
   });*/
 
-
   it('Should call syllables', () => {
-
-    let input, expected;
 
     expect(RiTa.syllables('')).eq('');
     expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
 
     // different without lexicon ------------------------------------------
 
+    let nums = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', ]
+    for (let i = 0; i < 10; i++) {
+      expect(RiTa.syllables(i+'')).eq(RiTa.syllables(nums[i]));
+    }
+
     expect(RiTa.syllables('deforestations')).eq(hasLex ? 'd-ih/f-ao/r-ih/s-t-ey/sh-ah-n-z' : 'd-ah/f-ao-r/s-t-ey/sh-ah-n-z');
     expect(RiTa.syllables("chevrolet")).eq(hasLex ? "sh-eh-v/r-ow/l-ey" : 'ch-eh-v/r-ow/l-ah-t');
     expect(RiTa.syllables("women")).eq(hasLex ? "w-ih/m-eh-n" : 'w-ow/m-eh-n');
     expect(RiTa.syllables("genuine")).eq(hasLex ? "jh-eh-n/y-uw/w-ah-n" : 'jh-eh-n/y-ah/ay-n');
+
+    let input, expected;
 
     input = 'The emperor had no clothes on.';
     expected = hasLex ? 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .' : 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z ah-n .';
@@ -575,7 +580,7 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.analyzer.computePhones("leo", { silent: true })).eql(["l", "iy", "ow"]);
     //expect(RiTa.analyzer.computePhones("leo", { silent: false })).eql(["l", "iy", "ow"]);
     //numbers
-    expect(RiTa.analyzer.computePhones("1")).eql(["w-ah-n"]);
+    expect(RiTa.analyzer.computePhones("1")).eql([ 'w', 'ah', 'n' ]);
     expect(RiTa.analyzer.computePhones("50")).eql(["f-ay-v", "z-ih-r-ow"]);
     //with "'"
     //expect(RiTa.analyzer.computePhones("student's", { silent: false })).eql(["s", "t", "uw1", "d", "eh1", "n", "t", "z"]);

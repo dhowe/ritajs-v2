@@ -79,7 +79,8 @@ class LetterToSound {
       word = (word.length > 1) ? word.split('') : [word];
       for (let k = 0; k < word.length; k++) {
         dig = parseInt(word[k]);
-        phoneList.push(Util.Phones.digits[dig]);
+        let phs = Util.Phones.digits[dig].split('-');
+        phoneList.push(...phs);
       }
       return phoneList;
     }
