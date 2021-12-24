@@ -109,6 +109,41 @@ class Util {
     return Util.syllablesToPhones(syllables);
   }
 
+  static numberToWords(num) {
+
+    const ones = [ '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine' ];
+    const tens = [ '', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety' ];
+    const teens = [ 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen' ];
+    
+    function millions(n) {
+      return n >= 1000000 ? millions(Math.floor(n / 1000000)) 
+        + " million " + thousands(n % 1000000)
+        : thousands(n);
+    }
+
+    function thousands(n) {
+      return n >= 1000 ?  hundreds(Math.floor(n / 1000)) +
+        " thousand " + hundreds(n % 1000)
+        : hundreds(n);
+    }
+
+    function hundreds(n) {
+      return n > 99 ? ones[Math.floor(n / 100)] 
+        + " hundred " + digits(n % 100)
+        : digits(n);
+    }
+    
+    function digits(n) {
+      if (n < 10) return ones[n];
+      else if (n >= 10 && n < 20) return teens[n - 10];
+      return tens[Math.floor(n / 10)] + ' '+ ones[n % 10]
+    }
+    
+    if (num === 0) return "zero";    
+    if (!Util.isNum(num)) return num; // warning?
+    return millions(num).replace(/\s+/g, ' ').trim();
+  }
+
   static isNum(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
   }

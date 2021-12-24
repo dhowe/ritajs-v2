@@ -318,6 +318,9 @@ RiTa.GERUND = 2;
 // For tokenization, Can't -> Can not, etc.
 RiTa.SPLIT_CONTRACTIONS = false;
 
+// For tokenization, Can't -> Can not, etc.
+RiTa.PARSE_NUMBERS = true;
+
 // Set to false to reduce memory use (likely slower)
 RiTa.CACHING = true;
 

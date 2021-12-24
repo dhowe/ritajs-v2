@@ -21,10 +21,15 @@ class Analyzer {
     }
 
     for (let i = 0; i < words.length; i++) {
+      if (this.RiTa.PARSE_NUMBERS && Util.isNum(words[i])) {
+        let wnum = Util.numberToWords(words[i]);
+        console.log('NUM',words[i]+'->'+wnum);
+        words[i] = wnum;
+      }
       let { phones, stresses, syllables } = this.analyzeWord(words[i], opts);
-      features.phones += phones;
-      features.stresses += stresses;
-      features.syllables += syllables;
+      features.phones += ' ' + phones;
+      features.stresses += ' ' + stresses;
+      features.syllables += ' ' + syllables;
     }
 
     features.phones = features.phones.trim();
@@ -79,7 +84,7 @@ class Analyzer {
       if (!rawPhones) {
         let ltsPhones = this.computePhones(word, opts);
         if (ltsPhones && ltsPhones.length) {
-          if (!silent && lex.size() && word.match(HAS_LETTER_RE)) {
+          if (!silent && lex.size()){// && word.match(HAS_LETTER_RE)) {
             console.log("[RiTa] Used LTS-rules for '" + word + "'");
           }
           rawPhones = Util.syllablesFromPhones(ltsPhones);
@@ -98,8 +103,10 @@ class Analyzer {
 
       // compute stresses if needed
       let stresses = useRaw ? word : this.phonesToStress(rawPhones);
-      if (!stresses.endsWith(' ')) stresses += ' ';
 
+      phones = phones.trim(); 
+      stresses = stresses.trim();
+      syllables  = syllables.trim();
       result = { phones, stresses, syllables };
 
       // add to cache if enabled

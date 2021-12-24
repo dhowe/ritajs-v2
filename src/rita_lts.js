@@ -75,14 +75,19 @@ class LetterToSound {
     }
 
     word = word.toLowerCase();
-    if (Util.isNum(word)) {
-      word = (word.length > 1) ? word.split('') : [word];
-      for (let k = 0; k < word.length; k++) {
-        dig = parseInt(word[k]);
-        phoneList.push(Util.Phones.digits[dig]);
-      }
-      return phoneList;
-    }
+    // if (Util.isNum(word)) {
+    //   let tmp = Util.numberToWords(word);
+    //   console.log('NUM: '+word+'->'+tmp);
+    //   word = tmp;
+    // }
+    //   word = (word.length > 1) ? word.split('') : [word];
+    //   for (let k = 0; k < word.length; k++) {
+    //     dig = parseInt(word[k]);
+    //     let parts = Util.Phones.digits[dig].split('-')
+    //     phoneList.push(...parts);
+    //   }
+    //   return phoneList;
+    // }
 
     // Create "000#word#000", uggh
     tmp = "000#" + word.trim() + "#000", full_buff = tmp.split('');
