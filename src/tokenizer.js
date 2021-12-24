@@ -58,9 +58,7 @@ class Tokenizer {
   tokenize(input, opts = {}) { // SYNC: Opts: {regex, splitContractions}
 
     if (typeof input !== 'string') return [];
-
     if (opts.regex) return input.split(regex);
-
     let { tags, text } = this.pushTags(input.trim());
 
     for (let i = 0; i < TOKENIZE_RE.length; i += 2) {
@@ -152,7 +150,8 @@ class Tokenizer {
       }
 
       result += thisToken; // add to result
-      if (thisNBPunct && !lastNBPunct && !withinQuote && SQUOTE_RE.test(thisToken) && lastEndWithS) {
+      if (thisNBPunct && !lastNBPunct && !withinQuote
+        && SQUOTE_RE.test(thisToken) && lastEndWithS) {
         result += delim;
       }
     }
@@ -166,16 +165,23 @@ class Tokenizer {
       tags.push(text.match(TAG_RE)[0]);
       text = text.replace(TAG_RE, " _" + TAG + (tagIdx++) + "_ ");
     }
-    
+    text = text.replace(/_/g, "_UNDERSCORE_"); // literal underscores
     return { tags, text };
   }
 
   popTags(result, tags) {
     for (let i = 0; i < result.length; i++) {
+
+      // handle tags
       if (POPTAG_RE.test(result[i])) {
         result[i] = tags.shift();
       }
-      if (result[i].includes('_')) {
+      // handle literal underscores
+      if (result[i].includes('_UNDERSCORE_')) {
+        result[i] = result[i].replace(/_UNDERSCORE_/g, '_');
+      }
+      // remove other underscores
+      else if (result[i].includes('_')) {
         result[i] = result[i].replace(UNDER_RE, "$1 $2");
       }
     }
@@ -200,7 +206,7 @@ class Tokenizer {
         inspectIdx++;
       }
       if (LT_RE.test(subArray[subArray.length - 1])) {
-        result = result.concat(subArray.slice(0,subArray.length - 1));
+        result = result.concat(subArray.slice(0, subArray.length - 1));
         currentIdx = inspectIdx;
         continue;
       }
@@ -294,7 +300,7 @@ const TOKENIZE_RE = [
   /([Ll])([Tt])([Dd])[\.]/g, "_$1$2$3_", // ltd.
   /(prof|Prof|PROF)[\.]/g, "_$1_", //Prof.
   //decimal #
-  /([\-]?[0-9]+)\.([0-9]+)/g,"$1DECIMALDOT$2_",//(-)27.3
+  /([\-]?[0-9]+)\.([0-9]+)/g, "$1DECIMALDOT$2_",//(-)27.3
   /([\-]?[0-9]+)\.([0-9]+)e([\-]?[0-9]+)/g, "_$1DECIMALDOT$2POWERE$3_",//(-)1.2e10
   /([0-9]{3}),([0-9]{3})/g, "$1_DECIMALCOMMA_$2", // large numbers like 200,000,000.13
   //escape sequences of line breaks in ASCII
@@ -347,9 +353,9 @@ const TOKENIZE_RE = [
   /_([Cc])([Oo])dcs([Ll])([Tt])([Dd])_/g, "$1$2.,_$3$4$5.", // co., ltd.
   /_([Cc])([Oo])ds([Ll])([Tt])([Dd])_/g, "$1$2._$3$4$5.", // co. ltd.
   /_(prof|PROF|Prof)_/g, "$1.", //Prof.
-  /([\-]?[0-9]+)DECIMALDOT([0-9]+)_/g,"$1.$2", //(-)27.3
+  /([\-]?[0-9]+)DECIMALDOT([0-9]+)_/g, "$1.$2", //(-)27.3
   /_([\-]?[0-9]+)\DECIMALDOT([0-9]+)POWERE([\-]?[0-9]+)_/g, "$1.$2e$3", //(-)1.2e(-)9
-  /_DECIMALCOMMA_/g,",",// large numbers like 200,000,000.13
+  /_DECIMALCOMMA_/g, ",",// large numbers like 200,000,000.13
   /_LINEFEED_/g, "\n", // LF
   /_CARRIAGERETURN_/g, "\r", // CR
   /_CARRIAGERETURNLINEFEED_/g, "\r\n", // CR LF

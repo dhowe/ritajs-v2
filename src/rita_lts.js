@@ -112,8 +112,8 @@ class LetterToSound {
       if (c == "'") continue;
       startIndex = this.letterIndex[c];
 
-      // must check for null here, not 0 (and not ===)
-      if (isNaN(parseFloat(startIndex)) || !isFinite(startIndex)) { // isNum
+      // must return null here, not 0 (and not ===)
+      if (isNaN(parseFloat(startIndex)) || !isFinite(startIndex)) {
         if (!silent) {
           console.warn("Unable to generate LTS for '" + word + "', no index for '" +
             c + "', isDigit=" + Util.isNum(c) + ", isPunct=" + RiTa.isPunct(c));

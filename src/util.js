@@ -139,6 +139,7 @@ class Util {
       return tens[Math.floor(n / 10)] + ' '+ ones[n % 10]
     }
     
+    if (typeof num === 'string') num = parseInt(num);
     if (num === 0) return "zero";    
     if (!Util.isNum(num)) return num; // warning?
     return millions(num).replace(/\s+/g, ' ').trim();

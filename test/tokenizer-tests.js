@@ -164,6 +164,9 @@ describe('RiTa.Tokenizer', () => {
     expect(RiTa.tokenize("")).eql([""]);
     expect(RiTa.tokenize(" ")).eql([""]);
     expect(RiTa.tokenize("The dog")).eql(["The", "dog"]);
+    expect(RiTa.tokenize("The_dog")).eql(["The_dog"]);
+    expect(RiTa.tokenize("Dog.")).eql(["Dog", "."]);
+    expect(RiTa.tokenize("1.1")).eql(["1.1"]);
 
     let input, expected, output;
 
@@ -191,7 +194,7 @@ describe('RiTa.Tokenizer', () => {
     input = "123 123 1 2 3 1,1 1.1 23.45.67 22/05/2012 12th May,2012";
     expected = ["123", "123", "1", "2", "3", "1", ",", "1", "1.1", "23.45", ".", "67", "22/05/2012", "12th", "May", ",", "2012"];
     output = RiTa.tokenize(input);
-    expect(output).eql(expected);
+    expect(output).eql(expected, 'GOT' + output);
 
     input = 'The boy screamed, "Where is my apple?"';
     expected = ["The", "boy", "screamed", ",", "\"", "Where", "is", "my", "apple", "?", "\""];
@@ -242,12 +245,14 @@ describe('RiTa.Tokenizer', () => {
       "face-to-face class",
       '"it is strange", said John, "Katherine does not drink alchol."',
       '"What?!", John yelled.',
-      //tests below this line don't pass
-      "John's Katherine's Jack's Linda's students' people's",
+      "this line is for the_underscore effect",
+      //tests below this line don't pass // TODO:
+      /*"John's Katherine's Jack's Linda's students' people's",
       "more abbreviations: a.m. p.m. Cap. c. et al. etc. P.S. Ph.D R.I.P vs. v. Mr. Ms. Dr. Pf. Mx. Ind. Inc. Corp. Co,.Ltd. Co,. Ltd. Co. Lid. Ltd.",
       "(testing) [brackets] {all} ⟨kinds⟩",
       "elipsis dots... another elipsis dots…",
-      "children's parents' won't gonna I'm"
+      "children's parents' won't gonna I'm",
+      */
     ];
     let outputs = [
       ["A", "simple", "sentence", "."],
@@ -257,14 +262,22 @@ describe('RiTa.Tokenizer', () => {
       ["face-to-face", "class"],
       ["\"", "it", "is", "strange", "\"", ",", "said", "John", ",", "\"", "Katherine", "does", "not", "drink", "alchol", ".", "\""],
       ["\"", "What", "?", "!", "\"", ",", "John", "yelled", "."],
-      //test below this line don't pass
-      ["John", "'s", "katherine", "'s", "Jack", "'s", "Linda", "'s", "students", "'", "people", "'s"],
+      ['this', 'line', 'is', 'for', 'the_underscore', 'effect']
+      //test below this line don't pass TODO:
+      /*["John", "'s", "katherine", "'s", "Jack", "'s", "Linda", "'s", "students", "'", "people", "'s"],
       ["more", "abbreviations", ":", "a.m.", "p.m.", "Cap.", "c.", "et al.", "etc.", "P.S.", "Ph.D", "R.I.P", "vs.", "v.", "Mr.", "Ms.", "Dr.", "Pf.", "Mx.", "Ind.", "Inc.", "Corp.", "Co.,Ltd", "Co., Ltd", "Co. Ltd.", "Ltd."],
       ["(", "testing", ")", "[", "brackets", "]", "{", "all", "}", "⟨", "kinds", "⟩"],//this might not need to be fix coz ⟨⟩ is rarely seen
       ["elipsis", "dots", "...", "another", "elipsis", "dots", "…"],
-      ["children", "'s", "parents", "'", "wo", "n't", "gon", "na", "I", "'m"]
+      ["children", "'s", "parents", "'", "wo", "n't", "gon", "na", "I", "'m"],
+      */
     ];
 
+    expect(inputs.length).eq(outputs.length);
+    for (let i = 0; i < inputs.length; i++) {
+      let res = RiTa.tokenize(inputs[i]);
+      //console.log(i, res);
+      expect(res).eql(outputs[i]);
+    }
     // contractions -------------------------
 
     let txt1 = "Dr. Chan is talking slowly with Mr. Cheng, and they're friends."; // strange but same as RiTa-java
@@ -444,7 +457,8 @@ describe('RiTa.Tokenizer', () => {
       '"that test line"',
       "my email address is name@domin.com",
       "it is www.google.com",
-      "that is www6.cityu.edu.hk"
+      "that is www6.cityu.edu.hk",
+      "this line is for the_underscore effect",
     ];
 
     let inputs = [
@@ -465,9 +479,10 @@ describe('RiTa.Tokenizer', () => {
       ['"', "that", "test", "line", '"'],
       ["my", "email", "address", "is", "name", "@", "domin", ".", "com"],
       ["it", "is", "www", ".", "google", ".", "com"],
-      ["that", "is", "www6", ".", "cityu", ".", "edu", ".", "hk"]
+      ["that", "is", "www6", ".", "cityu", ".", "edu", ".", "hk"],
+      ['this', 'line', 'is', 'for', 'the_underscore', 'effect']
     ];
-
+    console.log("this line is for the_underscore effect".split(' '));
     expect(inputs.length).eq(outputs.length);
     for (let i = 0; i < inputs.length; i++) {
       expect(RiTa.untokenize(inputs[i])).eq(outputs[i]);
