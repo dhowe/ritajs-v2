@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { RiTa, expect } from "./before";
 import Util from "../src/util";
 
@@ -19,6 +20,12 @@ describe("RiTa.Analyzer", () => {
     }
     expect(1).equals(2);
   });
+=======
+import { RiTa, expect } from './before';
+import Util from '../src/util';
+
+describe('RiTa.Analyzer', () => {
+>>>>>>> master
 
   it("Should call Util.numberToWords", () => {
     // niapi
@@ -326,29 +333,38 @@ describe("RiTa.Analyzer", () => {
     RiTa.SILENCE_LTS = silent;
   });*/
 
-  it("Should convert numbers to phones", () => {
-    // let ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-    // let teens = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
-    // let tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
-    // console.log(teens.map(n => RiTa.syllables(n)));
-  });
+  it('Should call syllables', () => {
 
-  it("Should call syllables", () => {
-    let input, expected;
-
-    // expect(RiTa.syllables('')).eq('');
-    // expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
+    expect(RiTa.syllables('')).eq('');
+    expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
 
     input = "one";
     expected = "w-ah-n";
     expect(RiTa.syllables(input)).eq(expected);
 
+<<<<<<< HEAD
     input = "cloze";
     expected = "k-l-ow-z";
     expect(RiTa.syllables(input)).eq(expected);
 
     input = "1";
     expected = "w-ah-n";
+=======
+    let nums = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', ]
+    for (let i = 0; i < 10; i++) {
+      expect(RiTa.syllables(i+'')).eq(RiTa.syllables(nums[i]));
+    }
+
+    expect(RiTa.syllables('deforestations')).eq(hasLex ? 'd-ih/f-ao/r-ih/s-t-ey/sh-ah-n-z' : 'd-ah/f-ao-r/s-t-ey/sh-ah-n-z');
+    expect(RiTa.syllables("chevrolet")).eq(hasLex ? "sh-eh-v/r-ow/l-ey" : 'ch-eh-v/r-ow/l-ah-t');
+    expect(RiTa.syllables("women")).eq(hasLex ? "w-ih/m-eh-n" : 'w-ow/m-eh-n');
+    expect(RiTa.syllables("genuine")).eq(hasLex ? "jh-eh-n/y-uw/w-ah-n" : 'jh-eh-n/y-ah/ay-n');
+
+    let input, expected;
+
+    input = 'The emperor had no clothes on.';
+    expected = hasLex ? 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .' : 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z ah-n .';
+>>>>>>> master
     expect(RiTa.syllables(input)).eq(expected);
 
     input = "12";
@@ -979,7 +995,7 @@ describe("RiTa.Analyzer", () => {
     ]);
     //expect(RiTa.analyzer.computePhones("leo", { silent: false })).eql(["l", "iy", "ow"]);
     //numbers
-    expect(RiTa.analyzer.computePhones("1")).eql(["w-ah-n"]);
+    expect(RiTa.analyzer.computePhones("1")).eql([ 'w', 'ah', 'n' ]);
     expect(RiTa.analyzer.computePhones("50")).eql(["f-ay-v", "z-ih-r-ow"]);
     //with "'"
     //expect(RiTa.analyzer.computePhones("student's", { silent: false })).eql(["s", "t", "uw1", "d", "eh1", "n", "t", "z"]);

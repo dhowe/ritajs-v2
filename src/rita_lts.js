@@ -88,6 +88,15 @@ class LetterToSound {
     //   }
     //   return phoneList;
     // }
+    if (Util.isNum(word)) {
+      word = (word.length > 1) ? word.split('') : [word];
+      for (let k = 0; k < word.length; k++) {
+        dig = parseInt(word[k]);
+        let phs = Util.Phones.digits[dig].split('-');
+        phoneList.push(...phs);
+      }
+      return phoneList;
+    }
 
     // Create "000#word#000", uggh
     tmp = "000#" + word.trim() + "#000", full_buff = tmp.split('');

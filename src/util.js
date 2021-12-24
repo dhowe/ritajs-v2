@@ -48,7 +48,7 @@ class Util {
         phoneme = phoneme.substring(0, phoneme.length - 1);
       }
 
-      if (dbug) log(i + ")" + phoneme + ' stress=' + stress + ' inter=' + internuclei.join(':'));
+      if (dbug) console.log(i + ")" + phoneme + ' stress=' + stress + ' inter=' + internuclei.join(':'));
 
       if (Util.Phones.vowels.includes(phoneme)) {
 
@@ -61,7 +61,7 @@ class Util {
           coda = internuclei.slice(0, split);
           onset = internuclei.slice(split, internuclei.length);
 
-          if (dbug) log('  ' + split + ') onset=' + onset.join(':') +
+          if (dbug) console.log('  ' + split + ') onset=' + onset.join(':') +
             '  coda=' + coda.join(':') + '  inter=' + internuclei.join(':'));
 
           // If we are looking at a valid onset, or if we're at the start of the word
@@ -70,7 +70,7 @@ class Util {
           // any that are valid, then split the nonvowels we've seen at this location.
           let bool = Util.Phones.onsets.includes(onset.join(" "));
           if (bool || syllables.length === 0 || onset.length === 0) {
-            if (dbug) log('  break ' + phoneme);
+            if (dbug) console.log('  break ' + phoneme);
             break;
           }
         }
@@ -79,7 +79,7 @@ class Util {
         // Can't do it if this is the first syllable.
         if (syllables.length > 0) {
           extend(syllables[syllables.length - 1][3], coda);
-          if (dbug) log('  tack: ' + coda + ' -> len=' +
+          if (dbug) console.log('  tack: ' + coda + ' -> len=' +
             syllables[syllables.length - 1][3].length + " [" +
             syllables[syllables.length - 1][3] + "]");
         }
@@ -195,7 +195,7 @@ Util.Phones = {
     'v y', 'th y', 'm y', 's p y', 's k y', 'g y', 'hh w', ''
   ],
   digits: ['z-ih-r-ow', 'w-ah-n', 't-uw', 'th-r-iy', 'f-ao-r', 'f-ay-v',
-    's-ih-k-s', 's-eh1-v-ax-n', 'ey-t', 'n-ih-n'
+    's-ih-k-s', 's-eh-v-ah-n', 'ey-t', 'n-ih-n'
   ]
 };
 
