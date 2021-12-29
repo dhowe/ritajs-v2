@@ -69,7 +69,7 @@ describe('RiTa.Analyzer', () => {
     expect(feats.syllables).eq("( w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy )");
     expect(feats.tokens).eq("( 1903 )");
     expect(feats.pos).eq("( cd )");
-    
+
     feats = RiTa.analyze("clothes");
     expect(feats.pos).eq("nns");
     expect(feats.tokens).eq("clothes");
@@ -105,18 +105,18 @@ describe('RiTa.Analyzer', () => {
     let feats = RiTa.analyze("off-site");
     //console.log(feats);
     eq(feats["pos"], "jj");
-    eq(feats["phones"], 'ah-b-ae-n-d-ah-n');
-    eq(feats["tokens"], "abandon");
-    eq(feats["stresses"], "0/1/0");
-    eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
+    eq(feats["phones"], '');
+    eq(feats["tokens"], "off - site");
+    eq(feats["stresses"], "");
+    eq(feats["syllables"], "");
 
     feats = RiTa.analyze("oft-cited");
     //console.log(feats);
     eq(feats["pos"], "jj");
-    eq(feats["phones"], 'ah-b-ae-n-d-ah-n');
-    eq(feats["tokens"], "abandon");
-    eq(feats["stresses"], "0/1/0");
-    eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
+    eq(feats["phones"], '');
+    eq(feats["tokens"], "oft - cited");
+    eq(feats["stresses"], "");
+    eq(feats["syllables"], "");
   });
 
   it('Should call stresses', () => {
@@ -197,14 +197,14 @@ describe('RiTa.Analyzer', () => {
     RiTa.SILENCE_LTS = silent;
   });
 
-  /*it('Should call phones(raw)', () => {
- 
+  it('Should call phones(raw)', () => {
+
     let silent = RiTa.SILENCE_LTS;
-    //RiTa.SILENCE_LTS = true;
- 
+    RiTa.SILENCE_LTS = true;
+
     let result, answer;
     let opts = { 'rawPhones': true };
- 
+
     eq(RiTa.phones("", opts), "");
     eq(RiTa.phones("b", opts), "b");
     eq(RiTa.phones("B", opts), "b");
@@ -212,48 +212,48 @@ describe('RiTa.Analyzer', () => {
     eq(RiTa.phones("flowers", opts), "f-l-aw-er-z");
     eq(RiTa.phones("mice", opts), "m-ay-s");
     eq(RiTa.phones("ant", opts), "ae-n-t");
- 
+
     eq(RiTa.phones("The.", opts), "dh-ah .");
- 
+
     // different without lexicon ------------------------------------------
- 
+
     result = RiTa.phones("The boy jumped over the wild dog.", opts);
     answer = hasLex ? "dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-ao-g ." : 'dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-aa-g .';
     eq(result, answer);
- 
+
     result = RiTa.phones("The boy ran to the store.", opts);
     answer = hasLex ? "dh-ah b-oy r-ae-n t-uw dh-ah s-t-ao-r ." : 'dh-ah b-oy r-ah-n t-ow dh-ah s-t-ao-r .';
     eq(result, answer);
- 
+
     result = RiTa.phones("The dog ran faster than the other dog.  But the other dog was prettier.", opts);
     answer = hasLex ? "dh-ah d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ah ah-dh-er d-ao-g . b-ah-t dh-ah ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er ." : 'dh-ah d-aa-g r-ah-n f-ae-s-t-er th-ae-n dh-ah ah-dh-er d-aa-g . b-ah-t dh-ah ah-dh-er d-aa-g w-ah-z p-r-eh-t-iy-er .';
     eq(result, answer);
- 
+
     eq(RiTa.phones("quiche", opts), hasLex ? "k-iy-sh" : 'k-w-ih-sh');
     eq(RiTa.phones("said", opts), hasLex ? "s-eh-d" : 's-ey-d');
     eq(RiTa.phones("chevrolet", opts), hasLex ? "sh-eh-v-r-ow-l-ey" : 'ch-eh-v-r-ow-l-ah-t');
     eq(RiTa.phones("women", opts), hasLex ? "w-ih-m-eh-n" : 'w-ow-m-eh-n');
     eq(RiTa.phones("genuine", opts), hasLex ? "jh-eh-n-y-uw-w-ah-n" : 'jh-eh-n-y-ah-ay-n');
- 
+
     if (!hasLex) return; // NOTE: below may fail without lexicon
- 
+
     expect(RiTa.phones("deforestations", opts)).eq('d-ih-f-ao-r-ih-s-t-ey-sh-ah-n-z');
     expect(RiTa.phones("schizophrenias", opts)).eq('s-k-ih-t-s-ah-f-r-iy-n-iy-ah-z');
- 
+
     RiTa.SILENCE_LTS = silent;
-  });*/
+  });
 
   it('Should call syllables', () => {
 
     expect(RiTa.syllables('')).eq('');
     expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
-    expect(RiTa.syllables("1903")).eq('w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy'); 
+    expect(RiTa.syllables("1903")).eq('w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy');
 
     // different without lexicon ------------------------------------------
 
-    let nums = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', ]
+    let nums = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',]
     for (let i = 0; i < 10; i++) {
-      expect(RiTa.syllables(i+'')).eq(RiTa.syllables(nums[i]));
+      expect(RiTa.syllables(i + '')).eq(RiTa.syllables(nums[i]));
     }
 
     expect(RiTa.syllables('deforestations')).eq(hasLex ? 'd-ih/f-ao/r-ih/s-t-ey/sh-ah-n-z' : 'd-ah/f-ao-r/s-t-ey/sh-ah-n-z');
@@ -539,18 +539,18 @@ describe('RiTa.Analyzer', () => {
     for (let i = 0; i < testPairs.length; i += 2) {
       expect(RiTa.singularize(testPairs[i])).eq(testPairs[i + 1]);
       expect(RiTa.pluralize(testPairs[i + 1])).eq(testPairs[i]);
-        // if input is plural, return input
+      // if input is plural, return input
       expect(RiTa.pluralize(testPairs[i])).eq(testPairs[i]);
     }
-  
+
     expect(RiTa.singularize()).eq("");
     expect(RiTa.singularize("")).eq("");
     expect(() => { RiTa.singularize([1]) }).to.throw();
     expect(() => { RiTa.singularize(1) }).to.throw();
     /*     expect(RiTa.singularize("sheep", { dbug: true })).eq("sheep");
         expect(RiTa.singularize("apples", { dbug: true })).eq("apple"); */
-    
-    
+
+
     expect(RiTa.pluralize()).eq("");
     expect(RiTa.pluralize("")).eq("");
     expect(() => { RiTa.pluralize([1]) }).to.throw();
@@ -601,9 +601,9 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.analyzer.computePhones("leo", { silent: true })).eql(["l", "iy", "ow"]);
     //expect(RiTa.analyzer.computePhones("leo", { silent: false })).eql(["l", "iy", "ow"]);
     //numbers
-    expect(RiTa.analyzer.computePhones("1")).eql([ 'w', 'ah', 'n' ]);
+    expect(RiTa.analyzer.computePhones("1")).eql(['w', 'ah', 'n']);
     //console.log(RiTa.analyzer.computePhones("50"));
-    expect(RiTa.analyzer.computePhones("50")).eql([  'f',  'ay', 'v', 'z',  'ih', 'r', 'ow']);
+    expect(RiTa.analyzer.computePhones("50")).eql(['f', 'ay', 'v', 'z', 'ih', 'r', 'ow']);
     //with "'"
     //expect(RiTa.analyzer.computePhones("student's", { silent: false })).eql(["s", "t", "uw1", "d", "eh1", "n", "t", "z"]);
   });
