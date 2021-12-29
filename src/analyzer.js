@@ -1,6 +1,8 @@
 import Util from "./util";
 import LetterToSound from "./rita_lts";
 
+const SP = ' ', E = '';
+
 class Analyzer {
 
   constructor(parent) {
@@ -13,23 +15,20 @@ class Analyzer {
     let words = this.RiTa.tokenizer.tokenize(text);
     let tags = this.RiTa.pos(text, opts); // don't fail if no lexicon
     let features = {
-      phones: '',
-      stresses: '',
-      syllables: '',
-      pos: tags.join(' '),
-      tokens: words.join(' ')
+      phones: E,
+      stresses: E,
+      syllables: E,
+      pos: tags.join(SP),
+      tokens: words.join(SP)
     }
 
     for (let i = 0; i < words.length; i++) {
       let { phones, stresses, syllables } = this.analyzeWord(words[i], opts);
-      features.phones += phones;
-      features.stresses += stresses;
-      features.syllables += syllables;
+      features.phones += SP + phones;
+      features.stresses += SP + stresses;
+      features.syllables += SP + syllables;
     }
-
-    features.phones = features.phones.trim();
-    features.stresses = features.stresses.trim();
-    features.syllables = features.syllables.trim();
+    Object.keys(features).forEach(k => features[k] = features[k].trim()); // trim
 
     return features;
   }
@@ -41,7 +40,7 @@ class Analyzer {
 
   phonesToStress(phones) {
     if (!phones) return;
-    let stress = '', syls = phones.split(' ');
+    let stress = E, syls = phones.split(SP);
     for (let j = 0; j < syls.length; j++) {
       if (!syls[j].length) continue;
       stress += syls[j].includes('1') ? '1' : '0';
@@ -91,16 +90,16 @@ class Analyzer {
       }
 
       // compute phones and syllables
-      let sp = rawPhones.replace(/1/g, '').replace(/ /g, delim) + ' ';
+      let sp = rawPhones.replace(/1/g, E).replace(/ /g, delim) + SP;
       let phones = (sp === 'dh ') ? 'dh-ah ' : sp; // special case
-      let ss = rawPhones.replace(/ /g, slash).replace(/1/g, '') + ' ';
+      let ss = rawPhones.replace(/ /g, slash).replace(/1/g, E) + SP;
       let syllables = (ss === 'dh ') ? 'dh-ah ' : ss;
 
       // compute stresses if needed
-      let stresses = useRaw ? word : this.phonesToStress(rawPhones);
-      if (!stresses.endsWith(' ')) stresses += ' ';
+      let stresses = useRaw ? word : this.phonesToStress(rawPhones);;
 
       result = { phones, stresses, syllables };
+      Object.keys(result).forEach(k => result[k] = result[k].trim());
 
       // add to cache if enabled
       if (RiTa.CACHING) this.cache[word] = result;

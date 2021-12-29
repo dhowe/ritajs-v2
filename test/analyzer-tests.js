@@ -12,20 +12,25 @@ describe('RiTa.Analyzer', () => {
     RiTa.SILENCE_LTS = true;
 
     let data = RiTa.analyzer.analyzeWord("abandon");
-    expect(data.phones).eq("ah-b-ae-n-d-ah-n ");
-    expect(data.stresses).eq("0/1/0 ");
-    expect(data.syllables).eq("ah/b-ae-n/d-ah-n ");
+    expect(data.phones).eq("ah-b-ae-n-d-ah-n");
+    expect(data.stresses).eq("0/1/0");
+    expect(data.syllables).eq("ah/b-ae-n/d-ah-n");
 
     // with lts
     data = RiTa.analyzer.analyzeWord("z");
-    expect(data.phones).eq("z ");
-    expect(data.stresses).eq("0 ");
-    expect(data.syllables).eq("z ");
+    expect(data.phones).eq("z");
+    expect(data.stresses).eq("0");
+    expect(data.syllables).eq("z");
 
     data = RiTa.analyzer.analyzeWord("cloze");
-    expect(data.phones).eq("k-l-ow-z ");
-    expect(data.stresses).eq("1 ");
-    expect(data.syllables).eq("k-l-ow-z ");
+    expect(data.phones).eq("k-l-ow-z");
+    expect(data.stresses).eq("1");
+    expect(data.syllables).eq("k-l-ow-z");
+
+    data = RiTa.analyzer.analyzeWord("1903");
+    expect(data.phones).eq("w-ah-n-n-ih-n-z-ih-r-ow-th-r-iy");
+    expect(data.stresses).eq("0/0/0/0/0");
+    expect(data.syllables).eq("w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy");
 
     RiTa.SILENCE_LTS = tmp;
   });
@@ -50,6 +55,21 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phones: '', syllables: '' });
 
     let feats;
+
+    feats = RiTa.analyze("1903");
+    expect(feats.phones).eq("w-ah-n-n-ih-n-z-ih-r-ow-th-r-iy");
+    expect(feats.stresses).eq("0/0/0/0/0");
+    expect(feats.syllables).eq("w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy");
+    expect(feats.tokens).eq("1903");
+    expect(feats.pos).eq("cd");
+
+    feats = RiTa.analyze("(1903)");
+    expect(feats.phones).eq("( w-ah-n-n-ih-n-z-ih-r-ow-th-r-iy )");
+    expect(feats.stresses).eq("( 0/0/0/0/0 )");
+    expect(feats.syllables).eq("( w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy )");
+    expect(feats.tokens).eq("( 1903 )");
+    expect(feats.pos).eq("( cd )");
+    
     feats = RiTa.analyze("clothes");
     expect(feats.pos).eq("nns");
     expect(feats.tokens).eq("clothes");
@@ -227,6 +247,7 @@ describe('RiTa.Analyzer', () => {
 
     expect(RiTa.syllables('')).eq('');
     expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
+    expect(RiTa.syllables("1903")).eq('w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy'); 
 
     // different without lexicon ------------------------------------------
 
