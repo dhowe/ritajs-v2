@@ -48,7 +48,8 @@ class Util {
         phoneme = phoneme.substring(0, phoneme.length - 1);
       }
 
-      if (dbug) console.log(i + ")" + phoneme + ' stress=' + stress + ' inter=' + internuclei.join(':'));
+      if (dbug) console.log(i + ")" + phoneme + ' stress='
+        + stress + ' inter=' + internuclei.join(':'));
 
       if (Util.Phones.vowels.includes(phoneme)) {
 
@@ -109,38 +110,53 @@ class Util {
     return Util.syllablesToPhones(syllables);
   }
 
+  // takes one or more digits, return their phones
+  static numberToPhones(num) {
+    if (typeof num === 'string') num = parseInt(num);
+    if (/^[0-9]$/.test(num)) {
+      return Util.Phones.digits[parseInt(num)].split('-');
+    }
+    let text = Util.numberToWords(num);
+    let words = [text]; // one word
+    if (text.includes(' ')) words = text.split(' '); // multiple words
+    let phones = [];
+    words.forEach(w => phones.push()); // ?
+    return phones;
+  }
+
+  // takes one or more digits, return their words
   static numberToWords(num) {
 
-    const ones = [ '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine' ];
-    const tens = [ '', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety' ];
-    const teens = [ 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen' ];
-    
+    const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+    const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+    const teens = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+
     function millions(n) {
-      return n >= 1000000 ? millions(Math.floor(n / 1000000)) 
+      return n >= 1000000 ? millions(Math.floor(n / 1000000))
         + " million " + thousands(n % 1000000)
         : thousands(n);
     }
 
     function thousands(n) {
-      return n >= 1000 ?  hundreds(Math.floor(n / 1000)) +
+      return n >= 1000 ? hundreds(Math.floor(n / 1000)) +
         " thousand " + hundreds(n % 1000)
         : hundreds(n);
     }
 
     function hundreds(n) {
-      return n > 99 ? ones[Math.floor(n / 100)] 
+      return n > 99 ? ones[Math.floor(n / 100)]
         + " hundred " + digits(n % 100)
         : digits(n);
     }
-    
+
     function digits(n) {
       if (n < 10) return ones[n];
       else if (n >= 10 && n < 20) return teens[n - 10];
-      return tens[Math.floor(n / 10)] + ' '+ ones[n % 10]
+      return tens[Math.floor(n / 10)] + ' ' + ones[n % 10]
     }
-    
+
     if (typeof num === 'string') num = parseInt(num);
-    if (num === 0) return "zero";    
+    if (num === 0) return "zero";
     if (!Util.isNum(num)) return num; // warning?
     return millions(num).replace(/\s+/g, ' ').trim();
   }
@@ -179,7 +195,6 @@ class RE {
   }
 }
 
-
 Util.Phones = {
   consonants: ['b', 'ch', 'd', 'dh', 'f', 'g', 'hh', 'jh', 'k', 'l', 'm',
     'n', 'ng', 'p', 'r', 's', 'sh', 't', 'th', 'v', 'w', 'y', 'z', 'zh'
@@ -197,7 +212,12 @@ Util.Phones = {
   ],
   digits: ['z-ih-r-ow', 'w-ah-n', 't-uw', 'th-r-iy', 'f-ao-r', 'f-ay-v',
     's-ih-k-s', 's-eh-v-ah-n', 'ey-t', 'n-ih-n'
-  ]
+  ],
+  numbers: { // NEXT: add phones here? **
+    one: '', two: '', three: '', four: '', five: '', six: '', seven: '', eight: '', nine: '',
+    twenty: '', thirty: '', forty: '', fifty: '', sixty: '', seventy: '', eighty: '', ninety: '',
+    ten: '', eleven: '', twelve: '', thirteen: '', fourteen: '', fifteen: '', sixteen: '', seventeen: '', eighteen: '', nineteen: ''
+  }
 };
 
 Util.RE = function (a, b, c) { return new RE(a, b, c) };

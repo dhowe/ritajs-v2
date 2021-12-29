@@ -315,11 +315,14 @@ RiTa.STOP_WORDS = ["and", "a", "of", "in", "i", "you", "is", "to", "that", "it",
 RiTa.INFINITIVE = 1;
 RiTa.GERUND = 2;
 
-// For tokenization, Can't -> Can not, etc.
+// For tokenization, Can't -> 'Can not', etc.
 RiTa.SPLIT_CONTRACTIONS = false;
 
-// For tokenization, Can't -> Can not, etc.
-RiTa.PARSE_NUMBERS = true;
+// For tokenization, the_dog -> 'the dog', etc.
+RiTa.PARSE_UNDERSCORES = false;
+
+// For tokenization, 21 -> 'twenty one'
+RiTa.PARSE_NUMBERS = false;
 
 // Set to false to reduce memory use (likely slower)
 RiTa.CACHING = true;

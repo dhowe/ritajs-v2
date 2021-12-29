@@ -44,11 +44,8 @@ class LetterToSound {
       this.stateMachine[this.numStates++] = this.createState(type, this.tokenizer);
     } else if (type === "I") {
       let index = parseInt(this.tokenizer.nextToken());
-      if (index != this.numStates) { 
-        throw Error("Bad index in file.");
-      } else {
-        this.letterIndex[this.tokenizer.nextToken()] = index;
-      }
+      if (index !== this.numStates) throw Error("Bad index");
+      this.letterIndex[this.tokenizer.nextToken()] = index;
     } else if (type == "T") {
       this.stateMachine = [];
       this.stateMachineSize = parseInt(this.tokenizer.nextToken());
@@ -61,9 +58,6 @@ class LetterToSound {
 
     if (!word || !word.length || RiTa.isPunct(word)) return;
 
-    let dig, phoneList = [], windowSize = 4, 
-      full_buff, tmp, currentState, startIndex, stateIndex, c;
-
     let silent = RiTa.SILENT || RiTa.SILENCE_LTS || (opts && opts.silent);
     if (!LetterToSound.RULES) {
       if (!this.warnedForNoLTS) {
@@ -71,36 +65,25 @@ class LetterToSound {
         if (!silent) console.warn("[WARN] No LTS-rules: for "
           + "words not in lexicon, use a full version of RiTa");
       }
-      return null;
+      return;// null;
     }
-
     word = word.toLowerCase();
-    // if (Util.isNum(word)) {
-    //   let tmp = Util.numberToWords(word);
-    //   console.log('NUM: '+word+'->'+tmp);
-    //   word = tmp;
-    // }
-    //   word = (word.length > 1) ? word.split('') : [word];
-    //   for (let k = 0; k < word.length; k++) {
-    //     dig = parseInt(word[k]);
-    //     let parts = Util.Phones.digits[dig].split('-')
-    //     phoneList.push(...parts);
-    //   }
-    //   return phoneList;
-    // }
-    if (Util.isNum(word)) {
-      word = (word.length > 1) ? word.split('') : [word];
-      for (let k = 0; k < word.length; k++) {
-        dig = parseInt(word[k]);
-        let phs = Util.Phones.digits[dig].split('-');
-        phoneList.push(...phs);
-      }
-      return phoneList;
-    }
+    /*if (word.includes('_')) {
+      let parts = word.split('_');
+      let phones = [];
+      parts.forEach(w => phones.push(...this.phonesForWord(w, silent), ' '));
+      return phones;
+    }*/
 
-    // Create "000#word#000", uggh
-    tmp = "000#" + word.trim() + "#000", full_buff = tmp.split('');
+    return this.phonesForWord(word, silent);
+  }
 
+  phonesForWord(word, silent) {
+
+    // Create "000#word#000", yuck
+    let tmp = "000#" + word.trim() + "#000", full_buff = tmp.split('');
+    let currentState, startIndex, stateIndex, c, windowSize = 4;
+    let phones = [];
     for (let pos = 0; pos < word.length; pos++) {
       for (let i = 0; i < windowSize; i++) {
         this.fval_buff[i] = full_buff[pos + i];
@@ -109,16 +92,13 @@ class LetterToSound {
       }
 
       c = word[pos];
-      if (c == "'") continue;
+      if (c === "'") continue;
       startIndex = this.letterIndex[c];
 
-      // must return null here, not 0 (and not ===)
+      // must return null here, not 0 or undefined?
       if (isNaN(parseFloat(startIndex)) || !isFinite(startIndex)) {
-        if (!silent) {
-          console.warn("Unable to generate LTS for '" + word + "', no index for '" +
-            c + "', isDigit=" + Util.isNum(c) + ", isPunct=" + RiTa.isPunct(c));
-        }
-        return null;
+        if (!silent) this.ltsWarn(word, c);
+        return; // remove null;
       }
 
       stateIndex = parseInt(startIndex);
@@ -127,10 +107,54 @@ class LetterToSound {
         stateIndex = currentState.getNextState(this.fval_buff);
         currentState = this.getState(stateIndex);
       }
-      currentState.append(phoneList);
+      currentState.append(phones);
     }
-    return phoneList;
+
+    return phones;
   }
+
+  ltsWarn(word, c) {
+    console.warn("Unable to generate LTS for '" + word + "', no index for '" +
+      (c || word) + "', isDigit=" + Util.isNum(c || word) + ", isPunct=" + this.RiTa.isPunct(c || word));
+  }
+
+  parseNumberSylls(word, opts) {
+    let RiTa = this.RiTa;
+    let silent = RiTa.SILENT || RiTa.SILENCE_LTS || (opts && opts.silent);
+    if (/^[0-9]+$/.test(word)) {
+      let num = Util.numberToWords(word);
+      if (!num.includes(' ')) { // one word
+        return this.buildPhones(num);
+      }
+      let words = num.split(' '); // multiple words
+      let phones = [];
+      words.forEach(w => phones.push(...this.buildPhones(w)));
+      return phones;
+    }
+    else {
+      if (!silent) this.ltsWarn(word);
+      return;
+    }
+
+    // for (let i = 0; i < words.length; i++) {
+    //   if (this.RiTa.PARSE_NUMBERS && /^[0-9]+$/.test(words[i])) {
+    //     let wnum = Util.numberToWords(words[i]);
+    //     if (wnum.includes(" ")) { // handle multi-word numbers
+    //       words.splice(i, 1, ...wnum.split(" "));
+    //     } else {
+    //       words[i] = wnum;
+    //     }
+    //   }
+    // }
+    // let words = (word.length > 1) ? word.split('') : [word];
+    // for (let k = 0; k < words.length; k++) {
+    //   let dig = parseInt(words[k]);
+    //   let phs = Util.Phones.digits[dig].split('-');
+    //   phones.push(...phs);
+    // }
+    // return phones;
+  }
+
 
   getState(i) {
     if (typeof i === 'number') {
@@ -189,7 +213,7 @@ class FinalState {
           this.phoneList[1] = phones.substring(i + 1);
         } else {
           this.phoneList[0] = phones;
-       }
+        }
       }
     }
   }

@@ -191,11 +191,6 @@ describe('RiTa.Tokenizer', () => {
     output = RiTa.tokenize(input);
     expect(output).eql(expected);
 
-    input = "123 123 1 2 3 1,1 1.1 23.45.67 22/05/2012 12th May,2012";
-    expected = ["123", "123", "1", "2", "3", "1", ",", "1", "1.1", "23.45", ".", "67", "22/05/2012", "12th", "May", ",", "2012"];
-    output = RiTa.tokenize(input);
-    expect(output).eql(expected, 'GOT' + output);
-
     input = 'The boy screamed, "Where is my apple?"';
     expected = ["The", "boy", "screamed", ",", "\"", "Where", "is", "my", "apple", "?", "\""];
     output = RiTa.tokenize(input);
@@ -319,7 +314,7 @@ describe('RiTa.Tokenizer', () => {
       "<!-- this is a comment -->", //? should this be divided? 
       "<a href=\"www.google.com\">a link to google</a>",
       "<p>this<br>is</br>a<br>paragraph<br/></p>",
-      "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p><img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />",
+      "<p>Link <a href=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p><img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />",
       "1 < 2 and 3 > 2."
     ];
 
@@ -334,7 +329,7 @@ describe('RiTa.Tokenizer', () => {
       ["<!-- this is a comment -->"],
       ["<a href=\"www.google.com\">", "a", "link", "to", "google", "</a>"],
       ["<p>", "this", "<br>", "is", "</br>", "a", "<br>", "paragraph", "<br/>", "</p>"],
-      ["<p>", "Link", "<a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">", "here", "</a>", "is", "about", "<span class=\"cat\">", "cute", "cat", "</span>", "</p>", "<img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"],
+      ["<p>", "Link", "<a href=\"https://hk.search.yahoo.com/search?p=cute+cat\">", "here", "</a>", "is", "about", "<span class=\"cat\">", "cute", "cat", "</span>", "</p>", "<img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />"],
       ["1", "<", "2", "and", "3", ">", "2", "."]
     ];
     expect(inputs.length).eq(outputs.length);
@@ -605,8 +600,22 @@ describe('RiTa.Tokenizer', () => {
       ["Today I would make something.", "A 4.7 inch gun.", "It was noon."]);
   });
 
+  // it('Should parse integer numbers', () => {
+  //   RiTa.PARSE_NUMBERS = false;
+  //   let input = "123 123 1 2 3 2012";
+  //   let expected = ["123", "123", "1", "2", "3", "2012"];
+  //   let output = RiTa.tokenize(input);
+  //   expect(output).eql(expected, 'GOT: ' + output);
+  //   RiTa.PARSE_NUMBERS = true;
+  //   expect(RiTa.tokenize("123")).eql(['one', 'hundred', 'twenty', 'three'], 'GOT: ' + output);
+  //   expect(RiTa.tokenize("2012")).eql(['two', 'thousand', 'twelve'], 'GOT: ' + output);
+  //   RiTa.PARSE_NUMBERS = false;
+  // });
+
   it('Should handle decimal numbers', () => {
+
     // Support number formats:  	3.14529, 1.9e10, 123,340.00, -255.34
+
     expect(RiTa.tokenize("27.3")).eql(["27.3"]);
     expect(RiTa.tokenize("-27.3")).eql(["-27.3"]);
     expect(RiTa.tokenize("1.9e10")).eql(["1.9e10"]);
@@ -618,6 +627,11 @@ describe('RiTa.Tokenizer', () => {
     expect(RiTa.tokenize("He owed 200,000.50.")).eql(['He', 'owed', '200,000.50', '.']);
 
     expect(RiTa.tokenize("A 4.7 inch gun.")).eql(['A', '4.7', 'inch', 'gun', '.']);
+
+    let input = "1.1 23.45.67 22/05/2012 12th May,2012";
+    let expected = ["1.1", "23.45", ".", "67", "22/05/2012", "12th", "May", ",", "2012"];
+    let output = RiTa.tokenize(input);
+    expect(output).eql(expected, 'GOT: ' + output);
   });
 
   it('Should handle decimal numbers in untokenize', () => {
