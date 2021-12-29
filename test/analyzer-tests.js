@@ -581,7 +581,8 @@ describe('RiTa.Analyzer', () => {
     //expect(RiTa.analyzer.computePhones("leo", { silent: false })).eql(["l", "iy", "ow"]);
     //numbers
     expect(RiTa.analyzer.computePhones("1")).eql([ 'w', 'ah', 'n' ]);
-    expect(RiTa.analyzer.computePhones("50")).eql(["f-ay-v", "z-ih-r-ow"]);
+    //console.log(RiTa.analyzer.computePhones("50"));
+    expect(RiTa.analyzer.computePhones("50")).eql([  'f',  'ay', 'v', 'z',  'ih', 'r', 'ow']);
     //with "'"
     //expect(RiTa.analyzer.computePhones("student's", { silent: false })).eql(["s", "t", "uw1", "d", "eh1", "n", "t", "z"]);
   });
