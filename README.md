@@ -152,7 +152,6 @@ Some of the following extensions may be useful:
 * hbenl.vscode-mocha-test-adapter
 * hbenl.vscode-test-explorer
 * ms-vscode.test-adapter-converter
-* esbenp.prettier-vscode
 
 &nbsp;
 
