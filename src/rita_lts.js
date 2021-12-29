@@ -44,7 +44,7 @@ class LetterToSound {
       this.stateMachine[this.numStates++] = this.createState(type, this.tokenizer);
     } else if (type === "I") {
       let index = parseInt(this.tokenizer.nextToken());
-      if (index != this.numStates) { 
+      if (index != this.numStates) {
         throw Error("Bad index in file.");
       } else {
         this.letterIndex[this.tokenizer.nextToken()] = index;
@@ -61,8 +61,8 @@ class LetterToSound {
 
     if (!word || !word.length || RiTa.isPunct(word)) return;
 
-    let dig, phoneList = [], windowSize = 4, 
-      full_buff, tmp, currentState, startIndex, stateIndex, c;
+    let phoneList = [], windowSize = 4;
+    let fullBuff, tmp, currentState, startIndex, stateIndex, c;
 
     let silent = RiTa.SILENT || RiTa.SILENCE_LTS || (opts && opts.silent);
     if (!LetterToSound.RULES) {
@@ -71,41 +71,45 @@ class LetterToSound {
         if (!silent) console.warn("[WARN] No LTS-rules: for "
           + "words not in lexicon, use a full version of RiTa");
       }
-      return null;
+      return;
     }
 
     word = word.toLowerCase();
+
     if (Util.isNum(word)) {
-      word = (word.length > 1) ? word.split('') : [word];
-      for (let k = 0; k < word.length; k++) {
-        dig = parseInt(word[k]);
-        let phs = Util.Phones.digits[dig].split('-');
-        phoneList.push(...phs);
+      if (/^[0-9]+$/.test(word)) {
+        word = (word.length > 1) ? word.split('') : [word];
+        for (let k = 0; k < word.length; k++) {
+          let asWord = Util.Numbers.toWords[parseInt(word[k])];
+          let phs = RiTa.lexicon().rawPhones(asWord, { noLts: true });
+          phs = phs.replace(/1/g, '').replace(/ /g, '-');
+          phoneList.push(...phs.split('-'));
+        }
+        return phoneList;
       }
-      return phoneList;
+      return; // fail
     }
 
     // Create "000#word#000", uggh
-    tmp = "000#" + word.trim() + "#000", full_buff = tmp.split('');
+    tmp = "000#" + word.trim() + "#000", fullBuff = tmp.split('');
 
     for (let pos = 0; pos < word.length; pos++) {
       for (let i = 0; i < windowSize; i++) {
-        this.fval_buff[i] = full_buff[pos + i];
+        this.fval_buff[i] = fullBuff[pos + i];
         this.fval_buff[i + windowSize] =
-          full_buff[i + pos + 1 + windowSize];
+          fullBuff[i + pos + 1 + windowSize];
       }
 
       c = word[pos];
       if (c == "'") continue;
       startIndex = this.letterIndex[c];
 
-      // must check for null here, not 0 (and not ===)
       if (isNaN(parseFloat(startIndex)) || !isFinite(startIndex)) { // isNum
         if (!silent) {
           console.warn("Unable to generate LTS for '" + word + "', no index for '" +
             c + "', isDigit=" + Util.isNum(c) + ", isPunct=" + RiTa.isPunct(c));
         }
-        return null;
+        return;
       }
 
       stateIndex = parseInt(startIndex);
@@ -176,7 +180,7 @@ class FinalState {
           this.phoneList[1] = phones.substring(i + 1);
         } else {
           this.phoneList[0] = phones;
-       }
+        }
       }
     }
   }

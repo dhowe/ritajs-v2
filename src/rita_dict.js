@@ -21997,5 +21997,16 @@ module && (module.exports = {
   "zoo":["z-uw1","nn"],
   "zoologist":["z-ow aa1 l-ah jh-ah-s-t","nn"],
   "zoology":["z-ow aa1 l-ah jh-iy","nn"],
-  "zoom":["z-uw1-m","vb"]
+  "zoom":["z-uw1-m","vb"],
+  "twelve":["t-w-eh1-l-v","cd"],
+  "thirteen":["th-er1 t-iy-n","cd"],
+  "fourteen":["f-ao1-r t-iy-n","cd"],
+  "fifteen":["f-ih1-f t-iy-n","cd"],
+  "sixteen":["s-ih1-k-s t-iy-n","cd"],
+  "seventeen":["s-eh1-v-ah-n t-iy-n","cd"],
+  "eighteen":["ey1 t-iy-n","cd"],
+  "nineteen":["n-ay1-n t-iy-n","cd"],
+  "forty":["f-ao1-r t-iy","cd"],
+  "fifty":["f-ih1-f t-iy","cd"],
+  "sixty":["s-ih1-k-s t-iy","cd"]
 });
