@@ -6,7 +6,7 @@ describe('RiTa.Analyzer', () => {
   const hasLex = process.env.NODE_ENV
     !== 'production' || RiTa.lexicon().size();
 
-  it('Should call analyzeWord', () => {
+  it('Should call analyzeWord', () => { // SYNC:
 
     let tmp = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
@@ -50,8 +50,8 @@ describe('RiTa.Analyzer', () => {
     expect(result).eq('dh-ah l-ae/g-ih-n', 'got \'' + result + "'");
   });
 
-  it('Should call analyze', () => {
-
+  it('Should call analyze', () => { // SYNC:
+ 
     expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phones: '', syllables: '' });
 
     let feats;
@@ -572,11 +572,6 @@ describe('RiTa.Analyzer', () => {
     expect(() => { RiTa.inflector.isPlural(1) }).to.throw();
     expect(RiTa.inflector.isPlural('sheep')).eq(true);
     expect(RiTa.inflector.isPlural('apples')).eq(true);
-    /*     expect(RiTa.inflector.isPlural('leaves', { debug: true })).eq(true);
-        expect(RiTa.inflector.isPlural('feet', { debug: true })).eq(true);
-        expect(RiTa.inflector.isPlural('beaux', { debug: true })).eq(false);
-        expect(RiTa.inflector.isPlural('child', { debug: true })).eq(false);
-        expect(RiTa.inflector.isPlural('abbots', { debug: true })).eq(true); */
     expect(RiTa.inflector.isPlural('leaves', { debug: false })).eq(true);
     expect(RiTa.inflector.isPlural('feet', { debug: false })).eq(true);
     expect(RiTa.inflector.isPlural('beaux', { debug: false })).eq(false);
@@ -585,7 +580,7 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.inflector.isPlural('happiness')).eq(true);
   });
 
-  it('Should call computePhones', () => {
+  it('Should call computePhones', () => { // SYNC:
     expect(RiTa.analyzer.computePhones("leo")).eql(["l", "iy", "ow"]);
     
     // bad inputs -> return undefined

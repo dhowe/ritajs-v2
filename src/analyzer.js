@@ -22,7 +22,7 @@ class Analyzer {
       tokens: words.join(SP)
     }
 
-    for (let i = 0; i < words.length; i++) {
+    for (let i = 0; i < words.length; i++) {  // SYNC:
       let { phones, stresses, syllables } = this.analyzeWord(words[i], opts);
       features.phones += SP + phones;
       features.stresses += SP + stresses;
@@ -49,7 +49,7 @@ class Analyzer {
     return stress;
   }
 
-  analyzeWord(word, opts = {}) {
+  analyzeWord(word, opts = {}) {  // SYNC:
 
     let RiTa = this.RiTa;
 
@@ -78,7 +78,7 @@ class Analyzer {
       if (!rawPhones) {
         let ltsPhones = this.computePhones(word, opts);
         if (ltsPhones && ltsPhones.length) {
-          if (!silent && lex.size() && word.match(HAS_LETTER_RE)) {
+          if (!silent && lex.size()) {// && word.match(HAS_LETTER_RE)) {
             console.log("[RiTa] Used LTS-rules for '" + word + "'");
           }
           rawPhones = Util.syllablesFromPhones(ltsPhones);
@@ -98,7 +98,7 @@ class Analyzer {
       // compute stresses if needed
       let stresses = useRaw ? word : this.phonesToStress(rawPhones);;
 
-      result = { phones, stresses, syllables };
+      result = { phones, stresses, syllables };  // SYNC:
       Object.keys(result).forEach(k => result[k] = result[k].trim());
 
       // add to cache if enabled

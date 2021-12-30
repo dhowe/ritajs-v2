@@ -26,7 +26,7 @@ class RiMarkov { //SYNC:
     // we store inputs to verify we don't duplicate sentences
     if (!this.disableInputChecks || this.mlm) this.input = [];
 
-    // add text if supplied as opt SYNC:
+    // add text if supplied as opt // SYNC:
     if (opts.text) this.addText(opts.text);
   }
 
@@ -71,6 +71,8 @@ class RiMarkov { //SYNC:
     let tries = 0, tokens = [], usedStarts = [];
     let minIdx = 0, sentenceIdxs = [];
     let markedNodes = [];
+
+    ////////////////////////// local functions /////////////////////////////
 
     const unmarkNodes = () => {
       markedNodes.forEach(n => n.marked = false);
@@ -136,7 +138,7 @@ class RiMarkov { //SYNC:
       let sentIdx = sentenceIdx();
       sentence = sentence || this._flatten(tokens.slice(sentIdx));
       if (tries >= this.maxAttempts) throwError(tries, resultCount());
-      if (tokens.length >= this.maxAttempts) throwError(tries, resultCount());
+      //if (tokens.length >= this.maxAttempts) throwError(tries, resultCount()); // ???
       let parent = this._pathTo(tokens);
       let numChildren = parent ? parent.childNodes({ filter: notMarked }).length : 0;
 
@@ -258,12 +260,14 @@ class RiMarkov { //SYNC:
       }
     }
 
+    ////////////////////////////////// code ////////////////////////////////////////
+
     selectStart();
 
     while (resultCount() < num) {
 
       let sentIdx = sentenceIdx();
-      //console.log('LEN? '+(tokens.length - sentIdx) + ' <= ' + maxLength)
+
       if (tokens.length - sentIdx >= maxLength) {
         fail('too-long', 0, true);
         continue;
@@ -283,9 +287,10 @@ class RiMarkov { //SYNC:
       }
 
       tokens.push(next);
-      if (this.trace) console.log(tokens.length - sentIdx, next.token, '['
-        + parent.childNodes({ filter: notMarked }).filter
-          (t => t !== next).map(t => t.token) + ']'); // print unmarked children
+
+      if (this.trace) console.log(tokens.length - sentIdx, next.token, 
+        '[' + parent.childNodes({ filter: notMarked }) // print unmarked kids
+        .filter(t => t !== next).map(t => t.token) + ']'); 
     }
 
     unmarkNodes();
