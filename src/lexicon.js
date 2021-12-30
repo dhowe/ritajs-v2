@@ -116,7 +116,7 @@ class Lexicon {
         word = this.matchPos(word, data, opts);
         if (!word) continue;
         // Note: we may have changed the word here (e.g. via conjugation)
-        // and it is also may no longer be in the dictionary
+        //       and it is also may no longer be in the dictionary
         if (word !== words[i]) data = dict[word];
       }
 
@@ -146,7 +146,7 @@ class Lexicon {
     const result = [], _silent = opts.silent;
     opts.silent = true; // disable warnings
 
-    // randomize list order if shuffle is true
+    // randomize list order if 'shuffle' is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
     for (let i = 0; i < words.length; i++) {
@@ -258,14 +258,13 @@ class Lexicon {
         if (!word) continue;
         if (word !== words[i]) data = dict[word];
         /* Note: a) may have changed the word here via conjugation
-           and b) it may no longer be in the dictionary  */
+                 and b) it may no longer be in the dictionary  */
       }
 
       if (!regex || this._regexMatch(word, data, regex, opts.type)) {
         result.push(word);
+        if (result.length === opts.limit) break;
       }
-
-      if (result.length === opts.limit) break;
     }
 
     opts.silent = _silent; // re-enable warnings
