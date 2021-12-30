@@ -356,8 +356,24 @@ describe('RiTa.Lexicon', function () {
     expect(num === 5, result + ": " + syllables).to.be.true; // "5 syllables: "
   });
 
+  // it('Should call search via generator', () => {
+
+  //   console.log(RiTa.lexicon().hasWord('dogx'));
+  //   //let all =  Array.from(RiTa.lexicon().search({ pos: "n" })); 
+  //   //console.log(all);
+
+  //   let lex = RiTa.lexicon();
+  //   console.log(lex.search({ pos: "n" }).next().value);
+  //   // let i = 0;
+  //   // for (let value of lex.search()) {
+  //   //   console.log((i++) +')'+ value);
+  //   // }
+
+  //   expect(1).eq(2);
+  // });
+
   it('Should call search without regex', () => {
-    expect(RiTa.search().length).gt(20000); // all words
+    expect(RiTa.search()).eql([]); // all words
     expect(RiTa.search({ limit: 11 }).length).eq(11);
     expect(RiTa.search({ pos: "n" })).eql([
       'abalone', 'abandonment',

@@ -57,7 +57,7 @@ class Lexicon {
         // always look for shorter words first
         guess.sort((a, b) => a.length - b.length);
 
-        // look for words stem(b)===a
+        // look for words stem(b) === a
         for (let i = 0; i < guess.length; i++) {
           if (this.RiTa.stem(guess[i]) === word) {
             return guess[i];
@@ -100,7 +100,7 @@ class Lexicon {
     const _silent = opts.silent;
     opts.silent = true; // disable warnings
 
-    // randomize list order if shuffle is true
+    // randomize list order if 'shuffle' is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
     for (let i = 0; i < words.length; i++) {
@@ -208,18 +208,18 @@ class Lexicon {
       }
     }
 
-    // delegate to search {limit=1, shuffle=true, strictPos=true}    SYNC:
+    // delegate to search {limit=1, shuffle=true, strictPos=true} // SYNC:
     opts = opts || {};
     opts.strictPos = true;
     opts.shuffle = true;
     opts.limit = 1;
 
-    let result = this.search(regex, opts);
+    let result = this._searchAll(regex, opts);
 
     // relax our pos constraints if we got nothing
     if (result.length < 1 && opts.hasOwnProperty('pos')) {
       opts.strictPos = false;
-      result = this.search(regex, opts);
+      result = this._searchAll(regex, opts);
     }
 
     // we've still got nothing, throw
@@ -231,23 +231,29 @@ class Lexicon {
     return result[0];
   }
 
-  search(pattern, options) {
+  _searchAll() {
+    return Array.from(this.search(...arguments));
+  }
+
+  * search(pattern, options) {
 
     let dict = this._dict(true);
     let words = Object.keys(dict);
 
     // no arguments, just return
-    if (!pattern && !options) return words;
+    if (!pattern && !options) return;
 
     let { regex, opts } = this._parseRegex(pattern, options);
     this.parseArgs(opts);
 
-    let result = [], _silent = opts.silent;
+    let _silent = opts.silent;
     opts.silent = true; // disable warnings
+    
 
     // randomize list order if shuffle is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
+    let hits = 0;
     for (let i = 0; i < words.length; i++) {
 
       let word = words[i], data = dict[word];
@@ -257,20 +263,17 @@ class Lexicon {
         word = this.matchPos(word, data, opts, opts.strictPos);
         if (!word) continue;
         if (word !== words[i]) data = dict[word];
-        /* Note: a) may have changed the word here via conjugation
-           and b) it may no longer be in the dictionary  */
+        /* Note: a) we may have changed the word here via conjugation
+                 and b) it may no longer be in the dictionary  */
       }
 
       if (!regex || this._regexMatch(word, data, regex, opts.type)) {
-        result.push(word);
+        if (hits++ === opts.limit) break;
+        yield word;
       }
-
-      if (result.length === opts.limit) break;
     }
 
     opts.silent = _silent; // re-enable warnings
-
-    return result;
   }
 
   isAlliteration(word1, word2) {
