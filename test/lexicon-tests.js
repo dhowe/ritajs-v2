@@ -221,7 +221,7 @@ describe('RiTa.Lexicon', function () {
     let result = RiTa.randomWord(/^ah-k-s-eh-n-t$/, { type: "phones", pos: "nn" });
     expect(result).eq("accent");
 
-    result = RiTa.randomWord(/p-r-eh-n/, { type: "phones", pos: "nn" });
+    result = RiTa.randomWord(/p-r-eh-n/, { type: "phones", pos: "nn", maxLength: 10 });
     expect(result).eq("apprentice");
   });
 
