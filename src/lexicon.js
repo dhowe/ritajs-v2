@@ -165,7 +165,7 @@ class Lexicon {
       : this.similarByType(word, opts);
   }
 
-  randomWord(regex, opts) {
+  randomWord(regex, opts) { // SYNC:
 
     // no arguments, just return
     if (!regex && !opts) {
@@ -180,14 +180,14 @@ class Lexicon {
       }
     }
 
-    // delegate to search {limit=1, shuffle=true, strictPos=true} // SYNC:
+    // delegate to search {limit=1, shuffle=true, strictPos=true}
     opts = opts || {};
     opts.strictPos = true;
     opts.shuffle = true;
     opts.limit = 1;
 
     for (let value of this.search(regex, opts)) {
-      if (value) return value; 
+      if (value) return value;
     }
 
     // relax pos constraints if we found nothing
@@ -204,14 +204,14 @@ class Lexicon {
     throw Error("No words matching constraints:\n" + JSON.stringify(opts, 0, 2));
   }
 
-  _searchAll() {
+  _searchAll(pattern, opts) { // SYNC:
     return Array.from(this.search(...arguments));
   }
 
-  * search(pattern, options) {
+  * search(pattern, options) { // SYNC:
 
     if (!pattern && !options) {
-      throw Error("search() requires at least one argument");
+      throw Error("search() requires arguments");
     }
 
     let dict = this._dict(true);
@@ -223,12 +223,12 @@ class Lexicon {
     let _silent = opts.silent;
     opts.silent = true; // disable warnings
 
-    // randomize list order if shuffle is true
+    // randomize list order if 'shuffle' is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
     for (let i = 0, matches = 0; i < words.length; i++) {
       let word = words[i], data = dict[word];
-    
+
       if (!this.checkCriteria(word, data, opts)) continue;
 
       if (opts.targetPos) {
@@ -291,7 +291,7 @@ class Lexicon {
 
     let result = [], minVal = Number.MAX_VALUE, words = Object.keys(dict);
 
-    // randomize list order if shuffle is true
+    // randomize list order if 'shuffle' is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
     for (let i = 0; i < words.length; i++) {
@@ -331,12 +331,28 @@ class Lexicon {
     return result.slice(0, opts.limit);
   }
 
+  similarBySoundAndLetter(word, opts) {
+
+    opts.type = 'letter';
+    const simLetter = this.similarByType(word, opts);
+    if (simLetter.length < 1) return [];
+
+    opts.type = 'sound';
+    const simSound = this.similarByType(word, opts);
+    if (simSound.length < 1) return [];
+
+    return this._intersect(simSound, simLetter).slice(0, opts.limit);
+  }
+
+  /////////////////////////////////////////////////////////////////////////
+
   matchPos(word, rdata, opts, strict) {
 
     let posArr = rdata[1].split(' ');
 
     // check the pos here (based on strict flag)
-    if (!posArr.includes(opts.targetPos) || (strict && opts.targetPos !== posArr[0])) {
+    if (!posArr.includes(opts.targetPos)
+      || (strict && opts.targetPos !== posArr[0])) {
       return;
     }
 
@@ -357,7 +373,7 @@ class Lexicon {
       if (opts.numSyllables) {
 
         // TODO: use rdata here if possible
-        let syls = this.analyzer.analyzeWord(result, SILENT).syllables;
+        let syls = this.analyzer.analyzeWord(result, _SILENT).syllables;
         let num = syls.split(this.RiTa.SYLLABLE_BOUNDARY).length;
 
         // reject if syllable count has changed
@@ -440,19 +456,6 @@ class Lexicon {
         });
       default: throw Error('Unexpected pos: ' + pos);
     }
-  }
-
-  similarBySoundAndLetter(word, opts) {
-
-    opts.type = 'letter';
-    const simLetter = this.similarByType(word, opts);
-    if (simLetter.length < 1) return [];
-
-    opts.type = 'sound';
-    const simSound = this.similarByType(word, opts);
-    if (simSound.length < 1) return [];
-
-    return this._intersect(simSound, simLetter).slice(0, opts.limit);
   }
 
   /* return word stem if found, otherwise undefined */
@@ -702,6 +705,6 @@ class Lexicon {
 
 }
 
-const SILENT = { silent: true };
+const _SILENT = { silent: true };
 
 export default Lexicon;
