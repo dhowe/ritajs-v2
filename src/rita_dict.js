@@ -882,7 +882,7 @@ module && (module.exports = {
   "appalling":["ah p-ao1 l-ih-ng","jj"],
   "appallingly":["ah p-ao1 l-ih-ng l-iy","rb"],
   "apparatus":["ae p-er ae1 t-ah-s","nn"],
-  "apparel":["ah p-ae1 r-ah-l","nn vb"],
+  "apparel":["ah p-ae1 r-ah-l","nn"],
   "apparent":["ah p-eh1 r-ah-n-t","jj nn"],
   "apparently":["ah p-eh1 r-ah-n-t l-iy","rb"],
   "apparition":["ae p-er ih1 sh-ah-n","nn"],

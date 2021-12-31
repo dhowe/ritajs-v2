@@ -42,59 +42,31 @@ class Lexicon {
     return false;
   }
 
-  isStem(word) {
-
-    let part = word;
-    let dict = this._dict(true);
-    let words = Object.keys(dict);
-
-    while (part.length > 1) {
-
-      let pattern = new RegExp('^' + part);
-      let guess = words.filter(w => pattern.test(w));
-      if (guess && guess.length) {
-
-        // always look for shorter words first
-        guess.sort((a, b) => a.length - b.length);
-
-        // look for words stem(b) === a
-        for (let i = 0; i < guess.length; i++) {
-          if (this.RiTa.stem(guess[i]) === word) {
-            return guess[i];
-          }
-        }
-      }
-      part = part.slice(0, -1);
-    }
-
-    return undefined;
-  }
-
-  alliterations(theWord, opts = {}) {
+  * alliterations(theWord, opts = {}) {
 
     this.parseArgs(opts);
     if (!theWord || typeof theWord !== 'string' || theWord.length < 2) {
-      return [];
+      return;
     }
 
     // only allow consonant inputs
     if (this.RiTa.isVowel(theWord.charAt(0))) {
       if (!opts.silent && !this.RiTa.SILENT) console.warn
         ('Expects a word starting with a consonant, got: ' + theWord);
-      return [];
+      return;
     }
 
     const dict = this._dict(true), words = Object.keys(dict);
     const fss = this._firstStressedSyl(theWord);
-    if (!fss) return [];
+    if (!fss) return;
 
-    const phone = this._firstPhone(fss), result = [];
+    const phone = this._firstPhone(fss);//, result = [];
 
     // make sure we parsed first phoneme
     if (!phone) {
       if (!opts.silent && !this.RiTa.SILENT) console.warn
         ('Failed parsing first phone in "' + theWord + '"');
-      return result;
+      return;
     }
 
     const _silent = opts.silent;
@@ -103,7 +75,7 @@ class Lexicon {
     // randomize list order if 'shuffle' is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
-    for (let i = 0; i < words.length; i++) {
+    for (let i = 0, matches = 0; i < words.length; i++) {
 
       let word = words[i];
       // check word length and syllables
@@ -123,16 +95,16 @@ class Lexicon {
       // TODO: use 'data' here unless we've changed 
       // to a new word not in dict
       let c2 = this._firstPhone(this._firstStressedSyl(word));
-      if (phone === c2) result.push(word);
-
-      if (result.length === opts.limit) break;
+      if (phone === c2) {// result.push(word);
+        if (matches++ === opts.limit) break;
+        yield word;
+      }
     }
 
     opts.silent = _silent; // re-enable warnings
-    return result;
   }
 
-  rhymes(theWord, opts = {}) {
+  * rhymes(theWord, opts = {}) {
 
     this.parseArgs(opts);
 
@@ -143,13 +115,13 @@ class Lexicon {
 
     if (!phone) return [];
 
-    const result = [], _silent = opts.silent;
+    const _silent = opts.silent;
     opts.silent = true; // disable warnings
 
     // randomize list order if 'shuffle' is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
-    for (let i = 0; i < words.length; i++) {
+    for (let i = 0, matches = 0; i < words.length; i++) {
 
       let word = words[i], data = dict[word];
 
@@ -170,13 +142,13 @@ class Lexicon {
       let phones = data ? data[0] : this.rawPhones(word);
 
       // check for the rhyme
-      if (phones.endsWith(phone)) result.push(word);
-
-      if (result.length === opts.limit) break;
+      if (phones.endsWith(phone)) {
+        if (matches++ === opts.limit) break;
+        yield word;
+      }
     }
 
     opts.silent = _silent; // re-enable warnings
-    return result;
   }
 
   spellsLike(word, opts = {}) {
@@ -214,21 +186,22 @@ class Lexicon {
     opts.shuffle = true;
     opts.limit = 1;
 
-    let result = this._searchAll(regex, opts);
+    for (let value of this.search(regex, opts)) {
+      if (value) return value; 
+    }
 
-    // relax our pos constraints if we got nothing
-    if (result.length < 1 && opts.hasOwnProperty('pos')) {
+    // relax pos constraints if we found nothing
+    if (opts.hasOwnProperty('pos')) {
       opts.strictPos = false;
-      result = this._searchAll(regex, opts);
+      for (let value of this.search(regex, opts)) {
+        if (value) return value;
+      }
     }
 
     // we've still got nothing, throw
-    if (result.length < 1) {
-      ['strictPos', 'shuffle', 'targetPos'].forEach(k => delete opts[k]);
-      throw Error("No words matching constraints:\n" + JSON.stringify(opts, 0, 2));
-    }
-
-    return result[0];
+    if (regex) opts.regex = regex.toString();
+    ['strictPos', 'shuffle', 'targetPos'].forEach(k => delete opts[k]);
+    throw Error("No words matching constraints:\n" + JSON.stringify(opts, 0, 2));
   }
 
   _searchAll() {
@@ -237,26 +210,25 @@ class Lexicon {
 
   * search(pattern, options) {
 
+    if (!pattern && !options) {
+      throw Error("search() requires at least one argument");
+    }
+
     let dict = this._dict(true);
     let words = Object.keys(dict);
-
-    // no arguments, just return
-    if (!pattern && !options) return;
 
     let { regex, opts } = this._parseRegex(pattern, options);
     this.parseArgs(opts);
 
     let _silent = opts.silent;
     opts.silent = true; // disable warnings
-    
 
     // randomize list order if shuffle is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
-    let hits = 0;
-    for (let i = 0; i < words.length; i++) {
-
+    for (let i = 0, matches = 0; i < words.length; i++) {
       let word = words[i], data = dict[word];
+    
       if (!this.checkCriteria(word, data, opts)) continue;
 
       if (opts.targetPos) {
@@ -268,7 +240,8 @@ class Lexicon {
       }
 
       if (!regex || this._regexMatch(word, data, regex, opts.type)) {
-        if (hits++ === opts.limit) break;
+        if (matches++ === opts.limit) break;
+        //console.log('search: '+matches+'/'+i);
         yield word;
       }
     }
@@ -481,6 +454,35 @@ class Lexicon {
 
     return this._intersect(simSound, simLetter).slice(0, opts.limit);
   }
+
+  /* return word stem if found, otherwise undefined */
+  findStem(word) {  // niapi, unused
+
+    let part = word;
+    let dict = this._dict(true);
+    let words = Object.keys(dict);
+
+    while (part.length > 1) {
+
+      let pattern = new RegExp('^' + part);
+      let guess = words.filter(w => pattern.test(w));
+      if (guess && guess.length) {
+
+        // always look for shorter words first
+        guess.sort((a, b) => a.length - b.length);
+
+        // look for words stem(b) === a
+        for (let i = 0; i < guess.length; i++) {
+          if (this.RiTa.stem(guess[i]) === word) {
+            return guess[i];
+          }
+        }
+      }
+      part = part.slice(0, -1);
+    }
+    return;
+  }
+
 
   rawPhones(word, opts) {
 
