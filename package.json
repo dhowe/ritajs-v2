@@ -39,6 +39,7 @@
     "prepare": "npm run compile",
     "watch.src": "npm-watch test.src",
     "test.src": "NODE_ENV=dev mocha -r esm",
+    "test.g": "NODE_ENV=dev mocha -r esm ./test/*.js -g ",
     "watch.grammar": "npm-watch antlr4.js",
     "compile": "npm run fix.antlr && npm run antlr4.js",
     "precoverage": "rm -rf ./coverage",
@@ -64,6 +65,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/plugin-proposal-class-properties": "^7.12.13",
+    "@babel/plugin-transform-runtime": "^7.16.7",
     "@babel/preset-env": "^7.12.16",
     "antlr4": "^4.9.1",
     "babel-loader": "^8.2.2",
@@ -81,5 +83,8 @@
     "webpack": "^4.41.2",
     "webpack-bundle-analyzer": "^4.1.0",
     "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.26.0"
   }
 }
