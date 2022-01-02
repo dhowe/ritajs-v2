@@ -245,6 +245,9 @@ describe('RiTa.Analyzer', () => {
 
   it('Should call syllables', () => {
 
+    let silent = RiTa.SILENCE_LTS;
+    RiTa.SILENCE_LTS = true;
+
     expect(RiTa.syllables('')).eq('');
     expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
     expect(RiTa.syllables("1903")).eq('w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy');
@@ -278,6 +281,8 @@ describe('RiTa.Analyzer', () => {
     input = 'The emperor had no clothes on.';
     expected = hasLex ? 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z aa-n .' : 'dh-ah eh-m/p-er/er hh-ae-d n-ow k-l-ow-dh-z ah-n .';
     expect(RiTa.syllables(input)).eq(expected);
+
+    RiTa.SILENCE_LTS = silent;
   });
 
   it('Should pluralize phrases', () => {
