@@ -118,17 +118,12 @@ class RiMarkov { //SYNC:
         return false;
       }
 
-      let flatSent = this.untokenize(sentence);
       if (!opts.allowDuplicates && isSubArray(sentence, tokens.slice(0, sentIdx))) {
         fail('duplicate (pop: ' + next.token + ')');
         return false;
       }
 
       tokens.push(next);
-      sentenceIdxs.push(tokens.length);
-
-      if (this.trace) console.log('OK (' + resultCount() + '/' + num + ') "' +
-        flatSent + '" sidxs=[' + sentenceIdxs + ']\n');
 
       return true;
     }
@@ -260,7 +255,7 @@ class RiMarkov { //SYNC:
       }
     }
 
-    ////////////////////////////////// code ////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
     selectStart();
 
@@ -282,7 +277,11 @@ class RiMarkov { //SYNC:
       }
 
       if (this._isEnd(next)) {
-        validateSentence(next);
+        if (validateSentence(next)) {
+          sentenceIdxs.push(tokens.length); // found one
+          if (this.trace) console.log('OK (' + resultCount() + '/' + num + ') "' +
+            flatSent + '" sidxs=[' + sentenceIdxs + ']\n');
+        }
         continue;
       }
 
