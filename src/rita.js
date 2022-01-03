@@ -270,6 +270,7 @@ RiTa.RiGrammar = RiGrammar;
 RiTa.RiMarkov = RiMarkov;
 RiTa.RiScript = RiScript;
 RiTa.Operator = Operator;
+RiTa.Stemmer = Stemmer;
 
 // COMPONENTS
 RiTa.tagger = new Tagger(RiTa);

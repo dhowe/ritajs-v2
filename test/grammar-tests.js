@@ -1,5 +1,6 @@
-import { RiTa, expect } from './before';
-  
+import { RiTa } from './before';
+import { expect } from 'chai';
+
 describe('RiTa.RiGrammar', function() {
 
     const ST = { silent: 1 }, TP = { trace: 1 }, TLP = { trace: 1, traceLex: 1 };

@@ -1,17 +1,20 @@
-import { RiTa, expect } from './before';
+import { loadTestingDeps } from './before';
 
 describe('RiTa.Stemmer', () => {
 
-  it('Should test stem1', () => {
-		test("accompanying", "accompani");
-		test("malediction", "maledict");
-		test("softeners", "soften");
-		test("write", "write");
-		test("writing", "write");
-		test("write writes writing writings.", "write write write write.");
+  let RiTa, expect;
+  before(async () => ({RiTa, expect} = await loadTestingDeps()));
+
+  it('Should test stem1', function () {
+    test("accompanying", "accompani");
+    test("malediction", "maledict");
+    test("softeners", "soften");
+    test("write", "write");
+    test("writing", "write");
+    test("write writes writing writings.", "write write write write.");
   });
 
-  it('Should test stem2', function() {
+  it('Should test stem2', function () {
 
     this.slow(300);
 
@@ -6397,15 +6400,14 @@ describe('RiTa.Stemmer', () => {
     test("cyttaria", "cyttaria");
   });
 
-  it('Should call stemAll', () => { 
+  it('Should call stemAll', function () {
     let input = ["cured", "cats", "cut", "plays"];
-    let expect = ["cure", "cat", "cut", "play"];
-    //unreachable function at stemmer.js line 844, add to rita.js?
-    //let ouput = Stemmer.stemAll(input);
-    // for (let i = 0; i < input.length; i++) {
-    //   expect(ouput[i]).eq(expect[i]);
-    // }
+    let expected = ["cure", "cat", "cut", "play"];
+    let output = RiTa.Stemmer.stemAll(input);
+    for (let i = 0; i < input.length; i++) {
+      expect(output[i]).eq(expected[i]);
+    }
   });
 
-	function test(i, o) { expect(RiTa.stem(i)).eq(o); }
+  function test(i, o) { expect(RiTa.stem(i)).eq(o); }
 });

@@ -1,5 +1,5 @@
-import { assert } from 'chai';
-import { RiTa, expect } from './before';
+import { RiTa } from './before';
+import { expect } from 'chai';
 
 describe('RiTa.RiMarkov', () => {
 

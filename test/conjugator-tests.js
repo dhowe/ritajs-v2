@@ -1,8 +1,11 @@
-import { RiTa, expect } from './before';
+import { loadTestingDeps } from './before';
 
-describe('RiTa.Conjugator', () => {
+describe('RiTa.Conjugator', function () {
 
-  it('Should call pastPart', () => {
+  let RiTa, expect;
+  before(async () => ({ RiTa, expect } = await loadTestingDeps()));
+
+  it('Should call pastPart', function () {
 
     equal(RiTa.pastPart("pen"), "penned"); // rita #150
     equal(RiTa.pastPart("red"), "red");
@@ -61,7 +64,7 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.pastPart("gone"), "gone");
   });
 
-  it('Should call presentPart', () => {
+  it('Should call presentPart', function () {
 
     equal(RiTa.presentPart(""), "");
     equal(RiTa.presentPart("sleep"), "sleeping");
@@ -90,7 +93,7 @@ describe('RiTa.Conjugator', () => {
     equal(RiTa.presentPart(" study"), "studying"); // trim
   });
 
-  it('Should conjugate VBDs', () => {
+  it('Should conjugate VBDs', function () {
     expect(RiTa.conjugate("go", {
       number: RiTa.SINGULAR,
       person: RiTa.FIRST,
@@ -103,12 +106,12 @@ describe('RiTa.Conjugator', () => {
     })).eq("ran");
   });
 
-  it('Should call conjugate', () => {
+  it('Should call conjugate', function () {
     let args, s, a, c;
 
     equal(RiTa.conjugate("walk"), "walk");
-    expect(() => { RiTa.conjugate() }).to.throw();
-    expect(() => { RiTa.conjugate("") }).to.throw();
+    expect(function () { RiTa.conjugate() }).to.throw();
+    expect(function () { RiTa.conjugate("") }).to.throw();
 
     equal("swum", RiTa.pastPart("swim"));
 
@@ -292,7 +295,7 @@ describe('RiTa.Conjugator', () => {
     }
 
     //string args
-    expect(() => { RiTa.conjugate("walk", "invalid args") }).to.throw();
+    expect(function () { RiTa.conjugate("walk", "invalid args") }).to.throw();
     expect(RiTa.conjugate("walk", "1SPr")).eq("walk");
     expect(RiTa.conjugate("walk", "1PPr")).eq("walk");
     expect(RiTa.conjugate("walk", "2SPr")).eq("walk");
@@ -377,11 +380,11 @@ describe('RiTa.Conjugator', () => {
     RiTa.conjugate("swim", "2PPa")
   });
 
-  it('Should call toString', () => {
+  it('Should call toString', function () {
     equal(RiTa.conjugator.toString(), '  ---------------------\n  Passive = false\n  Perfect = false\n  Progressive = false\n  ---------------------\n  Number = 8\n  Person = 2\n  Tense = 4\n  ---------------------\n');
   });
 
-  it('Should accept stems', () => {
+  it('Should accept stems', function () {
 
     // https://github.com/dhowe/rita/issues/116
     let stem = RiTa.stem("walking");
@@ -442,9 +445,9 @@ describe('RiTa.Conjugator', () => {
     });
   });
 
-  it("Should call unconjugate", () => {
+  it("Should call unconjugate", function () {
 
-expect(RiTa.conjugator.unconjugate("trepanning")).eq("trepan");
+    expect(RiTa.conjugator.unconjugate("trepanning")).eq("trepan");
 
 
     // 3rd person singular (regular)

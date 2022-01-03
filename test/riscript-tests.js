@@ -1,5 +1,5 @@
-import { RiTa, expect } from './before';
-//import Operator from "../src/operator"
+import { RiTa } from './before';
+import { expect } from 'chai';
 
 describe('RiTa.RiScript', function () {
 
