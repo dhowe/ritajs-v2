@@ -10,8 +10,10 @@ module.exports = {
     libraryTarget: 'umd',
     libraryExport: 'default'
   },
+  resolve: {
+    fallback: { "fs": false }
+  },
   node: {
-    fs: "empty",
     __dirname: false,
     __filename: false,
   },
