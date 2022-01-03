@@ -9,7 +9,7 @@ describe('RiTa.RiScript', function () {
 
   let RiTa, expect, RiScript;
   before(async () => {
-    ({RiTa, expect} = await loadTestingDeps());
+    ({ RiTa, expect } = await loadTestingDeps());
     RiScript = RiTa.RiScript;
   });
 
@@ -1200,8 +1200,12 @@ describe('RiTa.RiScript', function () {
     });
 
     it('Should resolve parameterized transforms', function () {
-      let res = RiTa.evaluate("(walk).conj(3PPa)", { conj: (a, c) => RiTa.conjugate(a, c) });
-      expect(res).eq("walked");
+      let hasLex = typeof process !== 'undefined'
+        && process.env.NODE_ENV !== 'production' || RiTa.lexicon().size();
+      if (hasLex) {
+        let res = RiTa.evaluate("(walk).conj(3PPa)", { conj: (a, c) => RiTa.conjugate(a, c) });
+        expect(res).eq("walked");
+      }
     });
 
     it('Should resolve object properties', function () {

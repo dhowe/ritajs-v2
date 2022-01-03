@@ -3,7 +3,7 @@
  * Loads the correct version of rita for 3 testing cases:
  * 1. In Node, using the raw code in 'src' (if NODE_ENV=dev)
  * 2. In Node, using the transpiled code in 'dist'
- * 3. In Browser, using the transpiled code in 'dist'
+ * 3. In Browser (test/index.html), using the transpiled code in 'dist'
  */
 async function loadTestingDeps() {
   let RiTa, expect;

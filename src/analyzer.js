@@ -57,9 +57,9 @@ class Analyzer {
     let result = RiTa.CACHING && this.cache[word];
     if (typeof result === 'undefined') {
 
-      let useRaw = false; //opts && opts.useRaw;
       let slash = '/', delim = '-';
       let lex = this.RiTa.lexicon();
+      let phones = word, syllables = word, stresses = word;
       let rawPhones = lex.rawPhones(word, { noLts: true });
 
       // if its a simple plural ending in 's',
@@ -70,7 +70,7 @@ class Analyzer {
         rawPhones && (rawPhones += '-z'); // add 's' phone
       }
 
-  		// TODO: what about verb forms here?? TestCase?
+      // TODO: what about verb forms here?? TestCase?
 
       let silent = RiTa.SILENT || RiTa.SILENCE_LTS || (opts && opts.silent);
 
@@ -83,20 +83,16 @@ class Analyzer {
           }
           rawPhones = Util.syllablesFromPhones(ltsPhones);
         }
-        else {
-          rawPhones = word;
-          useRaw = true;
-        }
       }
 
-      // compute phones and syllables
-      let sp = rawPhones.replace(/1/g, E).replace(/ /g, delim) + SP;
-      let phones = (sp === 'dh ') ? 'dh-ah ' : sp; // special case
-      let ss = rawPhones.replace(/ /g, slash).replace(/1/g, E) + SP;
-      let syllables = (ss === 'dh ') ? 'dh-ah ' : ss;
-
-      // compute stresses if needed
-      let stresses = useRaw ? word : this.phonesToStress(rawPhones);;
+      if (rawPhones) {
+        // compute phones, syllables and stresses
+        let sp = rawPhones.replace(/1/g, E).replace(/ /g, delim) + SP;
+        phones = (sp === 'dh ') ? 'dh-ah ' : sp; // special case
+        let ss = rawPhones.replace(/ /g, slash).replace(/1/g, E) + SP;
+        syllables = (ss === 'dh ') ? 'dh-ah ' : ss;
+        stresses = this.phonesToStress(rawPhones);
+      }
 
       result = { phones, stresses, syllables };  // SYNC:
       Object.keys(result).forEach(k => result[k] = result[k].trim());
