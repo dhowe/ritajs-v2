@@ -1,38 +1,48 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <title>RiTa Tests</title>
-    <link href="https://unpkg.com/mocha@4.0.1/mocha.css" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
 </head>
+
 <body>
-<div id="mocha"></div>
+    <div id="mocha"></div>
 
-<script src="../dist/rita-micro.js"></script>
-<script src="../node_modules/chai/chai.js"></script>
-<script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../dist/rita-micro.js"></script>
 
-<script>mocha.setup('bdd');</script>
+    <script class="mocha-init">
+        mocha.setup('bdd');
+        mocha.checkLeaks();
+    </script>
 
-<script src="./rita-tests.js"></script>
-<script src="./riscript-tests.js"></script>
-<script src="./grammar-tests.js"></script>
-<script src="./markov-tests.js"></script>
-<script src="./tokenizer-tests.js"></script>
-<script src="./analyzer-tests.js"></script>
+    <script type="module" src="./analyzer-tests.js"></script>
+    <script type="module" src="./conjugator-tests.js"></script>
+    <script type="module" src="./grammar-tests.js"></script>
+    <script type="module" src="./markov-tests.js"></script>
+    <script type="module" src="./riscript-tests.js"></script>
+    <script type="module" src="./rita-tests.js"></script>
+    <script type="module" src="./stemmer-tests.js"></script>
+    <script type="module" src="./tokenizer-tests.js"></script>
 
+    <!--
+        THESE WILL ALL THROW WITHOUT LEXICON
+        <script type="module" src="./tagger-tests.js"></script>
+        <script type="module" src="./lexicon-tests.js"></script>
+    -->
 
-<!--
-THESE SHOULD ALL THROW WITHOUT LEXICON
-<script src="./tagger-tests.js"></script>
-<script src="./lexicon-tests.js"></script>
--->
-
-<script>
-    const hasLex = false;
-    expect = chai.expect;
-    mocha.checkLeaks();
-    mocha.run();
-</script>
+    <script type="module" class="mocha-exec">
+        if (typeof RiTa === 'undefined') {
+            let message = 'RiTa not found: make sure to build first';
+            document.getElementById('mocha').innerHTML = message;
+            throw Error(message);
+        }
+        mocha.run();
+    </script>
 </body>
+
 </html>

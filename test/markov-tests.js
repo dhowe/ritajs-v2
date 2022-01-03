@@ -1,32 +1,30 @@
-import { RiTa } from './before';
-import { expect } from 'chai';
+import { loadTestingDeps } from './before';
 
-describe('RiTa.RiMarkov', () => {
 
-  let RiMarkov, Random;
+describe('RiTa.RiMarkov', function () {
+
   let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
   let sample2 = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself. After all, I did occasionally want to be embarrassed.";
   let sample3 = sample + ' One reason people are dishonest is to achieve power.';
   let sample4 = "The Sun is a barren, rocky world without air and water. It has dark lava on its surface. The Sun is filled with craters. It has no light of its own. It gets its light from the Sun. The Sun keeps changing its shape as it moves around the Sun. It spins on its Sun in 273 days. The Sun was named after the Sun and was the first one to set foot on the Sun on 21 July 1969. They reached the Sun in their space craft named the Sun. The Sun is a huge ball of gases. It has a diameter of two km. It is so huge that it can hold millions of planets inside it. The Sun is mainly made up of hydrogen and helium gas. The surface of the Sun is known as the Sun surface. The Sun is surrounded by a thin layer of gas known as the chromospheres. Without the Sun, there would be no life on the Sun. There would be no plants, no animals and no Sun. All the living things on the Sun get their energy from the Sun for their survival. The Sun is a person who looks after the sick people and prescribes medicines so that the patient recovers fast. In order to become a Sun, a person has to study medicine. The Sun lead a hard life. Its life is very busy. The Sun gets up early in the morning and goes in circle. The Sun works without taking a break. The Sun always remains polite so that we feel comfortable with it. Since the Sun works so hard we should realise its value. The Sun is an agricultural country. Most of the people on the Sun live in villages and are farmers. The Sun grows cereal, vegetables and fruits. The Sun leads a tough life. The Sun gets up early in the morning and goes in circles. The Sun stays and work in the sky until late evening. The Sun usually lives in a dark house. Though the Sun works hard it remains poor. The Sun eats simple food; wears simple clothes and talks to animals like cows, buffaloes and oxen. Without the Sun there would be no cereals for us to eat. The Sun plays an important role in the growth and economy of the sky.";
 
-  before(function () {
-    while (!RiTa) {
-    }
+  let RiTa, expect, RiMarkov, Random;
+  before(async () => {
+    ({ RiTa, expect } = await loadTestingDeps());
     RiMarkov = RiTa.RiMarkov;
     Random = RiTa.randomizer;
   });
 
-
-  it('should call RiMarkov', () => {
+  it('should call RiMarkov', function () {
     let rm = RiTa.markov(3);
     ok(typeof rm === 'object');
     eq(rm.size(), 0);
 
     // should throw when options conflict
-    expect(() => { let rm = new RiMarkov(3, { maxLengthMatch: 2 }) }).to.throw();
+    expect(function () { let rm = new RiMarkov(3, { maxLengthMatch: 2 }) }).to.throw();
   });
 
-  it('should call RiTa.markov', () => {
+  it('should call RiTa.markov', function () {
     let rm = RiTa.markov(3);
     ok(typeof rm === 'object');
     eq(rm.size(), 0);
@@ -36,20 +34,20 @@ describe('RiTa.RiMarkov', () => {
 
     rm = RiTa.markov(3, { text: "" });
     eq(rm.size(), 0);
-    expect(() => { rm.generate() }).to.throw();
+    expect(function () { rm.generate() }).to.throw();
 
     rm = RiTa.markov(3, { text: sample });
     expect(rm.generate().length > 0);
 
 
     rm = RiTa.markov(3, { text: "Too short." });
-    expect(() => { rm.generate() }).to.throw();
+    expect(function () { rm.generate() }).to.throw();
 
     rm = RiTa.markov(3, { text: 1 });
-    expect(() => { rm.generate() }).to.throw();
+    expect(function () { rm.generate() }).to.throw();
 
     rm = RiTa.markov(3, { text: false });
-    expect(() => { rm.generate() }).to.throw();
+    expect(function () { rm.generate() }).to.throw();
 
     rm = RiTa.markov(3, { text: ["Sentence one.", "Sentence two."] });
     eq(rm.size(), 6);
@@ -57,14 +55,14 @@ describe('RiTa.RiMarkov', () => {
     rm = RiTa.markov(3, { text: RiTa.sentences(sample) });
     expect(rm.generate().length > 0);
 
-    expect(() => { rm = RiTa.markov(1) }).to.throw();
-    expect(() => { rm = RiTa.markov(3, { maxLengthMatch: 2 }) }).to.throw();
+    expect(function () { rm = RiTa.markov(1) }).to.throw();
+    expect(function () { rm = RiTa.markov(3, { maxLengthMatch: 2 }) }).to.throw();
   });
 
-  it('should call Random.pSelect', () => {
+  it('should call Random.pSelect', function () {
 
     // should throw when options conflict
-    expect(() => { Random.pselect() }).to.throw();
+    expect(function () { Random.pselect() }).to.throw();
     expect(Random.pselect([1])).equal(0);
 
     //////////////////////////////////////////
@@ -106,7 +104,7 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  it('should call Random.ndist', () => {
+  it('should call Random.ndist', function () {
     expect(() => Random.ndist([1.0, 2, 6, -2.5, 0])).to.throw;
 
     let weights, expected, results;
@@ -124,7 +122,7 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  it('should call Random.ndist.temp', () => {
+  it('should call Random.ndist.temp', function () {
     let weights, expected, results;
     weights = [1.0, 2, 6, -2.5, 0];
     expected = [
@@ -147,7 +145,7 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  0 && it('should call createSeed', () => { // no longer used
+  0 && it('should call createSeed', function () { // no longer used
     let rm, toks;
 
     rm = new RiMarkov(3);
@@ -190,12 +188,12 @@ describe('RiTa.RiMarkov', () => {
     expect(rm._flatten(toks)).eq('The young girl');
   });
 
-  it('should throw on generate for empty model', () => {
+  it('should throw on generate for empty model', function () {
     let rm = new RiMarkov(4, { maxLengthMatch: 6 });
     expect(() => rm.generate(5)).to.throw;
   });
 
-  it('should throw on failed generate', () => {
+  it('should throw on failed generate', function () {
     let rm = new RiMarkov(4, { maxLengthMatch: 6 });
     rm.addText(RiTa.sentences(sample));
     expect(() => rm.generate(5)).to.throw;
@@ -209,7 +207,7 @@ describe('RiTa.RiMarkov', () => {
     expect(() => rm.generate(5)).to.throw;
   });
 
-  it('should split on custom tokenizers', () => {
+  it('should split on custom tokenizers', function () {
 
     let sents = ['asdfasdf-', 'aqwerqwer+', 'asdfasdf*'];
     let tokenize = (sent) => sent.split("");
@@ -225,7 +223,7 @@ describe('RiTa.RiMarkov', () => {
     eql(res, sents);
   });
 
-  it('should apply custom tokenizers', () => {
+  it('should apply custom tokenizers', function () {
 
     let sents = ['asdfasdf-', 'asqwerqwer+', 'aqadaqdf*'];
     let tokenize = (sent) => sent.split("");
@@ -251,7 +249,7 @@ describe('RiTa.RiMarkov', () => {
     ok(/^as.*[-=*]$/.test(result[0]), "FAIL: '" + result[0] + "'");
   });
 
-  it('should generate non-english sentences', () => {
+  it('should generate non-english sentences', function () {
 
     let text = '家 安 春 夢 家 安 春 夢 ！ 家 安 春 夢 德 安 春 夢 ？ 家 安 春 夢 安 安 春 夢 。';
     let sentArray = text.match(/[^，；。？！]+[，；。？！]/g);
@@ -263,7 +261,7 @@ describe('RiTa.RiMarkov', () => {
     result.forEach(r => ok(/^[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
   });
 
-  it('should apply custom chinese tokenizers ', () => {
+  it('should apply custom chinese tokenizers ', function () {
     let text = '家安春夢家安春夢！家安春夢德安春夢？家安春夢安安春夢。';
     let sents = text.match(/[^，；。？！]+[，；。？！]/g);
 
@@ -279,7 +277,7 @@ describe('RiTa.RiMarkov', () => {
     result.forEach(r => ok(/^[^，；。？！]+[，；。？！]$/.test(r), "FAIL: '" + r + "'"));
   });
 
-  it('should call generate1', () => {
+  it('should call generate1', function () {
 
     let rm;
     rm = new RiMarkov(4, { disableInputChecks: true });
@@ -291,7 +289,7 @@ describe('RiTa.RiMarkov', () => {
     ok(/[!?.]$/.test(sent));
   });
 
-  it('should call generate2', () => {
+  it('should call generate2', function () {
     let rm;
     rm = new RiMarkov(4, { disableInputChecks: true });
     rm.addText(RiTa.sentences(sample));
@@ -301,7 +299,7 @@ describe('RiTa.RiMarkov', () => {
     ok(/[!?.]$/.test(sent));
   });
 
-  it('should call generate3', () => {
+  it('should call generate3', function () {
 
     let rm;
     rm = new RiMarkov(4, { disableInputChecks: 1 });
@@ -316,7 +314,7 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  it('should call generate4', () => {
+  it('should call generate4', function () {
     let rm = new RiMarkov(3); // 3 is max for sample, with input checking
     rm.addText(sample);
     let s = rm.generate();
@@ -326,7 +324,7 @@ describe('RiTa.RiMarkov', () => {
     ok(num >= 5 && num <= 35);
   });
 
-  it('should call generate5', () => { // misc
+  it('should call generate5', function () { // misc
 
     let rm = new RiMarkov(3, { maxLengthMatch: 19, trace: 0 });
     rm.addText(RiTa.sentences(sample2));
@@ -351,7 +349,7 @@ describe('RiTa.RiMarkov', () => {
     });
   });
 
-  it('should call generate.minMaxLength', () => {
+  it('should call generate.minMaxLength', function () {
 
     let rm = new RiMarkov(3, { disableInputChecks: 0 }), minLength = 7, maxLength = 20;
     rm.addText(RiTa.sentences(sample));
@@ -368,7 +366,7 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  it('should call generate.minMaxLengthDIC', () => {
+  it('should call generate.minMaxLengthDIC', function () {
 
     let rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
@@ -384,7 +382,7 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  it('should call generate.seed', () => {
+  it('should call generate.seed', function () {
 
     let rm = new RiMarkov(4, { disableInputChecks: 1 });
     let start = 'One';
@@ -405,22 +403,22 @@ describe('RiTa.RiMarkov', () => {
 
     // should throw when sentence start is not found
     start = "Not-exist";
-    expect(() => { rm.generate(2, { seed: start }) }).to.throw();
+    expect(function () { rm.generate(2, { seed: start }) }).to.throw();
     start = "I and she";
-    expect(() => { rm.generate(2, { seed: start }) }).to.throw();
+    expect(function () { rm.generate(2, { seed: start }) }).to.throw();
     // if startToken is empty string, equal to not have start token
     start = "";
     ok(rm.generate(2, { seed: start }).length === 2);
     // if startToken is just space, throw
     start = " ";
-    expect(() => { rm.generate(2, { seed: start }) }).to.throw();
+    expect(function () { rm.generate(2, { seed: start }) }).to.throw();
     // if startToken is an array
     start = ["a"]
     expect(rm.generate(2, { seed: start }).length).eq(2);
     expect(rm.generate({ seed: start })[0].toLowerCase()).eq("a");
   });
 
-  it('should call generate.seedArray', () => {
+  it('should call generate.seedArray', function () {
 
     let rm = new RiMarkov(4, { disableInputChecks: 1 });
     let start = ['One'];
@@ -468,7 +466,7 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  it('Should call generate.allowDuplicates', () => {
+  it('Should call generate.allowDuplicates', function () {
     let rm = RiTa.markov(3, { text: sample3 });
     let res;
     for (let index = 0; index < 10; index++) {
@@ -477,7 +475,7 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  it('Should call generate.temperature', () => {
+  it('Should call generate.temperature', function () {
     let rm = RiTa.markov(3, { text: sample3 });
     for (let index = 0; index < 10; index++) {
       let res = rm.generate({ temperture: 1 });
@@ -492,7 +490,7 @@ describe('RiTa.RiMarkov', () => {
     expect(() => rm.generate({ temperature: -1 })).to.throw()
   });
 
-  it('should generate across sentences', () => {
+  it('should generate across sentences', function () {
 
     let rm = new RiMarkov(3, { trace: 0 });
     rm.addText(RiTa.sentences(sample2));
@@ -514,7 +512,7 @@ describe('RiTa.RiMarkov', () => {
     return wrappedCheck.includes(part);
   }
 
-  it('should add tokens to wraparound', () => {
+  it('should add tokens to wraparound', function () {
     let rm = new RiMarkov(3, { trace: 0 });
     rm.addText(RiTa.sentences('The dog ate the cat. A girl ate a mat.'));
     let s = ['mat', '.'];
@@ -524,7 +522,7 @@ describe('RiTa.RiMarkov', () => {
     ok(parent.childNodes()[0].token === 'The');
   });
 
-  it('should call generate.mlm1', () => {
+  it('should call generate.mlm1', function () {
 
     let mlms = 8, theText = sample4, rm;
 
@@ -555,7 +553,7 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  it('should call generate.mlm2', () => {
+  it('should call generate.mlm2', function () {
 
     let mlms = 9;
     let rm = new RiMarkov(3, { maxLengthMatch: mlms, trace: 0 });
@@ -580,7 +578,7 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  it('should call completions', () => {
+  it('should call completions', function () {
 
     let rm = new RiMarkov(4);
     rm.addText((sample));
@@ -630,7 +628,7 @@ describe('RiTa.RiMarkov', () => {
     eql(res, ["not", "occasionally"]);
 
     //should throw with bad inputs
-    expect(() => {
+    expect(function () {
       rm.completions(['I', 'did', 'not', 'occasionally'], ['want']);
     }).to.throw();
 
@@ -648,7 +646,7 @@ describe('RiTa.RiMarkov', () => {
     RiTa.SILENT = tmp;
   });
 
-  it('should call probabilities', () => {
+  it('should call probabilities', function () {
 
     let rm = new RiMarkov(3);
     rm.addText((sample));
@@ -676,7 +674,7 @@ describe('RiTa.RiMarkov', () => {
     }
   });
 
-  it('should call probabilities.array', () => {
+  it('should call probabilities.array', function () {
 
     let rm = new RiMarkov(4);
     rm.addText(sample2);
@@ -731,7 +729,7 @@ describe('RiTa.RiMarkov', () => {
     eql(res, expec);
   });
 
-  it('should call probability', () => {
+  it('should call probability', function () {
 
     let text, rm;
     text = 'the dog ate the boy the';
@@ -758,7 +756,7 @@ describe('RiTa.RiMarkov', () => {
     expect(rm.probability("Non-exist")).eq(0);
   });
 
-  it('should call probability.array', () => {
+  it('should call probability.array', function () {
 
     let rm = new RiMarkov(3);
     rm.addText(sample);
@@ -775,7 +773,7 @@ describe('RiTa.RiMarkov', () => {
     eq(rm.probability([]), 0);
   });
 
-  it('should call addText', () => {
+  it('should call addText', function () {
     let rm = new RiMarkov(4);
     let sents = RiTa.sentences(sample);
     let count = 0;
@@ -792,7 +790,7 @@ describe('RiTa.RiMarkov', () => {
       ['One', 'Achieving', 'For', 'He', 'However', 'I', 'Although']);
   });
 
-  it('should call Node.childCount', () => {
+  it('should call Node.childCount', function () {
     let rm = new RiMarkov(2);
     expect(rm.root.childCount()).eq(0);
     rm = new RiMarkov(2);
@@ -802,7 +800,7 @@ describe('RiTa.RiMarkov', () => {
   });
 
 
-  it('should call toString', () => {
+  it('should call toString', function () {
     let rm = new RiMarkov(2);
     rm.addText('The');
     expect(`ROOT {
@@ -865,7 +863,7 @@ describe('RiTa.RiMarkov', () => {
 }`);
   });
 
-  it('should call size', () => {
+  it('should call size', function () {
 
     let rm = new RiMarkov(4);
     eq(rm.size(), 0);
@@ -883,13 +881,13 @@ describe('RiTa.RiMarkov', () => {
     eq(rm.size(), rm2.size());
   });
 
-  it('should fail when sentence is in inputs', () => {
+  it('should fail when sentence is in inputs', function () {
     let rm = new RiMarkov(4);
     rm.addText(['I ate the dog.']);
     expect(() => rm.generate()).to.throw;
   });
 
-  it('should handle disableInputChecks option', () => {
+  it('should handle disableInputChecks option', function () {
     let rm = new RiMarkov(4, { disableInputChecks: 0 });
     rm.addText('I ate the dog.');
     expect(typeof rm.input === 'object').to.be.true;
@@ -899,7 +897,7 @@ describe('RiTa.RiMarkov', () => {
     expect(typeof rm.input === 'undefined').to.be.true;
   });
 
-  it('should serialize and deserialize', () => {
+  it('should serialize and deserialize', function () {
 
     let rm, copy;
     rm = new RiMarkov(4);
@@ -921,7 +919,7 @@ describe('RiTa.RiMarkov', () => {
     expect(copy.generate()).eql(rm.generate());
   });
 
-  0 && it('Should output log with trace option', () => {
+  0 && it('Should output log with trace option', function () {
     let rm = new RiMarkov(4, { maxAttempts: 2, trace: true });
     rm.addText("This is a text that is too short.");
     expect(() => rm.generate(5)).to.throw;

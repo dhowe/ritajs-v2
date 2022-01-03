@@ -1,6 +1,6 @@
 import { loadTestingDeps } from './before';
 
-describe('RiTa.Stemmer', () => {
+describe('RiTa.Stemmer', function () {
 
   let RiTa, expect;
   before(async () => ({RiTa, expect} = await loadTestingDeps()));
