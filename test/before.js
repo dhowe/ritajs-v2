@@ -1,5 +1,5 @@
 
-let testTranspiled = false, testWithoutLex = 1; // for node-tests default={false, false}
+let testTranspiled = false, testWithoutLex = false; // for node-tests default={false, false}
 
 /**
  * Loads the correct version of rita for 3 testing cases:
