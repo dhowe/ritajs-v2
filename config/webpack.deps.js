@@ -1,7 +1,6 @@
 // use with browser, includes deps
 
 module.exports = {
-  mode: 'production',
   output: {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
