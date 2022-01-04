@@ -12,6 +12,7 @@ import Concorder from './concorder';
 import Conjugator from './conjugator';
 import Inflector from './inflector';
 import RandGen from './randgen';
+import Util from './util';
 
 class RiTa {
 
@@ -132,7 +133,7 @@ class RiTa {
     return RiTa.tagger.tag(words, opts);
   }
 
-  static pluralize(word) {
+  static pluralize() {
     return RiTa.inflector.pluralize(...arguments);
   }
 
@@ -271,6 +272,7 @@ RiTa.RiMarkov = RiMarkov;
 RiTa.RiScript = RiScript;
 RiTa.Operator = Operator;
 RiTa.Stemmer = Stemmer;
+RiTa.Util = Util;
 
 // COMPONENTS
 RiTa.tagger = new Tagger(RiTa);
