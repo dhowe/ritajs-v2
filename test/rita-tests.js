@@ -6,10 +6,12 @@ describe('RiTa.Core', () => {
   before(async () => ({RiTa, expect} = await loadTestingDeps()));
 
   it('Should have access to statics', function () {
+    eq(RiTa.CDN, "https://www.unpkg.com/rita/");
+
     //console.log(process.env.NODE_ENV, process.env.npm_package_version, RiTa.VERSION);
-    if (typeof process === 'undefined') return; // TODO:
+    if (typeof process === 'undefined') return; // TODO: browser
     if (process.env.NODE_ENV === 'dev') {
-      eql(RiTa.VERSION, 'DEV');
+      expect(RiTa.VERSION === 'DEV' || /[0-9]\.[0-9]\.[0-9]+/.test(RiTa.VERSION)).eq(true);
     }
     else {
       if (typeof process.env.npm_package_version === 'undefined') {
@@ -19,7 +21,6 @@ describe('RiTa.Core', () => {
       }
     }
 
-    eq(RiTa.CDN, "https://www.unpkg.com/rita/");
   });
 
   it('Should call random', function () { // SYNC:
