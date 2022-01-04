@@ -622,14 +622,14 @@ describe('RiTa.Analyzer', function () {
     expect(RiTa.analyzer.phonesToStress("ah b-ae1-n d-ah-n")).eq("0/1/0");
   });
 
-  it('Should call isPlural', function () {
+  it('Should call isPlural', function () { // remove?
     expect(RiTa.inflector.isPlural()).eq(false);
     expect(RiTa.inflector.isPlural("")).eq(false);
 
     expect(function () { RiTa.inflector.isPlural([1]) }).to.throw();
     expect(function () { RiTa.inflector.isPlural(1) }).to.throw();
 
-    expect(RiTa.inflector.isPlural('octopus', { dbug: 1 })).eq(false);
+    expect(RiTa.inflector.isPlural('octopus', { dbug: 0 })).eq(false);
     expect(RiTa.inflector.isPlural('sheep')).eq(true);
     expect(RiTa.inflector.isPlural('apples')).eq(true);
     expect(RiTa.inflector.isPlural('leaves', { debug: false })).eq(true);
@@ -641,6 +641,7 @@ describe('RiTa.Analyzer', function () {
   });
 
   it('Should call computePhones', function () { // SYNC:
+
     expect(RiTa.analyzer.computePhones("leo")).eql(["l", "iy", "ow"]);
 
     // bad inputs -> return undefined
@@ -658,9 +659,10 @@ describe('RiTa.Analyzer', function () {
     expect(RiTa.analyzer.computePhones("student's")).eql(["s", "t", "uw1", "d", "eh1", "n", "t", "z"]);
 
     // numbers
-    expect(RiTa.analyzer.computePhones("-1")).eql(undefined);
+    expect(RiTa.analyzer.computePhones("-1", { silent: true })).eql(undefined); // TODO:
 
     if (!hasLex) return; // NOTE: below currently fail without lexicon
+
 
     expect(RiTa.analyzer.computePhones("1")).eql(['w', 'ah', 'n']);
     //console.log(RiTa.analyzer.computePhones("50"));
