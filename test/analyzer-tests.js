@@ -6,8 +6,6 @@ describe('RiTa.Analyzer', function () {
   before(async () => {
     ({ RiTa, expect } = await loadTestingDeps());
     hasLex = RiTa.HAS_LEXICON;
-    //typeof process !== 'undefined'
-    //&& process.env.NODE_ENV !== 'production' || RiTa.lexicon().size();
   });
 
   it('Should call analyzeWord', function () { // SYNC:
@@ -361,7 +359,8 @@ describe('RiTa.Analyzer', function () {
 
   it('Should handle number (singular/plural)', function () { // SYNC:
 
-    //    expect(RiTa.pluralize('dreariness', { dbug: 1 })).eq('dreariness');return;
+    //expect(RiTa.singularize('abyss', { dbug: 1 })).eq('abyss');return;
+    //expect(RiTa.pluralize('abyss', { dbug: 1 })).eq('abysses');return;
     // expect(RiTa.inflector.isPlural('dreariness', { dbug: 1 })).eq(true);return;
 
     expect(RiTa.singularize()).eq("");
@@ -375,6 +374,7 @@ describe('RiTa.Analyzer', function () {
     expect(function () { RiTa.pluralize(1) }).to.throw();
 
     let testPairs = [
+      'abysses', 'abyss',
       'knives', 'knife',
       'dazes', 'daze',
       'hives', 'hive',
@@ -520,7 +520,6 @@ describe('RiTa.Analyzer', function () {
       'impulses', 'impulse',
       'pelvises', 'pelvis',
       'fetishes', 'fetish',
-      'abysses', 'abyss',
       'gashes', 'gash',
       'directives', 'directive',
       'calories', 'calorie',
@@ -563,7 +562,7 @@ describe('RiTa.Analyzer', function () {
       'murderesses', 'murderess',
       'kisses', 'kiss',
     ];
-    let res1, res2, res3, res4, Util = RiTa.Util, dbug = 0
+    let res1, res2, res3, res4, Util = RiTa.Util, dbug = 0;
 
     for (let i = 0; i < testPairs.length; i += 2) {
 
@@ -575,9 +574,6 @@ describe('RiTa.Analyzer', function () {
       res1 = RiTa.singularize(plural, { dbug: dbug });
       res2 = RiTa.pluralize(singular, { dbug: dbug });
       res3 = RiTa.inflector.isPlural(plural, { dbug: dbug, fatal: false });
-      if (singular === 'Chines') {
-        console.log('hit');
-      }
       res4 = RiTa.inflector.isPlural(singular, { dbug: dbug, fatal: false });
 
       // singularize
@@ -602,18 +598,8 @@ describe('RiTa.Analyzer', function () {
           + ' isModalException=' + Util.MODAL_EXCEPTIONS.includes(singular.toLowerCase()) + '\n\n');
       }
 
-
       // TODO: add isSingular
     }
-
-    // for (let i = 0; i < testPairs.length; i += 2) {
-    //   expect(RiTa.singularize(testPairs[i])).eq(testPairs[i + 1]);
-    //   expect(RiTa.pluralize(testPairs[i + 1])).eq(testPairs[i]);
-    //   // if input is plural, return input
-    //   expect(RiTa.pluralize(testPairs[i])).eq(testPairs[i]);
-    // }
-
-
   });
 
   it('Should call phonesToStress', function () {

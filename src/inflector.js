@@ -43,7 +43,7 @@ class Inflector {
 
   singularize(word, opts) {
     if (this.isSingular(word, opts)) {
-      if (opts && opts.debug) console.log("pluralize returning in isPlural()");
+      if (opts && opts.debug) console.log("pluralize returning via isPlural()");
       return word;
     }
     return this.adjustNumber(word, SING, (opts && opts.dbug));
@@ -51,7 +51,7 @@ class Inflector {
 
   pluralize(word, opts) {
     if (this.isPlural(word, opts)) {
-      if (opts && opts.debug) console.log("pluralize returning in isPlural()");
+      if (opts && opts.debug) console.log("pluralize returning via isPlural()");
       return word;
     }
     return this.adjustNumber(word, PLUR, (opts && opts.dbug));
@@ -96,7 +96,7 @@ class Inflector {
       let rule = IS_PLURAL_RULES[i];
       if (rule.test(word)) {
         dbug && console.log(word + ' (isPlural) hit plural'
-          + (i < rules.length - 1 ? ' rule #' + i : ' DEFAULT rule'), rule);
+          + (i < IS_PLURAL_RULES.length - 1 ? ' rule #' + i : ' DEFAULT rule'), rule);
         return true;
       }
     }
@@ -133,7 +133,7 @@ class Inflector {
           return true;
         }
       }
-      else {
+      else { // no lexicon and a singular form that is different
         return true;
       }
     }
@@ -149,7 +149,7 @@ const PLUR = 1, SING = 2;
 const MASS_NOUNS = Util.MASS_NOUNS;
 const MODAL_EXCEPTIONS = Util.MODAL_EXCEPTIONS;
 
-const DEFAULT_SING = RE("^.*s$", 1);
+const DEFAULT_SING = RE("^.*[^s]s$", 1);
 const DEFAULT_PLUR = RE("^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$", 0, "s");
 
 //const DEFAULT_IS_PLUR_RE = /(ae|ia|s)$/; // NOT USED?

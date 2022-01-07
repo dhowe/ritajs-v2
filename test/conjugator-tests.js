@@ -2,8 +2,11 @@ import { loadTestingDeps } from './before';
 
 describe('RiTa.Conjugator', function () {
 
-  let RiTa, expect;
-  before(async () => ({ RiTa, expect } = await loadTestingDeps()));
+  let RiTa, expect, hasLex;
+  before(async () => {
+    ({ RiTa, expect } = await loadTestingDeps());
+    hasLex = RiTa.HAS_LEXICON;
+  });
 
   it('Should call pastPart', function () {
 
@@ -24,15 +27,6 @@ describe('RiTa.Conjugator', function () {
     equal(RiTa.pastPart("plead"), "pled");
     equal(RiTa.pastPart(""), "");
 
-    // PROBLEMS
-    equal(RiTa.pastPart("awake"), "awoken");
-    equal(RiTa.pastPart("become"), "become");
-    equal(RiTa.pastPart("drink"), "drunk");
-    equal(RiTa.pastPart("run"), "run");
-    equal(RiTa.pastPart("shine"), "shone");
-
-
-
     // or shined
     equal(RiTa.pastPart("shrink"), "shrunk");
 
@@ -40,28 +34,36 @@ describe('RiTa.Conjugator', function () {
     equal(RiTa.pastPart("stink"), "stunk");
     equal(RiTa.pastPart("study"), "studied");
 
-    // is already past part
-    equal(RiTa.pastPart("hopped"), "hopped");
-    equal(RiTa.pastPart("hated"), "hated");
-    equal(RiTa.pastPart("created"), "created");
-    equal(RiTa.pastPart("committed"), "committed");
-    equal(RiTa.pastPart("submitted"), "submitted");
-    equal(RiTa.pastPart("come"), "come");
-    equal(RiTa.pastPart("forgotten"), "forgotten");
-    equal(RiTa.pastPart("arisen"), "arisen");
-    equal(RiTa.pastPart("eaten"), "eaten");
-    equal(RiTa.pastPart("chosen"), "chosen");
-    equal(RiTa.pastPart("frozen"), "frozen");
-    equal(RiTa.pastPart("stolen"), "stolen");
-    equal(RiTa.pastPart("worn"), "worn");
-    equal(RiTa.pastPart("broken"), "broken");
-    equal(RiTa.pastPart("written"), "written");
-    equal(RiTa.pastPart("ridden"), "ridden");
-    equal(RiTa.pastPart("drawn"), "drawn");
-    equal(RiTa.pastPart("known"), "known");
-    equal(RiTa.pastPart("grown"), "grown");
-    equal(RiTa.pastPart("done"), "done");
-    equal(RiTa.pastPart("gone"), "gone");
+    if (hasLex) {
+      // is already past part
+      equal(RiTa.pastPart("hopped"), "hopped");
+      equal(RiTa.pastPart("hated"), "hated");
+      equal(RiTa.pastPart("created"), "created");
+      equal(RiTa.pastPart("committed"), "committed");
+      equal(RiTa.pastPart("submitted"), "submitted");
+      equal(RiTa.pastPart("come"), "come");
+      equal(RiTa.pastPart("forgotten"), "forgotten");
+      equal(RiTa.pastPart("arisen"), "arisen");
+      equal(RiTa.pastPart("eaten"), "eaten");
+      equal(RiTa.pastPart("chosen"), "chosen");
+      equal(RiTa.pastPart("frozen"), "frozen");
+      equal(RiTa.pastPart("stolen"), "stolen");
+      equal(RiTa.pastPart("worn"), "worn");
+      equal(RiTa.pastPart("broken"), "broken");
+      equal(RiTa.pastPart("written"), "written");
+      equal(RiTa.pastPart("ridden"), "ridden");
+      equal(RiTa.pastPart("drawn"), "drawn");
+      equal(RiTa.pastPart("known"), "known");
+      equal(RiTa.pastPart("grown"), "grown");
+      equal(RiTa.pastPart("done"), "done");
+      equal(RiTa.pastPart("gone"), "gone");
+
+      equal(RiTa.pastPart("awake"), "awoken");
+      equal(RiTa.pastPart("become"), "become");
+      equal(RiTa.pastPart("drink"), "drunk");
+      equal(RiTa.pastPart("run"), "run");
+      equal(RiTa.pastPart("shine"), "shone");
+    }
   });
 
   it('Should call presentPart', function () {
@@ -91,9 +93,18 @@ describe('RiTa.Conjugator', function () {
 
     equal(RiTa.presentPart("study "), "studying"); // trim
     equal(RiTa.presentPart(" study"), "studying"); // trim
+
+    if (hasLex) {
+
+      equal(RiTa.pastPart("awake"), "awoken");
+      equal(RiTa.pastPart("become"), "become");
+      equal(RiTa.pastPart("drink"), "drunk");
+      equal(RiTa.pastPart("run"), "run");
+      equal(RiTa.pastPart("shine"), "shone");
+    }
   });
 
-  it('Should conjugate VBDs', function () {
+  if (hasLex) it('Should conjugate VBDs', function () {
     expect(RiTa.conjugate("go", {
       number: RiTa.SINGULAR,
       person: RiTa.FIRST,
@@ -106,7 +117,7 @@ describe('RiTa.Conjugator', function () {
     })).eq("ran");
   });
 
-  it('Should call conjugate', function () {
+  if (hasLex) it('Should call conjugate', function () {
     let args, s, a, c;
 
     equal(RiTa.conjugate("walk"), "walk");
@@ -380,11 +391,11 @@ describe('RiTa.Conjugator', function () {
     RiTa.conjugate("swim", "2PPa")
   });
 
-  it('Should call toString', function () {
+  if (hasLex)   it('Should call toString', function () {
     equal(RiTa.conjugator.toString(), '  ---------------------\n  Passive = false\n  Perfect = false\n  Progressive = false\n  ---------------------\n  Number = 8\n  Person = 2\n  Tense = 4\n  ---------------------\n');
   });
 
-  it('Should accept stems', function () {
+  if (hasLex)  it('Should accept stems', function () {
 
     // https://github.com/dhowe/rita/issues/116
     let stem = RiTa.stem("walking");
@@ -445,10 +456,9 @@ describe('RiTa.Conjugator', function () {
     });
   });
 
-  it("Should call unconjugate", function () {
+  if (hasLex) it("Should call unconjugate", function () {
 
     expect(RiTa.conjugator.unconjugate("trepanning")).eq("trepan");
-
 
     // 3rd person singular (regular)
     expect(RiTa.conjugator.unconjugate("plays")).eq("play");

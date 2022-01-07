@@ -7,9 +7,10 @@ describe('RiTa.RiScript', function () {
 
   this.slow(100);
 
-  let RiTa, expect, RiScript;
+  let RiTa, expect, RiScript, hasLex;
   before(async () => {
     ({ RiTa, expect } = await loadTestingDeps());
+    hasLex = RiTa.HAS_LEXICON;
     RiScript = RiTa.RiScript;
   });
 
@@ -1199,13 +1200,9 @@ describe('RiTa.RiScript', function () {
       expect(/Wing has [0-9]{1,2} secs left\./.test(res)).true;
     });
 
-    it('Should resolve parameterized transforms', function () {
-      let hasLex = typeof process !== 'undefined'
-        && process.env.NODE_ENV !== 'production' || RiTa.lexicon().size();
-      if (hasLex) {
-        let res = RiTa.evaluate("(walk).conj(3PPa)", { conj: (a, c) => RiTa.conjugate(a, c) });
-        expect(res).eq("walked");
-      }
+    if (hasLex) it('Should resolve parameterized transforms', function () {
+      let res = RiTa.evaluate("(walk).conj(3PPa)", { conj: (a, c) => RiTa.conjugate(a, c) });
+      expect(res).eq("walked");
     });
 
     it('Should resolve object properties', function () {
