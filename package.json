@@ -64,7 +64,9 @@
       "extensions": "js"
     },
     "build.dev": {
-      "patterns": [ "src" ],
+      "patterns": [
+        "src"
+      ],
       "extensions": "js"
     }
   },
