@@ -321,8 +321,9 @@ class Lexicon {
 
       let word = words[i], data = dict[word];
 
-      if (!this.checkCriteria(word, data, opts)) continue;
       if (variations.includes(word)) continue;
+
+      if (!this.checkCriteria(word, data, opts)) continue;
 
       if (opts.targetPos) {
         word = this.matchPos(word, data, opts);

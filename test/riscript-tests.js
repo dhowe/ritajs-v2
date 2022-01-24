@@ -1200,7 +1200,8 @@ describe('RiTa.RiScript', function () {
       expect(/Wing has [0-9]{1,2} secs left\./.test(res)).true;
     });
 
-    if (hasLex) it('Should resolve parameterized transforms', function () {
+    it('Should resolve parameterized transforms', function () {
+      if (!hasLex) this.skip();
       let res = RiTa.evaluate("(walk).conj(3PPa)", { conj: (a, c) => RiTa.conjugate(a, c) });
       expect(res).eq("walked");
     });

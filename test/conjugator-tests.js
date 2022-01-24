@@ -104,7 +104,8 @@ describe('RiTa.Conjugator', function () {
     }
   });
 
-  if (hasLex) it('Should conjugate VBDs', function () {
+  it('Should conjugate VBDs', function () {
+    if (!hasLex) this.skip();
     expect(RiTa.conjugate("go", {
       number: RiTa.SINGULAR,
       person: RiTa.FIRST,
@@ -117,7 +118,10 @@ describe('RiTa.Conjugator', function () {
     })).eq("ran");
   });
 
-  if (hasLex) it('Should call conjugate', function () {
+  it('Should call conjugate', function () {
+
+    if (!hasLex) this.skip();
+
     let args, s, a, c;
 
     equal(RiTa.conjugate("walk"), "walk");
@@ -456,8 +460,10 @@ describe('RiTa.Conjugator', function () {
     });
   });
 
-  if (hasLex) it("Should call unconjugate", function () {
+  it("Should call unconjugate", function () {
 
+    if (!hasLex) this.skip();
+    
     expect(RiTa.conjugator.unconjugate("trepanning")).eq("trepan");
 
     // 3rd person singular (regular)
