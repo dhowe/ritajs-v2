@@ -1,17 +1,21 @@
-import { RiTa, expect } from './before';
+import { loadTestingDeps } from './before';
 
 describe('RiTa.Lexicon', function () {
 
   this.timeout(5000);
   this.slow(700);
 
-  let lex;
-  before(function () {
-    while (!RiTa) { /* no-op */ }
+  let RiTa, expect, lex, hasLex;
+  before(async () => {
+    ({ RiTa, expect } = await loadTestingDeps());
     lex = RiTa.lexicon(); // first load
+    hasLex = RiTa.HAS_LEXICON;
   });
 
-  it('Should call hasWord', () => { // SYNC:
+  it('Should call hasWord', function () {
+
+    if (!hasLex) this.skip();
+    // SYNC:
 
     expect(RiTa.hasWord("random")).to.be.true;
     expect(RiTa.hasWord("dog")).to.be.true;
@@ -44,21 +48,28 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.hasWord("haye")).to.be.false;
   });
 
-  it('Should call randomWord', () => { // SYNC:
+  it('Should call randomWord', function () {
+
+    if (!hasLex) this.skip();
+    // SYNC:
 
     let result;
     result = RiTa.randomWord();
+
     expect(result.length > 0, "randomWord: " + result).to.be.true;
-    expect(result).not.eq(RiTa.randomWord(), "randomWord dup: '" + result + "'"); // could happen?
+    expect(result === RiTa.randomWord(), "randomWord returned same result '" + result + "'").to.be.false;
 
     result = RiTa.randomWord({ numSyllables: 3 });
-    expect(result.length).gt(0, "3 sylls: " + result);
+    expect(result.length > 0, "3 syllables: " + result).to.be.true;
 
     result = RiTa.randomWord({ numSyllables: 5 });
-    expect(result.length).gt(0, "5 sylls: " + result);
+    expect(result.length > 0, "5 syllables: " + result).to.be.true;
   });
 
-  it('Should call randomWord with regex', () => {
+  it('Should call randomWord with regex', function () {
+
+    if (!hasLex) this.skip();
+
 
     // regex string as first parameter
     let result = RiTa.randomWord('^a');
@@ -71,6 +82,23 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.randomWord("le");
     expect(result.includes("le")).to.be.true;
 
+    let results = [];
+    for (let i = 0; i < 10; i++) {
+      results.push(RiTa.randomWord("^a"));
+    }
+    expect(results.length === 10).to.be.true;
+
+    let i = 0;
+    while (i < results.length - 1) {
+      if (results[i] === results[i + 1]) {
+        results.splice(i, 1);
+      } else {
+        i++;
+      }
+    }
+    // 10 words not the same
+    expect(results.length > 1).to.be.true;
+
     // regex object as first parameter
     result = RiTa.randomWord(/^a/);
     expect(/^a/.test(result)).to.be.true;
@@ -82,22 +110,19 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.randomWord(/le/);
     expect(result.includes("le")).to.be.true;
 
-    // 10 different words (could fail?)
-    let results = new Set();
-    for (let i = 0; i < 10; i++) {
-      results.add(RiTa.randomWord("^a"));
-    }
-    expect(results.size).eq(10);
+    result = RiTa.randomWord("^a");
+    expect(result.startsWith("a")).to.be.true;
 
-    results = new Set();
+    results = [];
     for (let i = 0; i < 10; i++) {
-      results.add(RiTa.randomWord(/^a/));
+      results.push(RiTa.randomWord(/^a/));
     }
-    expect(results.size).eq(10);
-
+    expect(results.length === 10).to.be.true;
   });
 
-  it('Should call randomWord with stress regex', () => {
+  it('Should call randomWord with stress regex', function () {
+
+    if (!hasLex) this.skip();
 
     let result = RiTa.randomWord("0/1/0", { type: "stresses" });
     expect(result.length > 3);
@@ -119,7 +144,10 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.analyze(result).stresses).eq("0/1/0/0");
   });
 
-  it('Should call randomWord with phones regex', () => {
+  it('Should call randomWord with phones regex', function () {
+
+    if (!hasLex) this.skip();
+
 
     let result = RiTa.randomWord("^th", { type: "phones" });
     expect(result.length > 3);
@@ -148,34 +176,84 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.analyze(result).phones.includes("ae")).to.be.true;
   });
 
-  it('Should call randomWord with opts regex', () => {
+  it('Should call randomWord with opts regex', function () {
 
-    // as one of the fields in opts
+    if (!hasLex) this.skip();
+
+
+    // as one of the field in opts
     let result = RiTa.randomWord({ regex: '^a' });
     expect(/^a/.test(result)).to.be.true;
     expect(result.length > 3).to.be.true;
+
+    // note: just one of each kind (same tests as above)
+    /* 
+        result = RiTa.randomWord({ regex: "^apple$" });
+        expect(result).equal("apple");
+    
+        result = RiTa.randomWord({ regex: "le" });
+        expect(result.includes("le")).to.be.true; */
 
     result = RiTa.randomWord({ regex: /^a/ });
     expect(/^a/.test(result)).to.be.true;
     expect(result.length > 3).to.be.true;
 
+    /*     result = RiTa.randomWord({ regex: /^apple$/ });
+        expect(result).equal("apple");
+    
+        result = RiTa.randomWord({ regex: /le/ });
+        expect(result.includes("le")).to.be.true; */
+
     result = RiTa.randomWord({ regex: "0/1/0", type: "stresses" });
     expect(result.length > 3);
     expect(RiTa.analyze(result).stresses.includes("0/1/0")).to.be.true;
 
+    /* result = RiTa.randomWord({ regex: "^0/1/0$", type: "stresses" });
+    expect(RiTa.analyze(result).stresses).eq("0/1/0");
+ 
+    result = RiTa.randomWord({ regex: "010", type: "stresses" });
+    expect(RiTa.analyze(result).stresses.includes("0/1/0")).to.be.true;
+ 
+    result = RiTa.randomWord({ regex: "^010$", type: "stresses" });
+    expect(RiTa.analyze(result).stresses).eq("0/1/0"); */
+
     result = RiTa.randomWord({ regex: /0\/1\/0/, type: "stresses" });
     expect(RiTa.analyze(result).stresses.includes("0/1/0")).to.be.true;
+    /* 
+        result = RiTa.randomWord({ regex: /^0\/1\/0\/0$/, type: "stresses" });
+        expect(RiTa.analyze(result).stresses).eq("0/1/0/0"); */
 
     result = RiTa.randomWord({ regex: "^th", type: "phones" });
     expect(result.length > 3);
     expect(/^th/.test(RiTa.analyze(result).phones)).to.be.true;
 
+    /* result = RiTa.randomWord({ regex: "v$", type: "phones" });
+    expect(/v$/.test(RiTa.analyze(result).phones)).to.be.true;
+ 
+    result = RiTa.randomWord({ regex: "^b-ih-l-iy-v$", type: "phones" });
+    expect(result).eq("believe");
+ 
+    result = RiTa.randomWord({ regex: "ae", type: "phones" });
+    expect(RiTa.analyze(result).phones.includes("ae")).to.be.true; */
+
     result = RiTa.randomWord({ regex: /^th/, type: "phones" });
     expect(result.length > 3);
     expect(/^th/.test(RiTa.analyze(result).phones)).to.be.true;
+    /* 
+        result = RiTa.randomWord({ regex: /v$/, type: "phones" });
+        expect(/v$/.test(RiTa.analyze(result).phones)).to.be.true;
+    
+        result = RiTa.randomWord({ regex: /^b-ih-l-iy-v$/, type: "phones" });
+        expect(result).eq("believe");
+    
+        result = RiTa.randomWord({ regex: /ae/, type: "phones" });
+        expect(RiTa.analyze(result).phones.includes("ae")).to.be.true; */
   });
 
-  it("Should handle an augmented lexicon", () => {
+  it("Should handle an augmented lexicon", function () {
+
+    if (!hasLex) this.skip();
+
     let toAdd = {
       'deg': ['d-eh1-g', 'nn'],
       'wadly': ['w-ae1-d l-iy', 'rb'],
@@ -190,7 +268,10 @@ describe('RiTa.Lexicon', function () {
     Object.keys(toAdd).forEach(w => delete RiTa.lexicon().data[w]);
   });
 
-  it("Should handle a custom lexicon", () => {
+  it("Should handle a custom lexicon", function () {
+
+    if (!hasLex) this.skip();
+
 
     let lex = RiTa.lexicon();
     let orig = lex.data;
@@ -209,23 +290,10 @@ describe('RiTa.Lexicon', function () {
     lex.data = orig;
   });
 
-  it('Should call randomWord with pos-relaxation', () => { // SYNC:
-    let result = RiTa.randomWord(/^ah-k-s-eh-n-t$/, { type: "phones", pos: "vb" });
-    expect(result).eq("accent");
+  it('Should call randomWord with pos', function () {
 
-    result = RiTa.randomWord(/p-r-eh-n/, { type: "phones", pos: "vb" });
-    expect(result).eq("apprentice");
-  });
-
-  it('Should call randomWord without pos-relaxation', () => { // SYNC:
-    let result = RiTa.randomWord(/^ah-k-s-eh-n-t$/, { type: "phones", pos: "nn" });
-    expect(result).eq("accent");
-
-    result = RiTa.randomWord(/p-r-eh-n/, { type: "phones", pos: "nn", maxLength: 10 });
-    expect(result).eq("apprentice");
-  });
-
-  it('Should call randomWord with pos', () => { // SYNC:
+    if (!hasLex) this.skip();
+    // SYNC:
 
     expect(() => RiTa.randomWord({ pos: "xxx" })).to.throw;
 
@@ -292,7 +360,10 @@ describe('RiTa.Lexicon', function () {
     expect(results.length > 1).to.be.true; // 10 words not the same
   });
 
-  it('Should call randomWord with syllables', () => {
+  it('Should call randomWord with syllables', function () {
+
+    if (!hasLex) this.skip();
+
     let i, result, syllables, num;
     result = RiTa.randomWord({ numSyllables: 3 });
     syllables = RiTa.syllables(result);
@@ -307,48 +378,12 @@ describe('RiTa.Lexicon', function () {
     expect(num === 5, result + ": " + syllables).to.be.true; // "5 syllables: "
   });
 
-  it('Should call *search via generator', () => {
+  it('Should call search without regex', function () {
 
-    let lex = RiTa.lexicon(), result;
+    if (!hasLex) this.skip();
 
-    for (let value of lex.search('^aba')) {
-      if (value) {
-        result = value;
-        break;
-      }
-    }
-    expect(/^aba/.test(result)).eq(true);
-
-    result = [];
-    for (let value of lex.search('^ab')) {
-      if (value && result.push(value) === 10) break;
-    }
-    //console.log(result);
-    expect(result.length).eq(10);
-    //result.forEach(r => expect(/^ab/.test(r)).eq(true));
-    expect(result).eql(RiTa.search('^ab'));
-
-    result = [];
-    for (let value of lex.search('^aba', { limit: 5 })) {
-      if (value) result.push(value);
-    }
-    expect(result.length).eq(5);
-    result.forEach(r => expect(/^aba/.test(r)).eq(true));
-
-    let item, result2 = [], iter = lex.search(/^ab/); // diff. syntax
-    while (item = iter.next(), !item.done) {
-      result2.push(item.value);
-    }
-    expect(result2.length).eq(10);
-  });
-
-  it('Should call search without regex', () => {
-
-    //expect(RiTa.search()).eql([]); // all words
-    expect(() => RiTa.search()).to.throw; // now throws, SYNC:
-
+    expect(RiTa.search().length).gt(20000); // all words
     expect(RiTa.search({ limit: 11 }).length).eq(11);
-
     expect(RiTa.search({ pos: "n" })).eql([
       'abalone', 'abandonment',
       'abbey', 'abbot',
@@ -382,7 +417,10 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should call search with letters', () => {
+  it('Should call search with letters', function () {
+
+    if (!hasLex) this.skip();
+
     expect(RiTa.search("phant")).eql([
       'elephant',
       'elephantine',
@@ -415,17 +453,12 @@ describe('RiTa.Lexicon', function () {
       'triumphant',
       'triumphantly'
     ]);
-
-    let result = RiTa.search({ regex: /phant/, shuffle: false, limit: 3 });
-    expect(result).eql(['elephant', 'elephantine', 'phantom']);
-
-    let shuffled = RiTa.search({ regex: /phant/, shuffle: true, limit: 3 });
-    expect(shuffled.length).eq(3);
-
-    expect(shuffled).not.eql(result); // could happen
   });
 
-  it('Should call search with phones, limit', () => {
+  it('Should call search with phones, limit', function () {
+
+    if (!hasLex) this.skip();
+
     // omitting no limit tests as they are a bit slow
     let result = RiTa.search(/f-a[eh]-n-t/, { type: 'phones', limit: 10 });
     expect(result).eql([
@@ -475,7 +508,10 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should call search with pos, feature, limit', () => {
+  it('Should call search with pos, feature, limit', function () {
+
+    if (!hasLex) this.skip();
+
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }))
       .eql(['abalone', 'abandonment', 'abbreviation', 'abdomen', 'abduction']);
@@ -521,7 +557,10 @@ describe('RiTa.Lexicon', function () {
       .eql(['elephants', 'infants', 'infantries']);
   });
 
-  it('Should call search with stresses, limit', () => {
+  it('Should call search with stresses, limit', function () {
+
+    if (!hasLex) this.skip();
+
 
     expect(RiTa.search('010000', { type: 'stresses', limit: 5 })).eql([
       'accountability',
@@ -596,7 +635,10 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should call randomWord.pos.syls', () => {
+  it('Should call randomWord.pos.syls', function () {
+
+    if (!hasLex) this.skip();
+
     function fail(result, epos) {
       let test = result.endsWith('es') ? result.substring(-2) : result;
       let ent = RiTa.lexicon()[test];
@@ -633,7 +675,10 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.isNoun(result)).eq(true, fail(result, 'nns'));
   });
 
-  it('Should call alliterations.numSyllables', () => {
+  it('Should call alliterations.numSyllables', function () {
+
+    if (!hasLex) this.skip();
+
     let result = RiTa.alliterations("cat", { minLength: 1, numSyllables: 7 });
     expect(result).eql(['electrocardiogram', 'electromechanical', 'telecommunications']);
     for (let i = 0; i < result.length; i++) {
@@ -641,7 +686,10 @@ describe('RiTa.Lexicon', function () {
     }
   });
 
-  it('Should call alliterations.pos', () => {
+  it('Should call alliterations.pos', function () {
+
+    if (!hasLex) this.skip();
+
     let res;
 
     res = RiTa.alliterations("cat", { numSyllables: 7, pos: 'n' });
@@ -683,7 +731,10 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should call alliterations', () => {
+  it('Should call alliterations', function () {
+
+    if (!hasLex) this.skip();
+
 
     let result;
 
@@ -697,14 +748,8 @@ describe('RiTa.Lexicon', function () {
     expect(result.length < 1, "failed on 'umbrella'").to.be.true;
 
     result = RiTa.alliterations("cat", { limit: 100 });
-
     expect(result.length === 100, "failed on 'cat'").to.be.true;
     expect(result.includes("cat")).to.be.false;
-
-    expect(result.includes("cabinet")).to.be.true;
-    expect(result.includes("cabbage")).to.be.true;
-    expect(result.includes("cacophony")).to.be.true;
-
     for (let i = 0; i < result.length; i++) {
       expect(RiTa.isAlliteration(result[i], "cat")).to.be.true;
     }
@@ -743,7 +788,10 @@ describe('RiTa.Lexicon', function () {
 
   });
 
-  it('Should call rhymes', () => {
+  it('Should call rhymes', function () {
+
+    if (!hasLex) this.skip();
+
 
     expect(RiTa.rhymes("cat").length).eq(10);
     expect(RiTa.rhymes("cat").includes("hat")).to.be.true;
@@ -776,7 +824,10 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.rhymes("K")).eql([]);
   });
 
-  it('Should call rhymes.pos', () => {
+  it('Should call rhymes.pos', function () {
+
+    if (!hasLex) this.skip();
+
 
     expect(RiTa.rhymes("cat", { pos: 'v' }).includes("hat")).to.be.false;
     expect(RiTa.rhymes("yellow", { pos: 'a' }).includes("mellow")).to.be.true;
@@ -806,7 +857,10 @@ describe('RiTa.Lexicon', function () {
     expect(rhymes.includes("condensed")).to.be.false;
   });
 
-  it('Should call rhymes.numSyllables', () => {
+  it('Should call rhymes.numSyllables', function () {
+
+    if (!hasLex) this.skip();
+
 
     expect(RiTa.rhymes("cat", { numSyllables: 1 }).includes("hat")).to.be.true;
     expect(RiTa.rhymes("cat", { numSyllables: 2 }).includes("hat")).to.be.false;
@@ -823,7 +877,10 @@ describe('RiTa.Lexicon', function () {
     expect(rhymes.includes("condensed")).to.be.false;
   });
 
-  it('Should call rhymes.wordlength', () => {
+  it('Should call rhymes.wordlength', function () {
+
+    if (!hasLex) this.skip();
+
 
     expect(RiTa.rhymes("cat", { minLength: 4 }).includes("hat")).to.be.false;
     expect(RiTa.rhymes("cat", { maxLength: 2 }).includes("hat")).to.be.false;
@@ -835,7 +892,10 @@ describe('RiTa.Lexicon', function () {
     expect(rhymes.includes("condensed")).to.be.false;
   });
 
-  it('Should call spellsLike', () => {
+  it('Should call spellsLike', function () {
+
+    if (!hasLex) this.skip();
+
 
     let result = RiTa.spellsLike("");
     eql(result, []);
@@ -858,7 +918,10 @@ describe('RiTa.Lexicon', function () {
 
   });
 
-  it('Should call spellsLike.options', () => {
+  it('Should call spellsLike.options', function () {
+
+    if (!hasLex) this.skip();
+
     let result;
 
     result = RiTa.spellsLike("banana", { minLength: 6, maxLength: 6 });
@@ -920,6 +983,9 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call soundsLike', function () {
 
+    if (!hasLex) this.skip();
+
+
     eql(RiTa.soundsLike("tornado", { type: 'sound' }), ["torpedo"]);
 
     let result = RiTa.soundsLike("try", { limit: 20 });
@@ -964,7 +1030,10 @@ describe('RiTa.Lexicon', function () {
     expect(result.includes("condensed")).to.be.false;
   });
 
-  it('Should call soundsLike().matchSpelling', () => {
+  it('Should call soundsLike().matchSpelling', function () {
+
+    if (!hasLex) this.skip();
+
 
     let result;
     result = RiTa.soundsLike("try", { matchSpelling: true });
@@ -991,7 +1060,10 @@ describe('RiTa.Lexicon', function () {
     expect(result.includes("awaited")).to.be.true;
   });
 
-  it('Should call isRhyme', () => {
+  it('Should call isRhyme', function () {
+
+    if (!hasLex) this.skip();
+
     expect(!RiTa.isRhyme("apple", "polo")).to.be.true;
     expect(!RiTa.isRhyme("this", "these")).to.be.true;
 
@@ -1025,7 +1097,10 @@ describe('RiTa.Lexicon', function () {
     }
   });
 
-  it('Should call isAlliteration', () => {
+  it('Should call isAlliteration', function () {
+
+    if (!hasLex) this.skip();
+
 
     expect(RiTa.isAlliteration("knife", "gnat")).to.be.true; // gnat=lts
     expect(RiTa.isAlliteration("knife", "naughty")).to.be.true;
@@ -1075,123 +1150,130 @@ describe('RiTa.Lexicon', function () {
     }
   });
 
-  it("Should call findStem", () => {
+  it("Should call isStem", function () {
+
+    if (!hasLex) this.skip();
+
+
     let lex = RiTa.lexicon();
 
     // stem in dict
-    expect(lex.findStem("chang")).eq("change");
-    expect(lex.findStem("accid")).eq("accident");
-    expect(lex.findStem("accept")).eq("accept");
-    expect(lex.findStem("bear")).eq("bear");
-    expect(lex.findStem("bodi")).eq("bodied");
-    expect(lex.findStem("book")).eq("book");
-    expect(lex.findStem("box")).eq("box");
-    expect(lex.findStem("across")).eq("across");
-    expect(lex.findStem("activ")).eq("active");
-    expect(lex.findStem("adulter")).eq("adulterer");
-    expect(lex.findStem("allianc")).eq("alliance");
-    expect(lex.findStem("beautifi")).eq("beautify");
-    expect(lex.findStem("bestsel")).eq("bestseller");
-    expect(lex.findStem("blond")).eq("blond");
-    expect(lex.findStem("borderlin")).eq("borderline");
-    expect(lex.findStem("brave")).eq("brave");
-    expect(lex.findStem("calor")).eq("caloric");
-    expect(lex.findStem("central")).eq("central");
-    expect(lex.findStem("certifi")).eq("certified");
-    expect(lex.findStem("choppi")).eq("choppy");
-    expect(lex.findStem("cigarett")).eq("cigarette");
-    expect(lex.findStem("cogniz")).eq("cognizant");
-    expect(lex.findStem("delicatessen")).eq("delicatessen");
-    expect(lex.findStem("disaffect")).eq("disaffected");
-    expect(lex.findStem("dog")).eq("dog");
-    expect(lex.findStem("drachma")).eq("drachma");
-    expect(lex.findStem("dualism")).eq("dualism");
-    expect(lex.findStem("dwell")).eq("dwell");
-    expect(lex.findStem("earthenwar")).eq("earthenware");
-    expect(lex.findStem("efficaci")).eq("efficacious");
-    expect(lex.findStem("elus")).eq("elusive");
-    expect(lex.findStem("emiss")).eq("emission");
-    expect(lex.findStem("environment")).eq("environmental");
-    expect(lex.findStem("fisherman")).eq("fisherman");
-    expect(lex.findStem("fragil")).eq("fragile");
-    expect(lex.findStem("fundamentalist")).eq("fundamentalist");
-    expect(lex.findStem("futil")).eq("futile");
-    expect(lex.findStem("fuzz")).eq("fuzz");
-    expect(lex.findStem("garag")).eq("garage");
-    expect(lex.findStem("gass")).eq("gass");
-    expect(lex.findStem("govern")).eq("govern");
-    expect(lex.findStem("groov")).eq("groove");
-    expect(lex.findStem("guttur")).eq("guttural");
-    expect(lex.findStem("hamburg")).eq("hamburger");
-    expect(lex.findStem("haphazard")).eq("haphazard");
-    expect(lex.findStem("haunt")).eq("haunt");
-    expect(lex.findStem("headlong")).eq("headlong");
-    expect(lex.findStem("hubbub")).eq("hubbub");
-    expect(lex.findStem("hungrili")).eq("hungrily");
-    expect(lex.findStem("hypoglycem")).eq("hypoglycemic");
+    expect(lex.isStem("chang")).eq("change");
+    expect(lex.isStem("accid")).eq("accident");
+    expect(lex.isStem("accept")).eq("accept");
+    expect(lex.isStem("bear")).eq("bear");
+    expect(lex.isStem("bodi")).eq("bodied");
+    expect(lex.isStem("book")).eq("book");
+    expect(lex.isStem("box")).eq("box");
+    expect(lex.isStem("across")).eq("across");
+    expect(lex.isStem("activ")).eq("active");
+    expect(lex.isStem("adulter")).eq("adulterer");
+    expect(lex.isStem("allianc")).eq("alliance");
+    expect(lex.isStem("beautifi")).eq("beautify");
+    expect(lex.isStem("bestsel")).eq("bestseller");
+    expect(lex.isStem("blond")).eq("blond");
+    expect(lex.isStem("borderlin")).eq("borderline");
+    expect(lex.isStem("brave")).eq("brave");
+    expect(lex.isStem("calor")).eq("caloric");
+    expect(lex.isStem("central")).eq("central");
+    expect(lex.isStem("certifi")).eq("certified");
+    expect(lex.isStem("choppi")).eq("choppy");
+    expect(lex.isStem("cigarett")).eq("cigarette");
+    expect(lex.isStem("cogniz")).eq("cognizant");
+    expect(lex.isStem("delicatessen")).eq("delicatessen");
+    expect(lex.isStem("disaffect")).eq("disaffected");
+    expect(lex.isStem("dog")).eq("dog");
+    expect(lex.isStem("drachma")).eq("drachma");
+    expect(lex.isStem("dualism")).eq("dualism");
+    expect(lex.isStem("dwell")).eq("dwell");
+    expect(lex.isStem("earthenwar")).eq("earthenware");
+    expect(lex.isStem("efficaci")).eq("efficacious");
+    expect(lex.isStem("elus")).eq("elusive");
+    expect(lex.isStem("emiss")).eq("emission");
+    expect(lex.isStem("environment")).eq("environmental");
+    expect(lex.isStem("fisherman")).eq("fisherman");
+    expect(lex.isStem("fragil")).eq("fragile");
+    expect(lex.isStem("fundamentalist")).eq("fundamentalist");
+    expect(lex.isStem("futil")).eq("futile");
+    expect(lex.isStem("fuzz")).eq("fuzz");
+    expect(lex.isStem("garag")).eq("garage");
+    expect(lex.isStem("gass")).eq("gass");
+    expect(lex.isStem("govern")).eq("govern");
+    expect(lex.isStem("groov")).eq("groove");
+    expect(lex.isStem("guttur")).eq("guttural");
+    expect(lex.isStem("hamburg")).eq("hamburger");
+    expect(lex.isStem("haphazard")).eq("haphazard");
+    expect(lex.isStem("haunt")).eq("haunt");
+    expect(lex.isStem("headlong")).eq("headlong");
+    expect(lex.isStem("hubbub")).eq("hubbub");
+    expect(lex.isStem("hungrili")).eq("hungrily");
+    expect(lex.isStem("hypoglycem")).eq("hypoglycemic");
 
     // correct stem but original word not in dict
-    expect(lex.findStem("abut")).eq(undefined);
-    expect(lex.findStem("airdrop")).eq(undefined);
-    expect(lex.findStem("waylay")).eq(undefined);
-    expect(lex.findStem("backslid")).eq(undefined);
-    expect(lex.findStem("bejewel")).eq(undefined);
-    expect(lex.findStem("blab")).eq(undefined);
-    expect(lex.findStem("brutifi")).eq(undefined);
-    expect(lex.findStem("bullwhip")).eq(undefined);
-    expect(lex.findStem("catnap")).eq(undefined);
-    expect(lex.findStem("clop")).eq(undefined);
-    expect(lex.findStem("verbifi")).eq(undefined);
-    expect(lex.findStem("dandifi")).eq(undefined);
-    expect(lex.findStem("declassifi")).eq(undefined);
-    expect(lex.findStem("disbar")).eq(undefined);
-    expect(lex.findStem("disint")).eq(undefined);
-    expect(lex.findStem("empanel")).eq(undefined);
-    expect(lex.findStem("fib")).eq(undefined);
-    expect(lex.findStem("flog")).eq(undefined);
-    expect(lex.findStem("ghostwritten")).eq(undefined);
-    expect(lex.findStem("glom")).eq(undefined);
-    expect(lex.findStem("hypertrophi")).eq(undefined);
-    expect(lex.findStem("interlaid")).eq(undefined);
-    expect(lex.findStem("jut")).eq(undefined);
-    expect(lex.findStem("miscarri")).eq(undefined);
-    expect(lex.findStem("mortifi")).eq(undefined);
-    expect(lex.findStem("overbid")).eq(undefined);
-    expect(lex.findStem("overgrow")).eq(undefined);
-    expect(lex.findStem("quickstep")).eq(undefined);
-    expect(lex.findStem("recommit")).eq(undefined);
-    expect(lex.findStem("rewound")).eq(undefined);
-    expect(lex.findStem("scram")).eq(undefined);
-    expect(lex.findStem("sightseen")).eq(undefined);
-    expect(lex.findStem("skydov")).eq(undefined);
-    expect(lex.findStem("unplug")).eq(undefined);
-    expect(lex.findStem("stencil")).eq(undefined);
-    expect(lex.findStem("spellbind")).eq(undefined);
-    expect(lex.findStem("subjectifi")).eq(undefined);
-    expect(lex.findStem("sup")).eq(undefined);
-    expect(lex.findStem("syllabifi")).eq(undefined);
-    expect(lex.findStem("snog")).eq(undefined);
-    expect(lex.findStem("unmak")).eq(undefined);
-    expect(lex.findStem("stupefi")).eq(undefined);
-    expect(lex.findStem("sulli")).eq(undefined);
-    expect(lex.findStem("tram")).eq(undefined);
-    expect(lex.findStem("underpay")).eq(undefined);
-    expect(lex.findStem("understudi")).eq(undefined);
-    expect(lex.findStem("unpin")).eq(undefined);
-    expect(lex.findStem("unzip")).eq(undefined);
-    expect(lex.findStem("whir")).eq(undefined);
-    expect(lex.findStem("yakk")).eq(undefined);
-    expect(lex.findStem("yap")).eq(undefined);
+    expect(lex.isStem("abut")).eq(undefined);
+    expect(lex.isStem("airdrop")).eq(undefined);
+    expect(lex.isStem("waylay")).eq(undefined);
+    expect(lex.isStem("backslid")).eq(undefined);
+    expect(lex.isStem("bejewel")).eq(undefined);
+    expect(lex.isStem("blab")).eq(undefined);
+    expect(lex.isStem("brutifi")).eq(undefined);
+    expect(lex.isStem("bullwhip")).eq(undefined);
+    expect(lex.isStem("catnap")).eq(undefined);
+    expect(lex.isStem("clop")).eq(undefined);
+    expect(lex.isStem("verbifi")).eq(undefined);
+    expect(lex.isStem("dandifi")).eq(undefined);
+    expect(lex.isStem("declassifi")).eq(undefined);
+    expect(lex.isStem("disbar")).eq(undefined);
+    expect(lex.isStem("disint")).eq(undefined);
+    expect(lex.isStem("empanel")).eq(undefined);
+    expect(lex.isStem("fib")).eq(undefined);
+    expect(lex.isStem("flog")).eq(undefined);
+    expect(lex.isStem("ghostwritten")).eq(undefined);
+    expect(lex.isStem("glom")).eq(undefined);
+    expect(lex.isStem("hypertrophi")).eq(undefined);
+    expect(lex.isStem("interlaid")).eq(undefined);
+    expect(lex.isStem("jut")).eq(undefined);
+    expect(lex.isStem("miscarri")).eq(undefined);
+    expect(lex.isStem("mortifi")).eq(undefined);
+    expect(lex.isStem("overbid")).eq(undefined);
+    expect(lex.isStem("overgrow")).eq(undefined);
+    expect(lex.isStem("quickstep")).eq(undefined);
+    expect(lex.isStem("recommit")).eq(undefined);
+    expect(lex.isStem("rewound")).eq(undefined);
+    expect(lex.isStem("scram")).eq(undefined);
+    expect(lex.isStem("sightseen")).eq(undefined);
+    expect(lex.isStem("skydov")).eq(undefined);
+    expect(lex.isStem("unplug")).eq(undefined);
+    expect(lex.isStem("stencil")).eq(undefined);
+    expect(lex.isStem("spellbind")).eq(undefined);
+    expect(lex.isStem("subjectifi")).eq(undefined);
+    expect(lex.isStem("sup")).eq(undefined);
+    expect(lex.isStem("syllabifi")).eq(undefined);
+    expect(lex.isStem("snog")).eq(undefined);
+    expect(lex.isStem("unmak")).eq(undefined);
+    expect(lex.isStem("stupefi")).eq(undefined);
+    expect(lex.isStem("sulli")).eq(undefined);
+    expect(lex.isStem("tram")).eq(undefined);
+    expect(lex.isStem("underpay")).eq(undefined);
+    expect(lex.isStem("understudi")).eq(undefined);
+    expect(lex.isStem("unpin")).eq(undefined);
+    expect(lex.isStem("unzip")).eq(undefined);
+    expect(lex.isStem("whir")).eq(undefined);
+    expect(lex.isStem("yakk")).eq(undefined);
+    expect(lex.isStem("yap")).eq(undefined);
 
     // incorrect stems
-    expect(lex.findStem("body")).eq(undefined);
-    expect(lex.findStem("justify")).eq(undefined);
-    expect(lex.findStem("cancelled")).eq(undefined);
-    expect(lex.findStem("trolling")).eq(undefined);
-    expect(lex.findStem("change")).eq(undefined);
+    expect(lex.isStem("body")).eq(undefined);
+    expect(lex.isStem("justify")).eq(undefined);
+    expect(lex.isStem("cancelled")).eq(undefined);
+    expect(lex.isStem("trolling")).eq(undefined);
+    expect(lex.isStem("change")).eq(undefined);
   });
 
-  it('Should correctly call _toPhoneArray', () => { // private-js only
+  it('Should correctly call _toPhoneArray', function () {  // private-js only
+
+    if (!hasLex) this.skip();
+
     let raw = RiTa.lexicon().rawPhones("tornado", false)
     let result = RiTa.lexicon()._toPhoneArray(raw);
     let ans = ["t", "ao", "r", "n", "ey", "d", "ow"];

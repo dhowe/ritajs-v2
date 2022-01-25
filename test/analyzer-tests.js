@@ -1,12 +1,14 @@
-import { RiTa, expect } from './before';
-import Util from '../src/util';
+import { loadTestingDeps } from './before';
 
-describe('RiTa.Analyzer', () => {
+describe('RiTa.Analyzer', function () {
 
-  const hasLex = process.env.NODE_ENV
-    !== 'production' || RiTa.lexicon().size();
+  let RiTa, expect, hasLex;
+  before(async () => {
+    ({ RiTa, expect } = await loadTestingDeps());
+    hasLex = RiTa.HAS_LEXICON;
+  });
 
-  it('Should call analyzeWord', () => { // SYNC:
+  it('Should call analyzeWord', function () { // SYNC:
 
     let tmp = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
@@ -16,7 +18,12 @@ describe('RiTa.Analyzer', () => {
     expect(data.stresses).eq("0/1/0");
     expect(data.syllables).eq("ah/b-ae-n/d-ah-n");
 
-    // with lts
+    RiTa.SILENCE_LTS = tmp;
+
+    if (!hasLex) return; // NOTE: below currently fail without lexicon
+
+    RiTa.SILENCE_LTS = true;
+
     data = RiTa.analyzer.analyzeWord("z");
     expect(data.phones).eq("z");
     expect(data.stresses).eq("0");
@@ -35,7 +42,7 @@ describe('RiTa.Analyzer', () => {
     RiTa.SILENCE_LTS = tmp;
   });
 
-  it('Should call analyze.lts', () => {
+  it('Should call analyze.lts', function () {
     expect(RiTa.SILENCE_LTS).eq(false);
     let feats;
     feats = RiTa.analyze("cloze", { silent: 1 });
@@ -45,30 +52,16 @@ describe('RiTa.Analyzer', () => {
     //RiTa.SILENCE_LTS = silent;
   });
 
-  it('Should call syllables.lts', () => {
+  it('Should call syllables.lts', function () {
     let result = RiTa.syllables('The Laggin', { silent: 1 });
     expect(result).eq('dh-ah l-ae/g-ih-n', 'got \'' + result + "'");
   });
 
-  it('Should call analyze', () => { // SYNC:
- 
+  it('Should call analyze', function () { // SYNC:
+
     expect(RiTa.analyze('')).eql({ tokens: '', pos: '', stresses: '', phones: '', syllables: '' });
 
     let feats;
-
-    feats = RiTa.analyze("1903");
-    expect(feats.phones).eq("w-ah-n-n-ih-n-z-ih-r-ow-th-r-iy");
-    expect(feats.stresses).eq("0/0/0/0/0");
-    expect(feats.syllables).eq("w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy");
-    expect(feats.tokens).eq("1903");
-    expect(feats.pos).eq("cd");
-
-    feats = RiTa.analyze("(1903)");
-    expect(feats.phones).eq("( w-ah-n-n-ih-n-z-ih-r-ow-th-r-iy )");
-    expect(feats.stresses).eq("( 0/0/0/0/0 )");
-    expect(feats.syllables).eq("( w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy )");
-    expect(feats.tokens).eq("( 1903 )");
-    expect(feats.pos).eq("( cd )");
 
     feats = RiTa.analyze("clothes");
     expect(feats.pos).eq("nns");
@@ -80,6 +73,13 @@ describe('RiTa.Analyzer', () => {
     expect(feats.syllables).eq(hasLex ? "sh-eh-v/r-ow/l-ey" : 'ch-eh-v/r-ow/l-ah-t');
 
     if (!hasLex) return; // NOTE: below currently fail without lexicon
+
+    feats = RiTa.analyze("1903");
+    expect(feats.phones).eq("w-ah-n-n-ih-n-z-ih-r-ow-th-r-iy");
+    expect(feats.stresses).eq("0/0/0/0/0");
+    expect(feats.syllables).eq("w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy");
+    expect(feats.tokens).eq("1903");
+    expect(feats.pos).eq("cd");
 
     feats = RiTa.analyze("the clothes");
     expect(feats.pos).eq("dt nns");
@@ -100,7 +100,7 @@ describe('RiTa.Analyzer', () => {
     eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
   });
 
-  false && it('TODO', () => { // TODO: (then SYNC:) See https://github.com/dhowe/rita/issues/65
+  false && it('TODO', function () { // TODO: (then SYNC:) See https://github.com/dhowe/rita/issues/65
 
     let feats = RiTa.analyze("off-site");
     //console.log(feats);
@@ -119,7 +119,7 @@ describe('RiTa.Analyzer', () => {
     eq(feats["syllables"], "");
   });
 
-  it('Should call stresses', () => {
+  it('Should call stresses', function () {
 
     let result, answer, word;
 
@@ -153,7 +153,7 @@ describe('RiTa.Analyzer', () => {
     eq(result, answer, word);
   });
 
-  it('Should call phones', () => {
+  it('Should call phones', function () {
 
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
@@ -197,7 +197,7 @@ describe('RiTa.Analyzer', () => {
     RiTa.SILENCE_LTS = silent;
   });
 
-  it('Should call phones(raw)', () => {
+  it('Should call phones(raw)', function () {
 
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
@@ -243,20 +243,22 @@ describe('RiTa.Analyzer', () => {
     RiTa.SILENCE_LTS = silent;
   });
 
-  it('Should call syllables', () => {
+  it('Should call syllables', function () {
 
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
 
     expect(RiTa.syllables('')).eq('');
     expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
-    expect(RiTa.syllables("1903")).eq('w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy');
 
     // different without lexicon ------------------------------------------
 
-    let nums = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',]
+    expect(RiTa.syllables("1903")).eq(hasLex ? 'w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy' : '1903');
+
+    let nums = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
     for (let i = 0; i < 10; i++) {
-      expect(RiTa.syllables(i + '')).eq(RiTa.syllables(nums[i]));
+      let istr = i + "";
+      expect(RiTa.syllables(istr)).eq((hasLex ? RiTa.syllables(nums[i]) : istr));
     }
 
     expect(RiTa.syllables('deforestations')).eq(hasLex ? 'd-ih/f-ao/r-ih/s-t-ey/sh-ah-n-z' : 'd-ah/f-ao-r/s-t-ey/sh-ah-n-z');
@@ -285,7 +287,7 @@ describe('RiTa.Analyzer', () => {
     RiTa.SILENCE_LTS = silent;
   });
 
-  it('Should pluralize phrases', () => {
+  it('Should pluralize phrases', function () {
     let input, expected;
     input = "set of choice"; expected = "set of choices";
     expect(RiTa.pluralize(input)).eq(expected);
@@ -297,8 +299,8 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.pluralize(input)).eq(expected);
   });
 
-  it('Should do nothing when input to pluralize is already plural', () => {
-    let dbug = 0; // same for mass nouns
+  it('Should do nothing when input to pluralize is already plural', function () {
+    // same for mass nouns
     let tests = ["tidings", "schnapps", "canvases", "censuses", "bonuses", "isthmuses", "thermoses", "circuses", "tongs", "emeriti"];
     tests.forEach((t, i) => {
       let res = RiTa.pluralize(t, { dbug: 0 });
@@ -307,8 +309,7 @@ describe('RiTa.Analyzer', () => {
     });
   });
 
-  it('Should return true for already plural nouns', () => {
-    let dbug = 1;
+  it('Should return true for already plural nouns', function () {
     let tests = ["tidings", "schnapps", "canvases", "censuses", "bonuses", "isthmuses", "thermoses", "circuses", "tongs", "emeriti"];
     tests.forEach((t, i) => {
       let res = RiTa.inflector.isPlural(t, { dbug: 0 });
@@ -317,18 +318,64 @@ describe('RiTa.Analyzer', () => {
     });
   });
 
-  it('Should correctly handle singular nouns in Tagger.allTags', () => {
-    let dbug = 1;
-    let tests = ["tiding", "census", "bonus", "thermos", "circus"];
-    tests.forEach((t, i) => {
-      let res = RiTa.tagger.allTags(t, false);
-      if (!res.includes('nn')) console.error(i + ') Fail: ' + t + ' -> ' + JSON.stringify(res));
-      expect(res.includes('nn')).to.be.true;
-    });
+  it('Should correctly handle singular nouns in Tagger.allTags', function () {
+    if (RiTa.HAS_LEXICON) {
+      let tests = ["tiding", "census", "bonus", "thermos", "circus"];
+      tests.forEach((t, i) => {
+        let res = RiTa.tagger.allTags(t, false);
+        if (!res.includes('nn')) console.error(i + ') Fail: ' + t + ' -> ' + JSON.stringify(res));
+        expect(res.includes('nn')).to.be.true;
+      });
+    }
   });
+  /*
+    it('Should singularize/pluralize', function () { // SYNC:
+      let testPairs = [
+        'gases', 'gas',
+        'alumni', 'alumnus',
+        'theses', 'thesis',
+        'octopuses', 'octopus',
+        'goddesses', 'goddess',
+        'tresses', 'tress',
+        'murderesses', 'murderess',
+        'addresses', 'address',
+        'spyglasses', 'spyglass',
+        'overpasses', 'overpass',
+        'fetuses', 'fetus',
+        'stimuli', 'stimulus',
+        'kisses', 'kiss',
+        'menus', 'menu',
+        'genuses', 'genus',
+      ];
+      let dbug = 1;
+      for (let i = 0; i < testPairs.length; i += 2) {
+        let plural = testPairs[i];
+        let singular = testPairs[i + 1];
+        expect(RiTa.singularize(singular, { dbug: dbug })).eq(singular);
+        expect(RiTa.singularize(plural, { dbug: dbug })).eq(singular);
+        expect(RiTa.pluralize(singular, { dbug: dbug })).eq(plural);
+        expect(RiTa.pluralize(plural, { dbug: dbug })).eq(plural);
+      }
+    });*/
 
-  it('Should handle number (singular/plural)', () => {
+  it('Should handle number (singular/plural)', function () { // SYNC:
+
+    //expect(RiTa.singularize('abyss', { dbug: 1 })).eq('abyss');return;
+    //expect(RiTa.pluralize('abyss', { dbug: 1 })).eq('abysses');return;
+    // expect(RiTa.inflector.isPlural('dreariness', { dbug: 1 })).eq(true);return;
+
+    expect(RiTa.singularize()).eq("");
+    expect(RiTa.singularize("")).eq("");
+    expect(function () { RiTa.singularize([1]) }).to.throw();
+    expect(function () { RiTa.singularize(1) }).to.throw();
+
+    expect(RiTa.pluralize()).eq("");
+    expect(RiTa.pluralize("")).eq("");
+    expect(function () { RiTa.pluralize([1]) }).to.throw();
+    expect(function () { RiTa.pluralize(1) }).to.throw();
+
     let testPairs = [
+      'abysses', 'abyss',
       'knives', 'knife',
       'dazes', 'daze',
       'hives', 'hive',
@@ -387,7 +434,6 @@ describe('RiTa.Analyzer', () => {
       'dogs', 'dog',
       'feet', 'foot',
       'teeth', 'tooth',
-      'kisses', 'kiss',
       'deer', 'deer',
       'sheep', 'sheep',
       'shrimp', 'shrimp',
@@ -400,7 +446,7 @@ describe('RiTa.Analyzer', () => {
       'grandchildren', 'grandchild',
       'menus', 'menu',
       'gurus', 'guru',
-      'hardness', 'hardness',
+      'hardnesses', 'hardness',
       'fish', 'fish',
       'ooze', 'ooze',
       'enterprises', 'enterprise',
@@ -419,7 +465,7 @@ describe('RiTa.Analyzer', () => {
       'series', 'series',
       'crises', 'crisis',
       'corpora', 'corpus',
-      'shortness', 'shortness',
+      'shortnesses', 'shortness',
       'dreariness', 'dreariness',
       'unwillingness', 'unwillingness',
       'moose', 'moose', 'lives', 'life',
@@ -427,9 +473,6 @@ describe('RiTa.Analyzer', () => {
       'epochs', 'epoch',
       'ranchs', 'ranch',
       'alcoves', 'alcove',
-      'goddesses', 'goddess',
-      'tresses', 'tress',
-      'murderesses', 'murderess',
       'memories', 'memory',
       'grooves', 'groove',
       'universes', 'universe',
@@ -478,7 +521,6 @@ describe('RiTa.Analyzer', () => {
       'impulses', 'impulse',
       'pelvises', 'pelvis',
       'fetishes', 'fetish',
-      'abysses', 'abyss',
       'gashes', 'gash',
       'directives', 'directive',
       'calories', 'calorie',
@@ -515,66 +557,66 @@ describe('RiTa.Analyzer', () => {
       'cognoscenti', 'cognoscenti',
       'bonsai', 'bonsai',
       'rice', 'rice',
-      'clothes', 'clothes'
+      'clothes', 'clothes',
+      'goddesses', 'goddess',
+      'tresses', 'tress',
+      'murderesses', 'murderess',
+      'kisses', 'kiss',
     ];
-    let res1, res2, res3, dbug = 0;
+    let res1, res2, res3, res4, Util = RiTa.Util, dbug = 0;
 
     for (let i = 0; i < testPairs.length; i += 2) {
 
       dbug && console.log(testPairs[i] + '/' + testPairs[i + 1]);
 
-      res1 = RiTa.singularize(testPairs[i], { dbug: dbug });
-      res2 = RiTa.pluralize(testPairs[i + 1], { dbug: dbug });
-      res3 = RiTa.inflector.isPlural(testPairs[i], { dbug: dbug, fatal: false });
+      let plural = testPairs[i];
+      let singular = testPairs[i + 1];
+
+      res1 = RiTa.singularize(plural, { dbug: dbug });
+      res2 = RiTa.pluralize(singular, { dbug: dbug });
+      res3 = RiTa.inflector.isPlural(plural, { dbug: dbug, fatal: false });
+      res4 = RiTa.inflector.isPlural(singular, { dbug: dbug, fatal: false });
 
       // singularize
-      eq(res1, testPairs[i + 1], 'FAIL: singularize(' + testPairs[i]
-        + ') was ' + res1 + ', but expected ' + testPairs[i + 1] + '\n        '
-        + 'pluralize(' + testPairs[i + 1] + ') was ' + res2 + '\n\n');
+      expect(res1).eq(singular, 'FAIL1: singularize(' + plural
+        + ') was ' + res1 + ', but expected ' + singular + '\n        '
+        + 'pluralize(' + singular + ') was ' + res2 + '\n\n');
 
       // pluralize
-      eq(res2, testPairs[i], 'FAIL: pluralize(' + testPairs[i + 1]
-        + ') was ' + res2 + ', but expected ' + testPairs[i] + '\n        '
-        + 'singularize(' + testPairs[i] + ') was ' + res1 + '\n\n');
+      expect(res2).eq(plural, 'FAIL2: pluralize(' + singular
+        + ') was ' + res2 + ', but expected ' + plural + '\n        '
+        + 'singularize(' + plural + ') was ' + res1 + '\n\n');
 
       // isPlural
-      ok(res3, 'FAIL: isPlural(' + testPairs[i] + ') was false\n\n');
+      expect(res3).eq(true, 'FAIL3: isPlural(' + plural + ') was false for plural noun\n\n');
+
+      // isPlural
+      let isMass = Util.MASS_NOUNS.includes(singular.toLowerCase());
+      let isModal = singular.endsWith('ness') && !Util.MODAL_EXCEPTIONS.includes(singular.toLowerCase());
+      if (!isMass && !isModal) {
+        expect(res4).eq(false, 'FAIL4: isPlural(' + singular + ') was true for singular noun,'
+          + ' isMassNoun=' + Util.MASS_NOUNS.includes(singular.toLowerCase())
+          + ' isModalException=' + Util.MODAL_EXCEPTIONS.includes(singular.toLowerCase()) + '\n\n');
+      }
+
+      // TODO: add isSingular
     }
-
-    for (let i = 0; i < testPairs.length; i += 2) {
-      expect(RiTa.singularize(testPairs[i])).eq(testPairs[i + 1]);
-      expect(RiTa.pluralize(testPairs[i + 1])).eq(testPairs[i]);
-      // if input is plural, return input
-      expect(RiTa.pluralize(testPairs[i])).eq(testPairs[i]);
-    }
-
-    expect(RiTa.singularize()).eq("");
-    expect(RiTa.singularize("")).eq("");
-    expect(() => { RiTa.singularize([1]) }).to.throw();
-    expect(() => { RiTa.singularize(1) }).to.throw();
-    /*     expect(RiTa.singularize("sheep", { dbug: true })).eq("sheep");
-        expect(RiTa.singularize("apples", { dbug: true })).eq("apple"); */
-
-
-    expect(RiTa.pluralize()).eq("");
-    expect(RiTa.pluralize("")).eq("");
-    expect(() => { RiTa.pluralize([1]) }).to.throw();
-    expect(() => { RiTa.pluralize(1) }).to.throw();
-    /*     expect(RiTa.pluralize("sheep", { dbug: true })).eq("sheep");
-        expect(RiTa.pluralize("apple", { dbug: true })).eq("apples"); */
   });
 
-  it('Should call phonesToStress', () => {
+  it('Should call phonesToStress', function () {
     expect(RiTa.analyzer.phonesToStress()).eq(undefined);
     expect(RiTa.analyzer.phonesToStress(" ")).eq("");
     expect(RiTa.analyzer.phonesToStress("ah b-ae1-n d-ah-n")).eq("0/1/0");
   });
 
-  it('Should call isPlural', () => {
+  it('Should call isPlural', function () { // remove?
     expect(RiTa.inflector.isPlural()).eq(false);
     expect(RiTa.inflector.isPlural("")).eq(false);
-    expect(() => { RiTa.inflector.isPlural([1]) }).to.throw();
-    expect(() => { RiTa.inflector.isPlural(1) }).to.throw();
+
+    expect(function () { RiTa.inflector.isPlural([1]) }).to.throw();
+    expect(function () { RiTa.inflector.isPlural(1) }).to.throw();
+
+    expect(RiTa.inflector.isPlural('octopus', { dbug: 0 })).eq(false);
     expect(RiTa.inflector.isPlural('sheep')).eq(true);
     expect(RiTa.inflector.isPlural('apples')).eq(true);
     expect(RiTa.inflector.isPlural('leaves', { debug: false })).eq(true);
@@ -585,32 +627,36 @@ describe('RiTa.Analyzer', () => {
     expect(RiTa.inflector.isPlural('happiness')).eq(true);
   });
 
-  it('Should call computePhones', () => { // SYNC:
+  it('Should call computePhones', function () { // SYNC:
+
     expect(RiTa.analyzer.computePhones("leo")).eql(["l", "iy", "ow"]);
-    
+
     // bad inputs -> return undefined
     expect(RiTa.analyzer.computePhones()).eq(undefined);
     expect(RiTa.analyzer.computePhones(".")).eq(undefined);
     expect(RiTa.analyzer.computePhones("")).eq(undefined);
     expect(RiTa.analyzer.computePhones(",")).eq(undefined);
-    
+
     // non-english input -> return undefined
     expect(RiTa.analyzer.computePhones("你好", { silent: true })).eq(undefined);
     expect(RiTa.analyzer.computePhones("Künste", { silent: true })).eq(undefined);
     expect(RiTa.analyzer.computePhones("leo", { silent: true })).eql(["l", "iy", "ow"]);
-    
+
+    // with "'"
+    expect(RiTa.analyzer.computePhones("student's")).eql(["s", "t", "uw1", "d", "eh1", "n", "t", "z"]);
+
     // numbers
-    expect(RiTa.analyzer.computePhones("-1")).eql(undefined);
+    expect(RiTa.analyzer.computePhones("-1", { silent: true })).eql(undefined); // TODO:
+
+    if (!hasLex) return; // NOTE: below currently fail without lexicon
+
+
     expect(RiTa.analyzer.computePhones("1")).eql(['w', 'ah', 'n']);
     //console.log(RiTa.analyzer.computePhones("50"));
     expect(RiTa.analyzer.computePhones("50")).eql(['f', 'ay', 'v', 'z', 'ih', 'r', 'ow']);
-
-    //with "'"
-    expect(RiTa.analyzer.computePhones("student's")).eql(["s", "t", "uw1", "d", "eh1", "n", "t", "z"]);
   });
 
   function ok(a, m) { expect(a, m).to.be.true; }
-  function def(res, m) { expect(res, m).to.not.be.undefined; }
   function eq(a, b, m) { expect(a).eq(b, m); }
 
 });

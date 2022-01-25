@@ -1,12 +1,17 @@
-import { RiTa, expect } from './before';
+import { loadTestingDeps } from './before';
 
 describe('RiTa.Core', () => {
 
-  it('Should have access to statics', () => {
+  let RiTa, expect;
+  before(async () => ({RiTa, expect} = await loadTestingDeps()));
+
+  it('Should have access to statics', function () {
+    eq(RiTa.CDN, "https://www.unpkg.com/rita/");
+
     //console.log(process.env.NODE_ENV, process.env.npm_package_version, RiTa.VERSION);
-    if (typeof process === 'undefined') return; // TODO:
+    if (typeof process === 'undefined') return; // TODO: browser
     if (process.env.NODE_ENV === 'dev') {
-      eql(RiTa.VERSION, 'DEV');
+      expect(RiTa.VERSION === 'DEV' || /[0-9]\.[0-9]\.[0-9]+/.test(RiTa.VERSION)).eq(true);
     }
     else {
       if (typeof process.env.npm_package_version === 'undefined') {
@@ -16,16 +21,15 @@ describe('RiTa.Core', () => {
       }
     }
 
-    eq(RiTa.CDN, "https://www.unpkg.com/rita/");
   });
 
-  it('Should call random', () => { // SYNC:
+  it('Should call random', function () { // SYNC:
     expect(RiTa.random(10)).to.be.within(0, 10);
     expect(RiTa.random(1, 10)).to.be.within(1, 10);
     expect(RiTa.random()).to.be.within(0, 1);
   });
 
-  it('Should call randi', () => { // SYNC:
+  it('Should call randi', function () { // SYNC:
     expect(RiTa.randi(10)).to.be.within(0, 9);
     expect(RiTa.randi(1, 10)).to.be.within(1, 9);
     expect(RiTa.randi()).eq(0);
@@ -34,7 +38,7 @@ describe('RiTa.Core', () => {
     expect(RiTa.randi(10)).to.satisfy(Number.isInteger);
   });
 
-  it('Should call randomOrdering', () => {
+  it('Should call randomOrdering', function () {
     expect(RiTa.randomOrdering(1)).eql([0]);
     expect(RiTa.randomOrdering(2)).to.have.members([0, 1])
     expect(RiTa.randomOrdering(['a'])).eql(['a']);
@@ -49,7 +53,7 @@ describe('RiTa.Core', () => {
     expect(ro).to.have.members(arr);
   });
 
-  it('Should call isQuestion', () => {
+  it('Should call isQuestion', function () {
     ok(RiTa.isQuestion("what"));
     ok(RiTa.isQuestion("what"));
     ok(RiTa.isQuestion("what is this"));
@@ -68,7 +72,7 @@ describe('RiTa.Core', () => {
     ok(!RiTa.isQuestion(""));
   });
 
-  it('Should handle articlize', () => {
+  it('Should handle articlize', function () {
     let data = [
       "dog", "a dog",
       "ant", "an ant",
@@ -83,7 +87,7 @@ describe('RiTa.Core', () => {
     }
   });
 
-  it('Should handle articlize phrases', () => {
+  it('Should handle articlize phrases', function () {
     let data = [
       "black dog", "a black dog",
       "black ant", "a black ant",
@@ -94,7 +98,7 @@ describe('RiTa.Core', () => {
     }
   });
 
-  it('Should call isAbbrev', () => {
+  it('Should call isAbbrev', function () {
 
     ok(RiTa.isAbbrev("Dr."));
     ok(RiTa.isAbbrev("dr."));
@@ -143,7 +147,7 @@ describe('RiTa.Core', () => {
     ok(!RiTa.isAbbrev(1, { caseSensitive: true }));
   });
 
-  it('Should call isPunct', () => {
+  it('Should call isPunct', function () {
 
     ok(!RiTa.isPunct("What the"));
     ok(!RiTa.isPunct("What ! the"));
@@ -209,7 +213,7 @@ describe('RiTa.Core', () => {
     }
   });
 
-  it('Should call isStopWord', () => { 
+  it('Should call isStopWord', function () { 
     let stopWords = ["and", "a", "of", "in", "i", "you", "is", "to", "that", "it", "for", "on", "have", "with", "this", "be", "not", "are", "as", "was", "but", "or", "from", "my", "at", "if", "they", "your", "all", "he", "by", "one", "me", "what", "so", "can", "will", "do", "an", "about", "we", "just", "would", "there", "no", "like", "out", "his", "has", "up", "more", "who", "when", "don't", "some", "had", "them", "any", "their", "it's", "only", "which", "i'm", "been", "other", "were", "how", "then", "now", "her", "than", "she", "well", "also", "us", "very", "because", "am", "here", "could", "even", "him", "into", "our", "much", "too", "did", "should", "over", "want", "these", "may", "where", "most", "many", "those", "does", "why", "please", "off", "going", "its", "i've", "down", "that's", "can't", "you're", "didn't", "another", "around", "must", "few", "doesn't", "the", "every", "yes", "each", "maybe", "i'll", "away", "doing", "oh", "else", "isn't", "he's", "there's", "hi", "won't", "ok", "they're", "yeah", "mine", "we're", "what's", "shall", "she's", "hello", "okay", "here's", "less", "didn't", "said"];
     let nonStopWords = ["apple", "orange", "cat", "dog", "play", "study", "worked", "paper"];
     stopWords.forEach(w => { 
@@ -220,7 +224,7 @@ describe('RiTa.Core', () => {
     });
   });
 
-  it('Should call isConsonant', () => {
+  it('Should call isConsonant', function () {
     let vowels = 'aeiou'.split('');
     vowels.forEach(l => ok(!RiTa.isConsonant(l)));
     ok(!RiTa.isConsonant(null));
@@ -231,7 +235,7 @@ describe('RiTa.Core', () => {
     someConsonants.forEach(l => ok(RiTa.isConsonant(l)));
   })
 
-  it('Should call tokenize', () => {
+  it('Should call tokenize', function () {
 
     expect(RiTa.tokenize("")).eql([""]);
     expect(RiTa.tokenize("The dog")).eql(["The", "dog"]);
@@ -384,7 +388,7 @@ describe('RiTa.Core', () => {
     expect(RiTa.tokenize(txt6)).eql(["We", "didn't", "find", "the", "cat", "."]);
   });
 
-  it('Should call untokenize', () => {
+  it('Should call untokenize', function () {
 
     let input, output, expected;
 
@@ -525,7 +529,7 @@ describe('RiTa.Core', () => {
     }
   });
 
-  it('Should call concordance', () => {
+  it('Should call concordance', function () {
 
     let data = RiTa.concordance("The dog ate the cat"); //default
     expect(Object.keys(data).length).eq(5);
@@ -613,7 +617,7 @@ describe('RiTa.Core', () => {
     expect(c.count("fox")).eq(0);
   });
 
-  it('Should call kwic', () => {
+  it('Should call kwic', function () {
     let result;
     RiTa.concordance("A sentence includes cat.");
     result = RiTa.kwic("cat");
@@ -677,7 +681,7 @@ describe('RiTa.Core', () => {
     expect(result[1]).eq("at the dog and buy a new fish.")
   });
 
-  it('Should call sentences', () => {
+  it('Should call sentences', function () {
 
     let input, expected, output;
 
@@ -755,7 +759,7 @@ describe('RiTa.Core', () => {
     eql(output, expected);
   });
 
-  it('Should call getTransforms', () => { 
+  it('Should call getTransforms', function () { 
     let transforms = RiTa.getTransforms();
     let expected = ["articlize", "capitalize", "uppercase", "quotify", "norepeat", "pluralize", "art", "cap", "uc", "qq", "nr", "s"];
     expected.forEach(t => {
@@ -763,7 +767,7 @@ describe('RiTa.Core', () => {
     });
   });
 
-  false && it('Should call isStem', () => {
+  false && it('Should call isStem', function () {
 
     //ok(RiTa.isStem(RiTa.stem("change"))) // returns false
 

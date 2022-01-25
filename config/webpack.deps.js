@@ -1,7 +1,6 @@
 // use with browser, includes deps
 
 module.exports = {
-  mode: 'production',
   output: {
     path: require('path').resolve(__dirname, '../dist'),
     library: 'RiTa',
@@ -10,8 +9,10 @@ module.exports = {
     libraryTarget: 'umd',
     libraryExport: 'default'
   },
+  resolve: {
+    fallback: { "fs": false }
+  },
   node: {
-    fs: "empty",
     __dirname: false,
     __filename: false,
   },

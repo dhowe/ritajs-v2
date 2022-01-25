@@ -78,16 +78,18 @@ class LetterToSound {
 
     if (Util.isNum(word)) {
       if (/^[0-9]+$/.test(word)) {
-        word = (word.length > 1) ? word.split('') : [word];
-        for (let k = 0; k < word.length; k++) {
-          let asWord = Util.Numbers.toWords[parseInt(word[k])];
-          let phs = RiTa.lexicon().rawPhones(asWord, { noLts: true });
-          phs = phs.replace(/1/g, '').replace(/ /g, '-');
-          phoneList.push(...phs.split('-'));
+        if (RiTa.HAS_LEXICON) {
+          word = (word.length > 1) ? word.split('') : [word];
+          for (let k = 0; k < word.length; k++) {
+            let asWord = Util.Numbers.toWords[parseInt(word[k])];
+            let phs = RiTa.lexicon().rawPhones(asWord, { noLts: true });
+            phs = phs.replace(/1/g, '').replace(/ /g, '-');
+            phoneList.push(...phs.split('-'));
+          }
+          return phoneList;
         }
-        return phoneList;
       }
-      return; // fail
+      // else use Util.numbToWords()
     }
 
     // Create "000#word#000", uggh
