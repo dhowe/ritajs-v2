@@ -249,7 +249,7 @@ class RiTa {
 
   static lexicon() { // lazy load
     if (typeof RiTa._lexicon === 'undefined') {
-      if (!RiTa.HAS_LEXICON) { //typeof __NOLEX__ !== 'undefined') { // used by webpack, don't shorten
+      if (typeof __NOLEX__ !== 'undefined') { // used by webpack, don't shorten
         RiTa._lexicon = new Lexicon(RiTa);
       }
       else {
