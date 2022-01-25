@@ -161,7 +161,7 @@ class RiTa {
   }
 
   static search() {
-    return RiTa.lexicon()._searchAll(...arguments);
+    return Array.from(RiTa.lexicon().search(...arguments));
   }
 
   static sentences() {

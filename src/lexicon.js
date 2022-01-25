@@ -204,9 +204,9 @@ class Lexicon {
     throw Error("No words matching constraints:\n" + JSON.stringify(opts, 0, 2));
   }
 
-  _searchAll(pattern, opts) { // SYNC:
-    return Array.from(this.search(...arguments));
-  }
+  // _searchAll(pattern, opts) { // SYNC:
+    
+  // }
 
   * search(pattern, options) { // SYNC:
 

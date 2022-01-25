@@ -53,7 +53,13 @@ class RiMarkov { //SYNC:
     }
   }
 
-  generate(count, opts = {}) {
+  generate() {
+    let iter = this.generateEach(...arguments), result;
+    while (!(result = iter.next()).done);
+    return result && result.value;
+  }
+
+  * generateEach(count, opts = {}) {
 
     if (arguments.length === 1 && typeof count === 'object') {
       opts = count;
@@ -195,7 +201,7 @@ class RiMarkov { //SYNC:
 
             if (this.trace) console.log('case 4: back at start of sentence'
               + ' or 0: ' + tokens.length, sentenceIdxs);
-              
+
             if (!tokens.length) {
               sentenceIdxs = [];
               return selectStart();
@@ -241,7 +247,7 @@ class RiMarkov { //SYNC:
 
       // we need a new sentence-start
       else if (!tokens.length || this._isEnd(tokens[tokens.length - 1])) {
-        
+
         let usableStarts = this.sentenceStarts.filter(ss => notMarked(this.root.child(ss)));
         if (!usableStarts.length) throw Error('No valid sentence-starts remaining');
         let start = RiTa().random(usableStarts);
@@ -249,6 +255,7 @@ class RiMarkov { //SYNC:
         markNode(startTok);
         usableStarts = this.sentenceStarts.filter(ss => notMarked(this.root.child(ss)));
         tokens.push(startTok);
+        if (this.trace) console.log(tokens.length, startTok.token);
       }
       else {
         throw Error('Invalid call to selectStart: ' + this._flatten(tokens));
@@ -265,6 +272,7 @@ class RiMarkov { //SYNC:
 
       if (tokens.length - sentIdx >= maxLength) {
         fail('too-long', 0, true);
+        yield;
         continue;
       }
 
@@ -273,23 +281,26 @@ class RiMarkov { //SYNC:
 
       if (!next) { // no valid children, pop and continue;
         fail('mlm-fail(' + this.mlm + ')', this._flatten(tokens), true);
+        yield;
         continue;
       }
 
       if (this._isEnd(next)) {
         if (validateSentence(next)) {
+          let flatSent = this._flatten(tokens.slice(sentIdx));
           sentenceIdxs.push(tokens.length); // found one
-          if (this.trace) console.log('OK (' + resultCount() + '/' + num + ') "' +
-            flatSent + '" sidxs=[' + sentenceIdxs + ']\n');
+          if (this.trace) console.log('OK (' + resultCount() + '/'
+            + num + ') "' + flatSent + '" sidxs=[' + sentenceIdxs + ']\n');
         }
+        yield;
         continue;
       }
 
       tokens.push(next);
 
-      if (this.trace) console.log(tokens.length - sentIdx, next.token, 
+      if (this.trace) console.log(tokens.length - sentIdx, next.token,
         '[' + parent.childNodes({ filter: notMarked }) // print unmarked kids
-        .filter(t => t !== next).map(t => t.token) + ']'); 
+          .filter(t => t !== next).map(t => t.token) + ']');
     }
 
     unmarkNodes();

@@ -16,6 +16,19 @@ describe('RiTa.RiMarkov', () => {
     Random = RiTa.randomizer;
   });
 
+  it('should call generateEach', () => {
+
+    let rm = new RiMarkov(4);
+    rm.addText(RiTa.sentences(sample));
+
+    let iter = rm.generateEach(), result;
+    while (!(result = iter.next()).done);
+
+    let sent = result.value;   
+    ok(typeof sent === 'string');
+    eq(sent[0], sent[0].toUpperCase());
+    ok(/[a-z][!?.]$/.test(sent));
+  });
 
   it('should call RiMarkov', () => {
     let rm = RiTa.markov(3);
@@ -282,13 +295,13 @@ describe('RiTa.RiMarkov', () => {
   it('should call generate1', () => {
 
     let rm;
-    rm = new RiMarkov(4, { disableInputChecks: true });
+    rm = new RiMarkov(4, { disableInputChecks: true, trace: 0 });
     rm.addText(RiTa.sentences(sample));
-
     let sent = rm.generate();
-    ok(typeof sent === 'string');
+    //console.log('got"', sent+'"' );
+    ok(typeof sent === 'string', 'expected string, got type: ' + typeof sent);
     eq(sent[0], sent[0].toUpperCase());
-    ok(/[!?.]$/.test(sent));
+    ok(/[a-z][!?.]$/.test(sent));
   });
 
   it('should call generate2', () => {
@@ -307,6 +320,7 @@ describe('RiTa.RiMarkov', () => {
     rm = new RiMarkov(4, { disableInputChecks: 1 });
     rm.addText(RiTa.sentences(sample));
     let sents = rm.generate(3);
+    //console.log(sents);
     eq(sents.length, 3);
     for (let i = 0; i < sents.length; i++) {
       let s = sents[i];
