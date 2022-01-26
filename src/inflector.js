@@ -1,5 +1,4 @@
 import RiTa from './rita';
-import { repulse } from './rita_dict';
 import Util from './util';
 
 class Inflector {

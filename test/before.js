@@ -27,7 +27,7 @@ async function loadTestingDeps() {
     RiTa = window.RiTa;  // loaded via script tags
     expect = window.chai.expect;
   }
-  return { RiTa, expect };
+  return { RiTa, expect, hasLex: RiTa.HAS_LEXICON };
 }
 
 export { loadTestingDeps };
