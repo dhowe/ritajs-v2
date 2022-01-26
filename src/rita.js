@@ -93,7 +93,7 @@ class RiTa {
       (RiTa.tokenize(sentence)[0].toLowerCase());
   }
 
-  /* static isStem(word) {
+  /* static findStem(word) {
     // return true if 1. it is in the dictionary 
     // && 2. it remains the same after stemming
     return RiTa.lexicon().hasWord(word, {fatal: true, strict: true})

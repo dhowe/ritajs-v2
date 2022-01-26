@@ -42,7 +42,7 @@ class Lexicon {
     return false;
   }
 
-  isStem(word) {
+  findStem(word) {
 
     let part = word;
     let dict = this._dict(true);
