@@ -26,11 +26,16 @@ describe('RiTa.Analyzer', function () {
     expect(data.syllables).eq("k-l-ow-z");
 
     RiTa.SILENCE_LTS = tmp;
+  });
 
-    if (!hasLex) return;
+  it('Should call analyzeWord with lts', function () { // SYNC:
 
+    if (!hasLex) this.skip(); // different without lexicon
+    
+    let tmp = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
-    data = RiTa.analyzer.analyzeWord("1903");
+    
+    let data = RiTa.analyzer.analyzeWord("1903");
     expect(data.phones).eq("w-ah-n-n-ih-n-z-ih-r-ow-th-r-iy");
     expect(data.stresses).eq("0/0/0/0/0");
     expect(data.syllables).eq("w-ah-n/n-ih-n/z-ih/r-ow/th-r-iy");

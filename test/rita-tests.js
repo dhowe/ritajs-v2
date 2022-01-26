@@ -767,17 +767,17 @@ describe('RiTa.Core', () => {
     });
   });
 
-  false && it('Should call isStem', function () {
+  false && it('Should call findStem', function () {
 
-    //ok(RiTa.isStem(RiTa.stem("change"))) // returns false
+    //ok(RiTa.findStem(RiTa.stem("change"))) // returns false
 
-    ok(RiTa.isStem("dog"));
-    ok(RiTa.isStem("cat"));
-    ok(RiTa.isStem("play"));
-    ok(RiTa.isStem("run"));
-    ok(!RiTa.isStem("dogs"));
-    ok(!RiTa.isStem("played"));
-    ok(!RiTa.isStem("writing"));
+    ok(RiTa.findStem("dog"));
+    ok(RiTa.findStem("cat"));
+    ok(RiTa.findStem("play"));
+    ok(RiTa.findStem("run"));
+    ok(!RiTa.findStem("dogs"));
+    ok(!RiTa.findStem("played"));
+    ok(!RiTa.findStem("writing"));
   });
 
   function ok(a, m) { expect(a, m).to.be.true; }

@@ -3,10 +3,10 @@ import { loadTestingDeps } from './before';
 describe('RiTa.Lexicon', function () {
 
   this.timeout(5000);
-  this.slow(700);
+  this.slow(500);
 
-  let RiTa, expect, hasLex;
-  before(async function() {
+  let RiTa, expect, lex, hasLex;
+  before(async function () {
     ({ RiTa, expect, hasLex } = await loadTestingDeps());
     if (!hasLex) this.skip();
     RiTa.lexicon(); // first load
@@ -183,7 +183,7 @@ describe('RiTa.Lexicon', function () {
 
     result = RiTa.randomWord({ regex: /0\/1\/0/, type: "stresses" });
     expect(RiTa.analyze(result).stresses.includes("0/1/0")).to.be.true;
- 
+
     result = RiTa.randomWord({ regex: "^th", type: "phones" });
     expect(result.length > 3);
     expect(/^th/.test(RiTa.analyze(result).phones)).to.be.true;
@@ -193,7 +193,7 @@ describe('RiTa.Lexicon', function () {
     expect(/^th/.test(RiTa.analyze(result).phones)).to.be.true;
   });
 
-  it("Should handle an augmented lexicon", function () {    
+  it("Should handle an augmented lexicon", function () {
 
     let toAdd = {
       'deg': ['d-eh1-g', 'nn'],
@@ -512,16 +512,6 @@ describe('RiTa.Lexicon', function () {
       'authoritarianism',
       'colonialism'
     ]);
-    expect(RiTa.search(/0\/1\/0\/0\/0\/0/, { type: 'stresses', limit: 5 })).eql([
-      'accountability',
-      'anticipatory',
-      'appreciatively',
-      'authoritarianism',
-      'colonialism'
-    ]);
-
-    //regex in options
-
     expect(RiTa.search({ regex: '010000', type: 'stresses', limit: 5 })).eql([
       'accountability',
       'anticipatory',
@@ -549,6 +539,20 @@ describe('RiTa.Lexicon', function () {
       'authoritarianism',
       'colonialism'
     ]);
+  });
+
+  it('Should call search with stress regex, limit', function () {
+
+    expect(RiTa.search(/0\/1\/0\/0\/0\/0/, { type: 'stresses', limit: 5 })).eql([
+      'accountability',
+      'anticipatory',
+      'appreciatively',
+      'authoritarianism',
+      'colonialism'
+    ]);
+
+    //regex in options
+
     expect(RiTa.search({ regex: /0\/1\/0\/0\/0\/0/, type: 'stresses', limit: 5 })).eql([
       'accountability',
       'anticipatory',
@@ -757,6 +761,9 @@ describe('RiTa.Lexicon', function () {
     expect(RiTa.rhymes("hose", { pos: 'v' }).includes("house")).to.be.false;
     expect(RiTa.rhymes("sieve", { pos: 'v' }).includes("mellow")).to.be.false;
     expect(RiTa.rhymes("swag", { pos: 'v' }).includes("grab")).to.be.false;
+  });
+
+  it('Should call rhymes.pos.nid', function () {
 
     // special case, where word is not in dictionary
     let rhymes = RiTa.rhymes("abated", { pos: 'vbd', limit: 1000 });
@@ -1155,7 +1162,7 @@ describe('RiTa.Lexicon', function () {
 
   it('Should correctly call _toPhoneArray', function () {  // private-js only
 
-    
+
 
     let raw = RiTa.lexicon().rawPhones("tornado", false)
     let result = RiTa.lexicon()._toPhoneArray(raw);
