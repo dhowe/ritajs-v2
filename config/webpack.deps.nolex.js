@@ -21,10 +21,21 @@ module.exports = {
     ignored: /node_modules/
   },
   entry: { 'rita': './src/rita.js' },
-  plugins: [new (require('webpack').DefinePlugin)({
-    __NOLEX__: JSON.stringify(true),
-    __VERSION__: JSON.stringify(require("../package.json").version)
-  })],
+  plugins: [
+    new (require('webpack').DefinePlugin)({
+      __NOLEX__: JSON.stringify(true),
+      __VERSION__: JSON.stringify(require("../package.json").version)
+    })
+    //, new (require('webpack').IgnorePlugin)({
+    //   resourceRegExp: /^\.\/rita_dict$/
+    //   // contextRegExp: /^src$/
+    //   // checkResource(resource, context) {
+    //   //   // do something with resource
+    //   //   console.log("***IgnorePlugin.checkResource",resource, context);
+    //   //   return resource !== './rita_dict';
+    //   // }
+    // })
+  ],
   module: {
     rules: [
       {

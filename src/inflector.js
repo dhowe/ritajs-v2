@@ -1,5 +1,3 @@
-import RiTa from './rita';
-import { repulse } from './rita_dict';
 import Util from './util';
 
 class Inflector {
@@ -124,7 +122,7 @@ class Inflector {
         return true;
       }
 
-      if (RiTa.HAS_LEXICON) {
+      if (this.RiTa.HAS_LEXICON) {
         // It it in lexicon as 'nn' (with noGuessing)?
         let tags = this.RiTa.tagger.allTags(sing, { noGuessing: true });
         if (tags.includes("nn")) { // fix for words like 'child' ?

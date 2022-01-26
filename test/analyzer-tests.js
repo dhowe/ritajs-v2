@@ -3,10 +3,7 @@ import { loadTestingDeps } from './before';
 describe('RiTa.Analyzer', function () {
 
   let RiTa, expect, hasLex;
-  before(async () => {
-    ({ RiTa, expect } = await loadTestingDeps());
-    hasLex = RiTa.HAS_LEXICON;
-  });
+  before(async () => ({ RiTa, expect, hasLex } = await loadTestingDeps()));
 
   it('Should call analyzeWord', function () { // SYNC:
 
@@ -18,12 +15,6 @@ describe('RiTa.Analyzer', function () {
     expect(data.stresses).eq("0/1/0");
     expect(data.syllables).eq("ah/b-ae-n/d-ah-n");
 
-    RiTa.SILENCE_LTS = tmp;
-
-    if (!hasLex) return; // NOTE: below currently fail without lexicon
-
-    RiTa.SILENCE_LTS = true;
-
     data = RiTa.analyzer.analyzeWord("z");
     expect(data.phones).eq("z");
     expect(data.stresses).eq("0");
@@ -34,6 +25,11 @@ describe('RiTa.Analyzer', function () {
     expect(data.stresses).eq("1");
     expect(data.syllables).eq("k-l-ow-z");
 
+    RiTa.SILENCE_LTS = tmp;
+
+    if (!hasLex) return;
+
+    RiTa.SILENCE_LTS = true;
     data = RiTa.analyzer.analyzeWord("1903");
     expect(data.phones).eq("w-ah-n-n-ih-n-z-ih-r-ow-th-r-iy");
     expect(data.stresses).eq("0/0/0/0/0");
@@ -49,7 +45,6 @@ describe('RiTa.Analyzer', function () {
     expect(feats.pos).eq("nn");
     expect(feats.tokens).eq("cloze");
     expect(feats.syllables).eq("k-l-ow-z");
-    //RiTa.SILENCE_LTS = silent;
   });
 
   it('Should call syllables.lts', function () {
@@ -247,7 +242,6 @@ describe('RiTa.Analyzer', function () {
 
     let silent = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
-
     expect(RiTa.syllables('')).eq('');
     expect(RiTa.syllables('clothes')).eq('k-l-ow-dh-z');
 
@@ -318,15 +312,14 @@ describe('RiTa.Analyzer', function () {
     });
   });
 
-  it('Should correctly handle singular nouns in Tagger.allTags', function () {
-    if (RiTa.HAS_LEXICON) {
-      let tests = ["tiding", "census", "bonus", "thermos", "circus"];
-      tests.forEach((t, i) => {
-        let res = RiTa.tagger.allTags(t, false);
-        if (!res.includes('nn')) console.error(i + ') Fail: ' + t + ' -> ' + JSON.stringify(res));
-        expect(res.includes('nn')).to.be.true;
-      });
-    }
+  it('Should handle singular nouns in Tagger.allTags', function () {
+    if (!hasLex) this.skip();
+    let tests = ["tiding", "census", "bonus", "thermos", "circus"];
+    tests.forEach((t, i) => {
+      let res = RiTa.tagger.allTags(t, false);
+      if (!res.includes('nn')) console.error(i + ') Fail: ' + t + ' -> ' + JSON.stringify(res));
+      expect(res.includes('nn')).to.be.true;
+    });
   });
   /*
     it('Should singularize/pluralize', function () { // SYNC:
@@ -360,19 +353,10 @@ describe('RiTa.Analyzer', function () {
 
   it('Should handle number (singular/plural)', function () { // SYNC:
 
-    //expect(RiTa.singularize('abyss', { dbug: 1 })).eq('abyss');return;
-    //expect(RiTa.pluralize('abyss', { dbug: 1 })).eq('abysses');return;
-    // expect(RiTa.inflector.isPlural('dreariness', { dbug: 1 })).eq(true);return;
-
     expect(RiTa.singularize()).eq("");
     expect(RiTa.singularize("")).eq("");
     expect(function () { RiTa.singularize([1]) }).to.throw();
     expect(function () { RiTa.singularize(1) }).to.throw();
-
-    expect(RiTa.pluralize()).eq("");
-    expect(RiTa.pluralize("")).eq("");
-    expect(function () { RiTa.pluralize([1]) }).to.throw();
-    expect(function () { RiTa.pluralize(1) }).to.throw();
 
     let testPairs = [
       'abysses', 'abyss',
@@ -649,7 +633,6 @@ describe('RiTa.Analyzer', function () {
     expect(RiTa.analyzer.computePhones("-1", { silent: true })).eql(undefined); // TODO:
 
     if (!hasLex) return; // NOTE: below currently fail without lexicon
-
 
     expect(RiTa.analyzer.computePhones("1")).eql(['w', 'ah', 'n']);
     //console.log(RiTa.analyzer.computePhones("50"));

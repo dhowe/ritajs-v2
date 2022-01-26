@@ -7,10 +7,9 @@ describe('RiTa.RiScript', function () {
 
   this.slow(100);
 
-  let RiTa, expect, RiScript, hasLex;
+  let RiTa, expect, hasLex, RiScript;
   before(async () => {
-    ({ RiTa, expect } = await loadTestingDeps());
-    hasLex = RiTa.HAS_LEXICON;
+    ({ RiTa, expect, hasLex } = await loadTestingDeps());
     RiScript = RiTa.RiScript;
   });
 

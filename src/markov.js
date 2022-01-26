@@ -60,7 +60,6 @@ class RiMarkov { //SYNC:
   }
 
   * generateEach(count, opts = {}) {
-
     if (arguments.length === 1 && typeof count === 'object') {
       opts = count;
       count = 1;

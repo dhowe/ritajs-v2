@@ -3,10 +3,7 @@ import { loadTestingDeps } from './before';
 describe('RiTa.Conjugator', function () {
 
   let RiTa, expect, hasLex;
-  before(async () => {
-    ({ RiTa, expect } = await loadTestingDeps());
-    hasLex = RiTa.HAS_LEXICON;
-  });
+  before(async () => ({ RiTa, expect, hasLex } = await loadTestingDeps()));
 
   it('Should call pastPart', function () {
 

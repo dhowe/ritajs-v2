@@ -3,14 +3,13 @@ import { loadTestingDeps } from './before';
 describe('RiTa.Tagger', () => {
 
   let RiTa, expect, hasLex;
-  before(async () => {
-    ({ RiTa, expect } = await loadTestingDeps());
-    hasLex = RiTa.HAS_LEXICON;
+  before(async function() {
+    ({ RiTa, expect, hasLex } = await loadTestingDeps());
+    if (!hasLex) this.skip();
   });
 
-
-
   it('Should call pos.array', function () {
+    if (!hasLex) this.skip();
     eql(RiTa.pos([]), []);
     eql(RiTa.pos(["deal"]), ["nn"]);
     eql(RiTa.pos(["freed"]), ["jj"]);
@@ -771,6 +770,11 @@ describe('RiTa.Tagger', () => {
     //
     eq(RiTa.tagger.tag(["A", "light", "blue", "sky", "."], { inline: true }), "A/dt light/jj blue/jj sky/nn .");
   });
+  // }
+  // else it('WARN: no tests without lexicon', function () {
+  //   expect(true).true;
+  // });
+
 
   // else it('WARN: no tests without lexicon', function () {
   //   expect(true).true;
