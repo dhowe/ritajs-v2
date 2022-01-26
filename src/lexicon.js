@@ -1,3 +1,4 @@
+import { result } from './rita_dict';
 import Util from './util';
 
 class Lexicon {
@@ -69,13 +70,11 @@ class Lexicon {
       return;
     }
 
-    const _silent = opts.silent;
-    opts.silent = true; // disable warnings
-
     // randomize list order if 'shuffle' is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
-    for (let i = 0, matches = 0; i < words.length; i++) {
+    let result = [];
+    for (let i = 0; i < words.length; i++) {
 
       let word = words[i];
       // check word length and syllables
@@ -96,12 +95,12 @@ class Lexicon {
       // to a new word not in dict
       let c2 = this._firstPhone(this._firstStressedSyl(word));
       if (phone === c2) {// result.push(word);
-        if (matches++ === opts.limit) break;
         yield word;
+        if (result.push(word) === opts.limit) break;
       }
     }
 
-    opts.silent = _silent; // re-enable warnings
+    return result;
   }
 
   * rhymes(theWord, opts = {}) {
@@ -111,17 +110,14 @@ class Lexicon {
     if (!theWord || !theWord.length || theWord.length < 2) return [];
 
     const dict = this._dict(true), words = Object.keys(dict);
-    const phone = this._lastStressedPhoneToEnd(theWord);
+    const phone = this._lastStressedPhoneToEnd(theWord), result = [];
 
-    if (!phone) return [];
-
-    const _silent = opts.silent;
-    opts.silent = true; // disable warnings
+    if (!phone) return result;
 
     // randomize list order if 'shuffle' is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
-    for (let i = 0, matches = 0; i < words.length; i++) {
+    for (let i = 0; i < words.length; i++) {
 
       let word = words[i], data = dict[word];
 
@@ -143,12 +139,12 @@ class Lexicon {
 
       // check for the rhyme
       if (phones.endsWith(phone)) {
-        if (matches++ === opts.limit) break;
         yield word;
+        if (result.push(word) === opts.limit) break;
       }
     }
 
-    opts.silent = _silent; // re-enable warnings
+    return result;
   }
 
   spellsLike(word, opts = {}) {
@@ -204,29 +200,23 @@ class Lexicon {
     throw Error("No words matching constraints:\n" + JSON.stringify(opts, 0, 2));
   }
 
-  // _searchAll(pattern, opts) { // SYNC:
-    
-  // }
-
   * search(pattern, options) { // SYNC:
 
     if (!pattern && !options) {
       throw Error("search() requires arguments");
     }
 
+    let result = [];
     let dict = this._dict(true);
     let words = Object.keys(dict);
-
+    
     let { regex, opts } = this._parseRegex(pattern, options);
     this.parseArgs(opts);
-
-    let _silent = opts.silent;
-    opts.silent = true; // disable warnings
 
     // randomize list order if 'shuffle' is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
-    for (let i = 0, matches = 0; i < words.length; i++) {
+    for (let i = 0; i < words.length; i++) {
       let word = words[i], data = dict[word];
 
       if (!this.checkCriteria(word, data, opts)) continue;
@@ -240,13 +230,13 @@ class Lexicon {
       }
 
       if (!regex || this._regexMatch(word, data, regex, opts.type)) {
-        if (matches++ === opts.limit) break;
         //console.log('search: '+matches+'/'+i);
         yield word;
+        if (result.push(word) === opts.limit) break;
       }
     }
 
-    opts.silent = _silent; // re-enable warnings
+    return result;
   }
 
   isAlliteration(word1, word2) {
@@ -287,9 +277,11 @@ class Lexicon {
     const variations = [input, input + 's', input + 'es'];
     const phonesA = matchSound ? this._toPhoneArray(this.rawPhones(input)) : input;
 
+    let result = [];
     if (!phonesA) return result;
 
-    let result = [], minVal = Number.MAX_VALUE, words = Object.keys(dict);
+    let minVal = Number.MAX_VALUE;
+    let words = Object.keys(dict);
 
     // randomize list order if 'shuffle' is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
@@ -326,6 +318,8 @@ class Lexicon {
       // another best to add
       else if (med === minVal && result.length < opts.limit) {
         result.push(word);
+        //yield word;
+        //if (result.push(word) === opts.limit) break;
       }
     }
 
