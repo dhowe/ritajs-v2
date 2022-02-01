@@ -486,6 +486,22 @@ describe('RiTa.Lexicon', function () { // SYNC:
     ]);
   });
 
+  it('Should call search with phones no limit and shuffle', function () {
+    let result = RiTa.search({ regex: 'f-ah-n-t', type: 'phones', limit: -1 });
+    expect(result).eql([
+      'elephant',
+      'infant',
+      'infantile',
+      'infantry',
+      "oftentimes",
+      "triumphant",
+      "triumphantly"
+    ]);
+    
+    let result2 = RiTa.search({ regex: 'f-ah-n-t', type: 'phones', limit: -1, shuffle: true });
+    expect(result2.sort()).eql(result);
+  });
+
   it('Should call search with pos, phones, sylls, limit', function () {
 
     expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'n', limit: 3, numSyllables: 2 }))
@@ -1239,7 +1255,7 @@ describe('RiTa.Lexicon', function () { // SYNC:
     expect(lex.findStem("yap")).eq(undefined);
 
     // incorrect stems TODO:
-    expect(lex.findStem("body")).eq(undefined); 
+    expect(lex.findStem("body")).eq(undefined);
     expect(lex.findStem("justify")).eq(undefined);
     expect(lex.findStem("cancelled")).eq(undefined);
     expect(lex.findStem("trolling")).eq(undefined);

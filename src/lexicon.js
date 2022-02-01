@@ -84,11 +84,12 @@ class Lexicon {
       return [];
     }
 
-    const dict = this._dict(true), words = Object.keys(dict);
+    const dict = this._dict(true);
     const fss = this._firstStressedSyl(theWord);
     if (!fss) return [];
 
-    const phone = this._firstPhone(fss), result = [];
+    let phone = this._firstPhone(fss), result = [];
+    let words = Object.keys(dict);
 
     // make sure we parsed first phoneme
     if (!phone) {
@@ -138,8 +139,9 @@ class Lexicon {
 
     if (!theWord || !theWord.length || theWord.length < 2) return [];
 
-    const dict = this._dict(true), words = Object.keys(dict);
-    const phone = this._lastStressedPhoneToEnd(theWord);
+    const dict = this._dict(true);
+    let phone = this._lastStressedPhoneToEnd(theWord);
+    let words = Object.keys(dict);
 
     if (!phone) return [];
 
