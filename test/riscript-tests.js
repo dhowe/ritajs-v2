@@ -5,7 +5,7 @@ describe('RiTa.RiScript', function () {
   const ST = { silent: 1 }, TP = { trace: 1 }, SKIP_FOR_NOW = true,
     TL = { traceLex: 1 }, TLP = { trace: 1, traceLex: 1 };
 
-  this.slow(100);
+  this.slow(150);
 
   let RiTa, expect, hasLex, RiScript;
   before(async () => {

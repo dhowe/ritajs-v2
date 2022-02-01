@@ -1,22 +1,71 @@
 import { loadTestingDeps } from './before';
 
-describe('RiTa.Lexicon', function () {
+describe('RiTa.Lexicon', function () { // SYNC:
 
   this.timeout(5000);
   this.slow(500);
 
-  let RiTa, expect, lex, hasLex;
+  let RiTa, expect, hasLex;
   before(async function () {
     ({ RiTa, expect, hasLex } = await loadTestingDeps());
     if (!hasLex) this.skip();
-    lex = RiTa.lexicon(); // first load
+    RiTa.lexicon(); // first load
+    hasLex = RiTa.HAS_LEXICON;
   });
 
+  /*it('Should call *search generator', () => {
+    let lex = RiTa.lexicon(), result;
+
+    let iterator = lex.search('^aba');
+    result = iterator.next();
+    while (!result.done) {
+      result = iterator.next(); // check each
+      expect(/^aba/.test(result.value)).eq(true);
+    }
+    //console.log('done ', result);
+    let answer = result.value; // check when finished
+    expect(Array.isArray(answer)).eq(true);
+    answer.forEach(v => expect(/^aba/.test(v)).eq(true));
+
+    iterator = lex.search('^ab', { limit: 10 });// same with explicit limit
+    result = iterator.next();
+    while (!result.done) {
+      result = iterator.next();
+      expect(/^ab/.test(result.value)).eq(true);
+    }
+    answer = result.value;
+    //console.log('done ', result);
+    expect(Array.isArray(answer)).eq(true);
+    expect(answer.length).eq(10);
+    answer.forEach(v => expect(/^ab/.test(v)).eq(true));
+
+
+    // grab first value
+    for (let value of lex.search('^aba', { limit: -1 })) {
+      if (value) {
+        result = value;
+        break;
+      }
+    }
+    expect(/^aba/.test(result)).eq(true);
+
+    result = [];
+    for (let value of lex.search('^aba', { limit: 5 })) {
+      if (value) result.push(value);
+    }
+    expect(Array.isArray(result)).eq(true);
+    expect(result.length).eq(5);
+    result.forEach(r => expect(/^aba/.test(r)).eq(true));
+
+    let item, result2 = [], iter = lex.search(/^ab/); // diff. syntax
+    while (item = iter.next(), !item.done) {
+      result2.push(item.value);
+    }
+    expect(result2.length).eq(10);
+  });*/
+
   it('Should call hasWord', function () {
-
-
     // SYNC:
-
     expect(RiTa.hasWord("random")).to.be.true;
     expect(RiTa.hasWord("dog")).to.be.true;
     expect(RiTa.hasWord("men")).to.be.true;
@@ -49,8 +98,6 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call randomWord', function () {
-
-
     // SYNC:
 
     let result;
@@ -67,9 +114,6 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call randomWord with regex', function () {
-
-
-
 
     // regex string as first parameter
     let result = RiTa.randomWord('^a');
@@ -110,27 +154,17 @@ describe('RiTa.Lexicon', function () {
     result = RiTa.randomWord(/le/);
     expect(result.includes("le")).to.be.true;
 
+    result = RiTa.randomWord("^a");
+    expect(result.startsWith("a")).to.be.true;
+
     results = [];
     for (let i = 0; i < 10; i++) {
       results.push(RiTa.randomWord(/^a/));
     }
     expect(results.length === 10).to.be.true;
-
-    i = 0;
-    while (i < results.length - 1) {
-      if (results[i] === results[i + 1]) {
-        results.splice(i, 1);
-      } else {
-        i++;
-      }
-    }
-
-    expect(results.length > 1).to.be.true; // 10 words not the same
   });
 
   it('Should call randomWord with stress regex', function () {
-
-
 
     let result = RiTa.randomWord("0/1/0", { type: "stresses" });
     expect(result.length > 3);
@@ -153,9 +187,6 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call randomWord with phones regex', function () {
-
-
-
 
     let result = RiTa.randomWord("^th", { type: "phones" });
     expect(result.length > 3);
@@ -229,9 +260,6 @@ describe('RiTa.Lexicon', function () {
 
   it("Should handle a custom lexicon", function () {
 
-
-
-
     let lex = RiTa.lexicon();
     let orig = lex.data;
     lex.data = {
@@ -250,7 +278,6 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call randomWord with pos', function () {
-
 
     // SYNC:
 
@@ -321,8 +348,6 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call randomWord with syllables', function () {
 
-
-
     let i, result, syllables, num;
     result = RiTa.randomWord({ numSyllables: 3 });
     syllables = RiTa.syllables(result);
@@ -339,9 +364,7 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call search without regex', function () {
 
-
-
-    expect(RiTa.search().length).gt(20000); // all words
+    //expect(RiTa.search().length).gt(20000); // all words
     expect(RiTa.search({ limit: 11 }).length).eq(11);
     expect(RiTa.search({ pos: "n" })).eql([
       'abalone', 'abandonment',
@@ -378,8 +401,6 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call search with letters', function () {
 
-
-
     expect(RiTa.search("phant")).eql([
       'elephant',
       'elephantine',
@@ -415,8 +436,6 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call search with phones, limit', function () {
-
-
 
     // omitting no limit tests as they are a bit slow
     let result = RiTa.search(/f-a[eh]-n-t/, { type: 'phones', limit: 10 });
@@ -467,28 +486,37 @@ describe('RiTa.Lexicon', function () {
     ]);
   });
 
-  it('Should call search with pos, feature, limit', function () {
+  it('Should call search with pos, phones, sylls, limit', function () {
 
+    expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'n', limit: 3, numSyllables: 2 }))
+      .eql(['infant']);
+  });
 
+  it('Should call search with pos, phones, limit', function () {
 
+    expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'n', limit: 3 }))
+      .eql(['elephant', 'infant', 'infantry']);
+
+    expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', pos: 'v', limit: 5 }))
+      .eql(["fantasize"]);
+  });
+
+  it('Should call search with simple pos, phones, limit', function () {
+
+    expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', pos: 'vb', limit: 5 }))
+      .eql(["fantasize"]);
+
+    expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'nns', limit: 3 }))
+      .eql(['elephants', 'infants', 'infantries']);
+  });
+
+  it('Should call search with pos, stress, limit', function () {
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n' }))
       .eql(['abalone', 'abandonment', 'abbreviation', 'abdomen', 'abduction']);
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'n', numSyllables: 3 }))
       .eql(['abdomen', 'abduction', 'abortion', 'abruptness', 'absorber']);
-
-    expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'n', limit: 3 }))
-      .eql(['elephant', 'infant', 'infantry']);
-
-    expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'n', limit: 3, numSyllables: 2 }))
-      .eql(['infant']);
-
-    expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', pos: 'v', limit: 5 }))
-      .eql(["fantasize"]);
-
-    expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', pos: 'vb', limit: 5 }))
-      .eql(["fantasize"]);
 
     expect(RiTa.search('010', { type: 'stresses', limit: 5, pos: 'nns' }))
       .eql(['abalone',
@@ -510,14 +538,9 @@ describe('RiTa.Lexicon', function () {
         'absorbers',
         'abstentions',
         'abstractions']);
-
-
-    expect(RiTa.search('f-ah-n-t', { type: 'phones', pos: 'nns', limit: 3 }))
-      .eql(['elephants', 'infants', 'infantries']);
   });
 
   it('Should call search with stresses, limit', function () {
-
 
     expect(RiTa.search('010000', { type: 'stresses', limit: 5 })).eql([
       'accountability',
@@ -636,8 +659,6 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call alliterations.numSyllables', function () {
 
-
-
     let result = RiTa.alliterations("cat", { minLength: 1, numSyllables: 7 });
     expect(result).eql(['electrocardiogram', 'electromechanical', 'telecommunications']);
     for (let i = 0; i < result.length; i++) {
@@ -646,8 +667,6 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call alliterations.pos', function () {
-
-
 
     let res;
 
@@ -691,9 +710,6 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call alliterations', function () {
-
-
-
 
     let result;
 
@@ -749,9 +765,6 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call rhymes', function () {
 
-
-
-
     expect(RiTa.rhymes("cat").length).eq(10);
     expect(RiTa.rhymes("cat").includes("hat")).to.be.true;
     expect(RiTa.rhymes("yellow").includes("mellow")).to.be.true;
@@ -784,7 +797,6 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call rhymes.pos', function () {
-
 
     expect(RiTa.rhymes("cat", { pos: 'v' }).includes("hat")).to.be.false;
     expect(RiTa.rhymes("yellow", { pos: 'a' }).includes("mellow")).to.be.true;
@@ -836,9 +848,6 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call rhymes.wordlength', function () {
 
-
-
-
     expect(RiTa.rhymes("cat", { minLength: 4 }).includes("hat")).to.be.false;
     expect(RiTa.rhymes("cat", { maxLength: 2 }).includes("hat")).to.be.false;
 
@@ -850,11 +859,9 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call spellsLike', function () {
+    let result;
 
-
-
-
-    let result = RiTa.spellsLike("");
+    result = RiTa.spellsLike("");
     eql(result, []);
 
     result = RiTa.spellsLike("banana");
@@ -871,13 +878,36 @@ describe('RiTa.Lexicon', function () {
       'nice', 'rice',
       'vice'
     ]);
+  });
 
+  0 && it('Should call spellsLike.minLimit', function () { // not implemented
+    let result;
 
+    result = RiTa.spellsLike("");
+    eql(result, []);
+
+    result = RiTa.spellsLike("banana", { minLimit: 5 });
+    eql(result, ['angina', 'arena', 'bacon', 'balance', 'ban']);
+
+    result = RiTa.spellsLike("tornado", { minLimit: 10 });
+    eql(result, [
+      'condo', 'forbade',
+      'horned', 'ornate',
+      'thread', 'tirade',
+      'toad', 'toenail',
+      'tomato', 'tonal']);
+
+    result = RiTa.spellsLike("ice", { minLimit: 4 });
+    eql(result, [
+      'ace', 'dice',
+      'iced', 'icy',
+      'ire', 'lice',
+      'nice', 'rice',
+      'vice'
+    ]);
   });
 
   it('Should call spellsLike.options', function () {
-
-
 
     let result;
 
@@ -940,9 +970,6 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call soundsLike', function () {
 
-
-
-
     eql(RiTa.soundsLike("tornado", { type: 'sound' }), ["torpedo"]);
 
     let result = RiTa.soundsLike("try", { limit: 20 });
@@ -989,9 +1016,6 @@ describe('RiTa.Lexicon', function () {
 
   it('Should call soundsLike().matchSpelling', function () {
 
-
-
-
     let result;
     result = RiTa.soundsLike("try", { matchSpelling: true });
     eql(result, ['cry', 'dry', 'fry', 'pry', 'tray']);
@@ -1018,8 +1042,6 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call isRhyme', function () {
-
-
 
     expect(!RiTa.isRhyme("apple", "polo")).to.be.true;
     expect(!RiTa.isRhyme("this", "these")).to.be.true;
@@ -1055,9 +1077,6 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should call isAlliteration', function () {
-
-
-
 
     expect(RiTa.isAlliteration("knife", "gnat")).to.be.true; // gnat=lts
     expect(RiTa.isAlliteration("knife", "naughty")).to.be.true;
@@ -1107,7 +1126,7 @@ describe('RiTa.Lexicon', function () {
     }
   });
 
-  it("Should call findStem", function () {
+  0 && it("Should call.findStem", function () { // ??
 
     let lex = RiTa.lexicon();
 
@@ -1162,6 +1181,9 @@ describe('RiTa.Lexicon', function () {
     expect(lex.findStem("hubbub")).eq("hubbub");
     expect(lex.findStem("hungrili")).eq("hungrily");
     expect(lex.findStem("hypoglycem")).eq("hypoglycemic");
+  });
+
+  0 && it("Should call findStem for words not in dict ", function () { // ?
 
     // correct stem but original word not in dict
     expect(lex.findStem("abut")).eq(undefined);
@@ -1216,8 +1238,8 @@ describe('RiTa.Lexicon', function () {
     expect(lex.findStem("yakk")).eq(undefined);
     expect(lex.findStem("yap")).eq(undefined);
 
-    // incorrect stems
-    expect(lex.findStem("body")).eq(undefined);
+    // incorrect stems TODO:
+    expect(lex.findStem("body")).eq(undefined); 
     expect(lex.findStem("justify")).eq(undefined);
     expect(lex.findStem("cancelled")).eq(undefined);
     expect(lex.findStem("trolling")).eq(undefined);
@@ -1225,8 +1247,6 @@ describe('RiTa.Lexicon', function () {
   });
 
   it('Should correctly call _toPhoneArray', function () {  // private-js only
-
-
 
     let raw = RiTa.lexicon().rawPhones("tornado", false)
     let result = RiTa.lexicon()._toPhoneArray(raw);

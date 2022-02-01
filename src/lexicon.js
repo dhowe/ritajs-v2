@@ -42,7 +42,7 @@ class Lexicon {
     return false;
   }
 
-  findStem(word) {
+  /*findStem(word) { // JC: what is this function doing?
 
     let part = word;
     let dict = this._dict(true);
@@ -68,7 +68,7 @@ class Lexicon {
     }
 
     return undefined;
-  }
+  }*/
 
   alliterations(theWord, opts = {}) {
 
@@ -302,7 +302,7 @@ class Lexicon {
 
   similarByType(theWord, opts) { // slow as we need to iterate through all
 
-    this.parseArgs(opts);
+    this.parseArgs(opts); // TODO: add minLimit (minResultCount) ?
 
     const dict = this._dict(true);
     const input = theWord.toLowerCase();
