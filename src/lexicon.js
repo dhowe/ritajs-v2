@@ -335,7 +335,7 @@ class Lexicon {
 
       let word = words[i], data = dict[word];
 
-      if (i > batchSize && i%batchSize === 1) yield i; 
+      if (i > batchSize && i%batchSize === 1) yield Math.floor(i/batchSize); 
 
       if (variations.includes(word)) continue;
 

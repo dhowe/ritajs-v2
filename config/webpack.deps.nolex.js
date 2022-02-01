@@ -1,4 +1,4 @@
-// use with browser, includes deps, no lexicon
+// use with browser/node, includes deps, no lexicon
 
 module.exports = {
   output: {
@@ -41,7 +41,14 @@ module.exports = {
       {
         test: /\.(js)$/,
         exclude: /node_modules/,
-        use: ['babel-loader?compact=true']
+        use: {
+          loader: 'babel-loader',
+          options: {
+            compact : true,
+            presets: ['@babel/preset-env'],
+            plugins: ['@babel/plugin-transform-runtime']
+          }
+        }
       }
     ]
   },

@@ -1,4 +1,4 @@
-// use with browser, includes deps
+// use with browser/node, includes deps
 
 module.exports = {
   output: {
@@ -30,7 +30,14 @@ module.exports = {
       {
         test: /\.(js)$/,
         exclude: /node_modules/,
-        use: ['babel-loader?compact=false']
+        use: {
+          loader: 'babel-loader',
+          options: {
+            compact : true,
+            presets: ['@babel/preset-env'],
+            plugins: ['@babel/plugin-transform-runtime']
+          }
+        }
       }
     ]
   },
