@@ -486,7 +486,7 @@ describe('RiTa.Lexicon', function () { // SYNC:
     ]);
   });
 
-  it('Should call search with phones no limit and shuffle', function () {
+  it('Should call search with phones no limit and shuffle', function () { // SYNC:
     let result = RiTa.search({ regex: 'f-ah-n-t', type: 'phones', limit: -1 });
     expect(result).eql([
       'elephant',
@@ -497,7 +497,7 @@ describe('RiTa.Lexicon', function () { // SYNC:
       "triumphant",
       "triumphantly"
     ]);
-    
+
     let result2 = RiTa.search({ regex: 'f-ah-n-t', type: 'phones', limit: -1, shuffle: true });
     expect(result2.sort()).eql(result);
   });
@@ -896,6 +896,27 @@ describe('RiTa.Lexicon', function () { // SYNC:
     ]);
   });
 
+  function resolveIterator(iter) {
+    let result;
+    while (!(result = iter.next()).done);
+    return result && result.value;
+  }
+
+
+  it('Should call spellsLikeGenerator', function () {
+    let lex = RiTa.lexicon();
+    eql(resolveIterator(lex.spellsLikeGenerator("", 5)), []);
+    eql(resolveIterator(lex.spellsLikeGenerator("banana", 3)), ["banal", "bonanza", "cabana", "manna"]);
+    eql(resolveIterator(lex.spellsLikeGenerator("tornado", 8)), ["torpedo"]);
+    eql(resolveIterator(lex.spellsLikeGenerator("ice", 4)), ['ace', 'dice', 'iced', 'icy', 'ire', 'lice', 'nice', 'rice', 'vice']);
+
+    // special case, where word is not in dictionary
+    let result = resolveIterator(lex.spellsLikeGenerator("abated", 6, { pos: 'vbd' }));
+    expect(result.includes("abetted")).to.be.true;
+    expect(result.includes("aborted")).to.be.true;
+    expect(result.includes("condensed")).to.be.false;
+  });
+
   0 && it('Should call spellsLike.minLimit', function () { // not implemented
     let result;
 
@@ -1025,6 +1046,53 @@ describe('RiTa.Lexicon', function () { // SYNC:
     expect(result.length > answer.length).to.be.true;
 
     result = RiTa.soundsLike("abated", { pos: 'vbd' });
+    expect(result.includes("abetted")).to.be.true;
+    expect(result.includes("debated")).to.be.true;
+    expect(result.includes("condensed")).to.be.false;
+  });
+
+  it('Should call soundsLikeGenerator', function () {
+    let lex = RiTa.lexicon();
+
+    eql(resolveIterator(lex.soundsLikeGenerator("tornado", 5)), ["torpedo"]);
+
+    let answer = ["cry", "dry", "fry", "pry", "rye", "tie", "tray", "tree", "tribe", "tried", "tripe", "trite", "true", "wry"]
+    eql(resolveIterator(lex.soundsLikeGenerator("try", 4, { limit: 20 })), answer);
+
+    let result = resolveIterator(lex.soundsLikeGenerator("try", 5, { minDistance: 2, limit: 20 }));
+    expect(result.length > answer.length).to.be.true; // more
+
+    answer = ["happier", "hippie"];
+    eql(resolveIterator(lex.soundsLikeGenerator("happy", 2)), answer);
+
+    result = resolveIterator(lex.soundsLikeGenerator("happy", 5, { minDistance: 2 }));
+    expect(result.length > answer.length).to.be.true; // more
+
+    eql(resolveIterator(lex.soundsLikeGenerator("cat", 5, { type: 'sound' })), [
+      'bat', 'cab',
+      'cache', 'calf',
+      'calve', 'can',
+      "can't", 'cap',
+      'cash', 'cast'
+    ]);
+
+    eql(resolveIterator(lex.soundsLikeGenerator("cat", 6, { type: 'sound', limit: 5 })), [
+      'bat', 'cab',
+      'cache', 'calf',
+      'calve'
+    ]);
+
+    eql(resolveIterator(lex.soundsLikeGenerator("cat", 5, { limit: 1000, minLength: 2, maxLength: 4 })),
+      ["at", "bat", "cab", "calf", "can", "cap", "cash", "cast", "chat", "coat", "cot", "curt", "cut", "fat", "hat", "kit", "kite", "mat", "matt", "pat", "rat", "sat", "that", "vat"]);
+
+    answer = ['catty', 'curt'];
+    eql(resolveIterator(lex.soundsLikeGenerator("cat", 9, { type: 'sound', minLength: 4, maxLength: 5, pos: 'jj' })),
+      answer);
+
+    result = resolveIterator(lex.soundsLikeGenerator("cat", 5, { minDistance: 2 }));
+    expect(result.length > answer.length).to.be.true;
+
+    result = resolveIterator(lex.soundsLikeGenerator("abated", 4, { pos: 'vbd' }));
     expect(result.includes("abetted")).to.be.true;
     expect(result.includes("debated")).to.be.true;
     expect(result.includes("condensed")).to.be.false;
@@ -1262,7 +1330,7 @@ describe('RiTa.Lexicon', function () { // SYNC:
     expect(lex.findStem("change")).eq(undefined);
   });
 
-  it('Should correctly call _toPhoneArray', function () {  // private-js only
+  it('Should call _toPhoneArray', function () {  // private-js only
 
     let raw = RiTa.lexicon().rawPhones("tornado", false)
     let result = RiTa.lexicon()._toPhoneArray(raw);

@@ -88,22 +88,20 @@ class Lexicon {
     const fss = this._firstStressedSyl(theWord);
     if (!fss) return [];
 
-    let phone = this._firstPhone(fss), result = [];
+    let phone = this._firstPhone(fss);
     let words = Object.keys(dict);
 
     // make sure we parsed first phoneme
     if (!phone) {
       if (!opts.silent && !this.RiTa.SILENT) console.warn
         ('Failed parsing first phone in "' + theWord + '"');
-      return result;
+      return [];
     }
-
-    const _silent = opts.silent;
-    opts.silent = true; // disable warnings
 
     // randomize list order if shuffle is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
+    let result = [];
     for (let i = 0; i < words.length; i++) {
 
       let word = words[i];
@@ -129,7 +127,6 @@ class Lexicon {
       if (result.length === opts.limit) break;
     }
 
-    opts.silent = _silent; // re-enable warnings
     return result;
   }
 
@@ -140,17 +137,15 @@ class Lexicon {
     if (!theWord || !theWord.length || theWord.length < 2) return [];
 
     const dict = this._dict(true);
-    let phone = this._lastStressedPhoneToEnd(theWord);
     let words = Object.keys(dict);
 
+    let phone = this._lastStressedPhoneToEnd(theWord);
     if (!phone) return [];
-
-    const result = [], _silent = opts.silent;
-    opts.silent = true; // disable warnings
 
     // randomize list order if 'shuffle' is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
+    let result = [];
     for (let i = 0; i < words.length; i++) {
 
       let word = words[i], data = dict[word];
@@ -177,7 +172,6 @@ class Lexicon {
       if (result.length === opts.limit) break;
     }
 
-    opts.silent = _silent; // re-enable warnings
     return result;
   }
 
@@ -187,12 +181,24 @@ class Lexicon {
     return this.similarByType(word, opts);
   }
 
+  spellsLikeGenerator(word, batches, opts = {}) {
+    opts.type = 'letter';
+    return this.similarByTypeGenerator(word, batches, opts);
+  }
+
   soundsLike(word, opts = {}) {
     if (!word || !word.length) return [];
     opts.type = "sound";
     return (opts.matchSpelling) ?
       this.similarBySoundAndLetter(word, opts)
       : this.similarByType(word, opts);
+  }
+
+  soundsLikeGenerator(word, batches, opts = {}) {
+    opts.type = "sound";
+    return (opts.matchSpelling) ?
+      this.similarBySoundAndLetterGenerator(word, batches, opts)
+      : this.similarByTypeGenerator(word, batches, opts);
   }
 
   randomWord(regex, opts) {
@@ -244,12 +250,10 @@ class Lexicon {
     let { regex, opts } = this._parseRegex(pattern, options);
     this.parseArgs(opts);
 
-    let result = [], _silent = opts.silent;
-    opts.silent = true; // disable warnings
-
     // randomize list order if shuffle is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
+    let result = [];
     for (let i = 0; i < words.length; i++) {
 
       let word = words[i], data = dict[word];
@@ -268,8 +272,6 @@ class Lexicon {
         if (result.length === opts.limit) break;
       }
     }
-
-    opts.silent = _silent; // re-enable warnings
 
     return result;
   }
@@ -302,7 +304,13 @@ class Lexicon {
 
   //////////////////////////// helpers /////////////////////////////////
 
-  similarByType(theWord, opts) { // slow as we need to iterate through all
+  similarByType(word, opts) { 
+    let iter = this.similarByTypeGenerator(word, 1, opts), result;
+    while (!(result = iter.next()).done);
+    return result && result.value;
+  }
+
+  * similarByTypeGenerator(theWord, batches, opts) {
 
     this.parseArgs(opts); // TODO: add minLimit (minResultCount) ?
 
@@ -312,16 +320,22 @@ class Lexicon {
     const variations = [input, input + 's', input + 'es'];
     const phonesA = matchSound ? this._toPhoneArray(this.rawPhones(input)) : input;
 
-    if (!phonesA) return result;
+    if (!phonesA) return [];
 
-    let result = [], minVal = Number.MAX_VALUE, words = Object.keys(dict);
+    let minVal = Number.MAX_VALUE, words = Object.keys(dict);
 
     // randomize list order if shuffle is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
+    let batchSize = Math.floor(words.length / batches);
+    //console.log(batchSize+'/'+words.length);
+
+    let result = [];
     for (let i = 0; i < words.length; i++) {
 
       let word = words[i], data = dict[word];
+
+      if (i > batchSize && i%batchSize === 1) yield i; 
 
       if (variations.includes(word)) continue;
 
@@ -477,6 +491,23 @@ class Lexicon {
     opts.type = 'sound';
     const simSound = this.similarByType(word, opts);
     if (simSound.length < 1) return [];
+
+    return this._intersect(simSound, simLetter).slice(0, opts.limit);
+  }
+
+  * similarBySoundAndLetterGenerator(word, batches, opts) {
+
+    opts.type = 'letter';
+    let iter = this.similarByTypeGenerator(word, batches, opts), result;
+    while (!(result = iter.next()).done) yield;
+    let simLetter = result && result.value;
+    if (!simLetter || !simLetter.length) return [];
+
+    opts.type = 'sound';
+    iter = this.similarByTypeGenerator(word, batches, opts);
+    while (!(result = iter.next()).done) yield;
+    let simSound = result && result.value;
+    if (!simSound || !simSound.length) return [];
 
     return this._intersect(simSound, simLetter).slice(0, opts.limit);
   }
