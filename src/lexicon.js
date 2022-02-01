@@ -150,15 +150,22 @@ class Lexicon {
   spellsLike(word, opts = {}) {
     if (!word || !word.length) return [];
     opts.type = 'letter';
-    return this.similarByType(word, opts);
+    let iter = this.similarByType(word, opts), result;
+    while (!(result = iter.next()).done);
+    return result && result.value;
   }
 
   soundsLike(word, opts = {}) {
     if (!word || !word.length) return [];
     opts.type = "sound";
-    return (opts.matchSpelling) ?
-      this.similarBySoundAndLetter(word, opts)
-      : this.similarByType(word, opts);
+    if (opts.matchSpelling) {
+      return this.similarBySoundAndLetter(word, opts);
+    }
+    else {
+      let iter = this.similarByType(word, opts), result;
+      while (!(result = iter.next()).done);
+      return result && result.value;
+    }
   }
 
   randomWord(regex, opts) { // SYNC:
@@ -267,7 +274,7 @@ class Lexicon {
 
   //////////////////////////// helpers /////////////////////////////////
 
-  similarByType(theWord, opts) { // slow as we need to iterate through all
+  * similarByType(theWord, opts) { // slow as we need to iterate through all
 
     this.parseArgs(opts);
 
@@ -289,9 +296,7 @@ class Lexicon {
     for (let i = 0; i < words.length; i++) {
 
       let word = words[i], data = dict[word];
-
       if (variations.includes(word)) continue;
-
       if (!this.checkCriteria(word, data, opts)) continue;
 
       if (opts.targetPos) {
@@ -313,13 +318,14 @@ class Lexicon {
       // found something even closer
       if (med >= opts.minDistance && med < minVal) {
         minVal = med;
+        yield;
         result = [word];
       }
       // another best to add
       else if (med === minVal && result.length < opts.limit) {
-        result.push(word);
-        //yield word;
-        //if (result.push(word) === opts.limit) break;
+        //result.push(word);
+        yield;
+        result.push(word);// === opts.limit) break;
       }
     }
 
@@ -329,11 +335,15 @@ class Lexicon {
   similarBySoundAndLetter(word, opts) {
 
     opts.type = 'letter';
-    const simLetter = this.similarByType(word, opts);
+    let iter1 = this.similarByType(word, opts), result1;
+    while (!(result1 = iter1.next()).done);
+    let simLetter = result1 && result1.value;
     if (simLetter.length < 1) return [];
 
     opts.type = 'sound';
-    const simSound = this.similarByType(word, opts);
+    let iter2 = this.similarByType(word, opts), result2;
+    while (!(result2 = iter2.next()).done);
+    let simSound = result2 && result2.value;
     if (simSound.length < 1) return [];
 
     return this._intersect(simSound, simLetter).slice(0, opts.limit);
