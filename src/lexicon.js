@@ -88,22 +88,20 @@ class Lexicon {
     const fss = this._firstStressedSyl(theWord);
     if (!fss) return [];
 
-    let phone = this._firstPhone(fss), result = [];
+    let phone = this._firstPhone(fss);
     let words = Object.keys(dict);
 
     // make sure we parsed first phoneme
     if (!phone) {
       if (!opts.silent && !this.RiTa.SILENT) console.warn
         ('Failed parsing first phone in "' + theWord + '"');
-      return result;
+      return [];
     }
-
-    const _silent = opts.silent;
-    opts.silent = true; // disable warnings
 
     // randomize list order if shuffle is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
+    let result = [];
     for (let i = 0; i < words.length; i++) {
 
       let word = words[i];
@@ -129,7 +127,6 @@ class Lexicon {
       if (result.length === opts.limit) break;
     }
 
-    opts.silent = _silent; // re-enable warnings
     return result;
   }
 
@@ -145,12 +142,10 @@ class Lexicon {
 
     if (!phone) return [];
 
-    const result = [], _silent = opts.silent;
-    opts.silent = true; // disable warnings
-
     // randomize list order if 'shuffle' is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
+    let result = [];
     for (let i = 0; i < words.length; i++) {
 
       let word = words[i], data = dict[word];
@@ -177,7 +172,6 @@ class Lexicon {
       if (result.length === opts.limit) break;
     }
 
-    opts.silent = _silent; // re-enable warnings
     return result;
   }
 
@@ -244,12 +238,10 @@ class Lexicon {
     let { regex, opts } = this._parseRegex(pattern, options);
     this.parseArgs(opts);
 
-    let result = [], _silent = opts.silent;
-    opts.silent = true; // disable warnings
-
     // randomize list order if shuffle is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
+    let result = [];
     for (let i = 0; i < words.length; i++) {
 
       let word = words[i], data = dict[word];
@@ -268,8 +260,6 @@ class Lexicon {
         if (result.length === opts.limit) break;
       }
     }
-
-    opts.silent = _silent; // re-enable warnings
 
     return result;
   }
@@ -312,13 +302,14 @@ class Lexicon {
     const variations = [input, input + 's', input + 'es'];
     const phonesA = matchSound ? this._toPhoneArray(this.rawPhones(input)) : input;
 
-    if (!phonesA) return result;
+    if (!phonesA) return [];
 
-    let result = [], minVal = Number.MAX_VALUE, words = Object.keys(dict);
+    let minVal = Number.MAX_VALUE, words = Object.keys(dict);
 
     // randomize list order if shuffle is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
 
+    let result = [];
     for (let i = 0; i < words.length; i++) {
 
       let word = words[i], data = dict[word];
