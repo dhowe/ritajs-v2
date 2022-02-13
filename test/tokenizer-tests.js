@@ -337,6 +337,8 @@ describe('RiTa.Tokenizer', () => {
 
   it('Should call untokenize', function () {
 
+    expect(RiTa.untokenize()).eq("");
+    expect(RiTa.untokenize(0)).eq("");
     expect(RiTa.untokenize([""])).eq("");
     expect(RiTa.untokenize([" "])).eq("");
 

@@ -77,6 +77,9 @@ class Tokenizer {
   }
 
   untokenize(arr, delim) { // very ugly (but works)
+
+    if (!arr || !Array.isArray(arr)) return '';
+
     arr = this.preProcessTags(arr);
     delim = delim || ' ';
 
