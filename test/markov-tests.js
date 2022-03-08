@@ -478,11 +478,11 @@ describe('RiTa.RiMarkov', function () {
   it('Should call generate.temperature', function () {
     let rm = RiTa.markov(3, { text: sample3 });
     for (let index = 0; index < 10; index++) {
-      let res = rm.generate({ temperture: 1 });
+      let res = rm.generate({ temperature: 1 });
       ok(res.length > 0);
-      res = rm.generate({ temperture: 0.1 });
+      res = rm.generate({ temperature: 0.1 });
       ok(res.length > 0);
-      res = rm.generate({ temperture: 100 });
+      res = rm.generate({ temperature: 100 });
       ok(res.length > 0);
     }
     expect(() => rm.generate({ temperature: 0 })).to.throw()
