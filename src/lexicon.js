@@ -17,7 +17,7 @@ class Lexicon {
     let dict = this._dict(true);
     let token = word.toLowerCase();
     let exists = dict.hasOwnProperty(token);
-    let noDerivations = opts.noDerivations; // SYNC:
+    let noDerivations = opts.noDerivations; 
 
     if (noDerivations || exists) return exists;
 
@@ -36,7 +36,7 @@ class Lexicon {
     let vlemma = this.RiTa.conjugator.unconjugate(token, opts);
     if (vlemma && dict.hasOwnProperty(vlemma)) {
       let tags = this.RiTa.tagger.allTags(vlemma);
-      if (tags.includes('vb')) return true; // SYNC:
+      if (tags.includes('vb')) return true; 
     }
 
     return false;
@@ -204,7 +204,7 @@ class Lexicon {
       }
     }
 
-    // delegate to search {limit=1, shuffle=true, strictPos=true}    SYNC:
+    // delegate to search {limit=1, shuffle=true, strictPos=true}  
     opts = opts || {};
     opts.strictPos = true;
     opts.shuffle = true;

@@ -215,7 +215,7 @@ class RiScript {
     return RiScript.transforms;
   }
 
-  static articlize(s) { // SYNC:
+  static articlize(s) { 
     if (!s || !s.length) return '';
     let first = s.split(/\s+/)[0];
     let phones = RiTa().phones(first, { silent: true });
@@ -289,7 +289,7 @@ RiScript.transforms = {
 };
 
 const VOW_RE = /[aeiou]/;
-const ENT_RE = /[\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g; // SYNC:
+const ENT_RE = /[\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g; 
 const PRS_RE = /([(){}|]|(\${1,2}\w+))/;
 const SYM_RE = /\${1,2}\w+/;
 const CONT_RE = /\\\n/;
