@@ -488,7 +488,35 @@ class Tagger {
         if (i > 0 && result[i - 1] === "in") {
           tag = "nn"
         }
-      } 
+      }
+
+      // https://github.com/dhowe/rita/issues/65
+      // handle hyphenated words -JC
+      if (word.includes("-")) {
+        if (result[i+1] && result[i+1].startsWith("n")){
+          //next word is a noun
+          tag = "jj";
+        } else if (result[i+1] && result[i+1].startsWith("v")) {
+          //next word is a verb
+          tag = "rb";
+        } else {
+          //end of sentence or next word is some strange things
+          // ? tocheck: anycase causeing death loop
+          let arr = word.split("-");
+          if (this.allTags(arr[0]).findIndex(t => /^n/.test(t)) > -1) {
+            if (this.allTags(arr[arr.length - 1]).findIndex(t => /^[vj]/.test(t)) > -1){
+              // factory-made etc.
+              tag = "jj";
+            } else {
+              // if first part is a noun father-in-law etc. 
+              // numbers depends of this noun
+              tag = this.RiTa.inflector.isPlural(arr[0]) ? "nns" : "nn" ;
+            }
+          } else {
+            tag = "jj"
+          }
+        }
+      }  
 
       result[i] = tag;
     }
