@@ -17,7 +17,7 @@ class Lexicon {
     let dict = this._dict(true);
     let token = word.toLowerCase();
     let exists = dict.hasOwnProperty(token);
-    let noDerivations = opts.noDerivations; // SYNC:
+    let noDerivations = opts.noDerivations; 
 
     if (noDerivations || exists) return exists;
 
@@ -36,7 +36,7 @@ class Lexicon {
     let vlemma = this.RiTa.conjugator.unconjugate(token, opts);
     if (vlemma && dict.hasOwnProperty(vlemma)) {
       let tags = this.RiTa.tagger.allTags(vlemma);
-      if (tags.includes('vb')) return true; // SYNC:
+      if (tags.includes('vb')) return true; 
     }
 
     return false;
@@ -204,7 +204,7 @@ class Lexicon {
       }
     }
 
-    // delegate to search {limit=1, shuffle=true, strictPos=true}    SYNC:
+    // delegate to search {limit=1, shuffle=true, strictPos=true}  
     opts = opts || {};
     opts.strictPos = true;
     opts.shuffle = true;
@@ -413,7 +413,7 @@ class Lexicon {
     opts.maxLength = opts.maxLength || Number.MAX_SAFE_INTEGER;
     opts.minLength = opts.minLength || (opts.limit > 1 ? 3 : 4); // 4 for randomWord
 
-    if (opts.limit && opts.limit < 1) delete opts.limit; // 0,1 = no limit (SYNC:)
+    if (opts.limit && opts.limit < 1) delete opts.limit; // 0,1 = no limit 
 
     // handle part-of-speech
     let tpos = opts.pos || false;

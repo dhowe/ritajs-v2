@@ -22,7 +22,7 @@ class Analyzer {
       tokens: words.join(SP)
     }
 
-    for (let i = 0; i < words.length; i++) {  // SYNC:
+    for (let i = 0; i < words.length; i++) {  
       let { phones, stresses, syllables } = this.analyzeWord(words[i], opts);
       features.phones += SP + phones;
       features.stresses += SP + stresses;
@@ -49,7 +49,7 @@ class Analyzer {
     return stress;
   }
 
-  analyzeWord(word, opts = {}) {  // SYNC:
+  analyzeWord(word, opts = {}) {  
 
     let RiTa = this.RiTa;
 
@@ -94,7 +94,7 @@ class Analyzer {
         stresses = this.phonesToStress(rawPhones);
       }
 
-      result = { phones, stresses, syllables };  // SYNC:
+      result = { phones, stresses, syllables }; 
       Object.keys(result).forEach(k => result[k] = result[k].trim());
 
       // add to cache if enabled

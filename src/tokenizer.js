@@ -8,7 +8,7 @@ class Tokenizer {
     this.splitter = /(\S.+?[.!?]["\u201D]?)(?=\s+|$)/g;
   }
 
-  tokens(text, opts = {}) { // SYNC:
+  tokens(text, opts = {}) { 
 
     // opts: {includePunct, caseSensitive, sort, ignoreStopWords} ?
     let words = this.tokenize(text, opts), map = {};
@@ -55,7 +55,7 @@ class Tokenizer {
     return arr && arr.length ? unescapeAbbrevs(arr) : [text];
   }
 
-  tokenize(input, opts = {}) { // SYNC: Opts: {regex, splitContractions}
+  tokenize(input, opts = {}) { 
 
     if (typeof input !== 'string') return [];
 
@@ -360,8 +360,7 @@ const TOKENIZE_RE = [
   /_RECORDSEPARATOR_/g, "\\036", // RS
 ];
 
-const CONTRACTS_RE = [ // SYNC:
-  // ADDED: she'd, he'd, i'd, she'll, he'll, i'll
+const CONTRACTS_RE = [ 
 
   /([Cc])an['\u2019]t/g, "$1an not",
   /([Dd])idn['\u2019]t/g, "$1id not",

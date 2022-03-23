@@ -13,9 +13,9 @@ class Tagger {
     let conj = this.RiTa.conjugator;
     
     // check irregular verbs (added 7/31/21) 
-    if (this._isNoLexIrregularVerb(word)) return true;        // SYNC:
-    if (conj.IRREG_VERBS_LEX_VB.hasOwnProperty(word)) return true; // SYNC:
-    if (conj.IRREG_VERBS_NOLEX.hasOwnProperty(word)) return true; // SYNC:
+    if (this._isNoLexIrregularVerb(word)) return true;        
+    if (conj.IRREG_VERBS_LEX_VB.hasOwnProperty(word)) return true; 
+    if (conj.IRREG_VERBS_NOLEX.hasOwnProperty(word)) return true;
 
     // any verbs (vb*) in lexicon
     let pos = this.allTags(word, opts);
@@ -138,7 +138,7 @@ class Tagger {
     }
 
     // finally check irregular verb list
-    if (!pos || !pos.includes("vbz")) { // SYNC:
+    if (!pos || !pos.includes("vbz")) { 
       if (this._isNoLexIrregularVerb(stem)) result.push('vbz');
     }
   }

@@ -4,7 +4,7 @@ import { parse, stringify } from 'flatted';
  * See full set of options for RiMarkov (https://rednoise.org/rita/reference/RiTa/markov/index.html)
  * and RiMarkov.generate (https://rednoise.org/rita/reference/RiMarkov/generate/index.html)
  */
-class RiMarkov { //SYNC:
+class RiMarkov { 
 
   constructor(n, opts = {}) {
 
@@ -26,7 +26,7 @@ class RiMarkov { //SYNC:
     // we store inputs to verify we don't duplicate sentences
     if (!this.disableInputChecks || this.mlm) this.input = [];
 
-    // add text if supplied as opt // SYNC:
+    // add text if supplied as opt // 
     if (opts.text) this.addText(opts.text);
   }
 

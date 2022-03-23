@@ -55,7 +55,7 @@ class LetterToSound {
     }
   }
 
-  buildPhones(word, opts) { // SYNC:
+  buildPhones(word, opts) {
 
     const RiTa = this.RiTa;
 

@@ -235,7 +235,7 @@ const PLUR_RULES = [
   RE("[bcdfghjklmnpqrstvwxyz]o$", 0, "es"),
   RE("[bcdfghjklmnpqrstvwxyz]y$", 1, "ies"),
   RE("^ox$", 0, "en"),
-  RE("^(stimul|alumn|termin|emerit)us$", 2, "i"), //SYNC:
+  RE("^(stimul|alumn|termin|emerit)us$", 2, "i"), 
   RE("^corpus$", 2, "ora"),
   RE("(xis|sis)$", 2, "es"),
   //RE("(ness)$", 0, "es"),

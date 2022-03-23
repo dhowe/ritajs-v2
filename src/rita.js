@@ -226,7 +226,7 @@ class RiTa {
 
   ////////////////////////////// niapa /////////////////////////////
 
-  static randi() { // SYNC:
+  static randi() { 
     return Math.floor(RiTa.randomizer.random(...arguments));
   }
 

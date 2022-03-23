@@ -65,7 +65,6 @@ describe('RiTa.Lexicon', function () { // SYNC:
   });*/
 
   it('Should call hasWord', function () {
-    // SYNC:
     expect(RiTa.hasWord("random")).to.be.true;
     expect(RiTa.hasWord("dog")).to.be.true;
     expect(RiTa.hasWord("men")).to.be.true;
@@ -78,7 +77,6 @@ describe('RiTa.Lexicon', function () { // SYNC:
     expect(RiTa.hasWord("oxen")).to.be.true;
     expect(RiTa.hasWord("mice")).to.be.true;
 
-    // strict mode SYNC:
     expect(RiTa.hasWord("dogs", { noDerivations: true })).to.be.false;
     expect(RiTa.hasWord("played", { noDerivations: true })).to.be.false;
     expect(RiTa.hasWord("cats", { noDerivations: true })).to.be.false;
@@ -279,8 +277,6 @@ describe('RiTa.Lexicon', function () { // SYNC:
 
   it('Should call randomWord with pos', function () {
 
-    // SYNC:
-
     expect(() => RiTa.randomWord({ pos: "xxx" })).to.throw;
 
     let result, pos = ["nn", "jj", "jjr", "wp"];
@@ -474,15 +470,6 @@ describe('RiTa.Lexicon', function () { // SYNC:
       "infant",
       "infantile",
       "infantry"
-    ]);
-
-    result = RiTa.search({ regex: 'f-ah-n-t', type: 'phones', limit: 5 });
-    expect(result).eql([
-      'elephant',
-      'infant',
-      'infantile',
-      'infantry',
-      "oftentimes"
     ]);
   });
 
