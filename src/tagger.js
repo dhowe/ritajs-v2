@@ -90,7 +90,7 @@ class Tagger {
 
     if (!Array.isArray(words)) { // we have a string
       if (!words.trim().length) return inline ? '' : [];
-      words = this.RiTa.tokenizer.tokenize(words);
+      words = this.RiTa.tokenizer.tokenize(words, {keepHyphen:1});
     }
 
     for (let i = 0, l = words.length; i < l; i++) {
@@ -488,7 +488,35 @@ class Tagger {
         if (i > 0 && result[i - 1] === "in") {
           tag = "nn"
         }
-      } 
+      }
+
+      // https://github.com/dhowe/rita/issues/65
+      // handle hyphenated words -JC
+      if (word.includes("-")) {
+        let arr = word.split("-");
+        if (result[i+1] && result[i+1].startsWith("n")){
+          //next word is a noun
+          tag = "jj";
+        } else if (result[i+1] && result[i+1].startsWith("v") && this.allTags(arr[arr.length - 1]) && this.allTags(arr[arr.length - 1]).findIndex(t => /^[vrj]/.test(t)) > -1) {
+          //next word is a verb, last part is rb/verb
+          tag = "rb";
+        } else {
+          //end of sentence or next word is some strange thing
+          // ? tocheck: anycase causeing death loop
+          if (this.allTags(arr[0]) && this.allTags(arr[0]).findIndex(t => /^n/.test(t)) > -1) {
+            if (this.allTags(arr[arr.length - 1]) && this.allTags(arr[arr.length - 1]).findIndex(t => /^[vj]/.test(t)) > -1){
+              //It is factory-made. etc.
+              tag = "jj";
+            } else {
+              // if first part is a noun, father-in-law etc. 
+              // numbers depends of this noun
+              tag = this.RiTa.inflector.isPlural(arr[0]) ? "nns" : "nn" ;
+            }
+          } else {
+            tag = "jj"; //generually it should be jj
+          }
+        }
+      }  
 
       result[i] = tag;
     }

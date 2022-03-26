@@ -100,23 +100,50 @@ describe('RiTa.Analyzer', function () {
     eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
   });
 
-  false && it('TODO', function () { // TODO: (then SYNC:) See https://github.com/dhowe/rita/issues/65
+  it('Should handle hyphenated word', function () { // TODO: (then SYNC:) See https://github.com/dhowe/rita/issues/65
 
+    // pos
+    expect(RiTa.pos("It is factory-made.")).eql(["prp", "vbz", "jj", "."]);
+    expect(RiTa.pos("My father-in-law likes cat.")).eql(["prp$", "nn", "vbz", "nn", "."]);
+    expect(RiTa.pos("She is my mother-in-law.")).eql(["prp", "vbz", "prp$", "nn", "."]);
+    expect(RiTa.pos("This oft-cited document.")).eql(["dt", "jj", "nn", "."]);
+    expect(RiTa.pos("sister-in-law")).eql(["nn"]);
+    expect(RiTa.pos("brothers-in-law")).eql(["nns"]);
+    expect(RiTa.pos("ready-made")).eql(["jj"]);
+    expect(RiTa.pos("off-site")).eql(["nn"]);
+    expect(RiTa.pos("oft-cited")).eql(["jj"]);
+    expect(RiTa.pos("deeply-nested")).eql(["jj"]);
+
+    // token
+    eql(RiTa.tokenize("deeply-nested"), ["deeply", "-", "nested"]);
+    eql(RiTa.tokenize("oft-cited"), ["oft", "-", "cited"]);
+    eql(RiTa.tokenize("off-site"), ["off", "-", "site"]);
+    eq(RiTa.untokenize(RiTa.tokenize("deeply-nested")),"deeply-nested");
+    eq(RiTa.untokenize(RiTa.tokenize("oft-cited")),"oft-cited");
+    eq(RiTa.untokenize(RiTa.tokenize("off-site")),"off-site");
+    // analyze
+    
     let feats = RiTa.analyze("off-site");
     //console.log(feats);
-    eq(feats["pos"], "jj");
-    eq(feats["phones"], '');
-    eq(feats["tokens"], "off - site");
-    eq(feats["stresses"], "");
-    eq(feats["syllables"], "");
+    eq(feats["pos"], "nn"); // it can be nn and jj/rb, depends on context, no context just nn
+    eq(feats["phones"], 'ao-f - s-ay-t');
+    eq(feats["stresses"], "1 - 1");
+    eq(feats["syllables"], "ao-f - s-ay-t");
 
     feats = RiTa.analyze("oft-cited");
     //console.log(feats);
     eq(feats["pos"], "jj");
-    eq(feats["phones"], '');
-    eq(feats["tokens"], "oft - cited");
-    eq(feats["stresses"], "");
-    eq(feats["syllables"], "");
+    eq(feats["phones"], 'ao-f-t - s-ih-t-ah-d');
+    eq(feats["stresses"], "1 - 1/0");
+    eq(feats["syllables"], "ao-f-t - s-ih/t-ah-d");
+
+    feats = RiTa.analyze("deeply-nested");
+    //console.log(feats);
+    eq(feats["pos"], "jj");
+    eq(feats["phones"], 'd-iy-p-l-iy - n-eh-s-t-ah-d');
+    eq(feats["stresses"], "1/0 - 1/0");
+    eq(feats["syllables"], "d-iy-p/l-iy - n-eh/s-t-ah-d");
+
   });
 
   it('Should call stresses', function () {
@@ -627,5 +654,6 @@ describe('RiTa.Analyzer', function () {
 
   function ok(a, m) { expect(a, m).to.be.true; }
   function eq(a, b, m) { expect(a).eq(b, m); }
+  function eql(a,b,m) {expect(a).eql(b,m);}
 
 });
