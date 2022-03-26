@@ -106,7 +106,7 @@ describe('RiTa.Analyzer', function () {
     //console.log(feats);
     eq(feats["pos"], "jj");
     eq(feats["phones"], '');
-    eq(feats["tokens"], "off - site");
+    eql(RiTa.tokenize("off-site"), ["off", "-", "site"]);
     eq(feats["stresses"], "");
     eq(feats["syllables"], "");
 
@@ -114,9 +114,27 @@ describe('RiTa.Analyzer', function () {
     //console.log(feats);
     eq(feats["pos"], "jj");
     eq(feats["phones"], '');
-    eq(feats["tokens"], "oft - cited");
+    eql(RiTa.tokenize("oft-cited"), ["oft", "-", "cited"]);
     eq(feats["stresses"], "");
     eq(feats["syllables"], "");
+
+    feats = RiTa.analyze("deeply-nested");
+    //console.log(feats);
+    eq(feats["pos"], "jj");
+    eq(feats["phones"], '');
+    eql(RiTa.tokenize("deeply-nested"), ["deeply", "-", "nested"]);
+    eq(feats["stresses"], "");
+    eq(feats["syllables"], "");
+
+    // pos
+    expect(RiTa.pos("It is factory-made.")).eql(["prp", "vbz", "jj", "."]);
+    expect(RiTa.pos("My father-in-law likes cat.")).eql(["prp$", "nn", "vbz", "nn", "."]);
+    expect(RiTa.pos("She is my mother-in-law.")).eql(["prp", "vbz", "prp$", "nn", "."]);
+    expect(RiTa.pos("This oft-cited document.")).eql(["dt", "jj", "nn", "."]);
+    expect(RiTa.pos("sister-in-law")).eql(["nn"]);
+    expect(RiTa.pos("brothers-in-law")).eql(["nns"]);
+    expect(RiTa.pos("ready-made")).eql(["jj"]);
+    // 
   });
 
   it('Should call stresses', function () {
