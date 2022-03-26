@@ -67,6 +67,10 @@ class Tokenizer {
       text = text.replace(TOKENIZE_RE[i], TOKENIZE_RE[i + 1]);
     }
 
+    // https://github.com/dhowe/rita/issues/65
+    // we need this hidden keepHyphen option for tagging hyphenated words with context
+    if (!opts.keepHyphen) text = text.replace(/(\w+)-(?=(\w+))/g,"$1 - ");
+
     if (this.RiTa.SPLIT_CONTRACTIONS || opts.splitContractions) {
       for (let i = 0; i < CONTRACTS_RE.length; i += 2) {
         text = text.replace(CONTRACTS_RE[i], CONTRACTS_RE[i + 1]);

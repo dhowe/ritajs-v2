@@ -242,7 +242,7 @@ describe('RiTa.Tokenizer', () => {
       "that's why this is our place).",
       "most, punctuation; is. split: from! adjoining words?",
       "double quotes \"OK\"", //Treebank tokenization document says double quotes (") are changed to doubled single forward- and backward- quotes (`` and '') tho
-      "face-to-face class",
+      "face-to-face class", // hyphenated words should be break -> https://github.com/dhowe/rita/issues/65
       '"it is strange", said John, "Katherine does not drink alchol."',
       '"What?!", John yelled.',
       //tests below this line don't pass
@@ -257,7 +257,7 @@ describe('RiTa.Tokenizer', () => {
       ["that's", "why", "this", "is", "our", "place", ")", "."],
       ["most", ",", "punctuation", ";", "is", '.', 'split', ':', "from", "!", "adjoining", "words", "?"],
       ["double", "quotes", "\"", "OK", "\""],
-      ["face-to-face", "class"],
+      ["face", "-", "to","-","face", "class"],
       ["\"", "it", "is", "strange", "\"", ",", "said", "John", ",", "\"", "Katherine", "does", "not", "drink", "alchol", ".", "\""],
       ["\"", "What", "?", "!", "\"", ",", "John", "yelled", "."],
       //test below this line don't pass
