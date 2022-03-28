@@ -100,8 +100,7 @@ describe('RiTa.Analyzer', function () {
     eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
   });
 
-  it('Should handle hyphenated word', function () { // TODO: (then SYNC:) See https://github.com/dhowe/rita/issues/65
-
+  it('Should handle hyphenated word', function () { 
     // pos
     expect(RiTa.pos("It is factory-made.")).eql(["prp", "vbz", "jj", "."]);
     expect(RiTa.pos("My father-in-law likes cat.")).eql(["prp$", "nn", "vbz", "nn", "."]);
