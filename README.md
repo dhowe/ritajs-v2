@@ -165,6 +165,10 @@ Some of the following extensions may be useful:
 * hbenl.vscode-test-explorer
 * ms-vscode.test-adapter-converter
 
+Here you can see the tests in the VSCode _Testing_ view
+
+<img width="800" alt="vscode-tests" src="https://user-images.githubusercontent.com/737638/166625520-f2f44218-cca8-4f5f-9c86-996b8bb8cd3b.png">
+
 &nbsp;
 
 ## About
