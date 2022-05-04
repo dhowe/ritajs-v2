@@ -11,10 +11,10 @@ class Tagger {
   isVerb(word, opts) {
 
     let conj = this.RiTa.conjugator;
-    
+
     // check irregular verbs (added 7/31/21) 
-    if (this._isNoLexIrregularVerb(word)) return true;        
-    if (conj.IRREG_VERBS_LEX_VB.hasOwnProperty(word)) return true; 
+    if (this._isNoLexIrregularVerb(word)) return true;
+    if (conj.IRREG_VERBS_LEX_VB.hasOwnProperty(word)) return true;
     if (conj.IRREG_VERBS_NOLEX.hasOwnProperty(word)) return true;
 
     // any verbs (vb*) in lexicon
@@ -88,9 +88,9 @@ class Tagger {
 
     if (!words || !words.length) return inline ? '' : [];
 
-    if (!Array.isArray(words)) { // we have a string
+    if (!Array.isArray(words)) { // likely a string
       if (!words.trim().length) return inline ? '' : [];
-      words = this.RiTa.tokenizer.tokenize(words, {keepHyphen:1});
+      words = this.RiTa.tokenizer.tokenize(words, { keepHyphen: true });
     }
 
     for (let i = 0, l = words.length; i < l; i++) {
@@ -138,7 +138,7 @@ class Tagger {
     }
 
     // finally check irregular verb list
-    if (!pos || !pos.includes("vbz")) { 
+    if (!pos || !pos.includes("vbz")) {
       if (this._isNoLexIrregularVerb(stem)) result.push('vbz');
     }
   }
@@ -244,11 +244,9 @@ class Tagger {
       if (stem) {
         let pos = lex._posArr(stem);
         if (pos && pos.includes('vb')) {
-          // vbg can be noun (in some context) 
-          // for example: His acting is good
-          // this is more for getting all 'possible' labels
-          // as in tag() function tags will be re-viewed by 
-          // a set of rules.
+          // vbg can be noun (in some contexts), for example: 'His acting is good'
+          // this is more for getting all 'possible' labels in tag() function as
+          // elsewhere tags are analyzed by context according to ruleset.
           return ['vbg', 'nn']; // assenting 
         }
         else {
@@ -403,7 +401,8 @@ class Tagger {
 
       // transform 9(dch): convert plural nouns (which are also 3sg-verbs) to
       // 3sg-verbs when following a singular noun (the dog dances, Dave dances, he dances)
-      if (i > 0 && tag === "nns" && this.hasTag(choices[i], "vbz") && result[i - 1].match(/^(nn|prp|nnp)$/)) {
+      if (i > 0 && tag === "nns" && this.hasTag(choices[i], "vbz")
+        && result[i - 1].match(/^(nn|prp|nnp)$/)) {
         tag = "vbz";
         //dbug && this._log(9, word, tag);
       }
@@ -494,29 +493,33 @@ class Tagger {
       // handle hyphenated words -JC
       if (word.includes("-")) {
         let arr = word.split("-");
-        if (result[i+1] && result[i+1].startsWith("n")){
+        if (result[i + 1] && result[i + 1].startsWith("n")) {
           //next word is a noun
           tag = "jj";
-        } else if (result[i+1] && result[i+1].startsWith("v") && this.allTags(arr[arr.length - 1]) && this.allTags(arr[arr.length - 1]).findIndex(t => /^[vrj]/.test(t)) > -1) {
+        } else if (result[i + 1] && result[i + 1].startsWith("v")
+          && this.allTags(arr[arr.length - 1])
+          && this.allTags(arr[arr.length - 1]).findIndex(t => /^[vrj]/.test(t)) > -1) {
           //next word is a verb, last part is rb/verb
           tag = "rb";
         } else {
           //end of sentence or next word is some strange thing
           // ? tocheck: anycase causeing death loop
-          if (this.allTags(arr[0]) && this.allTags(arr[0]).findIndex(t => /^n/.test(t)) > -1) {
-            if (this.allTags(arr[arr.length - 1]) && this.allTags(arr[arr.length - 1]).findIndex(t => /^[vj]/.test(t)) > -1){
+          if (this.allTags(arr[0])
+            && this.allTags(arr[0]).findIndex(t => /^n/.test(t)) > -1) {
+            if (this.allTags(arr[arr.length - 1])
+              && this.allTags(arr[arr.length - 1]).findIndex(t => /^[vj]/.test(t)) > -1) {
               //It is factory-made. etc.
               tag = "jj";
             } else {
               // if first part is a noun, father-in-law etc. 
               // numbers depends of this noun
-              tag = this.RiTa.inflector.isPlural(arr[0]) ? "nns" : "nn" ;
+              tag = this.RiTa.inflector.isPlural(arr[0]) ? "nns" : "nn";
             }
           } else {
             tag = "jj"; //generually it should be jj
           }
         }
-      }  
+      }
 
       result[i] = tag;
     }

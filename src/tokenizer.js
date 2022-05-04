@@ -8,9 +8,9 @@ class Tokenizer {
     this.splitter = /(\S.+?[.!?]["\u201D]?)(?=\s+|$)/g;
   }
 
-  tokens(text, opts = {}) { 
+  // opts: { includePunct, caseSensitive, sort, ignoreStopWords } ?
+  tokens(text, opts = {}) {
 
-    // opts: {includePunct, caseSensitive, sort, ignoreStopWords} ?
     let words = this.tokenize(text, opts), map = {};
     words.forEach(w => {
       if (!opts.caseSensitive) w = w.toLowerCase();
@@ -55,7 +55,7 @@ class Tokenizer {
     return arr && arr.length ? unescapeAbbrevs(arr) : [text];
   }
 
-  tokenize(input, opts = {}) { 
+  tokenize(input, opts = {}) {
 
     if (typeof input !== 'string') return [];
 
@@ -68,8 +68,8 @@ class Tokenizer {
     }
 
     // https://github.com/dhowe/rita/issues/65
-    // we need this hidden keepHyphen option for tagging hyphenated words with context
-    if (!opts.keepHyphen) text = text.replace(/(\w+)-(?=(\w+))/g,"$1 - ");
+    // 'keepHyphen' option used for tagging hyphenated words in context
+    if (!opts.keepHyphen) text = text.replace(/(\w+)-(?=(\w+))/g, "$1 - ");
 
     if (this.RiTa.SPLIT_CONTRACTIONS || opts.splitContractions) {
       for (let i = 0; i < CONTRACTS_RE.length; i += 2) {
@@ -80,7 +80,7 @@ class Tokenizer {
     return this.popTags(text.trim().split(WS_RE), tags);
   }
 
-  untokenize(arr, delim) { // very ugly (but works)
+  untokenize(arr, delim) { // very ugly, but works somehow
 
     if (!arr || !Array.isArray(arr)) return '';
 
@@ -98,16 +98,27 @@ class Tokenizer {
       let lastToken = arr[i - 1];
 
       let thisComma = thisToken === ',', lastComma = lastToken === ',';
-      let thisNBPunct = NOSP_BF_PUNCT_RE.test(thisToken) || UNTAG_RE[2].test(thisToken) || LINEBREAK_RE.test(thisToken); // NB -> no space before the punctuation (add closing tag)
+
+      // NB -> no space before the punctuation (add closing tag)
+      let thisNBPunct = NOSP_BF_PUNCT_RE.test(thisToken) || UNTAG_RE[2].test(thisToken)
+        || LINEBREAK_RE.test(thisToken);
+
       let thisLBracket = LB_RE.test(thisToken); // LBracket -> left bracket
       let thisRBracket = RB_RE.test(thisToken); // RBracket -> right bracket
-      let lastNBPunct = NOSP_BF_PUNCT_RE.test(lastToken) || LINEBREAK_RE.test(lastToken); // NB -> no space before
-      let lastNAPunct = NOSP_AF_PUNCT_RE.test(lastToken) || UNTAG_RE[1].test(lastToken) || LINEBREAK_RE.test(lastToken);// NA -> no space after (add opening tag)
+
+      // NB -> no space before
+      let lastNBPunct = NOSP_BF_PUNCT_RE.test(lastToken) || LINEBREAK_RE.test(lastToken);
+
+      // NA -> no space after (add opening tag)
+      let lastNAPunct = NOSP_AF_PUNCT_RE.test(lastToken) || UNTAG_RE[1].test(lastToken)
+        || LINEBREAK_RE.test(lastToken);
       let lastLB = LB_RE.test(lastToken), lastRB = RB_RE.test(lastToken);
       let lastEndWithS = (lastToken[lastToken.length - 1] === 's'
         && lastToken != "is" && lastToken != "Is" && lastToken != "IS");
       let lastIsWWW = WWW_RE.test(lastToken), isDomain = DOMAIN_RE.test(thisToken);
-      let nextIsS = i == arr.length - 1 ? false : (arr[i + 1] === "s" || arr[i + 1] === "S");
+      let nextIsS = i < arr.length - 1
+        ? (arr[i + 1] === "s" || arr[i + 1] === "S") : false;
+
       let lastQuote = QUOTE_RE.test(lastToken), isLast = (i == arr.length - 1);
       let thisQuote = QUOTE_RE.test(thisToken);
       let thisLineBreak = LINEBREAK_RE.test(thisToken);
@@ -159,7 +170,8 @@ class Tokenizer {
       }
 
       result += thisToken; // add to result
-      if (thisNBPunct && !lastNBPunct && !withinQuote && SQUOTE_RE.test(thisToken) && lastEndWithS) {
+      if (thisNBPunct && !lastNBPunct && !withinQuote
+        && SQUOTE_RE.test(thisToken) && lastEndWithS) {
         result += delim;
       }
     }
@@ -173,7 +185,7 @@ class Tokenizer {
       tags.push(text.match(TAG_RE)[0]);
       text = text.replace(TAG_RE, " _" + TAG + (tagIdx++) + "_ ");
     }
-    
+
     return { tags, text };
   }
 
@@ -191,6 +203,7 @@ class Tokenizer {
 
   preProcessTags(array) {
     let result = [], currentIdx = 0;
+
     while (currentIdx < array.length) {
       let currentToken = array[currentIdx];
       if (!LT_RE.test(currentToken)) {
@@ -198,6 +211,7 @@ class Tokenizer {
         currentIdx++;
         continue;
       } // if not '<'
+
       let subArray = [array[currentIdx]];
       let inspectIdx = currentIdx + 1;
       while (inspectIdx < array.length) {
@@ -206,21 +220,25 @@ class Tokenizer {
         if (GT_RE.test(array[inspectIdx])) break;
         inspectIdx++;
       }
+
       if (LT_RE.test(subArray[subArray.length - 1])) {
-        result = result.concat(subArray.slice(0,subArray.length - 1));
+        result = result.concat(subArray.slice(0, subArray.length - 1));
         currentIdx = inspectIdx;
         continue;
       }
+
       if (!GT_RE.test(subArray[subArray.length - 1])) {
         result = result.concat(subArray);
         currentIdx = inspectIdx + 1;
         continue;
       }
+
       if (!TAG_RE.test(subArray.join(''))) {
         result = result.concat(subArray);
         currentIdx = inspectIdx + 1;
         continue;
       }
+
       let tag = this.tagSubarrayToString(subArray);
       result.push(tag);
       currentIdx = inspectIdx + 1;
@@ -229,12 +247,13 @@ class Tokenizer {
   }
 
   tagSubarrayToString(array) {
-    if (!LT_RE.test(array[0]) || !GT_RE.test(array[array.length - 1])) throw Error(array + 'is not a tag');
+    if (!LT_RE.test(array[0]) || !GT_RE.test(array[array.length - 1])) {
+      throw Error(array + 'is not a tag');
+    }
     let start = '', end = '';
     start += array[0].trim();
     end = array[array.length - 1].trim() + end;
-    //start
-    let inspectIdx = 1;
+    let inspectIdx = 1; // start
     while (inspectIdx < array.length - 1 && TAGSTART_RE.test(array[inspectIdx])) {
       start += array[inspectIdx].trim();
       inspectIdx++;
@@ -246,10 +265,11 @@ class Tokenizer {
       inspectIdx--;
     }
     let contentEndIdx = inspectIdx;
-    let result = start + this.untokenize(array.slice(contentStartIdx, contentEndIdx + 1)).trim() + end;
+    let result = start + this.untokenize
+      (array.slice(contentStartIdx, contentEndIdx + 1)).trim() + end;
+
     return result;
   }
-
 }
 
 const UNTAG_RE = [
@@ -301,7 +321,7 @@ const TOKENIZE_RE = [
   /([Ll])([Tt])([Dd])[\.]/g, "_$1$2$3_", // ltd.
   /(prof|Prof|PROF)[\.]/g, "_$1_", //Prof.
   //decimal #
-  /([\-]?[0-9]+)\.([0-9]+)/g,"$1DECIMALDOT$2_",//(-)27.3
+  /([\-]?[0-9]+)\.([0-9]+)/g, "$1DECIMALDOT$2_",//(-)27.3
   /([\-]?[0-9]+)\.([0-9]+)e([\-]?[0-9]+)/g, "_$1DECIMALDOT$2POWERE$3_",//(-)1.2e10
   /([0-9]{3}),([0-9]{3})/g, "$1_DECIMALCOMMA_$2", // large numbers like 200,000,000.13
   //escape sequences of line breaks in ASCII
@@ -354,9 +374,9 @@ const TOKENIZE_RE = [
   /_([Cc])([Oo])dcs([Ll])([Tt])([Dd])_/g, "$1$2.,_$3$4$5.", // co., ltd.
   /_([Cc])([Oo])ds([Ll])([Tt])([Dd])_/g, "$1$2._$3$4$5.", // co. ltd.
   /_(prof|PROF|Prof)_/g, "$1.", //Prof.
-  /([\-]?[0-9]+)DECIMALDOT([0-9]+)_/g,"$1.$2", //(-)27.3
+  /([\-]?[0-9]+)DECIMALDOT([0-9]+)_/g, "$1.$2", //(-)27.3
   /_([\-]?[0-9]+)\DECIMALDOT([0-9]+)POWERE([\-]?[0-9]+)_/g, "$1.$2e$3", //(-)1.2e(-)9
-  /_DECIMALCOMMA_/g,",",// large numbers like 200,000,000.13
+  /_DECIMALCOMMA_/g, ",",// large numbers like 200,000,000.13
   /_LINEFEED_/g, "\n", // LF
   /_CARRIAGERETURN_/g, "\r", // CR
   /_CARRIAGERETURNLINEFEED_/g, "\r\n", // CR LF
@@ -364,7 +384,7 @@ const TOKENIZE_RE = [
   /_RECORDSEPARATOR_/g, "\\036", // RS
 ];
 
-const CONTRACTS_RE = [ 
+const CONTRACTS_RE = [
 
   /([Cc])an['\u2019]t/g, "$1an not",
   /([Dd])idn['\u2019]t/g, "$1id not",

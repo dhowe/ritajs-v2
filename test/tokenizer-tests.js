@@ -3,7 +3,7 @@ import { loadTestingDeps } from './before';
 describe('RiTa.Tokenizer', () => {
 
   let RiTa, expect;
-  before(async () => ({RiTa, expect} = await loadTestingDeps()));
+  before(async () => ({ RiTa, expect } = await loadTestingDeps()));
 
   it('Should call tokens', function () { // SYNC:
 
@@ -164,11 +164,11 @@ describe('RiTa.Tokenizer', () => {
 
   it('Should call tokenize', function () {
 
+    let input, expected, output;
+
     expect(RiTa.tokenize("")).eql([""]);
     expect(RiTa.tokenize(" ")).eql([""]);
     expect(RiTa.tokenize("The dog")).eql(["The", "dog"]);
-
-    let input, expected, output;
 
     input = "The student said 'learning is fun'";
     expected = ["The", "student", "said", "'", "learning", "is", "fun", "'"];
@@ -257,7 +257,7 @@ describe('RiTa.Tokenizer', () => {
       ["that's", "why", "this", "is", "our", "place", ")", "."],
       ["most", ",", "punctuation", ";", "is", '.', 'split', ':', "from", "!", "adjoining", "words", "?"],
       ["double", "quotes", "\"", "OK", "\""],
-      ["face", "-", "to","-","face", "class"],
+      ["face", "-", "to", "-", "face", "class"],
       ["\"", "it", "is", "strange", "\"", ",", "said", "John", ",", "\"", "Katherine", "does", "not", "drink", "alchol", ".", "\""],
       ["\"", "What", "?", "!", "\"", ",", "John", "yelled", "."],
       //test below this line don't pass

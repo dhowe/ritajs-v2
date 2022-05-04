@@ -504,6 +504,17 @@ describe('RiTa.Lexicon', function () { // SYNC:
       .eql(["fantasize"]);
   });
 
+  it('Should call search with pos, letters', function () { // SYNC:
+    let res = RiTa.search('cause', { pos: 'nns' });
+    expect(res).eql([ 'causes','causeways']);
+
+    res = RiTa.search(/cares$/, { pos: 'nns', limit: -1 });
+    expect(res).eql([ 'cares', 'scares']);
+
+    res = RiTa.search(/^rice$/, { pos: 'nns', limit: -1 });
+    expect(res).eql([ 'rice']);
+  });
+
   it('Should call search with simple pos, phones, limit', function () {
 
     expect(RiTa.search(/f-a[eh]-n-t/, { type: 'phones', pos: 'vb', limit: 5 }))

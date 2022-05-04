@@ -193,25 +193,6 @@ class RiTa {
     return RiTa.analyzer.analyze(...arguments).syllables;
   }
 
-  /*static template(md, opts = {}) {
-    let fun = (strs, ...vals) => {
-      try {
-        return RiScript.eval(strs.reduce
-          ((a, s, i) => a + s + (vals[i] || ''), ''));
-      }
-      catch (e) {
-        console.error('[RiScript] ' + e.message);
-        return '[RiScript] ' + e.message;
-      }
-    }
-    if (!md) return fun;
-    return (s, ...v) => {
-      let res = md`${fun(s, v)}`;
-      res.style['white-space'] = 'break-spaces';
-      return res;
-    };
-  }*/
-
   static tokens() {
     return RiTa.tokenizer.tokens(...arguments);
   }

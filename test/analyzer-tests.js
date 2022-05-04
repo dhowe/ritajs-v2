@@ -100,8 +100,9 @@ describe('RiTa.Analyzer', function () {
     eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
   });
 
-  it('Should handle hyphenated word', function () { 
-    // pos
+  it('Should handle hyphenated words', function () {  // see https://github.com/dhowe/rita/issues/65
+    
+    // pos-tagging -------------------------------------------------------
     expect(RiTa.pos("It is factory-made.")).eql(["prp", "vbz", "jj", "."]);
     expect(RiTa.pos("My father-in-law likes cat.")).eql(["prp$", "nn", "vbz", "nn", "."]);
     expect(RiTa.pos("She is my mother-in-law.")).eql(["prp", "vbz", "prp$", "nn", "."]);
@@ -113,24 +114,23 @@ describe('RiTa.Analyzer', function () {
     expect(RiTa.pos("oft-cited")).eql(["jj"]);
     expect(RiTa.pos("deeply-nested")).eql(["jj"]);
 
-    // token
+    // tokenizing --------------------------------------------------------
     eql(RiTa.tokenize("deeply-nested"), ["deeply", "-", "nested"]);
     eql(RiTa.tokenize("oft-cited"), ["oft", "-", "cited"]);
     eql(RiTa.tokenize("off-site"), ["off", "-", "site"]);
     eq(RiTa.untokenize(RiTa.tokenize("deeply-nested")),"deeply-nested");
     eq(RiTa.untokenize(RiTa.tokenize("oft-cited")),"oft-cited");
     eq(RiTa.untokenize(RiTa.tokenize("off-site")),"off-site");
-    // analyze
-    
+
+    // analyzing ----------------------------------------------------------
     let feats = RiTa.analyze("off-site");
-    //console.log(feats);
-    eq(feats["pos"], "nn"); // it can be nn and jj/rb, depends on context, no context just nn
+    console.log(feats);
+    eq(feats["pos"], "nn"); // it can be nn or jj/rb
     eq(feats["phones"], 'ao-f - s-ay-t');
     eq(feats["stresses"], "1 - 1");
     eq(feats["syllables"], "ao-f - s-ay-t");
-
+    
     feats = RiTa.analyze("oft-cited");
-    //console.log(feats);
     eq(feats["pos"], "jj");
     eq(feats["phones"], 'ao-f-t - s-ih-t-ah-d');
     eq(feats["stresses"], "1 - 1/0");
