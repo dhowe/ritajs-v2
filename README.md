@@ -157,9 +157,9 @@ $ npm run watch.src
 
 ### Visual Studio Code
 
-Once you have things running with npm/mocha, you might also try VSCode.
+Once you have things running with npm/mocha, you might also try [VSCode](https://code.visualstudio.com/).
 
-Some of the following extensions may be useful:
+Some of the following extensions may also be useful:
 
 * hbenl.vscode-mocha-test-adapter
 * hbenl.vscode-test-explorer
