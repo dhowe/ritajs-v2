@@ -237,24 +237,27 @@ class Tokenizer {
       throw Error(array + 'is not a tag');
     }
     let start = array[0].trim();
-    let end = array[array.length - 1].trim() + end;
+    let end = array[array.length - 1].trim();
 
     let inspectIdx = 1;
     while (inspectIdx < array.length - 1 && TAGSTART_RE.test(array[inspectIdx])) {
       start += array[inspectIdx].trim();
       inspectIdx++;
     }
+
     let contentStartIdx = inspectIdx;
     inspectIdx = array.length - 2;
     while (inspectIdx > contentStartIdx && TAGEND_RE.test(array[inspectIdx])) {
       end = array[inspectIdx].trim() + end;
       inspectIdx--;
     }
+
     let contentEndIdx = inspectIdx;
-    let result = start + this.untokenize(array.slice(contentStartIdx, contentEndIdx + 1)).trim() + end;
+    let result = start + this.untokenize
+      (array.slice(contentStartIdx, contentEndIdx + 1)).trim() + end;
+
     return result;
   }
-
 }
 
 const UNTAG_RE = [
