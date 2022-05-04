@@ -295,7 +295,7 @@ class RiMarkov {
 
     unmarkNodes();
 
-    let str = this.untokenize(tokens.map(t => t.token));
+    let str = this.untokenize(tokens.map(t => t.token)).trim();
     return num > 1 ? this._splitEnds(str) : str;
   }
 
