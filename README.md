@@ -141,17 +141,33 @@ $ npm run test
 ```
 If all goes according to plan, you should see a list of successful tests and find the library built in 'dist'
 
+<br>
+
+During development it is faster to run tests directly on the source, rather then the built library:
+```sh
+$ npm run test.src
+```
+
+You can also watch the source code and build automatically on any change:
+```sh
+$ npm run watch.src
+```
+
 &nbsp;
 
 ### Visual Studio Code
 
-Once you have things running with npm/mocha, you might also try VSCode.
+Once you have things running with npm/mocha, you might also try [VSCode](https://code.visualstudio.com/).
 
-Some of the following extensions may be useful:
+Some of the following extensions may also be useful:
 
 * hbenl.vscode-mocha-test-adapter
 * hbenl.vscode-test-explorer
 * ms-vscode.test-adapter-converter
+
+Here you can see the tests in the VSCode _Testing_ view
+
+<img width="800" alt="vscode-tests" src="https://user-images.githubusercontent.com/737638/166626482-bd28d9fa-b300-4b26-b2d7-7ecb6cf31866.png">
 
 &nbsp;
 

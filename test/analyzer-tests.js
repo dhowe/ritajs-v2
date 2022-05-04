@@ -102,6 +102,9 @@ describe('RiTa.Analyzer', function () {
 
   it('Should handle hyphenated words', function () {  // see https://github.com/dhowe/rita/issues/65
     
+    let lts = RiTa.SILENCE_LTS; // remembers
+    RiTa.SILENCE_LTS = true; // disable LTS logging 
+
     // pos-tagging -------------------------------------------------------
     expect(RiTa.pos("It is factory-made.")).eql(["prp", "vbz", "jj", "."]);
     expect(RiTa.pos("My father-in-law likes cat.")).eql(["prp$", "nn", "vbz", "nn", "."]);
@@ -124,7 +127,7 @@ describe('RiTa.Analyzer', function () {
 
     // analyzing ----------------------------------------------------------
     let feats = RiTa.analyze("off-site");
-    console.log(feats);
+    //console.log(feats);
     eq(feats["pos"], "nn"); // it can be nn or jj/rb
     eq(feats["phones"], 'ao-f - s-ay-t');
     eq(feats["stresses"], "1 - 1");
@@ -142,7 +145,8 @@ describe('RiTa.Analyzer', function () {
     eq(feats["phones"], 'd-iy-p-l-iy - n-eh-s-t-ah-d');
     eq(feats["stresses"], "1/0 - 1/0");
     eq(feats["syllables"], "d-iy-p/l-iy - n-eh/s-t-ah-d");
-
+    
+    RiTa.SILENCE_LTS = lts; // reset
   });
 
   it('Should call stresses', function () {

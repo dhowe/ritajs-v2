@@ -8,17 +8,17 @@ class Tokenizer {
     this.splitter = /(\S.+?[.!?]["\u201D]?)(?=\s+|$)/g;
   }
 
-  // opts: { includePunct, caseSensitive, sort, ignoreStopWords } ?
   tokens(text, opts = {}) {
 
-    let words = this.tokenize(text, opts), map = {};
+    // opts: {includePunct, caseSensitive, sort, ignoreStopWords} ?
+    let words = this.tokenize(text, opts),
+      map = {};
     words.forEach(w => {
       if (!opts.caseSensitive) w = w.toLowerCase();
       if (opts.includePunct || ALPHA_RE.test(w)) map[w] = 1;
     });
     let tokens = Object.keys(map);
-    if (opts.ignoreStopWords) tokens = tokens.filter
-      (t => !this.RiTa.isStopWord(t));
+    if (opts.ignoreStopWords) tokens = tokens.filter(t => !this.RiTa.isStopWord(t));
     return opts.sort ? tokens.sort() : tokens;
   }
 
@@ -68,7 +68,8 @@ class Tokenizer {
     }
 
     // https://github.com/dhowe/rita/issues/65
-    // 'keepHyphen' option used for tagging hyphenated words in context
+    // 'keepHyphen' option for tagging hyphenated words in context\
+    // TODO: handle multiple hyphens: /(\w+)(-(?=(\w+)))+/g  (needs test)
     if (!opts.keepHyphen) text = text.replace(/(\w+)-(?=(\w+))/g, "$1 - ");
 
     if (this.RiTa.SPLIT_CONTRACTIONS || opts.splitContractions) {
@@ -80,14 +81,16 @@ class Tokenizer {
     return this.popTags(text.trim().split(WS_RE), tags);
   }
 
-  untokenize(arr, delim) { // very ugly, but works somehow
+  untokenize(arr, delim) { // very ugly (but works)
 
     if (!arr || !Array.isArray(arr)) return '';
 
     arr = this.preProcessTags(arr);
     delim = delim || ' ';
 
-    let nextNoSpace = false, afterQuote = false, midSentence = false;
+    let nextNoSpace = false,
+      afterQuote = false,
+      midSentence = false;
     let withinQuote = arr.length && QUOTE_RE.test(arr[0]);
     let result = arr[0] || '';
 
@@ -97,29 +100,25 @@ class Tokenizer {
       let thisToken = arr[i];
       let lastToken = arr[i - 1];
 
-      let thisComma = thisToken === ',', lastComma = lastToken === ',';
-
-      // NB -> no space before the punctuation (add closing tag)
-      let thisNBPunct = NOSP_BF_PUNCT_RE.test(thisToken) || UNTAG_RE[2].test(thisToken)
-        || LINEBREAK_RE.test(thisToken);
-
+      let thisComma = thisToken === ',',
+        lastComma = lastToken === ',';
+      let thisNBPunct = NOSP_BF_PUNCT_RE.test(thisToken)
+        || UNTAG_RE[2].test(thisToken) || LINEBREAK_RE.test(thisToken); // NB -> no space before the punctuation (add closing tag)
       let thisLBracket = LB_RE.test(thisToken); // LBracket -> left bracket
       let thisRBracket = RB_RE.test(thisToken); // RBracket -> right bracket
-
-      // NB -> no space before
-      let lastNBPunct = NOSP_BF_PUNCT_RE.test(lastToken) || LINEBREAK_RE.test(lastToken);
-
-      // NA -> no space after (add opening tag)
-      let lastNAPunct = NOSP_AF_PUNCT_RE.test(lastToken) || UNTAG_RE[1].test(lastToken)
-        || LINEBREAK_RE.test(lastToken);
-      let lastLB = LB_RE.test(lastToken), lastRB = RB_RE.test(lastToken);
-      let lastEndWithS = (lastToken[lastToken.length - 1] === 's'
-        && lastToken != "is" && lastToken != "Is" && lastToken != "IS");
-      let lastIsWWW = WWW_RE.test(lastToken), isDomain = DOMAIN_RE.test(thisToken);
-      let nextIsS = i < arr.length - 1
-        ? (arr[i + 1] === "s" || arr[i + 1] === "S") : false;
-
-      let lastQuote = QUOTE_RE.test(lastToken), isLast = (i == arr.length - 1);
+      let lastNBPunct = NOSP_BF_PUNCT_RE.test(lastToken)
+        || LINEBREAK_RE.test(lastToken); // NB -> no space before
+      let lastNAPunct = NOSP_AF_PUNCT_RE.test(lastToken)
+        || UNTAG_RE[1].test(lastToken) || LINEBREAK_RE.test(lastToken); // NA -> no space after (add opening tag)
+      let lastLB = LB_RE.test(lastToken),
+        lastRB = RB_RE.test(lastToken);
+      let lastEndWithS = (lastToken[lastToken.length - 1] === 's' &&
+        lastToken != "is" && lastToken != "Is" && lastToken != "IS");
+      let lastIsWWW = WWW_RE.test(lastToken),
+        isDomain = DOMAIN_RE.test(thisToken);
+      let nextIsS = i == arr.length - 1 ? false : (arr[i + 1] === "s" || arr[i + 1] === "S");
+      let lastQuote = QUOTE_RE.test(lastToken),
+        isLast = (i == arr.length - 1);
       let thisQuote = QUOTE_RE.test(thisToken);
       let thisLineBreak = LINEBREAK_RE.test(thisToken);
 
@@ -145,8 +144,8 @@ class Tokenizer {
           // no-delim, mark quotation done
           afterQuote = true;
           withinQuote = false;
-        } else if (!((APOS_RE.test(thisToken) && lastEndWithS)
-          || (APOS_RE.test(thisToken) && nextIsS))) {
+        } else if (!((APOS_RE.test(thisToken) && lastEndWithS) ||
+          (APOS_RE.test(thisToken) && nextIsS))) {
           withinQuote = true;
           afterQuote = false;
           result += delim;
@@ -164,8 +163,8 @@ class Tokenizer {
         midSentence = false;
 
       } else if ((!thisNBPunct && !lastQuote && !lastNAPunct && !lastLB && !thisRBracket)
-        || (!isLast && thisNBPunct && lastNBPunct && !lastNAPunct
-          && !lastQuote && !lastLB && !thisRBracket) && !thisLineBreak) {
+        || (!isLast && thisNBPunct && lastNBPunct && !lastNAPunct &&
+          !lastQuote && !lastLB && !thisRBracket) && !thisLineBreak) {
         result += delim;
       }
 
@@ -180,7 +179,8 @@ class Tokenizer {
   }
 
   pushTags(text) {
-    let tags = [], tagIdx = 0;
+    let tags = [],
+      tagIdx = 0;
     while (TAG_RE.test(text)) {
       tags.push(text.match(TAG_RE)[0]);
       text = text.replace(TAG_RE, " _" + TAG + (tagIdx++) + "_ ");
@@ -202,8 +202,8 @@ class Tokenizer {
   }
 
   preProcessTags(array) {
-    let result = [], currentIdx = 0;
-
+    let result = [],
+      currentIdx = 0;
     while (currentIdx < array.length) {
       let currentToken = array[currentIdx];
       if (!LT_RE.test(currentToken)) {
@@ -211,7 +211,6 @@ class Tokenizer {
         currentIdx++;
         continue;
       } // if not '<'
-
       let subArray = [array[currentIdx]];
       let inspectIdx = currentIdx + 1;
       while (inspectIdx < array.length) {
@@ -220,25 +219,21 @@ class Tokenizer {
         if (GT_RE.test(array[inspectIdx])) break;
         inspectIdx++;
       }
-
       if (LT_RE.test(subArray[subArray.length - 1])) {
         result = result.concat(subArray.slice(0, subArray.length - 1));
         currentIdx = inspectIdx;
         continue;
       }
-
       if (!GT_RE.test(subArray[subArray.length - 1])) {
         result = result.concat(subArray);
         currentIdx = inspectIdx + 1;
         continue;
       }
-
       if (!TAG_RE.test(subArray.join(''))) {
         result = result.concat(subArray);
         currentIdx = inspectIdx + 1;
         continue;
       }
-
       let tag = this.tagSubarrayToString(subArray);
       result.push(tag);
       currentIdx = inspectIdx + 1;
@@ -250,10 +245,12 @@ class Tokenizer {
     if (!LT_RE.test(array[0]) || !GT_RE.test(array[array.length - 1])) {
       throw Error(array + 'is not a tag');
     }
-    let start = '', end = '';
+    let start = '',
+      end = '';
     start += array[0].trim();
     end = array[array.length - 1].trim() + end;
-    let inspectIdx = 1; // start
+    //start
+    let inspectIdx = 1;
     while (inspectIdx < array.length - 1 && TAGSTART_RE.test(array[inspectIdx])) {
       start += array[inspectIdx].trim();
       inspectIdx++;
@@ -267,9 +264,9 @@ class Tokenizer {
     let contentEndIdx = inspectIdx;
     let result = start + this.untokenize
       (array.slice(contentStartIdx, contentEndIdx + 1)).trim() + end;
-
     return result;
   }
+
 }
 
 const UNTAG_RE = [
@@ -285,26 +282,32 @@ const GT_RE = /^ *> *$/;
 const TAGSTART_RE = /^ *[!\-\/] *$/;
 const TAGEND_RE = /^ *[\-\/] *$/
 const NOSP_AF_PUNCT_RE = /^[\^\*\$\/\u2044#\-@\u00b0]+$/;
-const TAG = "TAG", UNDER_RE = /([a-zA-z]|[\.\,])_([a-zA-Z])/g;
-const LB_RE = /^[\[\(\{\u27e8]+$/, RB_RE = /^[\)\]\}\u27e9]+$/;
+const TAG = "TAG",
+  UNDER_RE = /([a-zA-z]|[\.\,])_([a-zA-Z])/g;
+const LB_RE = /^[\[\(\{\u27e8]+$/,
+  RB_RE = /^[\)\]\}\u27e9]+$/;
 const QUOTE_RE = /^[""\u201c\u201d\u2019\u2018`''\u00ab\u00bb]+$/;
 const DOMAIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|ch|fr)$/;
-const SQUOTE_RE = /^[\u2019\u2018`']+$/, ALPHA_RE = /^[A-Za-z’']+$/, WS_RE = / +/;
-const APOS_RE = /^[\u2019']+$/, NL_RE = /(\r?\n)+/g, WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
+const SQUOTE_RE = /^[\u2019\u2018`']+$/,
+  ALPHA_RE = /^[A-Za-z’']+$/,
+  WS_RE = / +/;
+const APOS_RE = /^[\u2019']+$/,
+  NL_RE = /(\r?\n)+/g,
+  WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
 const NOSP_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""\u201c\u201d\u2019\u2018`'%\u2026\u2103\^\*\u00b0\/\u2044\-@]+$/;
 const LINEBREAK_RE = /[\n\r\036]/;
 
 const TOKENIZE_RE = [
 
   // save  --------
-  /([Ee])[.]([Gg])[.]/g, "_$1$2_",//E.g
-  /([Ii])[.]([Ee])[.]/g, "_$1$2_",//i.e
-  /([Aa])[.]([Mm])[.]/g, "_$1$2_",//a.m.
-  /([Pp])[.]([Mm])[.]/g, "_$1$2_",//p.m.
-  /(Cap)[\.]/g, "_Cap_",//Cap.
-  /([Cc])[\.]/g, "_$1_",//c.
-  /([Ee][Tt])[\s]([Aa][Ll])[\.]/, "_$1zzz$2_",// et al.
-  /(etc|ETC)[\.]/g, "_$1_",//etc.
+  /([Ee])[.]([Gg])[.]/g, "_$1$2_", //E.g
+  /([Ii])[.]([Ee])[.]/g, "_$1$2_", //i.e
+  /([Aa])[.]([Mm])[.]/g, "_$1$2_", //a.m.
+  /([Pp])[.]([Mm])[.]/g, "_$1$2_", //p.m.
+  /(Cap)[\.]/g, "_Cap_", //Cap.
+  /([Cc])[\.]/g, "_$1_", //c.
+  /([Ee][Tt])[\s]([Aa][Ll])[\.]/, "_$1zzz$2_", // et al.
+  /(etc|ETC)[\.]/g, "_$1_", //etc.
   /([Pp])[\.]([Ss])[\.]/g, "_$1$2dot_", // p.s.
   /([Pp])[\.]([Ss])/g, "_$1$2_", // p.s
   /([Pp])([Hh])[\.]([Dd])/g, "_$1$2$3_", // Ph.D
@@ -317,13 +320,13 @@ const TOKENIZE_RE = [
   /([Cc])([Oo])[\.][\,][\s]([Ll])([Tt])([Dd])[\.]/g, "_$1$2dcs$3$4$5_", // co., ltd.
   /([Cc])([Oo])[\.][\s]([Ll])([Tt])([Dd])[\.]/g, "_$1$2ds$3$4$5_", // co. ltd.
   /([Cc])([Oo])[\.][\,]([Ll])([Tt])([Dd])[\.]/g, "_$1$2dc$3$4$5_", // co.,ltd.
-  /([Cc])([Oo])([Rr]?)([Pp]?)[\.]/g, "_$1$2$3$4_",// Corp. and Co.
+  /([Cc])([Oo])([Rr]?)([Pp]?)[\.]/g, "_$1$2$3$4_", // Corp. and Co.
   /([Ll])([Tt])([Dd])[\.]/g, "_$1$2$3_", // ltd.
   /(prof|Prof|PROF)[\.]/g, "_$1_", //Prof.
   //decimal #
-  /([\-]?[0-9]+)\.([0-9]+)/g, "$1DECIMALDOT$2_",//(-)27.3
-  /([\-]?[0-9]+)\.([0-9]+)e([\-]?[0-9]+)/g, "_$1DECIMALDOT$2POWERE$3_",//(-)1.2e10
-  /([0-9]{3}),([0-9]{3})/g, "$1_DECIMALCOMMA_$2", // large numbers like 200,000,000.13
+  /([\-]?[0-9]+)\.([0-9]+)/g, "$1DECIMALDOT$2_", //(-)27.3
+  /([\-]?[0-9]+)\.([0-9]+)e([\-]?[0-9]+)/g, "_$1DECIMALDOT$2POWERE$3_", //(-)1.2e10
+  /([0-9]{1,3}),([0-9]{3})/g, "$1_DECIMALCOMMA_$2", // large numbers like 19,700 or 200,000,000.13
   //escape sequences of line breaks in ASCII
   /\r\n/g, " _CARRIAGERETURNLINEFEED_ ", // CR LF
   /\n\r/g, " _LINEFEEDCARRIAGERETURN_ ", // LF CR
@@ -351,14 +354,14 @@ const TOKENIZE_RE = [
   /_elipsisDDD_/g, " ... ",
 
   //pop ------------------
-  /_([Ee])([Gg])_/g, "$1.$2.",//Eg
-  /_([Ii])([Ee])_/g, "$1.$2.",//ie
-  /_([Aa])([Mm])_/g, "$1.$2.",//a.m.
-  /_([Pp])([Mm])_/g, "$1.$2.",//p.m.
-  /_Cap_/g, "Cap.",//Cap.
-  /_([Cc])_/g, "$1.",//c.
-  /_([Ee][Tt])zzz([Aa][Ll])_/, "$1_$2.",// et al.
-  /_(etc|ETC)_/g, "$1.",//etc.
+  /_([Ee])([Gg])_/g, "$1.$2.", //Eg
+  /_([Ii])([Ee])_/g, "$1.$2.", //ie
+  /_([Aa])([Mm])_/g, "$1.$2.", //a.m.
+  /_([Pp])([Mm])_/g, "$1.$2.", //p.m.
+  /_Cap_/g, "Cap.", //Cap.
+  /_([Cc])_/g, "$1.", //c.
+  /_([Ee][Tt])zzz([Aa][Ll])_/, "$1_$2.", // et al.
+  /_(etc|ETC)_/g, "$1.", //etc.
   /_([Pp])([Ss])dot_/g, "$1.$2.", // p.s.
   /_([Pp])([Ss])_/g, "$1.$2",
   /_([Pp])([Hh])([Dd])_/g, "$1$2.$3", // Ph.D
@@ -368,7 +371,7 @@ const TOKENIZE_RE = [
   /_([Dd])([Rr])_/g, "$1$2.", // Dr.
   /_([Pp])([Ff])_/g, "$1$2.", // Pf.
   /_([Ii])([Nn])([Dd]|[Cc])_/g, "$1$2$3.", // Ind. and Inc.
-  /_([Cc])([Oo])([Rr]?)([Pp]?)_/g, "$1$2$3$4.",// Corp. and Co.
+  /_([Cc])([Oo])([Rr]?)([Pp]?)_/g, "$1$2$3$4.", // Corp. and Co.
   /_([Cc])([Oo])dc([Ll])([Tt])([Dd])_/g, "$1$2.,$3$4$5.", // co.,ltd.
   /_([Ll])([Tt])([Dd])_/g, "$1$2$3.", // ltd.
   /_([Cc])([Oo])dcs([Ll])([Tt])([Dd])_/g, "$1$2.,_$3$4$5.", // co., ltd.
@@ -376,7 +379,7 @@ const TOKENIZE_RE = [
   /_(prof|PROF|Prof)_/g, "$1.", //Prof.
   /([\-]?[0-9]+)DECIMALDOT([0-9]+)_/g, "$1.$2", //(-)27.3
   /_([\-]?[0-9]+)\DECIMALDOT([0-9]+)POWERE([\-]?[0-9]+)_/g, "$1.$2e$3", //(-)1.2e(-)9
-  /_DECIMALCOMMA_/g, ",",// large numbers like 200,000,000.13
+  /_DECIMALCOMMA_/g, ",", // large numbers like 200,000,000.13
   /_LINEFEED_/g, "\n", // LF
   /_CARRIAGERETURN_/g, "\r", // CR
   /_CARRIAGERETURNLINEFEED_/g, "\r\n", // CR LF
@@ -400,7 +403,6 @@ const CONTRACTS_RE = [
 ];
 
 const TAG_RE = /(<\/?[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*\/?>|<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i; // html tags (rita#103)
-
 const POPTAG_RE = new RegExp(`_${TAG}[0-9]+_`);
 
 export default Tokenizer;
