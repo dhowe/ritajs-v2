@@ -3,9 +3,9 @@ import { loadTestingDeps } from './before';
 describe('RiTa.Tokenizer', () => {
 
     let RiTa, expect;
-    before(async () => ({ RiTa, expect } = await loadTestingDeps()));
+    before(async() => ({ RiTa, expect } = await loadTestingDeps()));
 
-    it('Should call tokens', function () { // SYNC:
+    it('Should call tokens', function() { // SYNC:
 
         let tokens, input = "She wrote: \"I don't paint anymore. For a while she thought it was just a phase that she'd get over.\"";
 
@@ -96,7 +96,7 @@ describe('RiTa.Tokenizer', () => {
 
     });
 
-    it('Should handle tokenize then untokenize', function () {
+    it('Should handle tokenize then untokenize', function() {
         let sentences = [
             "this is www.google.com",
             "it is 'hell'"
@@ -114,7 +114,7 @@ describe('RiTa.Tokenizer', () => {
 
     });
 
-    it('Should handle tokenize then untokenize tags', function () {
+    it('Should handle tokenize then untokenize tags', function() {
         let strings = [
             "<a>link</a>",
             "<span class=\"test\">in line</span>",
@@ -144,7 +144,7 @@ describe('RiTa.Tokenizer', () => {
         }
     });
 
-    it('Should call tokenize.splitContractions', function () { // SYNC:
+    it('Should call tokenize.splitContractions', function() { // SYNC:
         let inputs = [
             "That's why this is our place.",
             "that's why he'll win.",
@@ -162,7 +162,7 @@ describe('RiTa.Tokenizer', () => {
         }
     });
 
-    it('Should call tokenize', function () {
+    it('Should call tokenize', function() {
 
         expect(RiTa.tokenize("")).eql([""]);
         expect(RiTa.tokenize(" ")).eql([""]);
@@ -295,7 +295,7 @@ describe('RiTa.Tokenizer', () => {
 
     });
 
-    it('Should tokenize tags', function () { // SYNC:
+    it('Should tokenize tags', function() { // SYNC:
 
         // html tags (rita#103)
         let inputs = [
@@ -335,7 +335,7 @@ describe('RiTa.Tokenizer', () => {
         }
     });
 
-    it('Should call untokenize', function () {
+    it('Should call untokenize', function() {
 
         expect(RiTa.untokenize()).eq("");
         expect(RiTa.untokenize(0)).eq("");
@@ -479,7 +479,7 @@ describe('RiTa.Tokenizer', () => {
         }
     });
 
-    it('Should untokenize tags', function () { // SYNC:
+    it('Should untokenize tags', function() { // SYNC:
 
         let inputs = [
             ["1", "<", "2"],
@@ -511,7 +511,7 @@ describe('RiTa.Tokenizer', () => {
         }
     });
 
-    it('Should call sentences', function () {
+    it('Should call sentences', function() {
 
         var input = "Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications. The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels. If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs.";
         var expected = ["Stealth's Open Frame, OEM style LCD monitors are designed for special mounting applications.", "The slim profile packaging provides an excellent solution for building into kiosks, consoles, machines and control panels.", "If you cannot find an off the shelf solution call us today about designing a custom solution to fit your exact needs."];
@@ -594,7 +594,7 @@ describe('RiTa.Tokenizer', () => {
         eql(RiTa.sentences("Today I would make something. A 4.7 inch gun. It was noon."), ["Today I would make something.", "A 4.7 inch gun.", "It was noon."]);
     });
 
-    it('Should handle decimal numbers', function () {
+    it('Should handle decimal numbers', function() {
         // Support number formats:  	3.14529, 1.9e10, 123,340.00, -255.34
         expect(RiTa.tokenize("27.3")).eql(["27.3"]);
         expect(RiTa.tokenize("-27.3")).eql(["-27.3"]);
@@ -609,7 +609,7 @@ describe('RiTa.Tokenizer', () => {
         expect(RiTa.tokenize("A 4.7 inch gun.")).eql(['A', '4.7', 'inch', 'gun', '.']);
     });
 
-    it('Should handle decimal numbers in untokenize', function () {
+    it('Should handle decimal numbers in untokenize', function() {
         // Support number formats:  	3.14529, 1.9e10, 123,340.00, -255.34
         expect(RiTa.untokenize(["27.3"])).eq("27.3");
         expect(RiTa.untokenize(["-27.3"])).eq("-27.3");
@@ -622,7 +622,7 @@ describe('RiTa.Tokenizer', () => {
         expect(RiTa.untokenize(['He', 'owed', '200,000.50', '.'])).eq("He owed 200,000.50.");
     });
 
-    it('Should handle line breaks', function () {
+    it('Should handle line breaks', function() {
         expect(RiTa.tokenize('A CARAFE, THAT IS A BLIND GLASS.\nA kind in glass and a cousin.')).eql([
             'A', 'CARAFE', ',',
             'THAT', 'IS', 'A',
@@ -644,7 +644,7 @@ describe('RiTa.Tokenizer', () => {
 
     });
 
-    it('Should handle numbers with commas', function () {
+    it('Should handle numbers with commas', function() {
         let input, expected, output;
         input = "It was 19,700 square inches, the equivalent of 409 A5 pages."; // SYNC:
         expected = [
