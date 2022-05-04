@@ -139,7 +139,9 @@ $ npm run build
 $ npm run test
 
 ```
-If all goes according to plan, you should see a list of successful tests and find the library built in 'dist'<br>
+If all goes according to plan, you should see a list of successful tests and find the library built in 'dist'
+
+<br>
 
 During development it is faster to run tests directly on the source, rather then the built library:
 ```sh
