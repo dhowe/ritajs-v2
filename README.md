@@ -167,7 +167,7 @@ Some of the following extensions may also be useful:
 
 Here you can see the tests in the VSCode _Testing_ view
 
-<img width="800" alt="vscode-tests" src="https://user-images.githubusercontent.com/737638/166626294-3629cf41-40c0-4a76-a678-481be68df859.png">
+<img width="800" alt="vscode-tests" src="https://user-images.githubusercontent.com/737638/166626482-bd28d9fa-b300-4b26-b2d7-7ecb6cf31866.png">
 
 &nbsp;
 
