@@ -141,6 +141,11 @@ $ npm run test
 ```
 If all goes according to plan, you should see a list of successful tests and find the library built in 'dist'
 
+During development it is faster to run tests directly on the source, rather then the built library:
+```sh
+$ npm run test.src
+```
+
 &nbsp;
 
 ### Visual Studio Code
