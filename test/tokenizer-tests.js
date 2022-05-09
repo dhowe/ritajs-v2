@@ -5,7 +5,7 @@ describe('RiTa.Tokenizer', () => {
   let RiTa, expect;
   before(async () => ({ RiTa, expect } = await loadTestingDeps()));
 
-  it('Should call tokens', function () { // SYNC:
+  it('Should call tokens', function () {
 
     let tokens, input = "She wrote: \"I don't paint anymore. For a while she thought it was just a phase that she'd get over.\"";
 
@@ -144,7 +144,7 @@ describe('RiTa.Tokenizer', () => {
     }
   });
 
-  it('Should call tokenize.splitContractions', function () { // SYNC:
+  it('Should call tokenize.splitContractions', function () {
     let inputs = [
       "That's why this is our place.",
       "that's why he'll win.",
@@ -295,7 +295,7 @@ describe('RiTa.Tokenizer', () => {
 
   });
 
-  it('Should tokenize tags', function () { // SYNC:
+  it('Should tokenize tags', function () {
 
     // html tags (rita#103)
     let inputs = [
@@ -306,7 +306,7 @@ describe('RiTa.Tokenizer', () => {
       "<!DOCTYPE html>",
       "<span>inline</span>",
       "<h1>header</h1>",
-      "<!-- this is a comment -->", //? should this be divided? 
+      "<!-- this is a comment -->", //? should this be divided?
       "<a href=\"www.google.com\">a link to google</a>",
       "<p>this<br>is</br>a<br>paragraph<br/></p>",
       "<p>Link <a herf=\"https://hk.search.yahoo.com/search?p=cute+cat\">here</a> is about <span class=\"cat\">cute cat</span></p><img src=\"cutecat.com/catpic001.jpg\" width=\"600\" />",
@@ -479,7 +479,7 @@ describe('RiTa.Tokenizer', () => {
     }
   });
 
-  it('Should untokenize tags', function () { // SYNC:
+  it('Should untokenize tags', function () {
 
     let inputs = [
       ["1", "<", "2"],
