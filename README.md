@@ -153,6 +153,10 @@ You can also watch the source code and build automatically on any change:
 $ npm run watch.src
 ```
 
+Please make contributions via [fork-and-pull](https://reflectoring.io/github-fork-and-pull/) - thanks!
+
+<br>
+
 &nbsp;
 
 ### Visual Studio Code
