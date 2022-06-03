@@ -832,6 +832,9 @@ describe('RiTa.Lexicon', function () { // SYNC:
     expect(RiTa.rhymes("hose", { pos: 'v' }).includes("house")).to.be.false;
     expect(RiTa.rhymes("sieve", { pos: 'v' }).includes("mellow")).to.be.false;
     expect(RiTa.rhymes("swag", { pos: 'v' }).includes("grab")).to.be.false;
+
+    expect(RiTa.rhymes("being", { pos: 'vbg', limit: 1000 }).includes("toing")).to.be.false;
+    expect(RiTa.rhymes("toning", { pos: 'vbg', limit: 1000 }).includes("toing")).to.be.false;
   });
 
   it('Should call rhymes.pos.nid', function () {
@@ -980,6 +983,15 @@ describe('RiTa.Lexicon', function () { // SYNC:
     expect(result.includes("abetted")).to.be.true;
     expect(result.includes("aborted")).to.be.true;
     expect(result.includes("condensed")).to.be.false;
+
+    result = RiTa.spellsLike("being", { pos: 'vbg', limit: 1000 });
+    expect(result.includes("toing")).to.be.false;
+    expect(result.includes("toeing")).to.be.true;
+
+    result = RiTa.spellsLike("toning", { pos: 'vbg', limit: 1000 });
+    expect(result.includes("toing")).to.be.false;
+    expect(result.includes("toeing")).to.be.true;
+
   });
 
   it('Should call soundsLike', function () {
@@ -1027,6 +1039,15 @@ describe('RiTa.Lexicon', function () { // SYNC:
     expect(result.includes("abetted")).to.be.true;
     expect(result.includes("debated")).to.be.true;
     expect(result.includes("condensed")).to.be.false;
+
+    result = RiTa.soundsLike("being", { pos: 'vbg', limit: 1000 });
+    expect(result.includes("toing")).to.be.false;
+    expect(result.includes("toeing")).to.be.false;
+
+    result = RiTa.soundsLike("toning", { pos: 'vbg', limit: 1000 });
+    expect(result.includes("toing")).to.be.false;
+    expect(result.includes("toeing")).to.be.true;
+
   });
 
   it('Should call soundsLike().matchSpelling', function () {
