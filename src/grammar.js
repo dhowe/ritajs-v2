@@ -57,7 +57,6 @@ class RiGrammar {
     }
 
     let ctx = deepMerge(this.context, this.rules); // ?
-    //if (opts) ctx = deepMerge(ctx, opts);
 
     rule = validateRuleName(rule);
     if (!ctx.hasOwnProperty(rule)) {
