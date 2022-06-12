@@ -31,10 +31,10 @@ describe('RiTa.Analyzer', function () {
   it('Should call analyzeWord with lts', function () { // SYNC:
 
     if (!hasLex) this.skip(); // different without lexicon
-    
+
     let tmp = RiTa.SILENCE_LTS;
     RiTa.SILENCE_LTS = true;
-    
+
     let data = RiTa.analyzer.analyzeWord("1903");
     expect(data.phones).eq("w-ah-n-n-ih-n-z-ih-r-ow-th-r-iy");
     expect(data.stresses).eq("0/0/0/0/0");
@@ -100,13 +100,13 @@ describe('RiTa.Analyzer', function () {
     eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
   });
 
-  0 && it('Should treat hyphenated words as single tokens', function() {
-   // treating word as a single token:
+  0 && it('Should treat hyphenated words as single tokens', function () {
+    // treating word as a single token:
 
     let lts = RiTa.SILENCE_LTS; // remembers
     RiTa.SILENCE_LTS = true; // disable LTS logging 
-    
-    let feats = RiTa.analyze("off-site"); 
+
+    let feats = RiTa.analyze("off-site");
     eq(feats["pos"], "nn");
     eq(feats["tokens"], "off-site");
     eq(feats["phones"], 'ao-f-s-ay-t');
@@ -129,7 +129,7 @@ describe('RiTa.Analyzer', function () {
     eq(feats["stresses"], "1/0-1/0");
     eq(feats["syllables"], "d-iy-p/l-iy - n-eh/s-t-ah-d");
     eql(feats["tokens"].split(' '), RiTa.tokenize("deeply-nested"));
-    
+
     feats = RiTa.analyze("father-in-law");
     eq(feats["pos"], "nn");
     eq(feats["tokens"], "father-in-law");
@@ -138,7 +138,7 @@ describe('RiTa.Analyzer', function () {
     eq(feats["syllables"], "f-aa/dh-er-ih-n-l-ao");
     eql(feats["tokens"].split(' '), RiTa.tokenize("father-in-law"));
 
-    feats =  RiTa.analyze("up-to-date");
+    feats = RiTa.analyze("up-to-date");
     eq(feats["pos"], "jj");
     eq(feats["tokens"], "up-to-date");
     eq(feats["phones"], 'ah-p-t-uw-d-ey-t');
@@ -146,7 +146,7 @@ describe('RiTa.Analyzer', function () {
     eq(feats["syllables"], "ah-p-t-uw-d-ey-t");
     eql(feats["tokens"].split(' '), RiTa.tokenize("up-to-date"));
 
-    feats =  RiTa.analyze("state-of-the-art");
+    feats = RiTa.analyze("state-of-the-art");
     eq(feats["pos"], "jj");
     eq(feats["tokens"], "state-of-the-art");
     eq(feats["phones"], 's-t-ey-t-ah-v-dh-ah-aa-r-t');
@@ -158,19 +158,19 @@ describe('RiTa.Analyzer', function () {
   });
 
   it('Should treat hyphenated words as separate tokens', function () {  // see https://github.com/dhowe/rita/issues/65
-    
+
     let lts = RiTa.SILENCE_LTS; // remembers
     RiTa.SILENCE_LTS = true; // disable LTS logging 
 
     // treating parts as separate tokens:
-    let feats = RiTa.analyze("off-site"); 
+    let feats = RiTa.analyze("off-site");
     eq(feats["pos"], "in - nn");
     eq(feats["tokens"], "off - site");
     eq(feats["phones"], 'ao-f - s-ay-t');
     eq(feats["stresses"], "1 - 1");
     eq(feats["syllables"], "ao-f - s-ay-t");
     eql(feats["tokens"].split(' '), RiTa.tokenize("off-site"));
-    
+
     feats = RiTa.analyze("oft-cited");
     eq(feats["pos"], "rb - vbd");
     eq(feats["tokens"], "oft - cited");
@@ -186,7 +186,7 @@ describe('RiTa.Analyzer', function () {
     eq(feats["stresses"], "1/0 - 1/0");
     eq(feats["syllables"], "d-iy-p/l-iy - n-eh/s-t-ah-d");
     eql(feats["tokens"].split(' '), RiTa.tokenize("deeply-nested"));
-    
+
     feats = RiTa.analyze("father-in-law");
     eq(feats["pos"], "nn - in - nn");
     eq(feats["tokens"], "father - in - law");
@@ -195,7 +195,7 @@ describe('RiTa.Analyzer', function () {
     eq(feats["syllables"], "f-aa/dh-er - ih-n - l-ao");
     eql(feats["tokens"].split(' '), RiTa.tokenize("father-in-law"));
 
-    feats =  RiTa.analyze("up-to-date");
+    feats = RiTa.analyze("up-to-date");
     eq(feats["pos"], "in - to - nn");
     eq(feats["tokens"], "up - to - date");
     eq(feats["phones"], 'ah-p - t-uw - d-ey-t');
@@ -203,7 +203,7 @@ describe('RiTa.Analyzer', function () {
     eq(feats["syllables"], "ah-p - t-uw - d-ey-t");
     eql(feats["tokens"].split(' '), RiTa.tokenize("up-to-date"));
 
-    feats =  RiTa.analyze("state-of-the-art");
+    feats = RiTa.analyze("state-of-the-art");
     eq(feats["pos"], "jj - in - dt - nn");
     eq(feats["tokens"], "state - of - the - art");
     eq(feats["phones"], 's-t-ey-t - ah-v - dh-ah - aa-r-t');
@@ -722,6 +722,6 @@ describe('RiTa.Analyzer', function () {
 
   function ok(a, m) { expect(a, m).to.be.true; }
   function eq(a, b, m) { expect(a).eq(b, m); }
-  function eql(a,b,m) {expect(a).eql(b,m);}
+  function eql(a, b, m) { expect(a).eql(b, m); }
 
 });
