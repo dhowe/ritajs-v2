@@ -31,6 +31,51 @@ describe('RiTa.Conjugator', function () {
     equal(RiTa.pastPart("stink"), "stunk");
     equal(RiTa.pastPart("study"), "studied");
 
+    //words with wrong 'vb' tag
+    //https://github.com/dhowe/rita/issues/177
+    equal(RiTa.pastPart("bite"), "bitten");
+    equal(RiTa.pastPart("break"), "broken");
+    equal(RiTa.pastPart("call"), "called");
+    equal(RiTa.pastPart("commit"), "committed");
+    equal(RiTa.pastPart("computerize"), "computerized");
+    equal(RiTa.pastPart("concern"), "concerned");
+    equal(RiTa.pastPart("discriminate"), "discriminated");
+    equal(RiTa.pastPart("end"), "ended");
+    equal(RiTa.pastPart("expect"), "expected");
+    equal(RiTa.pastPart("finish"), "finished");
+    equal(RiTa.pastPart("gain"), "gained");
+    equal(RiTa.pastPart("get"), "gotten");
+    equal(RiTa.pastPart("increase"), "increased");
+    equal(RiTa.pastPart("involve"), "involved");
+    equal(RiTa.pastPart("launch"), "launched");
+    equal(RiTa.pastPart("lead"), "led");
+    equal(RiTa.pastPart("live"), "lived");
+    equal(RiTa.pastPart("outpace"), "outpaced");
+    equal(RiTa.pastPart("oversee"), "overseen");
+    equal(RiTa.pastPart("oversell"), "oversold");
+    equal(RiTa.pastPart("pale"), "paled");
+    equal(RiTa.pastPart("prepay"), "prepaid");
+    equal(RiTa.pastPart("pressure"), "pressured");
+    equal(RiTa.pastPart("proliferate"), "proliferated");
+    equal(RiTa.pastPart("remake"), "remade");
+    equal(RiTa.pastPart("reopen"), "reopened");
+    equal(RiTa.pastPart("report"), "reported");
+    equal(RiTa.pastPart("resell"), "resold");
+    equal(RiTa.pastPart("settle"), "settled");
+
+    equal(RiTa.pastPart("bite"), "bitten");
+    equal(RiTa.pastPart("break"), "broken");
+    equal(RiTa.pastPart("build"), "built");
+    equal(RiTa.pastPart("enter"), "entered");
+    equal(RiTa.pastPart("own"), "owned");
+    equal(RiTa.pastPart("plan"), "planned");
+    equal(RiTa.pastPart("rent"), "rented");
+    equal(RiTa.pastPart("repurchase"), "repurchased");
+    equal(RiTa.pastPart("roast"), "roasted");
+    
+    0 && equal(RiTa.pastPart("start"), "started");
+    0 && equal(RiTa.pastPart("bust"), "busted");
+
     if (hasLex) {
       // is already past part
       equal(RiTa.pastPart("hopped"), "hopped");
@@ -556,7 +601,103 @@ describe('RiTa.Conjugator', function () {
       expect(RiTa.conjugator.unconjugate("sitting")).eq("sit");
       expect(RiTa.conjugator.unconjugate("pulling")).eq("pull");
     }
+
+    //words with wrong 'vb' tag
+    //https://github.com/dhowe/rita/issues/177
+    expect(RiTa.conjugator.unconjugate("bitten")).eq("bite");
+    expect(RiTa.conjugator.unconjugate("broken")).eq("break");
+    expect(RiTa.conjugator.unconjugate("committed")).eq("commit");
+    expect(RiTa.conjugator.unconjugate("computerized")).eq("computerize");
+    expect(RiTa.conjugator.unconjugate("concerned")).eq("concern");
+    expect(RiTa.conjugator.unconjugate("discriminated")).eq("discriminate");
+    expect(RiTa.conjugator.unconjugate("ended")).eq("end");
+    expect(RiTa.conjugator.unconjugate("expected")).eq("expect");
+    expect(RiTa.conjugator.unconjugate("finished")).eq("finish");
+    expect(RiTa.conjugator.unconjugate("gained")).eq("gain");
+    expect(RiTa.conjugator.unconjugate("gotten")).eq("get");
+    expect(RiTa.conjugator.unconjugate("increased")).eq("increase");
+    expect(RiTa.conjugator.unconjugate("involved")).eq("involve");
+    expect(RiTa.conjugator.unconjugate("launched")).eq("launch");
+    expect(RiTa.conjugator.unconjugate("led")).eq("lead");
+    expect(RiTa.conjugator.unconjugate("lived")).eq("live");
+    expect(RiTa.conjugator.unconjugate("outpaced")).eq("outpace");
+    expect(RiTa.conjugator.unconjugate("overseen")).eq("oversee");
+    expect(RiTa.conjugator.unconjugate("paled")).eq("pale");
+    expect(RiTa.conjugator.unconjugate("prepaid")).eq("prepay");
+    expect(RiTa.conjugator.unconjugate("pressured")).eq("pressure");
+    expect(RiTa.conjugator.unconjugate("proliferated")).eq("proliferate");
+    expect(RiTa.conjugator.unconjugate("remade")).eq("remake");
+    expect(RiTa.conjugator.unconjugate("reopened")).eq("reopen");
+    expect(RiTa.conjugator.unconjugate("reported")).eq("report");
+    expect(RiTa.conjugator.unconjugate("sold")).eq("sell");
+    expect(RiTa.conjugator.unconjugate("resold")).eq("resell");
+    expect(RiTa.conjugator.unconjugate("settled")).eq("settle");
+    expect(RiTa.conjugator.unconjugate("started")).eq("start");
+    expect(RiTa.conjugator.unconjugate("were")).eq("be");
+
+    expect(RiTa.conjugator.unconjugate("bitten")).eq("bite");
+    expect(RiTa.conjugator.unconjugate("broken")).eq("break");
+    expect(RiTa.conjugator.unconjugate("owned")).eq("own");
+    expect(RiTa.conjugator.unconjugate("planned")).eq("plan");
+    expect(RiTa.conjugator.unconjugate("rented")).eq("rent");
+    expect(RiTa.conjugator.unconjugate("repurchased")).eq("repurchase");
+    expect(RiTa.conjugator.unconjugate("roasted")).eq("roast");
   });
+
+  it("Should conjugate verbs", function() {
+    //words with wrong 'vb' tag
+    //https://github.com/dhowe/rita/issues/177
+
+    let opt = {
+        number: RiTa.SINGULAR,
+        person: RiTa.FIRST,
+        tense: RiTa.PAST
+    };
+    expect(RiTa.conjugate("bite", opt)).eq("bit");
+    expect(RiTa.conjugate("break", opt)).eq("broke");
+    expect(RiTa.conjugate("call", opt)).eq("called");
+    expect(RiTa.conjugate("commit", opt)).eq("committed");
+    expect(RiTa.conjugate("computerize", opt)).eq("computerized");
+    expect(RiTa.conjugate("concern", opt)).eq("concerned");
+    expect(RiTa.conjugate("discriminate", opt)).eq("discriminated");
+    expect(RiTa.conjugate("end", opt)).eq("ended");
+    expect(RiTa.conjugate("expect", opt)).eq("expected");
+    expect(RiTa.conjugate("finish", opt)).eq("finished");
+    expect(RiTa.conjugate("gain", opt)).eq("gained");
+    expect(RiTa.conjugate("get", opt)).eq("got");
+    expect(RiTa.conjugate("increase", opt)).eq("increased");
+    expect(RiTa.conjugate("involve", opt)).eq("involved");
+    expect(RiTa.conjugate("launch", opt)).eq("launched");
+    expect(RiTa.conjugate("lead", opt)).eq("led");
+    expect(RiTa.conjugate("live", opt)).eq("lived");
+    expect(RiTa.conjugate("concern", opt)).eq("concerned");
+    expect(RiTa.conjugate("oversee", opt)).eq("oversaw");
+    expect(RiTa.conjugate("pale", opt)).eq("paled");
+    expect(RiTa.conjugate("prepay", opt)).eq("prepaid");
+    expect(RiTa.conjugate("pressure", opt)).eq("pressured");
+    expect(RiTa.conjugate("proliferate", opt)).eq("proliferated");
+    expect(RiTa.conjugate("remake", opt)).eq("remade");
+    expect(RiTa.conjugate("reopen", opt)).eq("reopened");
+    expect(RiTa.conjugate("report", opt)).eq("reported");
+    expect(RiTa.conjugate("resell", opt)).eq("resold");
+    expect(RiTa.conjugate("settle", opt)).eq("settled");
+    expect(RiTa.conjugate("start", opt)).eq("started");
+
+    opt = {
+      tense: RiTa.PRESENT,
+      number: RiTa.SINGULAR,
+      perfect: true
+    };
+    expect(RiTa.conjugate("bite", opt)).eq("have bitten");
+    expect(RiTa.conjugate("break", opt)).eq("have broken");
+    expect(RiTa.conjugate("build", opt)).eq("have built");
+    expect(RiTa.conjugate("enter", opt)).eq("have entered");
+    expect(RiTa.conjugate("own", opt)).eq("have owned");
+    expect(RiTa.conjugate("plan", opt)).eq("have planned");
+    expect(RiTa.conjugate("rent", opt)).eq("have rented");
+    expect(RiTa.conjugate("repurchase", opt)).eq("have repurchased");
+    expect(RiTa.conjugate("roast", opt)).eq("have roasted");
+})
 
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }

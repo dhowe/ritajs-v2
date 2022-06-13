@@ -98,6 +98,43 @@ describe('RiTa.Analyzer', function () {
     eq(feats["tokens"], "abandon");
     eq(feats["stresses"], "0/1/0");
     eq(feats["syllables"], "ah/b-ae-n/d-ah-n");
+
+    //https://github.com/dhowe/rita/issues/177
+    feats = RiTa.analyze("bit");
+    expect(feats.pos).eq("vbd");
+    expect(feats.syllables).eq("b-ih-t");
+    
+    //'bit': as a vbd
+    feats = RiTa.analyze("It bit me.");
+    expect(feats.pos).eq("prp vbd prp ."); 
+    //'bit': as an nn
+    feats = RiTa.analyze("Give the duck a bit of bread.");
+    expect(feats.pos).eq("vb dt nn dt nn in nn .");
+
+    feats = RiTa.analyze("broke");
+    expect(feats.pos).eq("vbd");
+    expect(feats.syllables).eq("b-r-ow-k");
+    feats = RiTa.analyze("I broke my leg.");
+    expect(feats.pos).eq("prp vbd prp$ nn .");
+
+    feats = RiTa.analyze("The show has ended.");
+    expect(feats.pos).eq("dt nn vbz vbn .");
+
+    feats = RiTa.analyze("She oversaw it.");
+    expect(feats.pos).eq("prp vbd prp .");
+
+    //remade as a vbd
+    feats = RiTa.analyze("She remade this video.");
+    expect(feats.pos).eq("prp vbd dt nn .");
+    //remade as a vbn
+    feats = RiTa.analyze("They will be remade into something else.");
+    0 && expect(feats.pos).eq("prp md vb vbn in nn rb .");
+     
+    //become
+    feats = RiTa.analyze("She becomes a companion to a foreigner.");
+    expect(feats.pos).eq("prp vbz dt jj to dt nn .");
+    feats = RiTa.analyze("She has become a companion to a foreigner.");
+    0 && expect(feats.pos).eq("prp vbz vbn dt jj to dt nn .");
   });
 
   0 && it('Should treat hyphenated words as single tokens', function() {

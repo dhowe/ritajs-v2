@@ -101,6 +101,20 @@ describe('RiTa.Tagger', () => {
     eql(RiTa.pos("creed"), ["nn"]);
     eql(RiTa.pos("weed"), ["nn"]);
 
+    //https://github.com/dhowe/rita/issues/177
+    eql(RiTa.pos("broke"), ["vbd"]);
+    eql(RiTa.pos("broke", { simple: 1 }), ["v"]);
+    eql(RiTa.pos("committed"), ["vbn"]);
+    eql(RiTa.pos("committed", { simple: 1 }), ["v"]);
+    eql(RiTa.pos("outpaced"), ["vbd"]);
+    eql(RiTa.pos("outpaced", { simple: 1 }), ["v"]);
+    eql(RiTa.pos("concerned"), ["vbd"]);
+    eql(RiTa.pos("concerned", { simple: 1 }), ["v"]);
+    eql(RiTa.pos("committed"), ["vbn"]);
+    eql(RiTa.pos("committed", { simple: 1 }), ["v"]);
+
+
+
     eql(RiTa.pos("the top seed"), ["dt", "jj", "nn"]);
     eql(RiTa.pos("by illegal means"), ["in", "jj", "nn"]);
     eql(RiTa.pos('Joannie Smith ran away'), ['nnp', 'nnp', 'vbd', 'rb']);
@@ -325,6 +339,67 @@ describe('RiTa.Tagger', () => {
     txt = "The dog ran faster than the other dog.  But the other dog was prettier.";
     result = RiTa.posInline(txt);
     answer = "The/dt dog/nn ran/vbd faster/rbr than/in the/dt other/jj dog/nn . But/cc the/dt other/jj dog/nn was/vbd prettier/jjr .";
+    eq(result, answer);
+
+    //https://github.com/dhowe/rita/issues/177
+    //'bit': as a vbd 
+    txt = "The mosquito bit me.";
+    result = RiTa.posInline(txt);
+    answer = "The/dt mosquito/nn bit/vbd me/prp ."
+    eq(result, answer);
+    //'bit': as an nn
+    txt = "Give the duck a bit of bread.";
+    result = RiTa.posInline(txt);
+    answer = "Give/vb the/dt duck/nn a/dt bit/nn of/in bread/nn ."
+    eq(result, answer);
+
+    txt = "The show has ended.";
+    result = RiTa.posInline(txt);
+    answer = "The/dt show/nn has/vbz ended/vbn ."
+    eq(result, answer);
+
+    //'remade': as a vbd
+    txt = "She remade this video.";
+    result = RiTa.posInline(txt);
+    answer = "She/prp remade/vbd this/dt video/nn .";
+    eq(result, answer);
+    //'remade': as a vbn 
+    txt = "They will be remade into something else.";
+    result = RiTa.posInline(txt);
+    answer = "They/prp will/md be/vb remade/vbn into/in something/nn else/rb .";
+    0 && eq(result, answer);
+
+    //'sold': as a vbd
+    txt = "She sold her apartment.";
+    result = RiTa.posInline(txt);
+     answer = "She/prp sold/vbd her/prp$ apartment/nn .";
+     0 && eq(result, answer);
+     //'sold': as a vbn
+    txt = "Her apartment was sold.";
+    result = RiTa.posInline(txt);
+    answer = "Her/prp$ apartment/nn was/vbd sold/vbn .";
+    eq(result, answer);
+
+    //'resold': as a vbd
+    txt = "She resold her apartment.";
+    result = RiTa.posInline(txt);
+    answer = "She/prp resold/vbd her/prp$ apartment/nn .";
+     eq(result, answer);
+     //'resold': as a vbn
+    txt = "Her apartment was resold.";
+    result = RiTa.posInline(txt);
+    answer = "Her/prp$ apartment/nn was/vbd resold/vbn .";
+    0 && eq(result, answer);
+
+    //'led': as a vbd
+    txt = "He led a team of crows into battle.";
+    result = RiTa.posInline(txt);
+    answer = "He/prp led/vbd a/dt team/nn of/in crows/nns into/in battle/nn .";
+    eq(result, answer);
+    //'led': as a vbn
+    txt = "He led a team of crows into battle.";
+    result = RiTa.posInline(txt);
+    answer = "He/prp led/vbd a/dt team/nn of/in crows/nns into/in battle/nn .";
     eq(result, answer);
   });
 
@@ -689,7 +764,39 @@ describe('RiTa.Tagger', () => {
     expect(RiTa.tagger.allTags("ashdj")).to.include("nn");
     expect(RiTa.tagger.allTags("kahsdly")).to.include("rb");
     expect(RiTa.tagger.allTags("asdkasws")).to.include("nns");
-  });
+
+    //https://github.com/dhowe/rita/issues/177
+    expect(RiTa.tagger.allTags("bit")).eql(['vbd','nn','rb']);
+    expect(RiTa.tagger.allTags("broke")).eql(['vbd','jj','rb']);
+    expect(RiTa.tagger.allTags("called")).eql(['vbd','vbn']);
+    expect(RiTa.tagger.allTags("committed")).eql(['vbn','jj','vbd']);
+    expect(RiTa.tagger.allTags("computerized")).eql(['jj','vbd','vbn']);
+    expect(RiTa.tagger.allTags("concerned")).eql(['vbd','jj','vbn']);;
+    expect(RiTa.tagger.allTags("discriminated")).eql(['vbd','vbn','jj']);
+    expect(RiTa.tagger.allTags("ended")).eql(['vbd','jj','vbn']);
+    expect(RiTa.tagger.allTags("expected")).eql(['vbn','vbd','jj']);
+    expect(RiTa.tagger.allTags("finished")).eql(['vbd','jj','vbn']);
+    expect(RiTa.tagger.allTags("gained")).eql(['vbd','vbn']);
+
+    expect(RiTa.tagger.allTags("got")).eql(['vbd']);
+    expect(RiTa.tagger.allTags("increased")).eql(['vbn','jj','vbd']);
+    expect(RiTa.tagger.allTags("involved")).eql(['vbn','vbd','jj']);
+    expect(RiTa.tagger.allTags("launched")).eql(['vbn','vbd']);
+    expect(RiTa.tagger.allTags("led")).eql(['vbd', 'vbn']);
+    expect(RiTa.tagger.allTags("lived")).eql(['vbd','vbn']);
+    expect(RiTa.tagger.allTags("oversaw")).eql(['vbd']);
+    expect(RiTa.tagger.allTags("paled")).eql(['vbd','vbn']);
+    expect(RiTa.tagger.allTags("prepaid")).eql(['jj','vbd','vbn']);;
+    expect(RiTa.tagger.allTags("pressured")).eql(['vbn','jj','vbd']);
+    expect(RiTa.tagger.allTags("proliferated")).eql(['vbn','vbd']);
+    expect(RiTa.tagger.allTags("remade")).eql(['vbd','vbn']);
+    expect(RiTa.tagger.allTags("reopened")).eql(['vbd','vbn']);
+    expect(RiTa.tagger.allTags("reported")).eql(['vbd','jj','vbn']);
+    expect(RiTa.tagger.allTags("resold")).eql(['vbd','vbn']);
+    expect(RiTa.tagger.allTags("settled")).eql(['vbd','vbn','jj']);
+    expect(RiTa.tagger.allTags("started")).eql(['vbd','jj','vbn']);
+
+   });
 
   it('Should call hasTag', function () {
     ok(!RiTa.tagger.hasTag());
@@ -769,6 +876,15 @@ describe('RiTa.Tagger', () => {
     eq(RiTa.tagger.tag(["Monkeys", "attack", "."], { inline: true }), "Monkeys/nns attack/vbp .");
     //
     eq(RiTa.tagger.tag(["A", "light", "blue", "sky", "."], { inline: true }), "A/dt light/jj blue/jj sky/nn .");
+  
+    //https://github.com/dhowe/rita/issues/177
+    eq(RiTa.tagger.tag(["It", "broke", "."], { inline: true }), "It/prp broke/vbd .");
+    eq(RiTa.tagger.tag(["It", "outpaced", "that","."], { inline: true }), "It/prp outpaced/vbd that/in .");
+    eq(RiTa.tagger.tag(["She", "remade", "this", "video", "."], { inline: true }), "She/prp remade/vbd this/dt video/nn .");
+    eq(RiTa.tagger.tag(["She", "has", "remade", "this", "video", "."], { inline: true }), "She/prp has/vbz remade/vbn this/dt video/nn .");
+    0 && eq(RiTa.tagger.tag(["The", "video","was" ,"remade", "."], { inline: true }), "The/dt video/nn was/vbd remade/vbn .");
+    0 && eq(RiTa.tagger.tag(["Being", "literate", "didn\'t" ,"stop", "him", "from", "being", "discriminated", "against","."], { inline: true }), "Being/vbg literate/jj didn't/vbd stop/vb him/prp from/in being/vbg discriminated/vbn against/in .");
+   
   });
   // }
   // else it('WARN: no tests without lexicon', function () {
