@@ -93,6 +93,75 @@ describe('RiTa.Lexicon', function () { // SYNC:
     expect(RiTa.hasWord("barkness")).to.be.false;
     expect(RiTa.hasWord("horne")).to.be.false;
     expect(RiTa.hasWord("haye")).to.be.false;
+
+    // https://github.com/dhowe/rita/issues/177
+
+    expect(RiTa.hasWord("bites")).to.be.true;  
+    expect(RiTa.hasWord("bit")).to.be.true;  
+    expect(RiTa.hasWord("bitted")).to.be.false;
+
+    expect(RiTa.hasWord("breaks")).to.be.true;  
+    expect(RiTa.hasWord("broke")).to.be.true;  
+    expect(RiTa.hasWord("brokes")).to.be.false;
+    expect(RiTa.hasWord("broked")).to.be.false;
+
+    expect(RiTa.hasWord("concerned")).to.be.true;
+    expect(RiTa.hasWord("concerneded")).to.be.false;
+    expect(RiTa.hasWord("concerneds")).to.be.false;
+
+    expect(RiTa.hasWord("outpaced")).to.be.true;
+    expect(RiTa.hasWord("outpaceded")).to.be.false;
+    expect(RiTa.hasWord("outpaceds")).to.be.false;
+
+    expect(RiTa.hasWord("reported")).to.be.true;
+    expect(RiTa.hasWord("reporteds")).to.be.false;
+    expect(RiTa.hasWord("reporteded")).to.be.false;
+
+    expect(RiTa.hasWord("build")).to.be.true;
+    expect(RiTa.hasWord("built")).to.be.true;
+
+    expect(RiTa.hasWord("called")).to.be.true;
+    expect(RiTa.hasWord("calleds")).to.be.false;
+    expect(RiTa.hasWord("calleded")).to.be.false;
+
+    expect(RiTa.hasWord("commits")).to.be.true;
+    expect(RiTa.hasWord("committed")).to.be.true;
+    expect(RiTa.hasWord("committeds")).to.be.false;
+    expect(RiTa.hasWord("committeded")).to.be.false;
+
+    expect(RiTa.hasWord("computerized")).to.be.true;
+    expect(RiTa.hasWord("computerizeds")).to.be.false;
+    expect(RiTa.hasWord("computerizeded")).to.be.false;
+
+    expect(RiTa.hasWord("gets")).to.be.true;
+    expect(RiTa.hasWord("got")).to.be.true;
+    expect(RiTa.hasWord("gots")).to.be.false;
+    expect(RiTa.hasWord("gotten")).to.be.true;
+
+    expect(RiTa.hasWord("leads")).to.be.true;
+    expect(RiTa.hasWord("led")).to.be.true;
+    expect(RiTa.hasWord("leds")).to.be.false;
+
+    expect(RiTa.hasWord("oversaw")).to.be.true;  
+    expect(RiTa.hasWord("overseen")).to.be.true;  
+    expect(RiTa.hasWord("oversaws")).to.be.false;
+   expect(RiTa.hasWord("overseened")).to.be.false;
+
+    expect(RiTa.hasWord("remakes")).to.be.true;  
+    expect(RiTa.hasWord("remade")).to.be.true;  
+    expect(RiTa.hasWord("remaded")).to.be.false;
+
+    expect(RiTa.hasWord("discriminates")).to.be.true;  
+    expect(RiTa.hasWord("discriminated")).to.be.true;  
+    expect(RiTa.hasWord("discriminateds")).to.be.false;
+
+    expect(RiTa.hasWord("launched")).to.be.true;  
+    expect(RiTa.hasWord("launcheds")).to.be.false;  
+    expect(RiTa.hasWord("launcheded")).to.be.false;
+
+    expect(RiTa.hasWord("starts")).to.be.true;  
+    expect(RiTa.hasWord("started")).to.be.true;  
+    expect(RiTa.hasWord("starteds")).to.be.false;
   });
 
   it('Should call randomWord', function () {
@@ -393,6 +462,27 @@ describe('RiTa.Lexicon', function () { // SYNC:
       'aim', 'air',
       'aisle', 'ale'
     ]);
+
+    let search = RiTa.search({ pos: "vb", limit: -1 });
+    expect(search.includes("concerned")).to.be.false;
+    expect(search.includes("committed")).to.be.false;
+    expect(search.includes("called")).to.be.false;
+    expect(search.includes("computerized")).to.be.false;
+
+    search = RiTa.search({ pos: "vbd", limit: -1});
+    expect(search.includes("concerned")).to.be.true;
+    expect(search.includes("committed")).to.be.true;
+    expect(search.includes("called")).to.be.true;
+    expect(search.includes("computerized")).to.be.true;
+    0 && expect(search.includes("conclude")).to.be.true;
+
+   search = RiTa.search({ pos: "vbn", limit: -1 });
+    expect(search.includes("concerned")).to.be.true;
+    expect(search.includes("committed")).to.be.true;
+    expect(search.includes("called")).to.be.true;
+    expect(search.includes("computerized")).to.be.true;
+    0 && expect(search.includes("conclude")).to.be.true;
+
   });
 
   it('Should call search with letters', function () {
@@ -513,6 +603,25 @@ describe('RiTa.Lexicon', function () { // SYNC:
 
     res = RiTa.search(/^rice$/, { pos: 'nns', limit: -1 });
     expect(res).eql([ 'rice']);
+
+    //https://github.com/dhowe/rita/issues/177
+   res = RiTa.search('gain', { pos: "vbd", numSyllables: 1});
+   expect(res).eql([ 'gained']);
+   res = RiTa.search('end', { pos: "vbd", minLength: 2 , limit: -1 });
+   expect(res.includes("ended")).to.be.true;
+   res = RiTa.search('commit', { pos: "vbd" });
+   expect(res.includes("committed")).to.be.true;
+   res = RiTa.search('involve', { pos: "vbd"});  
+   expect(res.includes("involved")).to.be.true;
+    res = RiTa.search('outpace', { pos: "vbn" });
+    expect(res).eql([ 'outpaced']);
+    res = RiTa.search('paid', { pos: "vbd" });
+    expect(res.includes("prepaid")).to.be.true;
+    res = RiTa.search('made', { pos: "vbd"});
+    expect(res.includes("remade")).to.be.true;
+    res = RiTa.search('re', { pos: "vbd", limit: -1 });
+    expect(res.includes("reopened")).to.be.true;
+    expect(res.includes("resold")).to.be.true;
   });
 
   it('Should call search with simple pos, phones, limit', function () {
@@ -832,6 +941,22 @@ describe('RiTa.Lexicon', function () { // SYNC:
     expect(RiTa.rhymes("hose", { pos: 'v' }).includes("house")).to.be.false;
     expect(RiTa.rhymes("sieve", { pos: 'v' }).includes("mellow")).to.be.false;
     expect(RiTa.rhymes("swag", { pos: 'v' }).includes("grab")).to.be.false;
+
+    //https://github.com/dhowe/rita/issues/177
+    let rhyme = RiTa.rhymes("spreads", { pos: 'vbz', limit: 1000 });
+    expect(rhyme.includes("discriminateds")).to.be.false;
+    expect(rhyme.includes("endeds")).to.be.false;
+    expect(rhyme.includes("finisheds")).to.be.false;
+    expect(rhyme.includes("reporteds")).to.be.false;
+    expect(rhyme.includes("proliferateds")).to.be.false;
+    expect(rhyme.includes("outpaceds")).to.be.false;
+    expect(rhyme.includes("liveds")).to.be.false;
+    expect(RiTa.rhymes("hit", { pos: 'vb' }).includes("bit")).to.be.false;
+    expect(RiTa.rhymes("hit", { pos: 'vbd' }).includes("bit")).to.be.true;
+    expect(RiTa.rhymes("stroke", { pos: 'vb' }).includes("broke")).to.be.false;
+    expect(RiTa.rhymes("stroke", { pos: 'vbd' }).includes("broke")).to.be.true;
+    expect(RiTa.rhymes("evolved", { pos: 'vb' }).includes("involved")).to.be.false;
+    expect(RiTa.rhymes("evolved", { pos: 'vbd' }).includes("involved")).to.be.true;
   });
 
   it('Should call rhymes.pos.nid', function () {
@@ -980,6 +1105,25 @@ describe('RiTa.Lexicon', function () { // SYNC:
     expect(result.includes("abetted")).to.be.true;
     expect(result.includes("aborted")).to.be.true;
     expect(result.includes("condensed")).to.be.false;
+
+    //https://github.com/dhowe/rita/issues/177
+    expect( RiTa.spellsLike("lined", { pos: 'vb' }).includes("lived")).to.be.false;
+    expect( RiTa.spellsLike("lined", { pos: 'vbd' }).includes("lived")).to.be.true;
+    expect( RiTa.spellsLike("let", { pos: 'vb' }).includes("led")).to.be.false;
+    expect( RiTa.spellsLike("let", { pos: 'vbd' }).includes("led")).to.be.true;
+    expect( RiTa.spellsLike("brake", { pos: 'vb' }).includes("broke")).to.be.false;
+    expect( RiTa.spellsLike("brake", { pos: 'vbd' }).includes("broke")).to.be.true;
+    expect( RiTa.spellsLike("overseas", { pos: 'vb' }).includes("oversaw")).to.be.false;
+    expect( RiTa.spellsLike("overseas", { pos: 'vbd' }).includes("oversaw")).to.be.true;
+
+    let rhyme = RiTa.spellsLike("spreads", { pos: 'vbz', limit: 1000 });
+    expect(rhyme.includes("discriminateds")).to.be.false;
+    expect(rhyme.includes("endeds")).to.be.false;
+    expect(rhyme.includes("finisheds")).to.be.false;
+    expect(rhyme.includes("reporteds")).to.be.false;
+    expect(rhyme.includes("proliferateds")).to.be.false;
+    expect(rhyme.includes("outpaceds")).to.be.false;
+    expect(rhyme.includes("lived")).to.be.false;
   });
 
   it('Should call soundsLike', function () {
@@ -1026,6 +1170,18 @@ describe('RiTa.Lexicon', function () { // SYNC:
     expect(result.includes("abetted")).to.be.true;
     expect(result.includes("debated")).to.be.true;
     expect(result.includes("condensed")).to.be.false;
+
+    //https://github.com/dhowe/rita/issues/177
+    expect(RiTa.soundsLike("build", { pos: 'vb' ,limit: 1000}).includes("built")).to.be.false;
+    expect(RiTa.soundsLike("computerize", { pos: 'vb',limit: 1000 }).includes("computerized")).to.be.false;
+    expect(RiTa.soundsLike("concern", { pos: 'vb' }).includes("concerned")).to.be.false;
+    expect(RiTa.soundsLike("commit", { pos: 'vb' }).includes("committed")).to.be.false;
+    expect(RiTa.soundsLike("involve", { pos: 'vb' }).includes("involved")).to.be.false;
+    expect(RiTa.soundsLike("grained", { pos: 'vb' }).includes("gained")).to.be.false;
+    
+    expect(RiTa.soundsLike("premade", { pos: 'vbd' }).includes("remade")).to.be.true;
+    expect(RiTa.soundsLike("incriminate", { pos: 'vbd' }).includes("discriminated")).to.be.true;
+    expect(RiTa.soundsLike("paunched", { pos: 'vbd' }).includes("launched")).to.be.true;
   });
 
   it('Should call soundsLike().matchSpelling', function () {
