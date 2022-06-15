@@ -75,12 +75,9 @@ describe('RiTa.Conjugator', function () {
     
     equal(RiTa.pastPart("start"), "started");
     equal(RiTa.pastPart("bust"), "busted");
-    equal(RiTa.pastPart("grown"), "grown");
-    equal(RiTa.pastPart("heard"), "heard");
     equal(RiTa.pastPart("heart"), "hearted");
     equal(RiTa.pastPart("closet"), "closeted");
     equal(RiTa.pastPart("bear"), "borne");
-    equal(RiTa.pastPart("borne"), "borne");
 
     if (hasLex) {
       // is already past part
@@ -111,6 +108,10 @@ describe('RiTa.Conjugator', function () {
       equal(RiTa.pastPart("drink"), "drunk");
       equal(RiTa.pastPart("run"), "run");
       equal(RiTa.pastPart("shine"), "shone");
+
+      equal(RiTa.pastPart("grown"), "grown");
+      equal(RiTa.pastPart("heard"), "heard");
+      equal(RiTa.pastPart("borne"), "borne");
     }
   });
 
