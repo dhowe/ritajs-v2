@@ -3306,7 +3306,7 @@ module && (module.exports = {
   "closeness":["k-l-ow1-s n-ih-s","nn"],
   "closest":["k-l-ow1 s-ah-s-t","jjs"],
   "closet":["k-l-aa1 z-ah-t","nn jj vb"],
-  "closeted":["k-l-aa1 z-ah t-ih-d","jj"],
+  "closeted":["k-l-aa1 z-ah t-ih-d","jj vbd vbn"],
   "closeup":["k-l-ow1 s-ah1-p","jj"],
   "closing":["k-l-ow1 z-ih-ng","vbg jj nn"],
   "closure":["k-l-ow1 zh-er","nn"],
