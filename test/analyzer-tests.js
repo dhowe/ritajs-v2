@@ -711,6 +711,15 @@ describe('RiTa.Analyzer', function () {
     expect(RiTa.analyzer.phonesToStress("ah b-ae1-n d-ah-n")).eq("0/1/0");
   });
 
+  it('Should not pluralize uncountables', function(){
+    expect(RiTa.pluralize("honey")).eq("honey");
+    expect(RiTa.pluralize("pasta")).eq("pasta");
+    expect(RiTa.pluralize("advice")).eq("advice");
+    expect(RiTa.pluralize("fanfare")).eq("fanfare");
+    expect(RiTa.pluralize("medicare")).eq("medicare");
+    expect(RiTa.pluralize("childcare")).eq("childcare");
+  })
+
   it('Should call isPlural', function () { // remove?
     expect(RiTa.inflector.isPlural()).eq(false);
     expect(RiTa.inflector.isPlural("")).eq(false);
@@ -727,6 +736,12 @@ describe('RiTa.Analyzer', function () {
     expect(RiTa.inflector.isPlural('child', { debug: false })).eq(false);
     expect(RiTa.inflector.isPlural('abbots', { debug: false })).eq(true);
     expect(RiTa.inflector.isPlural('happiness')).eq(true);
+
+    expect(RiTa.inflector.isPlural('pasta')).eq(true);
+    expect(RiTa.inflector.isPlural('honey')).eq(true);
+    expect(RiTa.inflector.isPlural('fanfare')).eq(true);
+    expect(RiTa.inflector.isPlural('medicare')).eq(true);
+    expect(RiTa.inflector.isPlural('childcare')).eq(true);
   });
 
   it('Should call computePhones', function () { // SYNC:
