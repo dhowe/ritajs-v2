@@ -711,13 +711,20 @@ describe('RiTa.Analyzer', function () {
     expect(RiTa.analyzer.phonesToStress("ah b-ae1-n d-ah-n")).eq("0/1/0");
   });
 
-  it('Should not pluralize uncountables', function(){
+  it('Should not pluralize/singularize uncountables', function(){
     expect(RiTa.pluralize("honey")).eq("honey");
     expect(RiTa.pluralize("pasta")).eq("pasta");
     expect(RiTa.pluralize("advice")).eq("advice");
     expect(RiTa.pluralize("fanfare")).eq("fanfare");
     expect(RiTa.pluralize("medicare")).eq("medicare");
     expect(RiTa.pluralize("childcare")).eq("childcare");
+
+    expect(RiTa.singularize("honey")).eq("honey");
+    expect(RiTa.singularize("pasta")).eq("pasta");
+    expect(RiTa.singularize("advice")).eq("advice");
+    expect(RiTa.singularize("fanfare")).eq("fanfare");
+    expect(RiTa.singularize("medicare")).eq("medicare");
+    expect(RiTa.singularize("childcare")).eq("childcare");
   })
 
   it('Should call isPlural', function () { // remove?
