@@ -185,7 +185,7 @@ Here you can see the tests in the VSCode _Testing_ view
 
 &nbsp;
 
-## Environments
+## Quick Start 
 
 #### A simple sketch
  
@@ -211,7 +211,7 @@ Create a new file on your desktop called 'test.html' and download the latest rit
 
 ```html
 <html>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.3/p5.min.js"></script>
+  <script src="https://unpkg.com/p5"></script>
   <script src="https://unpkg.com/rita"></script>
   <script>
   function setup() {

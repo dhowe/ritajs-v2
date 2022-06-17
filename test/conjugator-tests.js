@@ -73,8 +73,11 @@ describe('RiTa.Conjugator', function () {
     equal(RiTa.pastPart("repurchase"), "repurchased");
     equal(RiTa.pastPart("roast"), "roasted");
     
-    0 && equal(RiTa.pastPart("start"), "started");
-    0 && equal(RiTa.pastPart("bust"), "busted");
+    equal(RiTa.pastPart("start"), "started");
+    equal(RiTa.pastPart("bust"), "busted");
+    equal(RiTa.pastPart("heart"), "hearted");
+    equal(RiTa.pastPart("closet"), "closeted");
+    equal(RiTa.pastPart("bear"), "borne");
 
     if (hasLex) {
       // is already past part
@@ -105,6 +108,10 @@ describe('RiTa.Conjugator', function () {
       equal(RiTa.pastPart("drink"), "drunk");
       equal(RiTa.pastPart("run"), "run");
       equal(RiTa.pastPart("shine"), "shone");
+
+      equal(RiTa.pastPart("grown"), "grown");
+      equal(RiTa.pastPart("heard"), "heard");
+      equal(RiTa.pastPart("borne"), "borne");
     }
   });
 
@@ -642,6 +649,11 @@ describe('RiTa.Conjugator', function () {
     expect(RiTa.conjugator.unconjugate("rented")).eq("rent");
     expect(RiTa.conjugator.unconjugate("repurchased")).eq("repurchase");
     expect(RiTa.conjugator.unconjugate("roasted")).eq("roast");
+
+    expect(RiTa.conjugator.unconjugate("busted")).eq("bust");
+    expect(RiTa.conjugator.unconjugate("grown")).eq("grow");
+    expect(RiTa.conjugator.unconjugate("blown")).eq("blow");
+    expect(RiTa.conjugator.unconjugate("heard")).eq("hear");
   });
 
   it("Should conjugate verbs", function() {

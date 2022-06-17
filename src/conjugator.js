@@ -335,8 +335,9 @@ class Conjugator {
     }
 
     // ends with n, d, or t?
-    if (/[ndt]$/.test(w)) {
+    if (/[ndt]$/.test(w) && Object.keys(IRREG_VERBS_LEX).includes(w)) {
       // grown, thrown, heard, learnt...
+      // start, bust...
       let pos = lex._posArr(w.substring(0, w.length - 1))
       if (pos && (pos.includes('vb'))) return true;
     }
@@ -467,11 +468,12 @@ const PAST_PART_RULES = [
   RE("^" + VERBAL_PREFIX + "?have$", 2, "d", 1),
   RE("(sink|slink|drink|shrink|stink)$", 3, "unk"),
   RE("(([sfc][twlp]?r?|w?r)ing|hang)$", 3, "ung"),
-  RE("^" + VERBAL_PREFIX + "?(shear|swear|bear|wear|tear)$", 3, "orn"),
+  RE("^" + VERBAL_PREFIX + "?(shear|swear|wear|tear)$", 3, "orn"),
   RE("^" + VERBAL_PREFIX + "?(bend|spend|send|lend)$", 1, "t"),
   RE("^" + VERBAL_PREFIX + "?(weep|sleep|sweep|creep|keep$)$", 2, "pt"),
   RE("^" + VERBAL_PREFIX + "?(sell|tell)$", 3, "old"),
   RE("^(outfight|beseech)$", 4, "ought"),
+  RE("^bear$", 3, "orne"),
   RE("^bethink$", 3, "ought"),
   RE("^buy$", 2, "ought"),
   RE("^aby$", 1, "ought"),
@@ -530,7 +532,7 @@ const PAST_PART_RULES = [
   RE("^get$", 2, "otten"),
   RE("^grind$", 3, "ound"),
   RE("^hacksaw", 0, "n"),
-  RE("^hear", 0, "d"),
+  RE("^hear$", 0, "d"),
   RE("^hold$", 3, "eld"),
   RE("^hide$", 1, "den"),
   RE("^honey$", 2, "ied"),
@@ -940,7 +942,7 @@ const VERB_CONS_DOUBLING = ["abat", "abet", "abhor", "abut", "accur", "acquit", 
   "carpetbag", "castanet", "cat", "catcal", "catnap", "chanel",
   "channel", "chap", "char", "chat", "chin", "chip", "chir",
   "chirrup", "chisel", "chop", "chug", "chur", "clam", "clap", "clearcut",
-  "clip", "clodhop", "clog", "clop", "closet", "clot", "club", "co-star", "cob", "cobweb", "cod", "coif",
+  "clip", "clodhop", "clog", "clop", "clot", "club", "co-star", "cob", "cobweb", "cod", "coif",
   "com", "combat", "comit", "commit", "compel", "con", "concur", "confer",
   "confiscat", "control", "cop", "coquet", "coral", "corral", "cosset",
   "cotransmit", "councel", "council", "counsel", "court-martial", "crab", "cram",
@@ -1084,7 +1086,7 @@ const PRESENT_RULESET = {
 
 const TO_BE = ["am", "are", "is", "was", "were"];
 
-const IRREG_PAST_PART = ["done", "gone", "abode", "been", "begotten", "begun", "bent", "bid", "bidden", "bled", "born", "bought", "brought", "built", "caught", "clad", "chlung", "could", "crept", "dove", "drunk", "dug", "dwelt", "fed", "felt", "fled", "flung", "fought", "found", "ground", "had", "held", "hung", "hurt", "kept", "knelt", "laid", "lain", "led", "left", "lent", "lit", "lost", "made", "met", "mown", "paid", "pled", "relaid", "rung", "said", "sat", "sent", "shod", "shot", "slain", "slept", "slid", "smelt", "sold", "sought", "spat", "sped", "spelt", "spent", "split", "spolit", "sprung", "spun", "stood", "stuck", "struck", "stung", "stunk", "sung", "sunk", "swept", "sworn", "swum", "swung", "taight", "thought", "told", "torn", "undergone", "understood", "wept", "woken", "won", "worn", "wound", "wrung"];
+const IRREG_PAST_PART = ["done", "gone", "abode", "been", "begotten", "begun", "bent", "bid", "bidden", "bled", "born", "borne", "bought", "brought", "built", "caught", "clad", "chlung", "could", "crept", "dove", "drunk", "dug", "dwelt", "fed", "felt", "fled", "flung", "fought", "found", "ground", "had", "held", "hung", "hurt", "kept", "knelt", "laid", "lain", "led", "left", "lent", "lit", "lost", "made", "met", "mown", "paid", "pled", "relaid", "rung", "said", "sat", "sent", "shod", "shot", "slain", "slept", "slid", "smelt", "sold", "sought", "spat", "sped", "spelt", "spent", "split", "spolit", "sprung", "spun", "stood", "stuck", "struck", "stung", "stunk", "sung", "sunk", "swept", "sworn", "swum", "swung", "taight", "thought", "told", "torn", "undergone", "understood", "wept", "woken", "won", "worn", "wound", "wrung"];
 
 Conjugator.VERB_CONS_DOUBLING = VERB_CONS_DOUBLING; // for scripts
 
