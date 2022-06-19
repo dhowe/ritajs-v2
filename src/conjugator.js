@@ -445,7 +445,7 @@ const ANY_STEM_RE = "^((\\w+)(-\\w+)*)(\\s((\\w+)(-\\w+)*))*$";
 
 const ING_FORM_RULES = [
   RE(CONS + "ie$", 2, "ying", 1),
-  RE("[^ie]e$", 1, "ing", 1),
+  RE("[^oie]e$", 1, "ing", 1),
   RE("^trek$", 1, "cking"),
   RE("^bring$", 0, "ing"),
   RE("^be$", 0, "ing"),
