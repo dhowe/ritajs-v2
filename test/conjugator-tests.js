@@ -143,6 +143,9 @@ describe('RiTa.Conjugator', function () {
     equal(RiTa.presentPart("study "), "studying"); // trim
     equal(RiTa.presentPart(" study"), "studying"); // trim
 
+    equal(RiTa.presentPart("hoe"), "hoeing");
+    equal(RiTa.presentPart("shoe"), "shoeing");
+
     if (hasLex) {
 
       equal(RiTa.pastPart("awake"), "awoken");
