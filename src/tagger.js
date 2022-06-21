@@ -98,7 +98,7 @@ class Tagger {
       let word = words[i];
       if (!word || !word.length) continue;
 
-      if (word.length === 1) {
+      if (word.length === 1 || word === "--") {
         result.push(this._handleSingleLetter(word));
       }
       else {
