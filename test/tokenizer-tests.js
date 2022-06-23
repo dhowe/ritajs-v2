@@ -594,6 +594,40 @@ describe('RiTa.Tokenizer', () => {
     eql(RiTa.sentences("Today I would make something. A 4.7 inch gun. It was noon."), ["Today I would make something.", "A 4.7 inch gun.", "It was noon."]);
   });
 
+   
+it('Should handle dashes', function() {
+  //sentences
+  var input = "Type two hyphens—without a space before, after, or between them.";
+  var output = RiTa.sentences(input);
+  var expected = ["Type two hyphens—without a space before, after, or between them."];
+  eql(output, expected);
+
+  input = "After a split second of hesitation, the second baseman leaped for the ball—or, rather, limped for it.";
+  output = RiTa.sentences(input);
+  expected = ["After a split second of hesitation, the second baseman leaped for the ball—or, rather, limped for it."];
+  eql(output, expected);
+
+  //tokenize and untokenize
+  var sentence = "Type two hyphens--without a space—before, after, or between them.";
+  var output = ['Type', 'two', 'hyphens', '--', 'without', 'a', 'space', '—', 'before', ',', 'after', ',', 'or', 'between', 'them', '.'];
+  expect(RiTa.tokenize(sentence)).eql(output);
+  expect(RiTa.untokenize(output)).eq(sentence);
+
+  sentence = "Phones, hand-held computers, and built-in TVs—each a possible distraction—can lead to a dangerous situation if used while driving.";
+  output = ['Phones', ',', 'hand', '-', 'held', 'computers', ',', 'and', 'built', '-', 'in', 'TVs', '—', 'each', 'a', 'possible', 'distraction', '—', 'can', 'lead', 'to', 'a', 'dangerous', 'situation', 'if', 'used', 'while', 'driving', '.'];
+  expect(RiTa.tokenize(sentence)).eql(output);
+
+  sentence = "He is afraid of two things--spiders and senior prom.";
+  output = ['He', 'is', 'afraid', 'of', 'two', 'things', '--', 'spiders', 'and', 'senior', 'prom', '.'];
+  expect(RiTa.tokenize(sentence)).eql(output);
+  expect(RiTa.untokenize(output)).eq(sentence);
+
+  sentence = "The teacher assigned pages 101–181 for tonight's reading material."
+  output = ['The', 'teacher', 'assigned', 'pages', '101', '–', '181', 'for', "tonight's", 'reading', 'material', '.'];
+  expect(RiTa.tokenize(sentence)).eql(output);
+  expect(RiTa.untokenize(output)).eq(sentence);
+});
+
   it('Should handle decimal numbers', function () {
     // Support number formats:  	3.14529, 1.9e10, 123,340.00, -255.34
     expect(RiTa.tokenize("27.3")).eql(["27.3"]);

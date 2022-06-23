@@ -251,6 +251,50 @@ describe('RiTa.Analyzer', function () {
     RiTa.SILENCE_LTS = lts; // reset
   });
 
+  it('Should handle dashes', function(){
+    // https://github.com/dhowe/rita/issues/176
+
+    let lts = RiTa.SILENCE_LTS;
+    RiTa.SILENCE_LTS = true; // disable LTS logging 
+
+    //U+2012
+    let sentence = "Teaching‒the profession has always appealed to me."
+    let feats = RiTa.analyze(sentence);
+    eq(feats["pos"], "vbg ‒ dt nn vbz rb vbd to prp .");
+    eq(feats["tokens"], "Teaching \u2012 the profession has always appealed to me .");
+    eql(feats["tokens"].split(' '), RiTa.tokenize(sentence));
+   
+    // U+2013
+    sentence = "The teacher assigned pages 101–181 for tonight's reading material. "
+    feats = RiTa.analyze(sentence);
+    eq(feats["pos"], "dt nn vbn nns cd \u2013 cd in nns vbg jj .");
+    eq(feats["tokens"], "The teacher assigned pages 101 – 181 for tonight's reading material .");
+    eql(feats["tokens"].split(' '), RiTa.tokenize(sentence));
+
+    //U+2014
+     sentence = "Type two hyphens—without a space before, after, or between them."
+     feats = RiTa.analyze(sentence);
+    eq(feats["pos"], "nn cd nns \u2014 in dt nn in , in , cc in prp .");
+    eq(feats["tokens"], "Type two hyphens — without a space before , after , or between them .");
+    eql(feats["tokens"].split(' '), RiTa.tokenize(sentence));
+
+    //U+2014
+    sentence = "Phones, hand-held computers, and built-in TVs—each a possible distraction—can lead to a dangerous situation if used while driving."
+    feats = RiTa.analyze(sentence);
+    eq(feats["pos"], "nns , jj - vbn nns , cc vbn - in nnps \u2014 dt dt jj nn \u2014 md vb to dt jj nn in vbn in vbg .");
+    eq(feats["tokens"], "Phones , hand - held computers , and built - in TVs — each a possible distraction — can lead to a dangerous situation if used while driving .");
+    eql(feats["tokens"].split(' '), RiTa.tokenize(sentence));
+
+    // "--"
+    sentence ="He is afraid of two things--spiders and senior prom." ;
+    feats = RiTa.analyze(sentence);
+    eq(feats["pos"], "prp vbz jj in cd nns -- nns cc jj nn .");
+    eq(feats["tokens"], "He is afraid of two things -- spiders and senior prom .");
+    eql(feats["tokens"].split(' '), RiTa.tokenize(sentence));
+
+    RiTa.SILENCE_LTS = lts;
+  })
+
   it('Should call stresses', function () {
 
     let result, answer, word;

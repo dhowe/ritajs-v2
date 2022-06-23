@@ -272,14 +272,14 @@ const LT_RE = /^ *< *$/;
 const GT_RE = /^ *> *$/;
 const TAGSTART_RE = /^ *[!\-\/] *$/;
 const TAGEND_RE = /^ *[\-\/] *$/
-const NOSP_AF_PUNCT_RE = /^[\^\*\$\/\u2044#\-@\u00b0]+$/;
+const NOSP_AF_PUNCT_RE = /^[\^\*\$\/\u2044#\-@\u00b0\u2012\u2013\u2014]+$/;
 const TAG = "TAG", UNDER_RE = /([a-zA-z]|[\.\,])_([a-zA-Z])/g;
 const LB_RE = /^[\[\(\{\u27e8]+$/, RB_RE = /^[\)\]\}\u27e9]+$/;
 const QUOTE_RE = /^[""\u201c\u201d\u2019\u2018`''\u00ab\u00bb]+$/;
 const DOMAIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|ch|fr)$/;
 const SQUOTE_RE = /^[\u2019\u2018`']+$/, ALPHA_RE = /^[A-Za-z’']+$/, WS_RE = / +/;
 const APOS_RE = /^[\u2019']+$/, NL_RE = /(\r?\n)+/g, WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
-const NOSP_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""\u201c\u201d\u2019\u2018`'%\u2026\u2103\^\*\u00b0\/\u2044\-@]+$/;
+const NOSP_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""\u201c\u201d\u2019\u2018`'%\u2026\u2103\^\*\u00b0\/\u2044\u2012\u2013\u2014\-@]+$/;
 const LINEBREAK_RE = /[\n\r\036]/;
 
 const TOKENIZE_RE = [
@@ -325,7 +325,10 @@ const TOKENIZE_RE = [
   /,([^0-9])/g, " , $1",
   /([^.])([.])([\])}>\"'\u2019]*)\s*$/g, "$1 $2$3 ",
   /([\[\](){}<>\u27e8\u27e9])/g, " $1 ",
-  /--/g, " -- ",
+  /--/g, " -- ", 
+  /\u2012/g, " \u2012 ", //" ‒ "
+  /\u2013/g, " \u2013 ", // " — "
+  /\u2014/g, " \u2014 ",//" – "
   /$/g, ' ',
   /^/g, ' ',
   /([^'])' | '/g, "$1 ' ",
