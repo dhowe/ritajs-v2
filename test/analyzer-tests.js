@@ -1,3 +1,4 @@
+import { feat } from '../src/rita_dict';
 import { loadTestingDeps } from './before';
 
 describe('RiTa.Analyzer', function () {
@@ -148,7 +149,7 @@ describe('RiTa.Analyzer', function () {
     eq(feats["tokens"], "off-site");
     eq(feats["phones"], 'ao-f-s-ay-t');
     eq(feats["stresses"], "1-1");
-    eq(feats["syllables"], "ao-f-s-ay-t"); // ao-f/s-ay-t ?
+    eq(feats["syllables"], "ao-f-s-ay-t");
     eql(feats["tokens"].split(' '), RiTa.tokenize("off-site"));
 
     feats = RiTa.analyze("oft-cited");
@@ -190,6 +191,63 @@ describe('RiTa.Analyzer', function () {
     eq(feats["stresses"], "1-1-0-1");
     eq(feats["syllables"], "s-t-ey-t-ah-v-dh-ah-aa-r-t");
     eql(feats["tokens"].split(' '), RiTa.tokenize("state-of-the-art"));
+
+    feats = RiTa.analyze('self-esteem');
+    eq(feats.pos, "nn");
+    eq(feats.tokens, "self-esteem");
+    eq(feats.phones, 's-eh-l-f-ah-s-t-iy-m');
+    eq(feats.syllables, 's-eh-l-f-ah/s-t-iy-m')
+    eq(feats.stresses, '1-0/1')
+    eql(feats.tokens.split(' '), RiTa.tokenize('self-esteem'));
+
+    feats = RiTa.analyze('empty-handed');
+    eq(feats.pos, "jj");
+    eq(feats.tokens, "empty-handed");
+    eq(feats.phones, 'eh-m-p-t-iy-hh-ae-n-d-ah-d');
+    eq(feats.syllables, 'eh-m-p/t-iy-hh-ae-n/d-ah-d');
+    eq(feats.stresses, '1/0-1/0')
+    eql(feats.tokens.split(' '), RiTa.tokenize('empty-handed'));
+
+    feats = RiTa.analyze('merry-go-round');
+    eq(feats.pos, "nn");
+    eq(feats.tokens, "merry-go-round");
+    eq(feats.phones, 'm-eh-r-iy-g-ow-r-aw-n-d');
+    eq(feats.syllables, 'm-eh/r-iy-g-ow-r-aw-n-d')
+    eq(feats.stresses, '1/0-1-1')
+    eql(feats.tokens.split(' '), RiTa.tokenize('merry-go-round'));
+
+    feats = RiTa.analyze('man-eating');
+    eq(feats.pos, "jj");
+    eq(feats.tokens, "man-eating");
+    eq(feats.phones, 'm-ae-n-iy-t-ih-ng');
+    eq(feats.syllables, 'm-ae-n-iy/t-ih-ng');
+    eq(feats.stresses, '1-1/0')
+    eql(feats.tokens.split(' '), RiTa.tokenize('man-eating'));
+
+    //numbers?
+    feats = RiTa.analyze('twenty-one');
+    eq(feats.pos, "cd");
+    eq(feats.tokens, "twenty-one");
+    eq(feats.phones, 't-w-eh-n-t-iy-w-ah-n');
+    eq(feats.syllables, 't-w-eh-n/t-iy-w-ah-n');
+    eq(feats.stresses, '1/0-1')
+    eql(feats.tokens.split(' '), RiTa.tokenize('twenty-one'));
+
+    feats = RiTa.analyze('twenty-first');
+    eq(feats.pos, "jj");
+    eq(feats.tokens, "twenty-first");
+    eq(feats.phones, 't-w-eh-n-t-iy-f-er-s-t');
+    eq(feats.syllables, 't-w-eh-n/t-iy-f-er-s-t')
+    eq(feats.stresses, '1/0-1')
+    eql(feats.tokens.split(' '), RiTa.tokenize('twenty-first'));
+
+    feats = RiTa.analyze('thirty-second');
+    eq(feats.pos, "jj");
+    eq(feats.tokens, "thirty-second");
+    eq(feats.phones, 'th-er-t-iy-s-eh-k-ah-n-d');
+    eq(feats.syllables, 'th-er/t-iy-s-eh/k-ah-n-d')
+    eq(feats.stresses, '1/0-1/0')
+    eql(feats.tokens.split(' '), RiTa.tokenize('thirty-second'));
 
     RiTa.SILENCE_LTS = lts; // reset
   });
