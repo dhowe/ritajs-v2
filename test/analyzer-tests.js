@@ -194,7 +194,7 @@ describe('RiTa.Analyzer', function () {
     RiTa.SILENCE_LTS = lts; // reset
   });
 
-  it('Should treat hyphenated words as separate tokens', function () {  // see https://github.com/dhowe/rita/issues/65
+  0 && it('Should treat hyphenated words as separate tokens', function () {  // see https://github.com/dhowe/rita/issues/65
 
     let lts = RiTa.SILENCE_LTS; // remembers
     RiTa.SILENCE_LTS = true; // disable LTS logging 
@@ -281,8 +281,8 @@ describe('RiTa.Analyzer', function () {
     //U+2014
     sentence = "Phones, hand-held computers, and built-in TVs—each a possible distraction—can lead to a dangerous situation if used while driving."
     feats = RiTa.analyze(sentence);
-    eq(feats["pos"], "nns , jj - vbn nns , cc vbn - in nnps \u2014 dt dt jj nn \u2014 md vb to dt jj nn in vbn in vbg .");
-    eq(feats["tokens"], "Phones , hand - held computers , and built - in TVs — each a possible distraction — can lead to a dangerous situation if used while driving .");
+    eq(feats["pos"], "nns , jj nns , cc jj nnps \u2014 dt dt jj nn \u2014 md vb to dt jj nn in vbn in vbg .");
+    eq(feats["tokens"], "Phones , hand-held computers , and built-in TVs — each a possible distraction — can lead to a dangerous situation if used while driving .");
     eql(feats["tokens"].split(' '), RiTa.tokenize(sentence));
 
     // "--"

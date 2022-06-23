@@ -349,7 +349,7 @@ describe('RiTa.Core', () => {
       ["that's", "why", "this", "is", "our", "place", ")", "."],
       ["most", ",", "punctuation", ";", "is", '.', 'split', ':', "from", "!", "adjoining", "words", "?"],
       ["double", "quotes", "\"", "OK", "\""],
-      ["face","-","to","-","face", "class"],
+      ["face-to-face", "class"],
       ["\"", "it", "is", "strange", "\"", ",", "said", "John", ",", "\"", "Katherine", "does", "not", "drink", "alchol", ".", "\""],
       ["\"", "What", "?", "!", "\"", ",", "John", "yelled", "."],
       ["more", "abbreviations", ":", "a.m.", "p.m.", "Cap.", "c.", "et al.", "etc.", "P.S.", "Ph.D", "R.I.P", "vs.", "v.", "Mr.", "Ms.", "Dr.", "Pf.", "Mx.", "Ind.", "Inc.", "Corp.", "Co.,Ltd.", "Co., Ltd.", "Co. Ltd.", "Ltd.", "Prof."],

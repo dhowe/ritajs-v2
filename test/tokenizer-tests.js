@@ -614,7 +614,7 @@ it('Should handle dashes', function() {
   expect(RiTa.untokenize(output)).eq(sentence);
 
   sentence = "Phones, hand-held computers, and built-in TVs—each a possible distraction—can lead to a dangerous situation if used while driving.";
-  output = ['Phones', ',', 'hand', '-', 'held', 'computers', ',', 'and', 'built', '-', 'in', 'TVs', '—', 'each', 'a', 'possible', 'distraction', '—', 'can', 'lead', 'to', 'a', 'dangerous', 'situation', 'if', 'used', 'while', 'driving', '.'];
+  output = ['Phones', ',', 'hand-held', 'computers', ',', 'and', 'built-in', 'TVs', '—', 'each', 'a', 'possible', 'distraction', '—', 'can', 'lead', 'to', 'a', 'dangerous', 'situation', 'if', 'used', 'while', 'driving', '.'];
   expect(RiTa.tokenize(sentence)).eql(output);
 
   sentence = "He is afraid of two things--spiders and senior prom.";
