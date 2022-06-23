@@ -1,5 +1,6 @@
 import Util from "./util";
 import LetterToSound from "./rita_lts";
+import { part } from "./rita_dict";
 
 const SP = ' ', E = '';
 
@@ -12,7 +13,7 @@ class Analyzer {
   }
 
   analyze(text, opts) {
-    let words = this.RiTa.tokenizer.tokenize(text);
+    let words = this.RiTa.tokenizer.tokenize(text, { keepHyphen: true });
     let tags = this.RiTa.pos(text, opts); // don't fail if no lexicon
     let features = {
       phones: E,
@@ -62,26 +63,19 @@ class Analyzer {
       let phones = word, syllables = word, stresses = word;
       let rawPhones = lex.rawPhones(word, { noLts: true });
 
-      // if its a simple plural ending in 's',
-      // and the singular is in the lexicon, add '-z' to end
-      if (!rawPhones && word.endsWith('s')) {
-        let sing = RiTa.singularize(word);
-        rawPhones = lex.rawPhones(sing, { noLts: true });
-        rawPhones && (rawPhones += '-z'); // add 's' phone
-      }
-
-      // TODO: what about verb forms here?? TestCase?
-
-      let silent = RiTa.SILENT || RiTa.SILENCE_LTS || (opts && opts.silent);
-
-      // if no phones yet, try the lts-engine
       if (!rawPhones) {
-        let ltsPhones = this.computePhones(word, opts);
-        if (ltsPhones && ltsPhones.length) {
-          if (!silent && lex.size()) {// && word.match(HAS_LETTER_RE)) {
-            console.log("[RiTa] Used LTS-rules for '" + word + "'");
-          }
-          rawPhones = Util.syllablesFromPhones(ltsPhones);
+        if (word.includes("-")) {
+          rawPhones = "";
+          let arr = word.split("-");
+          arr.forEach(p => {
+            let part = this._computeRawPhones(p, lex);
+            if (part && part.length > 0) {
+              rawPhones += part + "-"
+            }
+          });
+          rawPhones = rawPhones.substring(0, -1);
+        } else {
+          rawPhones = this._computeRawPhones(word, lex);
         }
       }
 
@@ -102,6 +96,34 @@ class Analyzer {
     }
 
     return result;
+  }
+
+  _computeRawPhones(word, lex) {
+    // if its a simple plural ending in 's',
+    // and the singular is in the lexicon, add '-z' to end
+    let rawPhones = undefined, RiTa = this.RiTa;
+    if (!word.endsWith('s')) {
+      let sing = RiTa.singularize(word);
+      rawPhones = lex.rawPhones(sing, { noLts: true });
+      rawPhones && (rawPhones += '-z'); // add 's' phone
+    }
+
+    // TODO: what about verb forms here?? TestCase?
+
+    let silent = RiTa.SILENT || RiTa.SILENCE_LTS || (opts && opts.silent);
+
+    // if no phones yet, try the lts-engine
+    if (!rawPhones) {
+      let ltsPhones = this.computePhones(word, opts);
+      if (ltsPhones && ltsPhones.length) {
+        if (!silent && lex.size()) {// && word.match(HAS_LETTER_RE)) {
+          console.log("[RiTa] Used LTS-rules for '" + word + "'");
+        }
+        rawPhones = Util.syllablesFromPhones(ltsPhones);
+      }
+    }
+
+    return rawPhones;
   }
 }
 

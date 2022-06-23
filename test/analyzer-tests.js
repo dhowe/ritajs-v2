@@ -137,7 +137,7 @@ describe('RiTa.Analyzer', function () {
     0 && expect(feats.pos).eq("prp vbz vbn dt jj to dt nn .");
   });
 
-  0 && it('Should treat hyphenated words as single tokens', function () {
+  it('Should treat hyphenated words as single tokens', function () {
     // treating word as a single token:
 
     let lts = RiTa.SILENCE_LTS; // remembers

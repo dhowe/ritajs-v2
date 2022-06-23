@@ -90,7 +90,7 @@ class Tagger {
 
     if (!Array.isArray(words)) { // likely a string
       if (!words.trim().length) return inline ? '' : [];
-      words = this.RiTa.tokenizer.tokenize(words); // keepHyphen disabled
+      words = this.RiTa.tokenizer.tokenize(words, {keepHyphen: true}); // keepHyphen enable
     }
 
     for (let i = 0, l = words.length; i < l; i++) {
