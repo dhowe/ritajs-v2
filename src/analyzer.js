@@ -13,7 +13,7 @@ class Analyzer {
   }
 
   analyze(text, opts) {
-    let words = this.RiTa.tokenizer.tokenize(text, { keepHyphen: true });
+    let words = this.RiTa.tokenizer.tokenize(text);
     let tags = this.RiTa.pos(text, opts); // don't fail if no lexicon
     let features = {
       phones: E,
@@ -65,27 +65,41 @@ class Analyzer {
 
       if (!rawPhones) {
         if (word.includes("-")) {
-          rawPhones = "";
+          rawPhones = [];
           let arr = word.split("-");
           arr.forEach(p => {
-            let part = this._computeRawPhones(p, lex);
+            let part = this._computeRawPhones(p, lex, opts, true);
             if (part && part.length > 0) {
-              rawPhones += part + "-"
+              rawPhones.push(part)
             }
           });
-          rawPhones = rawPhones.substring(0, -1);
         } else {
-          rawPhones = this._computeRawPhones(word, lex);
+          rawPhones = this._computeRawPhones(word, lex, opts);
         }
       }
 
       if (rawPhones) {
         // compute phones, syllables and stresses
-        let sp = rawPhones.replace(/1/g, E).replace(/ /g, delim) + SP;
-        phones = (sp === 'dh ') ? 'dh-ah ' : sp; // special case
-        let ss = rawPhones.replace(/ /g, slash).replace(/1/g, E) + SP;
-        syllables = (ss === 'dh ') ? 'dh-ah ' : ss;
-        stresses = this.phonesToStress(rawPhones);
+        if (typeof rawPhones === 'string') {
+          let sp = rawPhones.replace(/1/g, E).replace(/ /g, delim) + SP;
+          phones = (sp === 'dh ') ? 'dh-ah ' : sp; // special case
+          let ss = rawPhones.replace(/ /g, slash).replace(/1/g, E) + SP;
+          syllables = (ss === 'dh ') ? 'dh-ah ' : ss;
+          stresses = this.phonesToStress(rawPhones);
+        } else {
+          // hyphenated
+          let ps = [], syls = [], strs = [];
+          rawPhones.forEach(p => { 
+            let sp = p.replace(/1/g, E).replace(/ /g, delim);
+            ps.push((sp === 'dh ') ? 'dh-ah ' : sp); // special case
+            let ss = p.replace(/ /g, slash).replace(/1/g, E);
+            syls.push((ss === 'dh ') ? 'dh-ah ' : ss);
+            strs.push(this.phonesToStress(p));
+          });
+          phones = ps.join("-");
+          syllables = syls.join("-");
+          stresses = strs.join("-");
+        }
       }
 
       result = { phones, stresses, syllables }; 
@@ -98,11 +112,12 @@ class Analyzer {
     return result;
   }
 
-  _computeRawPhones(word, lex) {
+  _computeRawPhones(word, lex, opts, isPart) {
+    let rawPhones = undefined, RiTa = this.RiTa;
+    if (isPart) rawPhones = lex.rawPhones(word, { noLts: true });
     // if its a simple plural ending in 's',
     // and the singular is in the lexicon, add '-z' to end
-    let rawPhones = undefined, RiTa = this.RiTa;
-    if (!word.endsWith('s')) {
+    if (!rawPhones && word.endsWith('s')) {
       let sing = RiTa.singularize(word);
       rawPhones = lex.rawPhones(sing, { noLts: true });
       rawPhones && (rawPhones += '-z'); // add 's' phone

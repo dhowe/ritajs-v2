@@ -68,7 +68,7 @@ class Tokenizer {
 
     // https://github.com/dhowe/rita/issues/65
     // 'keepHyphen' option for tagging hyphenated words in context
-    if (!opts.keepHyphen) text = text.split(/(?<=[a-zA-Z]+)-(?=[a-zA-Z]+)/).join(" - "); //look behinde and ahead
+    if (opts.splitHyphen) text = text.split(/(?<=[a-zA-Z]+)-(?=[a-zA-Z]+)/).join(" - "); //look behinde and ahead
    
     if (this.RiTa.SPLIT_CONTRACTIONS || opts.splitContractions) {
       for (let i = 0; i < CONTRACTS_RE.length; i += 2) {

@@ -90,7 +90,7 @@ class Tagger {
 
     if (!Array.isArray(words)) { // likely a string
       if (!words.trim().length) return inline ? '' : [];
-      words = this.RiTa.tokenizer.tokenize(words, {keepHyphen: true}); // keepHyphen enable
+      words = this.RiTa.tokenizer.tokenize(words); // keepHyphen enable
     }
 
     for (let i = 0, l = words.length; i < l; i++) {
@@ -491,9 +491,7 @@ class Tagger {
 
       // https://github.com/dhowe/rita/issues/65
       // handle hyphenated words -JC
-      // temporarily disabled -KZ
       if (word.includes("-")) {
-         continue;
         let arr = word.split("-");
         if (result[i + 1] && result[i + 1].startsWith("n")) {
           //next word is a noun

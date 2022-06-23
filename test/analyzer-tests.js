@@ -148,8 +148,8 @@ describe('RiTa.Analyzer', function () {
     eq(feats["tokens"], "off-site");
     eq(feats["phones"], 'ao-f-s-ay-t');
     eq(feats["stresses"], "1-1");
-    eq(feats["syllables"], "ao-f/s-ay-t");
-    eq(feats["tokens"].split(' '), RiTa.tokenize("off-site"));
+    eq(feats["syllables"], "ao-f-s-ay-t"); // ao-f/s-ay-t ?
+    eql(feats["tokens"].split(' '), RiTa.tokenize("off-site"));
 
     feats = RiTa.analyze("oft-cited");
     eq(feats["pos"], "jj");
@@ -161,10 +161,10 @@ describe('RiTa.Analyzer', function () {
 
     feats = RiTa.analyze("deeply-nested");
     eq(feats["pos"], "jj");
-    eq(feats["tokens"], "deeply - nested");
+    eq(feats["tokens"], "deeply-nested");
     eq(feats["phones"], 'd-iy-p-l-iy-n-eh-s-t-ah-d');
     eq(feats["stresses"], "1/0-1/0");
-    eq(feats["syllables"], "d-iy-p/l-iy - n-eh/s-t-ah-d");
+    eq(feats["syllables"], "d-iy-p/l-iy-n-eh/s-t-ah-d");
     eql(feats["tokens"].split(' '), RiTa.tokenize("deeply-nested"));
 
     feats = RiTa.analyze("father-in-law");
@@ -184,7 +184,7 @@ describe('RiTa.Analyzer', function () {
     eql(feats["tokens"].split(' '), RiTa.tokenize("up-to-date"));
 
     feats = RiTa.analyze("state-of-the-art");
-    eq(feats["pos"], "jj");
+    eq(feats["pos"], "nn"); // it should be recognized as noun without context, as "state of the art" is a noun phrase - JC
     eq(feats["tokens"], "state-of-the-art");
     eq(feats["phones"], 's-t-ey-t-ah-v-dh-ah-aa-r-t');
     eq(feats["stresses"], "1-1-0-1");
