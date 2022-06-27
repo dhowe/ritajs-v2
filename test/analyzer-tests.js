@@ -145,133 +145,55 @@ describe('RiTa.Analyzer', function () {
     RiTa.SILENCE_LTS = true; // disable LTS logging 
 
     // pool1: all parts in dict
-    let pool1 = ['mother-in-law', 'father-in-law', 'sister-in-law', 'brother-in-law', 'off-site', 'up-to-date', 'state-of-the-art', 'self-esteem'];
+    let pool1 = ['mother-in-law', 'father-in-law', 'sister-in-law', 'brother-in-law', 'off-site', 'up-to-date', 'state-of-the-art', 'self-esteem', 'merry-go-round', 'man-eating', 'twenty-one', 'twenty-first', 'thirty-second', 'happy-go-lucky', 'editor-in-chief', 'over-the-counter', 'long-term'];
     let feats1 = [{ pos: 'nn', tokens: 'mother-in-law', phones: 'm-ah-dh-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 'm-ah/dh-er/ih-n/l-ao' },
       { pos: 'nn', tokens: 'father-in-law', phones: 'f-aa-dh-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 'f-aa/dh-er/ih-n/l-ao' },
       { pos: 'nn', tokens: 'sister-in-law', phones: 's-ih-s-t-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 's-ih/s-t-er/ih-n/l-ao' },
       { pos: 'nn', tokens: 'brother-in-law', phones: 'b-r-ah-dh-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 'b-r-ah/dh-er/ih-n/l-ao' },
-      { pos: 'nn', tokens: 'off-site', phones: 'ao-f-s-ay-t', stresses: '1-1', syllables: 'ao-f/s-ay-t' },
+      { pos: 'jj', tokens: 'off-site', phones: 'ao-f-s-ay-t', stresses: '1-1', syllables: 'ao-f/s-ay-t' },
       { pos: 'jj', tokens: 'up-to-date', phones: 'ah-p-t-uw-d-ey-t', stresses: '1-1-1', syllables: 'ah-p/t-uw/d-ey-t' },
       { pos: 'nn', tokens: 'state-of-the-art', phones: 's-t-ey-t-ah-v-dh-ah-aa-r-t', stresses: '1-1-0-1', syllables: 's-t-ey-t/ah-v/dh-ah/aa-r-t' },
-      { pos: 'nn', tokens: 'self-esteem', phones: 's-eh-l-f-ah-s-t-iy-m', stresses: '1-0/1', syllables: 's-eh-l-f/ah/s-t-iy-m'}];
+      { pos: 'nn', tokens: 'self-esteem', phones: 's-eh-l-f-ah-s-t-iy-m', stresses: '1-0/1', syllables: 's-eh-l-f/ah/s-t-iy-m'},
+      { pos: 'nn', tokens: 'merry-go-round', phones: 'm-eh-r-iy-g-ow-r-aw-n-d', stresses: '1/0-1-1', syllables: 'm-eh/r-iy/g-ow/r-aw-n-d' },
+      { pos: 'jj', tokens: 'man-eating', phones: 'm-ae-n-iy-t-ih-ng', stresses: '1-1/0', syllables: 'm-ae-n/iy/t-ih-ng'},
+      { pos: 'cd', tokens: 'twenty-one', phones: 't-w-eh-n-t-iy-w-ah-n', stresses: '1/0-1', syllables: 't-w-eh-n/t-iy/w-ah-n'},
+      { pos: 'jj', tokens: 'twenty-first', phones: 't-w-eh-n-t-iy-f-er-s-t', stresses: '1/0-1', syllables: 't-w-eh-n/t-iy/f-er-s-t'},
+      { pos: 'jj', tokens: 'thirty-second', phones: 'th-er-t-iy-s-eh-k-ah-n-d', stresses: '1/0-1/0', syllables: 'th-er/t-iy/s-eh/k-ah-n-d'},
+      { pos: 'jj', tokens: 'happy-go-lucky', phones: 'hh-ae-p-iy-g-ow-l-ah-k-iy', stresses: '1/0-1-1/0', syllables: 'hh-ae/p-iy/g-ow/l-ah/k-iy'},
+      { pos: 'nn', tokens: 'editor-in-chief', phones: 'eh-d-ah-t-er-ih-n-ch-iy-f', stresses: '1/0/0-0-1', syllables: 'eh/d-ah/t-er/ih-n/ch-iy-f'},
+      { pos: 'jj', tokens: 'over-the-counter', phones: 'ow-v-er-dh-ah-k-aw-n-t-er', stresses: '1/0-0-1/0', syllables: 'ow/v-er/dh-ah/k-aw-n/t-er'},
+      { pos: 'jj', tokens: 'long-term', phones: 'l-ao-ng-t-er-m', stresses: '1-1', syllables: 'l-ao-ng/t-er-m'}];
     
     for (let i = 0; i < pool1.length; i++) {
       const feats = RiTa.analyze(pool1[i]);
-      eq(feats.pos, feats1[i].pos);
-      eq(feats.tokens, feats1[i].tokens);
-      eq(feats.phones, feats1[i].phones);
-      eq(feats.stresses, feats1[i].stresses);
-      eq(feats.syllables, feats1[i].syllables);
+      eq(feats.pos, feats1[i].pos, '[pos]fail at ' + pool1[i]);
+      eq(feats.tokens, feats1[i].tokens, '[tokens]fail at ' + pool1[i]);
+      eq(feats.phones, feats1[i].phones, '[phones]fail at ' + pool1[i]);
+      eq(feats.stresses, feats1[i].stresses, '[stresses]fail at ' + pool1[i]);
+      eq(feats.syllables, feats1[i].syllables, '[syllables]fail at ' + pool1[i]);
       eql(feats.tokens.split(' '), RiTa.tokenize(pool1[i]));
     }
 
     // pool2: some parts not in dict
     // pool2A: the missing part is a transfromation of a word in dict
-    let pool2A = ['oft-cited', 'deeply-nested'];
+    let pool2A = ['oft-cited', 'deeply-nested', 'empty-handed', 'sergeant-at-arms'];
     let feats2A = [
       { pos: 'jj', tokens: 'oft-cited', phones: 'ao-f-t-s-ih-t-ah-d', stresses: '1-1/0', syllables: 'ao-f-t/s-ih/t-ah-d' },
-      { pos: 'jj', tokens: 'deeply-nested', phones: 'd-iy-p-l-iy-n-eh-s-t-ah-d', stresses: '1/0-1/0', syllables: 'd-iy-p/l-iy/n-eh/s-t-ah-d'}
+      { pos: 'jj', tokens: 'deeply-nested', phones: 'd-iy-p-l-iy-n-eh-s-t-ah-d', stresses: '1/0-1/0', syllables: 'd-iy-p/l-iy/n-eh/s-t-ah-d'},
+      { pos: 'jj', tokens: 'empty-handed', phones: 'eh-m-p-t-iy-hh-ae-n-d-ah-d', stresses: '1/0-1/0', syllables: 'eh-m-p/t-iy/hh-ae-n/d-ah-d'},
+      { pos: 'nn', tokens: 'sergeant-at-arms', phones: 's-aa-r-jh-ah-n-t-ae-t-aa-r-m-z', stresses: '1/0-1-1', syllables: 's-aa-r/jh-ah-n-t/ae-t/aa-r-m-z'}
     ];
     for (let i = 0; i < pool2A.length; i++) {
       const feats = RiTa.analyze(pool2A[i]);
-      eq(feats.pos, feats2A[i].pos);
-      eq(feats.tokens, feats2A[i].tokens);
-      eq(feats.phones, feats2A[i].phones);
-      eq(feats.stresses, feats2A[i].stresses);
-      eq(feats.syllables, feats2A[i].syllables);
+      eq(feats.pos, feats2A[i].pos, '[pos]fail at ' + pool2A[i]);
+      eq(feats.tokens, feats2A[i].tokens, '[tokens]fail at ' + pool2A[i]);
+      eq(feats.phones, feats2A[i].phones, '[phones]fail at ' + pool2A[i]);
+      eq(feats.stresses, feats2A[i].stresses, '[stresses]fail at ' + pool2A[i]);
+      eq(feats.syllables, feats2A[i].syllables, '[syllables]fail at ' + pool2A[i]);
       eql(feats.tokens.split(' '), RiTa.tokenize(pool2A[i]));
     }
 
     // pool2B: the missing part has no connection to any word in dict
-    
-    // feats = RiTa.analyze('empty-handed');
-    // eq(feats.pos, "jj");
-    // eq(feats.tokens, "empty-handed");
-    // eq(feats.phones, 'eh-m-p-t-iy-hh-ae-n-d-ah-d');
-    // eq(feats.syllables, 'eh-m-p/t-iy/hh-ae-n/d-ah-d');
-    // eq(feats.stresses, '1/0-1/0')
-    // eql(feats.tokens.split(' '), RiTa.tokenize('empty-handed'));
-
-    // feats = RiTa.analyze('merry-go-round');
-    // eq(feats.pos, "nn");
-    // eq(feats.tokens, "merry-go-round");
-    // eq(feats.phones, 'm-eh-r-iy-g-ow-r-aw-n-d');
-    // eq(feats.syllables, 'm-eh/r-iy/g-ow/r-aw-n-d')
-    // eq(feats.stresses, '1/0-1-1')
-    // eql(feats.tokens.split(' '), RiTa.tokenize('merry-go-round'));
-
-    // feats = RiTa.analyze('man-eating');
-    // eq(feats.pos, "jj");
-    // eq(feats.tokens, "man-eating");
-    // eq(feats.phones, 'm-ae-n-iy-t-ih-ng');
-    // eq(feats.syllables, 'm-ae-n/iy/t-ih-ng');
-    // eq(feats.stresses, '1-1/0')
-    // eql(feats.tokens.split(' '), RiTa.tokenize('man-eating'));
-
-    // //numbers?
-    // feats = RiTa.analyze('twenty-one');
-    // eq(feats.pos, "cd");
-    // eq(feats.tokens, "twenty-one");
-    // eq(feats.phones, 't-w-eh-n-t-iy-w-ah-n');
-    // eq(feats.syllables, 't-w-eh-n/t-iy/w-ah-n');
-    // eq(feats.stresses, '1/0-1')
-    // eql(feats.tokens.split(' '), RiTa.tokenize('twenty-one'));
-
-    // feats = RiTa.analyze('twenty-first');
-    // eq(feats.pos, "jj");
-    // eq(feats.tokens, "twenty-first");
-    // eq(feats.phones, 't-w-eh-n-t-iy-f-er-s-t');
-    // eq(feats.syllables, 't-w-eh-n/t-iy/f-er-s-t')
-    // eq(feats.stresses, '1/0-1')
-    // eql(feats.tokens.split(' '), RiTa.tokenize('twenty-first'));
-
-    // feats = RiTa.analyze('thirty-second');
-    // eq(feats.pos, "jj");
-    // eq(feats.tokens, "thirty-second");
-    // eq(feats.phones, 'th-er-t-iy-s-eh-k-ah-n-d');
-    // eq(feats.syllables, 'th-er/t-iy/s-eh/k-ah-n-d')
-    // eq(feats.stresses, '1/0-1/0')
-    // eql(feats.tokens.split(' '), RiTa.tokenize('thirty-second'));
-
-    // feats = RiTa.analyze();
-    // eq(feats.pos, '');
-    // eq(feats.tokens, '');
-    // eq(feats.phones, '');
-    // eq(feats.syllables, '');
-    // eq(feats.stresses, '');
-    // eql(feats.tokens.split(' '), RiTa.tokenize(''));
-
-    // feats = RiTa.analyze();
-    // eq(feats.pos, '');
-    // eq(feats.tokens, '');
-    // eq(feats.phones, '');
-    // eq(feats.syllables, '');
-    // eq(feats.stresses, '');
-    // eql(feats.tokens.split(' '), RiTa.tokenize(''));
-
-    // feats = RiTa.analyze();
-    // eq(feats.pos, '');
-    // eq(feats.tokens, '');
-    // eq(feats.phones, '');
-    // eq(feats.syllables, '');
-    // eq(feats.stresses, '');
-    // eql(feats.tokens.split(' '), RiTa.tokenize(''));
-
-    // feats = RiTa.analyze();
-    // eq(feats.pos, '');
-    // eq(feats.tokens, '');
-    // eq(feats.phones, '');
-    // eq(feats.syllables, '');
-    // eq(feats.stresses, '');
-    // eql(feats.tokens.split(' '), RiTa.tokenize(''));
-
-    // feats = RiTa.analyze();
-    // eq(feats.pos, '');
-    // eq(feats.tokens, '');
-    // eq(feats.phones, '');
-    // eq(feats.syllables, '');
-    // eq(feats.stresses, '');
-    // eql(feats.tokens.split(' '), RiTa.tokenize(''));
 
     RiTa.SILENCE_LTS = lts; // reset
   });

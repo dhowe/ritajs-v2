@@ -499,7 +499,61 @@ class Tagger {
         let arr = word.split("-");
         let firstPart = arr[0];
         let lastPart = arr[arr.length - 1];
-        if (result[i + 1] && result[i + 1].startsWith("n")) {
+        // ? tocheck: anycase causeing death loop
+       
+        if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^cd/.test(t)) > -1) {
+          console.log(word);
+          // numbers
+          let allCD = true;
+          for (let z = 1; z < arr.length; z++) {
+            let part = arr[z];
+            if (!(this.allTags(part) && this.allTags(part).findIndex(t => /^cd/.test(t)) > -1)) {
+              allCD = false;
+              break;
+            }
+          }
+          if (allCD) {
+            tag = "cd"
+          } else {
+            //ordinal number like twenty-first
+            tag = "jj"
+          }
+        } else if (this.allTags(lastPart) && ((this.allTags(lastPart).findIndex(t => /^(jj[rs]?)/.test(t)) > -1 && this.allTags(lastPart).findIndex(t => /^nn/.test(t)) < 0) || this.allTags(lastPart).findIndex(t => /^vb[dg]/.test(t)) > -1)) {
+          // last part is jj or vbd/vbg
+          tag = "jj"
+        } else if (this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^[n]/.test(t)) > -1) {
+          //last part is a noun
+          if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^(in|rb)/.test(t)) > -1) {
+            // over-the-counter; before-hand etc
+            tag = "jj"
+          } else {
+            let lastNounIsMajor = true;
+            for (let z = 0; z < arr.length - 1; z++) {
+              let part = arr[z];
+              if (!(this.allTags(part) && this.allTags(part).findIndex(t => /^([jn]|dt|in)/.test(t)) > -1)) {
+                lastNounIsMajor = false;
+                break;
+              }
+            }
+            if (lastNounIsMajor) {
+              tag = "nn"
+            } else {
+              tag = "jj"
+            }
+          }
+        } else if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^n/.test(t)) > -1) {
+          //first part can be a noun
+          // father-in-law etc. 
+          // numbers depends of this noun
+          tag = this.RiTa.inflector.isPlural(arr[0]) ? "nns" : "nn";
+        }
+        else {
+          tag = "nn"; //generually it should be nn
+        }
+
+
+        // change according to context
+        if (result[i + 1] && result[i + 1].startsWith("n") && tag.startsWith("n")) {
           //next word is a noun
           tag = "jj";
         } else if (result[i + 1] && result[i + 1].startsWith("v")
@@ -507,56 +561,11 @@ class Tagger {
           && this.allTags(lastPart).findIndex(t => /^[vrj]/.test(t)) > -1) {
           //next word is a verb, last part is rb/verb
           tag = "rb";
-        } else {
-          //end of sentence or next word is some strange thing
-          // ? tocheck: anycase causeing death loop
-          if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^n/.test(t)) > -1) {
-            //first part is a noun
-            if (this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^(jj[rs]?|vb[dg])/.test(t)) > -1) {
-              // factory-made. etc.
-              tag = "jj";
-            } else {
-              // father-in-law etc. 
-              // numbers depends of this noun
-              tag = this.RiTa.inflector.isPlural(arr[0]) ? "nns" : "nn";
-            }
-          } else if (this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^[n]/.test(t)) > -1) {
-            //last part is a noun
-            let allNorJ = true;
-            for (let z = 0; z < arr.length - 1; z++) {
-              let part = arr[z];
-              if (!(this.allTags(part) && this.allTags(part).findIndex(t => /^[jn]/.test(t)) > -1)) {
-                allNorJ = false;
-                break;
-              }
-            } 
-            if (allNorJ) {
-              tag = "nn"
-            } else {
-              tag = "jj"
-            }
-          } else if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^cd/.test(t)) > -1) {
-            // numbers
-            let allCD = true;
-            for (let z = 1; z < arr.length; z++) {
-              let part = arr[z];
-              if (!(this.allTags(part) && this.allTags(part).findIndex(t => /^cd/.test(t)) > -1)) {
-                allCD = false;
-                break;
-              }
-            } 
-            if (allCD) {
-              tag = "cd"
-            } else {
-              //ordinal number like twenty-first
-              tag = "jj"
-            }
-          }
-            else {
-            tag = "jj"; //generually it should be jj
-          }
+        } else if (result[i - 1]) {
+          // TBC
         }
       }
+      // end of #HWF
       result[i] = tag;
     }
 

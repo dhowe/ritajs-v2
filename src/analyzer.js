@@ -78,6 +78,7 @@ class Analyzer {
           rawPhones = this._computeRawPhones(word, lex, opts);
         }
       }
+      //endof #HWF
 
       if (rawPhones) {
         // compute phones, syllables and stresses
@@ -88,7 +89,7 @@ class Analyzer {
           syllables = (ss === 'dh ') ? 'dh-ah ' : ss;
           stresses = this.phonesToStress(rawPhones);
         } else {
-          // hyphenated
+          // hyphenated #HWF
           let ps = [], syls = [], strs = [];
           rawPhones.forEach(p => { 
             let sp = p.replace(/1/g, E).replace(/ /g, delim);
@@ -100,6 +101,7 @@ class Analyzer {
           phones = ps.join("-");
           syllables = syls.join("/"); 
           stresses = strs.join("-");
+          // end of #HWF
         }
       }
 

@@ -19623,7 +19623,7 @@ module && (module.exports = {
   "third":["th-er1-d","nn jj rb"],
   "thirst":["th-er1-s-t","nn"],
   "thirsty":["th-er1 s-t-iy","jj"],
-  "thirty":["th-er1 t-iy","nn"],
+  "thirty":["th-er1 t-iy","cd nn"], //#HWF
   "this":["dh-ih1-s","dt rb pdt"],
   "thistle":["th-ih1 s-ah-l","nn"],
   "thong":["th-ao1-ng","nn"],
@@ -20242,7 +20242,7 @@ module && (module.exports = {
   "tweed":["t-w-iy1-d","nn"],
   "tweedy":["t-w-iy1 d-iy","jj"],
   "tweezer":["t-w-iy1 z-er","nn"],
-  "twenty":["t-w-eh1-n t-iy","cd"],
+  "twenty":["t-w-eh1-n t-iy","cd nn"], //#HWF
   "twice":["t-w-ay1-s","rb jj"],
   "twig":["t-w-ih1-g","nn"],
   "twilight":["t-w-ay1 l-ay-t","nn"],
