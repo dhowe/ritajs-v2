@@ -67,7 +67,7 @@ class Tokenizer {
     }
 
     // https://github.com/dhowe/rita/issues/65
-    // 'keepHyphen' option for tagging hyphenated words in context
+    // #HWF now default behavior is to keep hyphen
     if (opts.splitHyphen) text = text.split(/(?<=[a-zA-Z]+)-(?=[a-zA-Z]+)/).join(" - "); //look behinde and ahead
    
     if (this.RiTa.SPLIT_CONTRACTIONS || opts.splitContractions) {

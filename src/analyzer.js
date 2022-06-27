@@ -63,6 +63,7 @@ class Analyzer {
       let phones = word, syllables = word, stresses = word;
       let rawPhones = lex.rawPhones(word, { noLts: true });
 
+      //#HWF
       if (!rawPhones) {
         if (word.includes("-")) {
           rawPhones = [];
@@ -97,7 +98,7 @@ class Analyzer {
             strs.push(this.phonesToStress(p));
           });
           phones = ps.join("-");
-          syllables = syls.join("-");
+          syllables = syls.join("/"); 
           stresses = strs.join("-");
         }
       }
@@ -112,6 +113,7 @@ class Analyzer {
     return result;
   }
 
+  //#HWF this part is unchanged but move to a separated function
   _computeRawPhones(word, lex, opts, isPart) {
     let rawPhones = undefined, RiTa = this.RiTa;
     if (isPart) rawPhones = lex.rawPhones(word, { noLts: true });

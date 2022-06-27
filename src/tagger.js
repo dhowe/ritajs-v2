@@ -492,7 +492,7 @@ class Tagger {
         }
       }
 
-      // https://github.com/dhowe/rita/issues/65
+      // https://github.com/dhowe/rita/issues/65 #HWF
       // handle hyphenated words -JC
       if (word.includes("-")) {
         if (word === '--') continue; // double hyphen is treated as dash
