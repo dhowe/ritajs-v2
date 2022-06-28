@@ -145,7 +145,7 @@ describe('RiTa.Analyzer', function () {
     RiTa.SILENCE_LTS = true; // disable LTS logging 
 
     // pool1: all parts in dict
-    let pool1 = ['mother-in-law', 'father-in-law', 'sister-in-law', 'brother-in-law', 'off-site', 'up-to-date', 'state-of-the-art', 'self-esteem', 'merry-go-round', 'man-eating', 'twenty-one', 'twenty-first', 'thirty-second', 'happy-go-lucky', 'editor-in-chief', 'over-the-counter', 'long-term'];
+    let pool1 = ['mother-in-law', 'father-in-law', 'sister-in-law', 'brother-in-law', 'off-site', 'up-to-date', 'state-of-the-art', 'self-esteem', 'merry-go-round', 'man-eating', 'twenty-one', 'twenty-first', 'thirty-second', 'happy-go-lucky', 'editor-in-chief', 'over-the-counter', 'long-term', 'high-speed', 'in-depth', 'full-length', 'part-time', 'sun-dried', 'well-off', 'well-known', 'gift-wrap', 'follow-up', 'well-being', 'good-looking', 'knee-length', 'runner-up', 'tip-off', 'blush-on'];
     let feats1 = [{ pos: 'nn', tokens: 'mother-in-law', phones: 'm-ah-dh-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 'm-ah/dh-er/ih-n/l-ao' },
       { pos: 'nn', tokens: 'father-in-law', phones: 'f-aa-dh-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 'f-aa/dh-er/ih-n/l-ao' },
       { pos: 'nn', tokens: 'sister-in-law', phones: 's-ih-s-t-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 's-ih/s-t-er/ih-n/l-ao' },
@@ -162,7 +162,23 @@ describe('RiTa.Analyzer', function () {
       { pos: 'jj', tokens: 'happy-go-lucky', phones: 'hh-ae-p-iy-g-ow-l-ah-k-iy', stresses: '1/0-1-1/0', syllables: 'hh-ae/p-iy/g-ow/l-ah/k-iy'},
       { pos: 'nn', tokens: 'editor-in-chief', phones: 'eh-d-ah-t-er-ih-n-ch-iy-f', stresses: '1/0/0-0-1', syllables: 'eh/d-ah/t-er/ih-n/ch-iy-f'},
       { pos: 'jj', tokens: 'over-the-counter', phones: 'ow-v-er-dh-ah-k-aw-n-t-er', stresses: '1/0-0-1/0', syllables: 'ow/v-er/dh-ah/k-aw-n/t-er'},
-      { pos: 'jj', tokens: 'long-term', phones: 'l-ao-ng-t-er-m', stresses: '1-1', syllables: 'l-ao-ng/t-er-m'}];
+      { pos: 'jj', tokens: 'long-term', phones: 'l-ao-ng-t-er-m', stresses: '1-1', syllables: 'l-ao-ng/t-er-m'},
+      { pos: 'jj', tokens: 'high-speed', phones: 'hh-ay-s-p-iy-d', stresses: '1-1', syllables: 'hh-ay/s-p-iy-d'},
+      { pos: 'jj', tokens: 'in-depth', phones: 'ih-n-d-eh-p-th', stresses: '0-1', syllables: 'ih-n/d-eh-p-th'},
+      { pos: 'jj', tokens: 'full-length', phones: 'f-uh-l-l-eh-ng-k-th', stresses: '1-1', syllables: 'f-uh-l/l-eh-ng-k-th'},
+      { pos: 'jj', tokens: 'part-time', phones: 'p-aa-r-t-t-ay-m', stresses: '1-1', syllables: 'p-aa-r-t/t-ay-m'},
+      { pos: 'jj', tokens: 'sun-dried', phones: 's-ah-n-d-r-ay-d', stresses: '1-1', syllables: 's-ah-n/d-r-ay-d'},
+      { pos: 'jj', tokens: 'well-off', phones: 'w-eh-l-ao-f', stresses: '1-1', syllables: 'w-eh-l/ao-f'},
+      { pos: 'jj', tokens: 'well-known', phones: 'w-eh-l-n-ow-n', stresses: '1-1', syllables: 'w-eh-l/n-ow-n'},
+      { pos: 'nn', tokens: 'gift-wrap', phones: 'g-ih-f-t-r-ae-p', stresses: '1-1', syllables: 'g-ih-f-t/r-ae-p'},
+      { pos: 'nn', tokens: 'follow-up', phones: 'f-aa-l-ow-ah-p', stresses: '1/0-1', syllables: 'f-aa/l-ow/ah-p'},
+      { pos: 'nn', tokens: 'well-being', phones: 'w-eh-l-b-iy-ih-ng', stresses: '1-1/0', syllables: 'w-eh-l/b-iy/ih-ng'},
+      { pos: 'jj', tokens: 'good-looking', phones: 'g-uh-d-l-uh-k-ih-ng', stresses: '1-1/0', syllables: 'g-uh-d/l-uh/k-ih-ng'},
+      { pos: 'jj', tokens: 'knee-length', phones: 'n-iy-l-eh-ng-k-th', stresses: '1-1', syllables: 'n-iy/l-eh-ng-k-th'},
+      { pos: 'nn', tokens: 'runner-up', phones: 'r-ah-n-er-ah-p', stresses: '1/0-1', syllables: 'r-ah/n-er/ah-p'},
+      { pos: 'nn', tokens: 'tip-off', phones: 't-ih-p-ao-f', stresses: '1-1', syllables: 't-ih-p/ao-f'},
+      { pos: 'nn', tokens: 'blush-on', phones: 'b-l-ah-sh-aa-n', stresses: '1-1', syllables: 'b-l-ah-sh/aa-n'}
+    ];
     
     for (let i = 0; i < pool1.length; i++) {
       const feats = RiTa.analyze(pool1[i]);
@@ -176,12 +192,19 @@ describe('RiTa.Analyzer', function () {
 
     // pool2: some parts not in dict
     // pool2A: the missing part is a transfromation of a word in dict
-    let pool2A = ['oft-cited', 'deeply-nested', 'empty-handed', 'sergeant-at-arms'];
+    let pool2A = ['oft-cited', 'deeply-nested', 'empty-handed', 'sergeant-at-arms', 'left-handed', 'long-haired', 'breath-taking', 'self-centered', 'single-minded', 'short-tempered', 'one-sided'];
     let feats2A = [
       { pos: 'jj', tokens: 'oft-cited', phones: 'ao-f-t-s-ih-t-ah-d', stresses: '1-1/0', syllables: 'ao-f-t/s-ih/t-ah-d' },
       { pos: 'jj', tokens: 'deeply-nested', phones: 'd-iy-p-l-iy-n-eh-s-t-ah-d', stresses: '1/0-1/0', syllables: 'd-iy-p/l-iy/n-eh/s-t-ah-d'},
       { pos: 'jj', tokens: 'empty-handed', phones: 'eh-m-p-t-iy-hh-ae-n-d-ah-d', stresses: '1/0-1/0', syllables: 'eh-m-p/t-iy/hh-ae-n/d-ah-d'},
-      { pos: 'nn', tokens: 'sergeant-at-arms', phones: 's-aa-r-jh-ah-n-t-ae-t-aa-r-m-z', stresses: '1/0-1-1', syllables: 's-aa-r/jh-ah-n-t/ae-t/aa-r-m-z'}
+      { pos: 'nn', tokens: 'sergeant-at-arms', phones: 's-aa-r-jh-ah-n-t-ae-t-aa-r-m-z', stresses: '1/0-1-1', syllables: 's-aa-r/jh-ah-n-t/ae-t/aa-r-m-z'},
+      { pos: 'jj', tokens: 'left-handed', phones: 'l-eh-f-t-hh-ae-n-d-ah-d', stresses: '1-1/0', syllables: 'l-eh-f-t/hh-ae-n/d-ah-d'},
+      { pos: 'jj', tokens: 'long-haired', phones: 'l-ao-ng-hh-eh-r-d', stresses: '1-1', syllables: 'l-ao-ng/hh-eh-r-d'},
+      { pos: 'jj', tokens: 'breath-taking', phones: 'b-r-eh-th-t-ey-k-ih-ng', stresses: '1-1/0', syllables: 'b-r-eh-th/t-ey/k-ih-ng'},
+      { pos: 'jj', tokens: 'self-centered', phones: 's-eh-l-f-s-eh-n-t-er-d', stresses: '1-1/0', syllables: 's-eh-l-f/s-eh-n/t-er-d'},
+      { pos: 'jj', tokens: 'single-minded', phones: 's-ih-ng-g-ah-l-m-ay-n-d-ah-d', stresses: '1/0-1/0', syllables: 's-ih-ng/g-ah-l/m-ay-n/d-ah-d'},
+      { pos: 'jj', tokens: 'short-tempered', phones: 'sh-ao-r-t-t-eh-m-p-er-d', stresses: '1-1/0', syllables: 'sh-ao-r-t/t-eh-m/p-er-d'},
+      { pos: 'jj', tokens: 'one-sided', phones: 'w-ah-n-s-ay-d-ah-d', stresses: '1-1/0', syllables: 'w-ah-n/s-ay/d-ah-d'}
     ];
     for (let i = 0; i < pool2A.length; i++) {
       const feats = RiTa.analyze(pool2A[i]);
