@@ -91,6 +91,7 @@ class Tagger {
     let simple = opts && opts.simple;
     let inline = opts && opts.inline;
     let dbug = 0, result = [], choices2d = [];
+    if (opts && opts.dbug) dbug = 1;
 
     if (!words || !words.length) return inline ? '' : [];
 
@@ -295,6 +296,10 @@ class Tagger {
 
     // Check if this could be a plural noun form
     if (this.isLikelyPlural(word)) return ['nns'];
+
+    // Check if is irregular past part of a verb
+    let conj = this.RiTa.conjugator;
+    if (conj.IRREG_PAST_PART.includes(word)) return ['vbd'];
 
     // Give up 
     return noGuessing ? [] : word.endsWith('ly') ? ['rb'] :
@@ -506,13 +511,20 @@ class Tagger {
         if (word === '--') continue; // double hyphen is treated as dash
         if (SPECIAL_HYPHENATED_WORDS.hasOwnProperty(word)) {
           result[i] = SPECIAL_HYPHENATED_WORDS[word];
+          if (dbug) console.log(word + ": " + SPECIAL_HYPHENATED_WORDS[word] + " ACC: special");
           continue;
         }
         let arr = word.split("-");
         let firstPart = arr[0];
         let lastPart = arr[arr.length - 1];
-       
-        if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^cd/.test(t)) > -1) {
+        
+        if (arr.length === 2 && VERB_PREFIX.includes(arr[0]) && this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^vb/.test(t)) > -1) {
+          tag = this.allTags(lastPart).find(t => /^vb/.test(t));
+          if (dbug) console.log(word + ": " + tag + " ACC: prefix-vb");
+        } else if (arr.length === 2 && NOUN_PREFIX.includes(arr[0]) && this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^nn/.test(t)) > -1) { 
+          tag = this.allTags(lastPart).find(t => /^nn/.test(t));
+          if (dbug) console.log(word + ": " + tag + " ACC: prefix-nn");
+        } else if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^cd/.test(t)) > -1) {
           // numbers
           let allCD = true;
           for (let z = 1; z < arr.length; z++) {
@@ -524,29 +536,42 @@ class Tagger {
           }
           if (allCD) {
             tag = "cd"
+            if (dbug) console.log(word + ": " + tag + " ACC: cd(-cd)+ ");
           } else {
             //ordinal number like twenty-first
             tag = "jj"
+            if (dbug) console.log(word + ": " + tag + " ACC: cd(-jj/nn)+ ");
           }
+        } else if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^jj$/.test(t)) > -1 && arr.length === 2 && this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^nn/.test(t)) > -1) {
+          tag = 'jj'
+          if (dbug) console.log(word + ": " + tag + " ACC: jj-nn");
         } else if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^vb$/.test(t)) > -1 && this.allTags(firstPart).findIndex(t => /^jj/.test(t)) < 0) {
           // first part is vb
           if (arr.length === 2 && (this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^in$/.test(t)) > -1)) {
             // verb phrase with in, e.g. blush-on tip-off get-together run-in
             tag = "nn"
-          } else if(arr.length === 2 && this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^(jj|vb[gdp]|nn)/.test(t)) > -1) {
-            // man-eating, part-time, 
+            if (dbug) console.log(word + ": " + tag + " ACC: vb-in");
+          } else if(arr.length === 2 && this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^(vb[gdp])/.test(t)) > -1 && this.allTags(lastPart).findIndex(t => /^vb$/.test(t)) < 0) {
+            // man-eating
             tag = "jj"
+            if (dbug) console.log(word + ": " + tag + " ACC: vb-vbg/vbd/vbp");
+          } else if (arr.length === 2 && this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^jj/.test(t)) > -1) { 
+            tag = 'jj'
+            if (dbug) console.log(word + ": " + tag + " ACC: vb-jj");
           } else {
             tag = "nn"
+            if (dbug) console.log(word + ": " + tag + " ACC: vb(-.)+ general");
           }
         } else if (this.allTags(lastPart) && ((this.allTags(lastPart).findIndex(t => /^(jj[rs]?)/.test(t)) > -1 && this.allTags(lastPart).findIndex(t => /^nn/.test(t)) < 0) || this.allTags(lastPart).findIndex(t => /^vb[dg]/.test(t)) > -1)) {
           // last part is jj or vbd/vbg
           tag = "jj"
+          if (dbug) console.log(word + ": " + tag + " ACC: last part jj or vbd/vbg");
         } else if (this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^[n]/.test(t)) > -1) {
           //last part is a noun
           if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^(in|rb)/.test(t)) > -1) {
             // over-the-counter; before-hand etc
             tag = "jj"
+            if (dbug) console.log(word + ": " + tag + " ACC: in/rb(-.)*-nn");
           } else {
             let lastNounIsMajor = true;
             for (let z = 0; z < arr.length - 1; z++) {
@@ -558,18 +583,22 @@ class Tagger {
             }
             if (lastNounIsMajor) {
               tag = "nn"
+              if (dbug) console.log(word + ": " + tag + " ACC: all nn");
             } else {
               tag = "jj"
+              if (dbug) console.log(word + ": " + tag + " ACC: (.-)+nn");
             }
           }
         } else if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^n/.test(t)) > -1) {
           //first part can be a noun
-          // father-in-law etc. 
+          // father-in-law etc.
           // numbers depends of this noun
           tag = this.RiTa.inflector.isPlural(arr[0]) ? "nns" : "nn";
+          if (dbug) console.log(word + ": " + tag + " ACC: nn(-.)+");
         }
         else {
           tag = "nn"; //generually it should be nn
+          if (dbug) console.log(word + ": " + tag + " ACC: no rule hit");
         }
 
 
@@ -582,8 +611,10 @@ class Tagger {
           && this.allTags(lastPart).findIndex(t => /^[vrj]/.test(t)) > -1) {
           //next word is a verb, last part is rb/verb
           tag = "rb";
-        } else if (result[i - 1]) {
-          // TBC
+        } else if (result[i + 1] && result[i + 1].startsWith("v") && tag === 'jj') {
+          tag = "rb"
+        } else if (result[i - 1] && words[i - 1].toLowerCase() === 'the' && tag === 'jj') {
+          tag = 'nn'
         }
       }
       // end of #HWF
@@ -619,6 +650,14 @@ const EX_BE = ["is", "are", "was", "were", "isn't", "aren't", "wasn't", "weren't
 const SPECIAL_HYPHENATED_WORDS = {
   "well-being": "nn", // by rules should be jj, like 'good-looking'
   "knee-length": "jj", // by rules should be nn, coz all parts are noun, like 'gift-wrap'
+  "king-size": 'jj', // by rules should be nn, coz all parts are noun
+  "ho-hum": 'uh', // by rules should be nn, coz all parts are noun as ho will be recognise as nn in the algorithm
+  "roly-poly": 'jj', // by rules should be nn, coz all parts are recognise as nn in the algorithm
+  "nitty-gritty": 'nn', // by rules should be jj, coz gritty is jj
+  "topsy-turvy": 'jj', // by rules should be nn, coz all parts are recognise as nn in the algorithm
 };
+const VERB_PREFIX = ["de", "over", "re", "dis", "un", "mis", "out", "pre", "post", "co", "fore", "inter", "sub", "trans", "under"];
+const NOUN_PREFIX = ["anti", "auto", "de", "dis", "un", "non", "co", "over", "under", "up", "down", "hyper", "mono", "bi", "uni", "di", "semi", "omni", "mega", "mini", "macro", "micro", "counter", "ex", "mal", "neo", "out", "poly", "pseudo", "super", "sub", "sur", "tele", "tri", "ultra", "vice"];
+const ADJECTIVE_PREFIX = ["dis", "non", "semi", "un"];
 
 export default Tagger;

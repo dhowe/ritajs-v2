@@ -7130,6 +7130,7 @@ module && (module.exports = {
   "featureless":["f-iy1 ch-er l-ah-s","jj"],
   "fecal":["f-iy1 k-ah-l","jj"],
   "feckless":["f-eh1-k l-ih-s","jj"],
+  "fed":["f-eh1-d",'vbd'],
   "federal":["f-eh1 d-er ah-l","jj"],
   "federalist":["f-eh1 d-er ah l-ih-s-t","nn"],
   "federalized":["f-eh1 d-er ah l-ay-z-d","jj"],

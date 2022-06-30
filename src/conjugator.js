@@ -216,6 +216,7 @@ class Conjugator {
   _reset() {
     this.IRREG_VERBS_LEX_VB = IRREG_VERBS_LEX;     // for tagger
     this.IRREG_VERBS_NOLEX = IRREG_VERBS_NOLEX;  // for tagger
+    this.IRREG_PAST_PART = IRREG_PAST_PART; // for tagger
     this.perfect = this.progressive = this.passive = this.interrogative = false;
     this.tense = this.RiTa.PRESENT;
     this.person = this.RiTa.FIRST;

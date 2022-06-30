@@ -145,40 +145,53 @@ describe('RiTa.Analyzer', function () {
     RiTa.SILENCE_LTS = true; // disable LTS logging 
 
     // pool1: all parts in dict
-    let pool1 = ['mother-in-law', 'father-in-law', 'sister-in-law', 'brother-in-law', 'off-site', 'up-to-date', 'state-of-the-art', 'self-esteem', 'merry-go-round', 'man-eating', 'twenty-one', 'twenty-first', 'thirty-second', 'happy-go-lucky', 'editor-in-chief', 'over-the-counter', 'long-term', 'high-speed', 'in-depth', 'full-length', 'part-time', 'sun-dried', 'well-off', 'well-known', 'gift-wrap', 'follow-up', 'well-being', 'good-looking', 'knee-length', 'runner-up', 'tip-off', 'blush-on'];
+    let pool1 = ['mother-in-law', 'father-in-law', 'sister-in-law', 'brother-in-law', 'off-site', 'up-to-date', 'state-of-the-art', 'self-esteem', 'merry-go-round', 'man-eating', 'twenty-one', 'twenty-first', 'thirty-second', 'happy-go-lucky', 'editor-in-chief', 'over-the-counter', 'long-term', 'high-speed', 'in-depth', 'full-length', 'part-time', 'sun-dried', 'well-off', 'well-known', 'gift-wrap', 'follow-up', 'well-being', 'good-looking', 'knee-length', 'runner-up', 'tip-off', 'blush-on', 'sugar-free', 'ice-cold', 'far-flung', 'high-rise', 'life-size', 'king-size', 'next-door', 'full-time', 'forty-acre', 'on-campus', 'family-run', 'low-grade', 'round-trip'];
     let feats1 = [{ pos: 'nn', tokens: 'mother-in-law', phones: 'm-ah-dh-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 'm-ah/dh-er/ih-n/l-ao' },
-      { pos: 'nn', tokens: 'father-in-law', phones: 'f-aa-dh-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 'f-aa/dh-er/ih-n/l-ao' },
-      { pos: 'nn', tokens: 'sister-in-law', phones: 's-ih-s-t-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 's-ih/s-t-er/ih-n/l-ao' },
-      { pos: 'nn', tokens: 'brother-in-law', phones: 'b-r-ah-dh-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 'b-r-ah/dh-er/ih-n/l-ao' },
-      { pos: 'jj', tokens: 'off-site', phones: 'ao-f-s-ay-t', stresses: '1-1', syllables: 'ao-f/s-ay-t' },
-      { pos: 'jj', tokens: 'up-to-date', phones: 'ah-p-t-uw-d-ey-t', stresses: '1-1-1', syllables: 'ah-p/t-uw/d-ey-t' },
-      { pos: 'nn', tokens: 'state-of-the-art', phones: 's-t-ey-t-ah-v-dh-ah-aa-r-t', stresses: '1-1-0-1', syllables: 's-t-ey-t/ah-v/dh-ah/aa-r-t' },
-      { pos: 'nn', tokens: 'self-esteem', phones: 's-eh-l-f-ah-s-t-iy-m', stresses: '1-0/1', syllables: 's-eh-l-f/ah/s-t-iy-m'},
-      { pos: 'nn', tokens: 'merry-go-round', phones: 'm-eh-r-iy-g-ow-r-aw-n-d', stresses: '1/0-1-1', syllables: 'm-eh/r-iy/g-ow/r-aw-n-d' },
-      { pos: 'jj', tokens: 'man-eating', phones: 'm-ae-n-iy-t-ih-ng', stresses: '1-1/0', syllables: 'm-ae-n/iy/t-ih-ng'},
-      { pos: 'cd', tokens: 'twenty-one', phones: 't-w-eh-n-t-iy-w-ah-n', stresses: '1/0-1', syllables: 't-w-eh-n/t-iy/w-ah-n'},
-      { pos: 'jj', tokens: 'twenty-first', phones: 't-w-eh-n-t-iy-f-er-s-t', stresses: '1/0-1', syllables: 't-w-eh-n/t-iy/f-er-s-t'},
-      { pos: 'jj', tokens: 'thirty-second', phones: 'th-er-t-iy-s-eh-k-ah-n-d', stresses: '1/0-1/0', syllables: 'th-er/t-iy/s-eh/k-ah-n-d'},
-      { pos: 'jj', tokens: 'happy-go-lucky', phones: 'hh-ae-p-iy-g-ow-l-ah-k-iy', stresses: '1/0-1-1/0', syllables: 'hh-ae/p-iy/g-ow/l-ah/k-iy'},
-      { pos: 'nn', tokens: 'editor-in-chief', phones: 'eh-d-ah-t-er-ih-n-ch-iy-f', stresses: '1/0/0-0-1', syllables: 'eh/d-ah/t-er/ih-n/ch-iy-f'},
-      { pos: 'jj', tokens: 'over-the-counter', phones: 'ow-v-er-dh-ah-k-aw-n-t-er', stresses: '1/0-0-1/0', syllables: 'ow/v-er/dh-ah/k-aw-n/t-er'},
-      { pos: 'jj', tokens: 'long-term', phones: 'l-ao-ng-t-er-m', stresses: '1-1', syllables: 'l-ao-ng/t-er-m'},
-      { pos: 'jj', tokens: 'high-speed', phones: 'hh-ay-s-p-iy-d', stresses: '1-1', syllables: 'hh-ay/s-p-iy-d'},
-      { pos: 'jj', tokens: 'in-depth', phones: 'ih-n-d-eh-p-th', stresses: '0-1', syllables: 'ih-n/d-eh-p-th'},
-      { pos: 'jj', tokens: 'full-length', phones: 'f-uh-l-l-eh-ng-k-th', stresses: '1-1', syllables: 'f-uh-l/l-eh-ng-k-th'},
-      { pos: 'jj', tokens: 'part-time', phones: 'p-aa-r-t-t-ay-m', stresses: '1-1', syllables: 'p-aa-r-t/t-ay-m'},
-      { pos: 'jj', tokens: 'sun-dried', phones: 's-ah-n-d-r-ay-d', stresses: '1-1', syllables: 's-ah-n/d-r-ay-d'},
-      { pos: 'jj', tokens: 'well-off', phones: 'w-eh-l-ao-f', stresses: '1-1', syllables: 'w-eh-l/ao-f'},
-      { pos: 'jj', tokens: 'well-known', phones: 'w-eh-l-n-ow-n', stresses: '1-1', syllables: 'w-eh-l/n-ow-n'},
-      { pos: 'nn', tokens: 'gift-wrap', phones: 'g-ih-f-t-r-ae-p', stresses: '1-1', syllables: 'g-ih-f-t/r-ae-p'},
-      { pos: 'nn', tokens: 'follow-up', phones: 'f-aa-l-ow-ah-p', stresses: '1/0-1', syllables: 'f-aa/l-ow/ah-p'},
-      { pos: 'nn', tokens: 'well-being', phones: 'w-eh-l-b-iy-ih-ng', stresses: '1-1/0', syllables: 'w-eh-l/b-iy/ih-ng'},
-      { pos: 'jj', tokens: 'good-looking', phones: 'g-uh-d-l-uh-k-ih-ng', stresses: '1-1/0', syllables: 'g-uh-d/l-uh/k-ih-ng'},
-      { pos: 'jj', tokens: 'knee-length', phones: 'n-iy-l-eh-ng-k-th', stresses: '1-1', syllables: 'n-iy/l-eh-ng-k-th'},
-      { pos: 'nn', tokens: 'runner-up', phones: 'r-ah-n-er-ah-p', stresses: '1/0-1', syllables: 'r-ah/n-er/ah-p'},
-      { pos: 'nn', tokens: 'tip-off', phones: 't-ih-p-ao-f', stresses: '1-1', syllables: 't-ih-p/ao-f'},
-      { pos: 'nn', tokens: 'blush-on', phones: 'b-l-ah-sh-aa-n', stresses: '1-1', syllables: 'b-l-ah-sh/aa-n'}
-    ];
+    { pos: 'nn', tokens: 'father-in-law', phones: 'f-aa-dh-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 'f-aa/dh-er/ih-n/l-ao' },
+    { pos: 'nn', tokens: 'sister-in-law', phones: 's-ih-s-t-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 's-ih/s-t-er/ih-n/l-ao' },
+    { pos: 'nn', tokens: 'brother-in-law', phones: 'b-r-ah-dh-er-ih-n-l-ao', stresses: '1/0-0-1', syllables: 'b-r-ah/dh-er/ih-n/l-ao' },
+    { pos: 'jj', tokens: 'off-site', phones: 'ao-f-s-ay-t', stresses: '1-1', syllables: 'ao-f/s-ay-t' },
+    { pos: 'jj', tokens: 'up-to-date', phones: 'ah-p-t-uw-d-ey-t', stresses: '1-1-1', syllables: 'ah-p/t-uw/d-ey-t' },
+    { pos: 'nn', tokens: 'state-of-the-art', phones: 's-t-ey-t-ah-v-dh-ah-aa-r-t', stresses: '1-1-0-1', syllables: 's-t-ey-t/ah-v/dh-ah/aa-r-t' },
+    { pos: 'nn', tokens: 'self-esteem', phones: 's-eh-l-f-ah-s-t-iy-m', stresses: '1-0/1', syllables: 's-eh-l-f/ah/s-t-iy-m' },
+    { pos: 'nn', tokens: 'merry-go-round', phones: 'm-eh-r-iy-g-ow-r-aw-n-d', stresses: '1/0-1-1', syllables: 'm-eh/r-iy/g-ow/r-aw-n-d' },
+    { pos: 'jj', tokens: 'man-eating', phones: 'm-ae-n-iy-t-ih-ng', stresses: '1-1/0', syllables: 'm-ae-n/iy/t-ih-ng' },
+    { pos: 'cd', tokens: 'twenty-one', phones: 't-w-eh-n-t-iy-w-ah-n', stresses: '1/0-1', syllables: 't-w-eh-n/t-iy/w-ah-n' },
+    { pos: 'jj', tokens: 'twenty-first', phones: 't-w-eh-n-t-iy-f-er-s-t', stresses: '1/0-1', syllables: 't-w-eh-n/t-iy/f-er-s-t' },
+    { pos: 'jj', tokens: 'thirty-second', phones: 'th-er-t-iy-s-eh-k-ah-n-d', stresses: '1/0-1/0', syllables: 'th-er/t-iy/s-eh/k-ah-n-d' },
+    { pos: 'jj', tokens: 'happy-go-lucky', phones: 'hh-ae-p-iy-g-ow-l-ah-k-iy', stresses: '1/0-1-1/0', syllables: 'hh-ae/p-iy/g-ow/l-ah/k-iy' },
+    { pos: 'nn', tokens: 'editor-in-chief', phones: 'eh-d-ah-t-er-ih-n-ch-iy-f', stresses: '1/0/0-0-1', syllables: 'eh/d-ah/t-er/ih-n/ch-iy-f' },
+    { pos: 'jj', tokens: 'over-the-counter', phones: 'ow-v-er-dh-ah-k-aw-n-t-er', stresses: '1/0-0-1/0', syllables: 'ow/v-er/dh-ah/k-aw-n/t-er' },
+    { pos: 'jj', tokens: 'long-term', phones: 'l-ao-ng-t-er-m', stresses: '1-1', syllables: 'l-ao-ng/t-er-m' },
+    { pos: 'jj', tokens: 'high-speed', phones: 'hh-ay-s-p-iy-d', stresses: '1-1', syllables: 'hh-ay/s-p-iy-d' },
+    { pos: 'jj', tokens: 'in-depth', phones: 'ih-n-d-eh-p-th', stresses: '0-1', syllables: 'ih-n/d-eh-p-th' },
+    { pos: 'jj', tokens: 'full-length', phones: 'f-uh-l-l-eh-ng-k-th', stresses: '1-1', syllables: 'f-uh-l/l-eh-ng-k-th' },
+    { pos: 'jj', tokens: 'part-time', phones: 'p-aa-r-t-t-ay-m', stresses: '1-1', syllables: 'p-aa-r-t/t-ay-m' },
+    { pos: 'jj', tokens: 'sun-dried', phones: 's-ah-n-d-r-ay-d', stresses: '1-1', syllables: 's-ah-n/d-r-ay-d' },
+    { pos: 'jj', tokens: 'well-off', phones: 'w-eh-l-ao-f', stresses: '1-1', syllables: 'w-eh-l/ao-f' },
+    { pos: 'jj', tokens: 'well-known', phones: 'w-eh-l-n-ow-n', stresses: '1-1', syllables: 'w-eh-l/n-ow-n' },
+    { pos: 'nn', tokens: 'gift-wrap', phones: 'g-ih-f-t-r-ae-p', stresses: '1-1', syllables: 'g-ih-f-t/r-ae-p' },
+    { pos: 'nn', tokens: 'follow-up', phones: 'f-aa-l-ow-ah-p', stresses: '1/0-1', syllables: 'f-aa/l-ow/ah-p' },
+    { pos: 'nn', tokens: 'well-being', phones: 'w-eh-l-b-iy-ih-ng', stresses: '1-1/0', syllables: 'w-eh-l/b-iy/ih-ng' },
+    { pos: 'jj', tokens: 'good-looking', phones: 'g-uh-d-l-uh-k-ih-ng', stresses: '1-1/0', syllables: 'g-uh-d/l-uh/k-ih-ng' },
+    { pos: 'jj', tokens: 'knee-length', phones: 'n-iy-l-eh-ng-k-th', stresses: '1-1', syllables: 'n-iy/l-eh-ng-k-th' },
+    { pos: 'nn', tokens: 'runner-up', phones: 'r-ah-n-er-ah-p', stresses: '1/0-1', syllables: 'r-ah/n-er/ah-p' },
+    { pos: 'nn', tokens: 'tip-off', phones: 't-ih-p-ao-f', stresses: '1-1', syllables: 't-ih-p/ao-f' },
+    { pos: 'nn', tokens: 'blush-on', phones: 'b-l-ah-sh-aa-n', stresses: '1-1', syllables: 'b-l-ah-sh/aa-n' },
+    { pos: 'jj', tokens: 'sugar-free', phones: 'sh-uh-g-er-f-r-iy', stresses: '1/0-1', syllables: 'sh-uh/g-er/f-r-iy' },
+    { pos: 'jj', tokens: 'ice-cold', phones: 'ay-s-k-ow-l-d', stresses: '1-1', syllables: 'ay-s/k-ow-l-d' },
+    { pos: 'jj', tokens: 'far-flung', phones: 'f-aa-r-f-l-ah-ng', stresses: '1-1', syllables: 'f-aa-r/f-l-ah-ng' },
+    { pos: 'nn', tokens: 'high-rise', phones: 'hh-ay-r-ay-z', stresses: '1-1', syllables: 'hh-ay/r-ay-z' },
+    { pos: 'jj', tokens: 'life-size', phones: 'l-ay-f-s-ay-z', stresses: '1-1', syllables: 'l-ay-f/s-ay-z' },
+    { pos: 'jj', tokens: 'king-size', phones: 'k-ih-ng-s-ay-z', stresses: '1-1', syllables: 'k-ih-ng/s-ay-z' },
+    { pos: 'jj', tokens: 'next-door', phones: 'n-eh-k-s-t-d-ao-r', stresses: '1-1', syllables: 'n-eh-k-s-t/d-ao-r' },
+    { pos: 'jj', tokens: 'full-time', phones: 'f-uh-l-t-ay-m', stresses: '1-1', syllables: 'f-uh-l/t-ay-m' },
+    { pos: 'jj', tokens: 'forty-acre', phones: 'f-ao-r-t-iy-ey-k-er', stresses: '1/0-1/0', syllables: 'f-ao-r/t-iy/ey/k-er' },
+    { pos: 'jj', tokens: 'on-campus', phones: 'aa-n-k-ae-m-p-ah-s', stresses: '1-1/0', syllables: 'aa-n/k-ae-m/p-ah-s' },
+    { pos: 'jj', tokens: 'family-run', phones: 'f-ae-m-ah-l-iy-r-ah-n', stresses: '1/0/0-1', syllables: 'f-ae/m-ah/l-iy/r-ah-n' },
+    { pos: 'jj', tokens: 'low-grade', phones: 'l-ow-g-r-ey-d', stresses: '1-1', syllables: 'l-ow/g-r-ey-d' },
+    { pos: 'jj', tokens: 'round-trip', phones: 'r-aw-n-d-t-r-ih-p', stresses: '1-1', syllables: 'r-aw-n-d/t-r-ih-p'}
+  ];
     
     for (let i = 0; i < pool1.length; i++) {
       const feats = RiTa.analyze(pool1[i]);
@@ -192,19 +205,24 @@ describe('RiTa.Analyzer', function () {
 
     // pool2: some parts not in dict
     // pool2A: the missing part is a transfromation of a word in dict
-    let pool2A = ['oft-cited', 'deeply-nested', 'empty-handed', 'sergeant-at-arms', 'left-handed', 'long-haired', 'breath-taking', 'self-centered', 'single-minded', 'short-tempered', 'one-sided'];
+    let pool2A = ['oft-cited', 'deeply-nested', 'empty-handed', 'sergeant-at-arms', 'left-handed', 'long-haired', 'breath-taking', 'self-centered', 'single-minded', 'short-tempered', 'one-sided', 'warm-blooded', 'cold-blooded', 'bell-bottoms', 'corn-fed', 'able-bodied'];
     let feats2A = [
       { pos: 'jj', tokens: 'oft-cited', phones: 'ao-f-t-s-ih-t-ah-d', stresses: '1-1/0', syllables: 'ao-f-t/s-ih/t-ah-d' },
-      { pos: 'jj', tokens: 'deeply-nested', phones: 'd-iy-p-l-iy-n-eh-s-t-ah-d', stresses: '1/0-1/0', syllables: 'd-iy-p/l-iy/n-eh/s-t-ah-d'},
-      { pos: 'jj', tokens: 'empty-handed', phones: 'eh-m-p-t-iy-hh-ae-n-d-ah-d', stresses: '1/0-1/0', syllables: 'eh-m-p/t-iy/hh-ae-n/d-ah-d'},
-      { pos: 'nn', tokens: 'sergeant-at-arms', phones: 's-aa-r-jh-ah-n-t-ae-t-aa-r-m-z', stresses: '1/0-1-1', syllables: 's-aa-r/jh-ah-n-t/ae-t/aa-r-m-z'},
-      { pos: 'jj', tokens: 'left-handed', phones: 'l-eh-f-t-hh-ae-n-d-ah-d', stresses: '1-1/0', syllables: 'l-eh-f-t/hh-ae-n/d-ah-d'},
-      { pos: 'jj', tokens: 'long-haired', phones: 'l-ao-ng-hh-eh-r-d', stresses: '1-1', syllables: 'l-ao-ng/hh-eh-r-d'},
-      { pos: 'jj', tokens: 'breath-taking', phones: 'b-r-eh-th-t-ey-k-ih-ng', stresses: '1-1/0', syllables: 'b-r-eh-th/t-ey/k-ih-ng'},
-      { pos: 'jj', tokens: 'self-centered', phones: 's-eh-l-f-s-eh-n-t-er-d', stresses: '1-1/0', syllables: 's-eh-l-f/s-eh-n/t-er-d'},
-      { pos: 'jj', tokens: 'single-minded', phones: 's-ih-ng-g-ah-l-m-ay-n-d-ah-d', stresses: '1/0-1/0', syllables: 's-ih-ng/g-ah-l/m-ay-n/d-ah-d'},
-      { pos: 'jj', tokens: 'short-tempered', phones: 'sh-ao-r-t-t-eh-m-p-er-d', stresses: '1-1/0', syllables: 'sh-ao-r-t/t-eh-m/p-er-d'},
-      { pos: 'jj', tokens: 'one-sided', phones: 'w-ah-n-s-ay-d-ah-d', stresses: '1-1/0', syllables: 'w-ah-n/s-ay/d-ah-d'}
+      { pos: 'jj', tokens: 'deeply-nested', phones: 'd-iy-p-l-iy-n-eh-s-t-ah-d', stresses: '1/0-1/0', syllables: 'd-iy-p/l-iy/n-eh/s-t-ah-d' },
+      { pos: 'jj', tokens: 'empty-handed', phones: 'eh-m-p-t-iy-hh-ae-n-d-ah-d', stresses: '1/0-1/0', syllables: 'eh-m-p/t-iy/hh-ae-n/d-ah-d' },
+      { pos: 'nn', tokens: 'sergeant-at-arms', phones: 's-aa-r-jh-ah-n-t-ae-t-aa-r-m-z', stresses: '1/0-1-1', syllables: 's-aa-r/jh-ah-n-t/ae-t/aa-r-m-z' },
+      { pos: 'jj', tokens: 'left-handed', phones: 'l-eh-f-t-hh-ae-n-d-ah-d', stresses: '1-1/0', syllables: 'l-eh-f-t/hh-ae-n/d-ah-d' },
+      { pos: 'jj', tokens: 'long-haired', phones: 'l-ao-ng-hh-eh-r-d', stresses: '1-1', syllables: 'l-ao-ng/hh-eh-r-d' },
+      { pos: 'jj', tokens: 'breath-taking', phones: 'b-r-eh-th-t-ey-k-ih-ng', stresses: '1-1/0', syllables: 'b-r-eh-th/t-ey/k-ih-ng' },
+      { pos: 'jj', tokens: 'self-centered', phones: 's-eh-l-f-s-eh-n-t-er-d', stresses: '1-1/0', syllables: 's-eh-l-f/s-eh-n/t-er-d' },
+      { pos: 'jj', tokens: 'single-minded', phones: 's-ih-ng-g-ah-l-m-ay-n-d-ah-d', stresses: '1/0-1/0', syllables: 's-ih-ng/g-ah-l/m-ay-n/d-ah-d' },
+      { pos: 'jj', tokens: 'short-tempered', phones: 'sh-ao-r-t-t-eh-m-p-er-d', stresses: '1-1/0', syllables: 'sh-ao-r-t/t-eh-m/p-er-d' },
+      { pos: 'jj', tokens: 'one-sided', phones: 'w-ah-n-s-ay-d-ah-d', stresses: '1-1/0', syllables: 'w-ah-n/s-ay/d-ah-d' },
+      { pos: 'jj', tokens: 'warm-blooded', phones: 'w-ao-r-m-b-l-ah-d-ah-d', stresses: '1-1/0', syllables: 'w-ao-r-m/b-l-ah/d-ah-d' },
+      { pos: 'jj', tokens: 'cold-blooded', phones: 'k-ow-l-d-b-l-ah-d-ah-d', stresses: '1-1/0', syllables: 'k-ow-l-d/b-l-ah/d-ah-d' },
+      { pos: 'nn', tokens: 'bell-bottoms', phones: 'b-eh-l-b-aa-t-ah-m-z', stresses: '1-1/0', syllables: 'b-eh-l/b-aa/t-ah-m-z' },
+      { pos: 'jj', tokens: 'corn-fed', phones: 'k-ao-r-n-f-eh-d', stresses: '1-1', syllables: 'k-ao-r-n/f-eh-d' },
+      { pos: 'jj', tokens: 'able-bodied', phones: 'ey-b-ah-l-b-aa-d-iy-d', stresses: '1/0-1/0', syllables: 'ey/b-ah-l/b-aa/d-iy-d'}
     ];
     for (let i = 0; i < pool2A.length; i++) {
       const feats = RiTa.analyze(pool2A[i]);
@@ -217,7 +235,47 @@ describe('RiTa.Analyzer', function () {
     }
 
     // pool2B: the missing part has no connection to any word in dict
+    let pool2B = ["de-emphasize", 're-apply', 'ho-hum', 'co-manage', 'co-manager', 'neo-liberalism', 'u-turn', 'x-ray', 'a-frame', 'high-tech', 'nitty-gritty'];
+    let feats2B = [
+      { pos: 'vb', tokens: 'de-emphasize', phones: 'd-ih-eh-m-f-ah-s-ay-z', stresses: '0-1/0/0', syllables: 'd-ih/eh-m/f-ah/s-ay-z' },
+      { pos: 'vb', tokens: 're-apply', phones: 'r-iy-ah-p-l-ay1', stresses: '0-0/1', syllables: 'r-iy/ah/p-l-ay1' },
+      { pos: 'uh', tokens: 'ho-hum', phones: 'hh-ow-hh-ah-m', stresses: '0-1', syllables: 'hh-ow/hh-ah-m' },
+      { pos: 'vb', tokens: 'co-manage', phones: 'k-ow-m-ae-n-ah-jh', stresses: '0-1/0', syllables: 'k-ow/m-ae/n-ah-jh' },
+      { pos: 'nn', tokens: 'co-manager', phones: 'k-ow-m-ae-n-ah-jh-er', stresses: '0-1/0/0', syllables: 'k-ow/m-ae/n-ah/jh-er' },
+      { pos: 'nn', tokens: 'neo-liberalism', phones: 'n-iy-ow-l-ih-b-er-ah-l-ih-z-ah-m', stresses: '0/0-1/0/0/0/0', syllables: 'n-iy/ow/l-ih/b-er/ah/l-ih/z-ah-m' },
+      { pos: 'nn', tokens: 'u-turn', phones: 'y-uw-t-er-n', stresses: '1-1', syllables: 'y-uw/t-er-n' },
+      { pos: 'nn', tokens: 'x-ray', phones: 'eh-k-z-r-ey', stresses: '1-1', syllables: 'eh-k-z/r-ey' },
+      { pos: 'nn', tokens: 'a-frame', phones: 'ey-f-r-ey-m', stresses: '1-1', syllables: 'ey/f-r-ey-m' },
+      { pos: 'jj', tokens: 'high-tech', phones: 'hh-ay-t-eh-k', stresses: '1-1', syllables: 'hh-ay/t-eh-k' },
+      { pos: 'nn', tokens: 'nitty-gritty', phones: 'n-ih-t-iy-g-r-ih-t-iy', stresses: '1/0-1/0', syllables: 'n-ih/t-iy/g-r-ih/t-iy'}
+    ];
+    for (let i = 0; i < pool2B.length; i++) {
+      const feats = RiTa.analyze(pool2B[i]);
+      eq(feats.pos, feats2B[i].pos, '[pos]fail at ' + pool2B[i]);
+      if (["de-emphasize", 're-apply', 'u-turn', 'x-ray'].includes(pool2B[i])) continue; // LTS related error, see https://github.com/dhowe/rita/issues/185
+      eq(feats.tokens, feats2B[i].tokens, '[tokens]fail at ' + pool2B[i]);
+      eq(feats.phones, feats2B[i].phones, '[phones]fail at ' + pool2B[i]);
+      eq(feats.stresses, feats2B[i].stresses, '[stresses]fail at ' + pool2B[i]);
+      eq(feats.syllables, feats2B[i].syllables, '[syllables]fail at ' + pool2B[i]);
+      eql(feats.tokens.split(' '), RiTa.tokenize(pool2B[i]));
+    }
 
+    // pool3 all parts are not in dict
+    let pool3 = ["co-op", "roly-poly", "topsy-turvy"];
+    let feats3 = [
+      { pos: 'nn', tokens: 'co-op', phones: 'k-ow-ah-p', stresses: '0-0', syllables: 'k-ow/ah-p' },
+      { pos: 'jj', tokens: 'roly-poly', phones: 'r-ow-l-iy-p-aa-l-iy', stresses: '1/0-1/0', syllables: 'r-ow/l-iy/p-aa/l-iy' },
+      { pos: 'jj', tokens: 'topsy-turvy', phones: 't-aa-p-s-iy-t-er-v-iy', stresses: '1/0-1/0', syllables: 't-aa-p/s-iy/t-er/v-iy'}
+    ];
+    for (let i = 0; i < pool3.length; i++) {
+      const feats = RiTa.analyze(pool3[i]);
+      eq(feats.pos, feats3[i].pos, '[pos]fail at ' + pool3[i]);
+      eq(feats.tokens, feats3[i].tokens, '[tokens]fail at ' + pool3[i]);
+      eq(feats.phones, feats3[i].phones, '[phones]fail at ' + pool3[i]);
+      eq(feats.stresses, feats3[i].stresses, '[stresses]fail at ' + pool3[i]);
+      eq(feats.syllables, feats3[i].syllables, '[syllables]fail at ' + pool3[i]);
+      eql(feats.tokens.split(' '), RiTa.tokenize(pool3[i]));
+    }
     RiTa.SILENCE_LTS = lts; // reset
   });
 
