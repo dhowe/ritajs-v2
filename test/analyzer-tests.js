@@ -1,4 +1,3 @@
-import { feat } from '../src/rita_dict';
 import { loadTestingDeps } from './before';
 
 describe('RiTa.Analyzer', function () {
