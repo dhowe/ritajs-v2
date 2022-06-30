@@ -1,6 +1,5 @@
 import Util from "./util";
 import LetterToSound from "./rita_lts";
-import { part } from "./rita_dict";
 
 const SP = ' ', E = '';
 
