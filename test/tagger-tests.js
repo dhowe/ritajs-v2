@@ -886,6 +886,21 @@ describe('RiTa.Tagger', () => {
     0 && eq(RiTa.tagger.tag(["Being", "literate", "didn\'t" ,"stop", "him", "from", "being", "discriminated", "against","."], { inline: true }), "Being/vbg literate/jj didn't/vbd stop/vb him/prp from/in being/vbg discriminated/vbn against/in .");
    
   });
+
+  it('Should handle hyphenated words in sentence', () => { 
+    let pool = [
+      'He is my father-in-law.',
+      'We have a off-site meeting yesterday.',
+      'I know a great place for an off-site.',
+      'a state-of-the-art computer',
+      'The girls wanted the merry-go-round to go faster.',
+      'He ate twenty-one burgers today.',
+      'The politician arrived by high-speed railway.',
+      'People doing yoga benefit from an increased feeling of well-being.',
+      'There is a life-size statue of the dragon in the park.',
+      
+    ];
+  });
   // }
   // else it('WARN: no tests without lexicon', function () {
   //   expect(true).true;

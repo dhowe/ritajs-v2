@@ -613,7 +613,7 @@ class Tagger {
           tag = "rb";
         } else if (result[i + 1] && result[i + 1].startsWith("v") && tag === 'jj') {
           tag = "rb"
-        } else if (result[i - 1] && words[i - 1].toLowerCase() === 'the' && tag === 'jj') {
+        } else if (result[i - 1] && (words[i - 1].toLowerCase() === 'the' || words[i - 1].toLowerCase() === 'a' || words[i - 1].toLowerCase() === 'an') && tag === 'jj') {
           tag = 'nn'
         }
       }
