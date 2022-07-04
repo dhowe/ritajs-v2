@@ -898,7 +898,23 @@ describe('RiTa.Tagger', () => {
       'The politician arrived by high-speed railway.',
       'People doing yoga benefit from an increased feeling of well-being.',
       'There is a life-size statue of the dragon in the park.',
-      
+      'He has a king-size bed in his room.',
+      'I am taking a full-time job now',
+      'The cost for the round-trip ticket is 2000 dollars.',
+      'The cost is 2000 dollars for the round-trip.',
+      'He come back empty-handed',
+      'She is left-handed',
+      'I like the dress of the long-haired girl in the photo.',
+      'His move was breath-taking.',
+      'Snakes are cold-blooded.',
+      'People liked to wear bell-bottoms in the 80s.',
+      'This shop mainly sells corn-fed meats.',
+      'I withdraw the application and re-apply for another position.',
+      'Our co-manager believe in neo-liberalism.',
+      'He did a u-turn.',
+      'We are not going to get down to the nitty-gritty analysis of value for money.',
+      'The game require co-op with your teammates.',
+      'He was a roly-poly little man.'
     ];
   });
   // }
