@@ -22,7 +22,7 @@ class Analyzer {
       tokens: words.join(SP)
     }
 
-    for (let i = 0; i < words.length; i++) {  
+    for (let i = 0; i < words.length; i++) {
       let { phones, stresses, syllables } = this.analyzeWord(words[i], opts);
       features.phones += SP + phones;
       features.stresses += SP + stresses;
@@ -49,7 +49,7 @@ class Analyzer {
     return stress;
   }
 
-  analyzeWord(word, opts = {}) {  
+  analyzeWord(word, opts = {}) {
 
     let RiTa = this.RiTa;
 
@@ -60,26 +60,11 @@ class Analyzer {
       let slash = '/', delim = '-';
       let lex = this.RiTa.lexicon();
       let phones = word, syllables = word, stresses = word;
-      let rawPhones = lex.rawPhones(word, { noLts: true });
-
-      //#HWF
-      if (!rawPhones) {
-        if (word.includes("-")) {
-          rawPhones = [];
-          let arr = word.split("-");
-          arr.forEach(p => {
-            let part = this._computeRawPhones(p, lex, opts, true);
-            if (part && part.length > 0) {
-              rawPhones.push(part)
-            }
-          });
-        } else {
-          rawPhones = this._computeRawPhones(word, lex, opts);
-        }
-      }
-      //endof #HWF
+      let rawPhones = lex.rawPhones(word, { noLts: true })
+        || this._computeRawPhones(word, lex, opts);
 
       if (rawPhones) {
+        
         // compute phones, syllables and stresses
         if (typeof rawPhones === 'string') {
           let sp = rawPhones.replace(/1/g, E).replace(/ /g, delim) + SP;
@@ -87,10 +72,11 @@ class Analyzer {
           let ss = rawPhones.replace(/ /g, slash).replace(/1/g, E) + SP;
           syllables = (ss === 'dh ') ? 'dh-ah ' : ss;
           stresses = this.phonesToStress(rawPhones);
-        } else {
+        } 
+        else {
           // hyphenated #HWF
           let ps = [], syls = [], strs = [];
-          rawPhones.forEach(p => { 
+          rawPhones.forEach(p => {
             let sp = p.replace(/1/g, E).replace(/ /g, delim);
             ps.push((sp === 'dh ') ? 'dh-ah ' : sp); // special case
             let ss = p.replace(/ /g, slash).replace(/1/g, E);
@@ -98,13 +84,13 @@ class Analyzer {
             strs.push(this.phonesToStress(p));
           });
           phones = ps.join("-");
-          syllables = syls.join("/"); 
+          syllables = syls.join("/");
           stresses = strs.join("-");
           // end of #HWF
         }
       }
 
-      result = { phones, stresses, syllables }; 
+      result = { phones, stresses, syllables };
       Object.keys(result).forEach(k => result[k] = result[k].trim());
 
       // add to cache if enabled
@@ -114,9 +100,25 @@ class Analyzer {
     return result;
   }
 
+  _computeRawPhones(word, lex, opts) {
+    return word.includes("-")  // #HWF
+      ? this._computePhonesHyph(word, lex, opts)
+      : this._computePhonesWord(word, lex, opts);
+  }
+
+  //#HWF
+  _computePhonesHyph(word, lex, opts) {
+    let rawPhones = [];
+    word.split("-").forEach(p => {
+      let part = this._computePhonesWord(p, lex, opts, true);
+      if (part && part.length > 0) rawPhones.push(part);
+    });
+    return rawPhones;
+  }
+
   //#HWF this part is unchanged but move to a separated function
-  _computeRawPhones(word, lex, opts, isPart) {
-    let rawPhones = undefined, RiTa = this.RiTa;
+  _computePhonesWord(word, lex, opts, isPart) {
+    let rawPhones, RiTa = this.RiTa;
     if (isPart) rawPhones = lex.rawPhones(word, { noLts: true });
     // if its a simple plural ending in 's',
     // and the singular is in the lexicon, add '-z' to end

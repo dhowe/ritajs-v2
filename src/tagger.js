@@ -71,18 +71,12 @@ class Tagger {
 
     let noGuessing = opts.noGuessing || false;
     let noDerivations = opts.noDerivations || false;
-    //#HWF
-    let noGuessingForHyphnatedWord = opts.noGuessingForHyphnatedWord || false;
-    //end of #HWF
 
-    // fix error when sth like allTags(['word']) is called
     if (word && typeof word === 'string' && word.length) {
       let posData = this.RiTa.lexicon()._posArr(word);
       if (posData && posData.length > 0) return posData;
-      //#HWF
-      if (word.includes("-") && noGuessingForHyphnatedWord) return null;
-      //endof #HWF
-      return noDerivations ? null : this._derivePosData(word, noGuessing);
+      if (word.includes("-") && opts.noGuessingOnHyphenated) return;  //#HWF
+      if (!noDerivations) return this._derivePosData(word, noGuessing);
     }
   }
 
@@ -112,10 +106,10 @@ class Tagger {
         result[i] = this._handleSingleLetter(word);
       }
       else {
-        //#HWF: skip guessing for not-in-dict hyphnated word here coz we deal with them later 
-        let opts = this.allTags(word, {noGuessingForHyphnatedWord: true});
+        //#HWF: skip guessing for not-in-dict hyphenated words as we deal with these later 
+        let opts = this.allTags(word, { noGuessingOnHyphenated: true });
         choices2d[i] = opts || []; // all options
-        result[i] = opts ? opts[0] : 'HYPHNATED'; // first option
+        result[i] = opts ? opts[0] : '__HYPH__'; // first option
       }
     }
 
@@ -504,32 +498,47 @@ class Tagger {
         }
       }
 
+      // WORKING HERE - refactor into function
+      
       // https://github.com/dhowe/rita/issues/65 #HWF
       // handle hyphenated words -JC
       if (word.includes("-")) {
-        if (result[i] !== 'HYPHNATED') continue; //in dict
+
+        if (result[i] !== '__HYPH__') continue; // in dict
+
         if (word === '--') continue; // double hyphen is treated as dash
-        if (SPECIAL_HYPHENATED_WORDS.hasOwnProperty(word)) {
-          result[i] = SPECIAL_HYPHENATED_WORDS[word];
-          if (dbug) console.log(word + ": " + SPECIAL_HYPHENATED_WORDS[word] + " ACC: special");
+
+        if (HYPHENATEDS.hasOwnProperty(word)) {
+          result[i] = HYPHENATEDS[word];
+          if (dbug) console.log(word + ": " + HYPHENATEDS[word] + " ACC: special");
           continue;
         }
+
         let arr = word.split("-");
-        let firstPart = arr[0];
-        let lastPart = arr[arr.length - 1];
-        
-        if (arr.length === 2 && VERB_PREFIX.includes(arr[0]) && this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^vb/.test(t)) > -1) {
+        let firstPart = arr[0], lastPart = arr[arr.length - 1];
+
+        if (arr.length === 2 && VERB_PREFIX.includes(arr[0])
+          && this.allTags(lastPart)
+          && this.allTags(lastPart).some(t => /^vb/.test(t))) {
+
           tag = this.allTags(lastPart).find(t => /^vb/.test(t));
           if (dbug) console.log(word + ": " + tag + " ACC: prefix-vb");
-        } else if (arr.length === 2 && NOUN_PREFIX.includes(arr[0]) && this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^nn/.test(t)) > -1) { 
+        }
+        else if (arr.length === 2 && NOUN_PREFIX.includes(arr[0])
+          && this.allTags(lastPart)
+          && this.allTags(lastPart).some(t => /^nn/.test(t))) {
+
           tag = this.allTags(lastPart).find(t => /^nn/.test(t));
           if (dbug) console.log(word + ": " + tag + " ACC: prefix-nn");
-        } else if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^cd/.test(t)) > -1) {
+        }
+        else if (this.allTags(firstPart)
+          && this.allTags(firstPart).some(t => /^cd/.test(t))) {
+
           // numbers
           let allCD = true;
           for (let z = 1; z < arr.length; z++) {
             let part = arr[z];
-            if (!(this.allTags(part) && this.allTags(part).findIndex(t => /^cd/.test(t)) > -1)) {
+            if (!(this.allTags(part) && this.allTags(part).some(t => /^cd/.test(t)))) {
               allCD = false;
               break;
             }
@@ -537,46 +546,74 @@ class Tagger {
           if (allCD) {
             tag = "cd"
             if (dbug) console.log(word + ": " + tag + " ACC: cd(-cd)+ ");
-          } else {
+          }
+          else {
             //ordinal number like twenty-first
             tag = "jj"
             if (dbug) console.log(word + ": " + tag + " ACC: cd(-jj/nn)+ ");
           }
-        } else if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^jj$/.test(t)) > -1 && arr.length === 2 && this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^nn/.test(t)) > -1) {
+        }
+        else if (this.allTags(firstPart)
+          && this.allTags(firstPart).some(t => t.startsWith('jj'))
+          && arr.length === 2 && this.allTags(lastPart)
+          && this.allTags(lastPart).some(t => t.startsWith('nn'))) {
+
           tag = 'jj'
           if (dbug) console.log(word + ": " + tag + " ACC: jj-nn");
-        } else if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^vb$/.test(t)) > -1 && this.allTags(firstPart).findIndex(t => /^jj/.test(t)) < 0) {
+        }
+        else if (this.allTags(firstPart) && this.allTags(firstPart).some(t => t === 'vb')
+          && !this.allTags(firstPart).some(t => t.startsWith('jj'))) {
+
           // first part is vb
-          if (arr.length === 2 && (this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^in$/.test(t)) > -1)) {
+          if (arr.length === 2 && this.allTags(lastPart)
+            && this.allTags(lastPart).some(t => t === 'in')) {
+
             // verb phrase with in, e.g. blush-on tip-off get-together run-in
             tag = "nn"
             if (dbug) console.log(word + ": " + tag + " ACC: vb-in");
-          } else if(arr.length === 2 && this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^(vb[gdp])/.test(t)) > -1 && this.allTags(lastPart).findIndex(t => /^vb$/.test(t)) < 0) {
+          }
+          else if (arr.length === 2 && this.allTags(lastPart)
+            && this.allTags(lastPart).some(t => /^(vb[gdp])/.test(t))
+            && !this.allTags(lastPart).some(t => /^vb$/.test(t))) {
+
             // man-eating
             tag = "jj"
             if (dbug) console.log(word + ": " + tag + " ACC: vb-vbg/vbd/vbp");
-          } else if (arr.length === 2 && this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^jj/.test(t)) > -1) { 
+          }
+          else if (arr.length === 2 && this.allTags(lastPart)
+            && this.allTags(lastPart).some(t => t.startsWith('jj'))) {
+
             tag = 'jj'
             if (dbug) console.log(word + ": " + tag + " ACC: vb-jj");
-          } else {
+          }
+          else {
             tag = "nn"
             if (dbug) console.log(word + ": " + tag + " ACC: vb(-.)+ general");
           }
-        } else if (this.allTags(lastPart) && ((this.allTags(lastPart).findIndex(t => /^(jj[rs]?)/.test(t)) > -1 && this.allTags(lastPart).findIndex(t => /^nn/.test(t)) < 0) || this.allTags(lastPart).findIndex(t => /^vb[dg]/.test(t)) > -1)) {
+        }
+        else if (this.allTags(lastPart)
+          && ((this.allTags(lastPart).some(t => /^(jj[rs]?)/.test(t))
+            && !this.allTags(lastPart).some(t => t.startsWith('nn')))
+            || this.allTags(lastPart).some(t => /^vb[dg]/.test(t)))) {
           // last part is jj or vbd/vbg
           tag = "jj"
           if (dbug) console.log(word + ": " + tag + " ACC: last part jj or vbd/vbg");
-        } else if (this.allTags(lastPart) && this.allTags(lastPart).findIndex(t => /^[n]/.test(t)) > -1) {
+        }
+        else if (this.allTags(lastPart)
+          && this.allTags(lastPart).some(t => /^[n]/.test(t))) {
           //last part is a noun
-          if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^(in|rb)/.test(t)) > -1) {
+          if (this.allTags(firstPart)
+            && this.allTags(firstPart).some(t => /^(in|rb)/.test(t))) {
             // over-the-counter; before-hand etc
             tag = "jj"
             if (dbug) console.log(word + ": " + tag + " ACC: in/rb(-.)*-nn");
-          } else {
+          }
+          else {
             let lastNounIsMajor = true;
             for (let z = 0; z < arr.length - 1; z++) {
               let part = arr[z];
-              if (!(this.allTags(part) && this.allTags(part).findIndex(t => /^([jn]|dt|in)/.test(t)) > -1)) {
+              if (!(this.allTags(part)
+                && this.allTags(part).some(t => /^([jn]|dt|in)/.test(t)))) {
                 lastNounIsMajor = false;
                 break;
               }
@@ -584,15 +621,17 @@ class Tagger {
             if (lastNounIsMajor) {
               tag = "nn"
               if (dbug) console.log(word + ": " + tag + " ACC: all nn");
-            } else {
+            }
+            else {
               tag = "jj"
               if (dbug) console.log(word + ": " + tag + " ACC: (.-)+nn");
             }
           }
-        } else if (this.allTags(firstPart) && this.allTags(firstPart).findIndex(t => /^n/.test(t)) > -1) {
-          //first part can be a noun
-          // father-in-law etc.
-          // numbers depends of this noun
+        }
+        else if (this.allTags(firstPart)
+          && this.allTags(firstPart).some(t => t.startsWith('n'))) {
+          // first part can be a noun: father-in-law etc.
+          // numbers depend on this noun
           tag = this.RiTa.inflector.isPlural(arr[0]) ? "nns" : "nn";
           if (dbug) console.log(word + ": " + tag + " ACC: nn(-.)+");
         }
@@ -601,20 +640,24 @@ class Tagger {
           if (dbug) console.log(word + ": " + tag + " ACC: no rule hit");
         }
 
-
         // change according to context
         if (result[i + 1] && result[i + 1].startsWith("n") && tag.startsWith("n")) {
           //next word is a noun
           tag = "jj";
-        } else if (result[i + 1] && result[i + 1].startsWith("v")
+        }
+        else if (result[i + 1] && result[i + 1].startsWith("v")
           && this.allTags(lastPart)
-          && this.allTags(lastPart).findIndex(t => /^[vrj]/.test(t)) > -1) {
+          && this.allTags(lastPart).some(t => /^[vrj]/.test(t))) {
           //next word is a verb, last part is rb/verb
           tag = "rb";
-        } else if (result[i + 1] && result[i + 1].startsWith("v") && tag === 'jj') {
+        }
+        else if (result[i + 1] && result[i + 1].startsWith("v") && tag === 'jj') {
           tag = "rb"
-        } else if (result[i - 1] && (words[i - 1].toLowerCase() === 'the' || words[i - 1].toLowerCase() === 'a' || words[i - 1].toLowerCase() === 'an') && tag === 'jj') {
-          if (!words[i + 1] || (result[i + 1] && /^(v|cc|in|md|w)/.test(result[i + 1]))) tag = 'nn'
+        }
+        else if (result[i - 1] && tag === 'jj' && /^(the|a|an)$/i.test(words[i - 1])) {
+          if (!words[i + 1] || (result[i + 1] && /^(v|cc|in|md|w)/.test(result[i + 1]))) {
+            tag = 'nn';
+          }
         }
       }
       // end of #HWF
@@ -646,8 +689,9 @@ const ADVS = ['rb', 'rbr', 'rbs', 'rp'];
 const NOUNS = ['nn', 'nns', 'nnp', 'nnps'];
 const VERBS = ['vb', 'vbd', 'vbg', 'vbn', 'vbp', 'vbz'];
 const EX_BE = ["is", "are", "was", "were", "isn't", "aren't", "wasn't", "weren't"];
+
 //#HWF
-const SPECIAL_HYPHENATED_WORDS = {
+const HYPHENATEDS = {
   "well-being": "nn", // by rules should be jj, like 'good-looking'
   "knee-length": "jj", // by rules should be nn, coz all parts are noun, like 'gift-wrap'
   "king-size": 'jj', // by rules should be nn, coz all parts are noun
@@ -658,6 +702,6 @@ const SPECIAL_HYPHENATED_WORDS = {
 };
 const VERB_PREFIX = ["de", "over", "re", "dis", "un", "mis", "out", "pre", "post", "co", "fore", "inter", "sub", "trans", "under"];
 const NOUN_PREFIX = ["anti", "auto", "de", "dis", "un", "non", "co", "over", "under", "up", "down", "hyper", "mono", "bi", "uni", "di", "semi", "omni", "mega", "mini", "macro", "micro", "counter", "ex", "mal", "neo", "out", "poly", "pseudo", "super", "sub", "sur", "tele", "tri", "ultra", "vice"];
-const ADJECTIVE_PREFIX = ["dis", "non", "semi", "un"];
+//const ADJECTIVE_PREFIX = ["dis", "non", "semi", "un"]; // not used?
 
 export default Tagger;

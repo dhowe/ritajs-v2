@@ -19624,7 +19624,7 @@ module && (module.exports = {
   "third":["th-er1-d","nn jj rb"],
   "thirst":["th-er1-s-t","nn"],
   "thirsty":["th-er1 s-t-iy","jj"],
-  "thirty":["th-er1 t-iy","cd nn"], //#HWF
+  "thirty":["th-er1 t-iy","cd"],
   "this":["dh-ih1-s","dt rb pdt"],
   "thistle":["th-ih1 s-ah-l","nn"],
   "thong":["th-ao1-ng","nn"],

@@ -67,9 +67,11 @@ class Tokenizer {
     }
 
     // https://github.com/dhowe/rita/issues/65
-    // #HWF now default behavior is to keep hyphen
-    if (opts.splitHyphen) text = text.split(/(?<=[a-zA-Z]+)-(?=[a-zA-Z]+)/).join(" - "); //look behinde and ahead
-   
+    // default behavior is to keep hyphen
+    if (opts.splitHyphen) text = text
+      .split(/(?<=[a-zA-Z]+)-(?=[a-zA-Z]+)/)
+      .join(" - "); //look behind and ahead
+
     if (this.RiTa.SPLIT_CONTRACTIONS || opts.splitContractions) {
       for (let i = 0; i < CONTRACTS_RE.length; i += 2) {
         text = text.replace(CONTRACTS_RE[i], CONTRACTS_RE[i + 1]);
@@ -325,7 +327,7 @@ const TOKENIZE_RE = [
   /,([^0-9])/g, " , $1",
   /([^.])([.])([\])}>\"'\u2019]*)\s*$/g, "$1 $2$3 ",
   /([\[\](){}<>\u27e8\u27e9])/g, " $1 ",
-  /--/g, " -- ", 
+  /--/g, " -- ",
   /\u2012/g, " \u2012 ", //" ‒ "
   /\u2013/g, " \u2013 ", // " — "
   /\u2014/g, " \u2014 ",//" – "
