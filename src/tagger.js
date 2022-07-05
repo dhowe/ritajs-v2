@@ -315,10 +315,10 @@ class Tagger {
 
   _log(i, frm, to) { // log custom tag
     console.log("\n  Custom(" + i + ") tagged '" + frm + "' -> '" + to + "'\n\n");
-  }// debuggin only: not available in built version since 'dbug' in tag() is 0
+  }// debug only: not available in built version since 'dbug' in tag() is 0
 
   // Applies a customized subset of the Brill transformations
-  _applyContext(words, result, choices, dbug) {
+  _applyContext(words, result, choices, dbug) { // SYNC:
 
     // Apply transformations
     for (let i = 0, l = words.length; i < l; i++) {
@@ -500,164 +500,164 @@ class Tagger {
         }
       }
 
-      // WORKING HERE - refactor into function
-
       // https://github.com/dhowe/rita/issues/65 #HWF
-      // handle hyphenated words -JC
       if (word.includes("-")) {
-
         if (result[i] !== '__HYPH__') continue; // in dict
-
-        if (word === '--') continue; // double hyphen is treated as dash
-
+        if (word === '--') continue; // double hyphen treated as dash
         if (HYPHENATEDS.hasOwnProperty(word)) {
           result[i] = HYPHENATEDS[word];
           if (dbug) console.log(word + ": " + HYPHENATEDS[word] + " ACC: special");
           continue;
         }
-
-        let words = word.split("-");
-        let firstPart = words[0], lastPart = words[words.length - 1];
-        let firstPartAllTags = this.allTags(firstPart);
-        let lastPartAllTags = this.allTags(lastPart);
-
-        if (words.length === 2 && VERB_PREFIX.includes(words[0])
-          && lastPartAllTags.some(t => /^vb/.test(t))) {
-
-          tag = lastPartAllTags.find(t => /^vb/.test(t));
-          if (dbug) console.log(word + ": " + tag + " ACC: prefix-vb");
-        }
-        else if (words.length === 2 && NOUN_PREFIX.includes(words[0])
-          && lastPartAllTags.some(t => /^nn/.test(t))) {
-
-          tag = lastPartAllTags.find(t => /^nn/.test(t));
-          if (dbug) console.log(word + ": " + tag + " ACC: prefix-nn");
-        }
-        else if (firstPartAllTags.some(t => /^cd/.test(t))) {
-
-          // numbers
-          let allCD = true;
-          for (let z = 1; z < words.length; z++) {
-            let part = words[z];
-            if (!(this.allTags(part).some(t => /^cd/.test(t)))) {
-              allCD = false;
-              break;
-            }
-          }
-          if (allCD) {
-            tag = "cd"
-            if (dbug) console.log(word + ": " + tag + " ACC: cd(-cd)+ ");
-          }
-          else {
-            //ordinal number like twenty-first
-            tag = "jj"
-            if (dbug) console.log(word + ": " + tag + " ACC: cd(-jj/nn)+ ");
-          }
-        }
-        else if (firstPartAllTags.some(t => t.startsWith('jj'))
-          && words.length === 2 && lastPartAllTags.some(t => t.startsWith('nn'))) {
-
-          tag = 'jj'
-          if (dbug) console.log(word + ": " + tag + " ACC: jj-nn");
-        }
-        else if (firstPartAllTags.some(t => t === 'vb')
-          && !firstPartAllTags.some(t => t.startsWith('jj'))) {
-
-          // first part is vb
-          if (words.length === 2
-            && lastPartAllTags.some(t => t === 'in')) {
-
-            // verb phrase with in, e.g. blush-on tip-off get-together run-in
-            tag = "nn"
-            if (dbug) console.log(word + ": " + tag + " ACC: vb-in");
-          }
-          else if (words.length === 2
-            && lastPartAllTags.some(t => /^(vb[gdp])/.test(t))
-            && !lastPartAllTags.some(t => /^vb$/.test(t))) {
-
-            // man-eating
-            tag = "jj"
-            if (dbug) console.log(word + ": " + tag + " ACC: vb-vbg/vbd/vbp");
-          }
-          else if (words.length === 2 //&& this.allTags(lastPart)
-            && lastPartAllTags.some(t => t.startsWith('jj'))) {
-
-            tag = 'jj'
-            if (dbug) console.log(word + ": " + tag + " ACC: vb-jj");
-          }
-          else {
-            tag = "nn"
-            if (dbug) console.log(word + ": " + tag + " ACC: vb(-.)+ general");
-          }
-        }
-        else if (((lastPartAllTags.some(t => /^(jj[rs]?)/.test(t))
-            && !lastPartAllTags.some(t => t.startsWith('nn')))
-            || lastPartAllTags.some(t => /^vb[dg]/.test(t)))) {
-          // last part is jj or vbd/vbg
-          tag = "jj"
-          if (dbug) console.log(word + ": " + tag + " ACC: last part jj or vbd/vbg");
-        }
-        else if (lastPartAllTags.some(t => /^[n]/.test(t))) {
-          //last part is a noun
-          if (firstPartAllTags.some(t => /^(in|rb)/.test(t))) {
-            // over-the-counter; before-hand etc
-            tag = "jj"
-            if (dbug) console.log(word + ": " + tag + " ACC: in/rb(-.)*-nn");
-          }
-          else {
-            let lastNounIsMajor = true;
-            for (let z = 0; z < words.length - 1; z++) {
-              let part = words[z];
-              if (!(this.allTags(part).some(t => /^([jn]|dt|in)/.test(t)))) {
-                lastNounIsMajor = false;
-                break;
-              }
-            }
-            if (lastNounIsMajor) {
-              tag = "nn"
-              if (dbug) console.log(word + ": " + tag + " ACC: all nn");
-            }
-            else {
-              tag = "jj"
-              if (dbug) console.log(word + ": " + tag + " ACC: (.-)+nn");
-            }
-          }
-        }
-        else if (firstPartAllTags.some(t => t.startsWith('n'))) {
-          // first part can be a noun: father-in-law etc.
-          // numbers depend on this noun
-          tag = this.RiTa.inflector.isPlural(words[0]) ? "nns" : "nn";
-          if (dbug) console.log(word + ": " + tag + " ACC: nn(-.)+");
-        }
-        else {
-          tag = "nn"; //generually it should be nn
-          if (dbug) console.log(word + ": " + tag + " ACC: no rule hit");
-        }
-
-        // change according to context
-        if (result[i + 1] && result[i + 1].startsWith("n") && tag.startsWith("n")) {
-          //next word is a noun
-          tag = "jj";
-        }
-        else if (result[i + 1] && result[i + 1].startsWith("v")
-          && lastPartAllTags.some(t => /^[vrj]/.test(t))) {
-          //next word is a verb, last part is rb/verb
-          tag = "rb";
-        }
-        else if (result[i + 1] && result[i + 1].startsWith("v") && tag === 'jj') {
-          tag = "rb"
-        }
-        else if (result[i - 1] && tag === 'jj' && /^(the|a|an)$/i.test(words[i - 1])) {
-          if (!words[i + 1] || (result[i + 1] && /^(v|cc|in|md|w)/.test(result[i + 1]))) {
-            tag = 'nn';
-          }
-        }
+        tag = this._tagCompoundWord(word, tag, result, i, dbug);
       }
-      // end of #HWF
+
       result[i] = tag;
     }
 
     return result;
+  }
+
+  // determine tag for compound (hyphenated) word
+  _tagCompoundWord(word, tag, result, i, dbug) { // #HWF
+
+    let words = word.split("-");
+    let firstPart = words[0], lastPart = words[words.length - 1];
+    let firstPartAllTags = this.allTags(firstPart);
+    let lastPartAllTags = this.allTags(lastPart);
+
+    if (words.length === 2 && VERB_PREFIX.includes(words[0])
+      && lastPartAllTags.some(t => /^vb/.test(t))) {
+
+      tag = lastPartAllTags.find(t => /^vb/.test(t));
+      if (dbug) console.log(word + ": " + tag + " ACC: prefix-vb");
+    }
+    else if (words.length === 2 && NOUN_PREFIX.includes(words[0])
+      && lastPartAllTags.some(t => /^nn/.test(t))) {
+
+      tag = lastPartAllTags.find(t => /^nn/.test(t));
+      if (dbug) console.log(word + ": " + tag + " ACC: prefix-nn");
+    }
+    else if (firstPartAllTags.some(t => /^cd/.test(t))) {
+
+      // numbers
+      let allCD = true;
+      for (let z = 1; z < words.length; z++) {
+        let part = words[z];
+        if (!(this.allTags(part).some(t => /^cd/.test(t)))) {
+          allCD = false;
+          break;
+        }
+      }
+      if (allCD) {
+        tag = "cd"
+        if (dbug) console.log(word + ": " + tag + " ACC: cd(-cd)+ ");
+      }
+      else {
+        //ordinal number like twenty-first
+        tag = "jj"
+        if (dbug) console.log(word + ": " + tag + " ACC: cd(-jj/nn)+ ");
+      }
+    }
+    else if (firstPartAllTags.some(t => t.startsWith('jj'))
+      && words.length === 2 && lastPartAllTags.some(t => t.startsWith('nn'))) {
+
+      tag = 'jj'
+      if (dbug) console.log(word + ": " + tag + " ACC: jj-nn");
+    }
+    else if (firstPartAllTags.some(t => t === 'vb')
+      && !firstPartAllTags.some(t => t.startsWith('jj'))) {
+
+      // first part is vb
+      if (words.length === 2
+        && lastPartAllTags.some(t => t === 'in')) {
+
+        // verb phrase with in, e.g. blush-on tip-off get-together run-in
+        tag = "nn"
+        if (dbug) console.log(word + ": " + tag + " ACC: vb-in");
+      }
+      else if (words.length === 2
+        && lastPartAllTags.some(t => /^(vb[gdp])/.test(t))
+        && !lastPartAllTags.some(t => /^vb$/.test(t))) {
+
+        // man-eating
+        tag = "jj"
+        if (dbug) console.log(word + ": " + tag + " ACC: vb-vbg/vbd/vbp");
+      }
+      else if (words.length === 2 && lastPartAllTags.some(t => t.startsWith('jj'))) {
+        tag = 'jj'
+        if (dbug) console.log(word + ": " + tag + " ACC: vb-jj");
+      }
+      else {
+        tag = "nn"
+        if (dbug) console.log(word + ": " + tag + " ACC: vb(-.)+ general");
+      }
+    }
+    else if (((lastPartAllTags.some(t => /^(jj[rs]?)/.test(t))
+      && !lastPartAllTags.some(t => t.startsWith('nn')))
+      || lastPartAllTags.some(t => /^vb[dg]/.test(t)))) {
+
+      // last part is jj or vbd/vbg
+      tag = "jj"
+      if (dbug) console.log(word + ": " + tag + " ACC: last part jj or vbd/vbg");
+    }
+    else if (lastPartAllTags.some(t => /^[n]/.test(t))) {
+
+      // last part is a noun
+      if (firstPartAllTags.some(t => /^(in|rb)/.test(t))) {
+        // over-the-counter; before-hand etc
+        tag = "jj"
+        if (dbug) console.log(word + ": " + tag + " ACC: in/rb(-.)*-nn");
+      }
+      else {
+        let lastNounIsMajor = true;
+        for (let z = 0; z < words.length - 1; z++) {
+          let part = words[z];
+          if (!(this.allTags(part).some(t => /^([jn]|dt|in)/.test(t)))) {
+            lastNounIsMajor = false;
+            break;
+          }
+        }
+        if (lastNounIsMajor) {
+          tag = "nn"
+          if (dbug) console.log(word + ": " + tag + " ACC: all nn");
+        }
+        else {
+          tag = "jj"
+          if (dbug) console.log(word + ": " + tag + " ACC: (.-)+nn");
+        }
+      }
+    }
+    else if (firstPartAllTags.some(t => t.startsWith('n'))) {
+      // first part can be a noun: father-in-law etc.
+      // numbers depend on this noun
+      tag = this.RiTa.inflector.isPlural(words[0]) ? "nns" : "nn";
+      if (dbug) console.log(word + ": " + tag + " ACC: nn(-.)+");
+    }
+    else {
+      tag = "nn"; //generually it should be nn
+      if (dbug) console.log(word + ": " + tag + " ACC: no rule hit");
+    }
+
+    // change according to context
+    if (result[i + 1] && result[i + 1].startsWith("n") && tag.startsWith("n")) {
+      //next word is a noun
+      tag = "jj";
+    }
+    else if (result[i + 1] && result[i + 1].startsWith("v")
+      && lastPartAllTags.some(t => /^[vrj]/.test(t))) {
+      //next word is a verb, last part is rb/verb
+      tag = "rb";
+    }
+    else if (result[i + 1] && result[i + 1].startsWith("v") && tag === 'jj') {
+      tag = "rb"
+    }
+    else if (result[i - 1] && tag === 'jj' && /^(the|a|an)$/i.test(words[i - 1])) {
+      if (!words[i + 1] || (result[i + 1] && /^(v|cc|in|md|w)/.test(result[i + 1]))) {
+        tag = 'nn';
+      }
+    }
+    return tag;
   }
 
   _lexHas(pos, word) { // takes ([n|v|a|r] or a full tag
@@ -695,6 +695,6 @@ const HYPHENATEDS = {
 };
 const VERB_PREFIX = ["de", "over", "re", "dis", "un", "mis", "out", "pre", "post", "co", "fore", "inter", "sub", "trans", "under"];
 const NOUN_PREFIX = ["anti", "auto", "de", "dis", "un", "non", "co", "over", "under", "up", "down", "hyper", "mono", "bi", "uni", "di", "semi", "omni", "mega", "mini", "macro", "micro", "counter", "ex", "mal", "neo", "out", "poly", "pseudo", "super", "sub", "sur", "tele", "tri", "ultra", "vice"];
-//const ADJECTIVE_PREFIX = ["dis", "non", "semi", "un"]; // not used?
+//const ADJECTIVE_PREFIX = ["dis", "non", "semi", "un"]; // JC: not used?
 
 export default Tagger;
