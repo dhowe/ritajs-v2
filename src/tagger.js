@@ -516,31 +516,30 @@ class Tagger {
           continue;
         }
 
-        let arr = word.split("-");
-        let firstPart = arr[0], lastPart = arr[arr.length - 1];
+        let words = word.split("-");
+        let firstPart = words[0], lastPart = words[words.length - 1];
+        let firstPartAllTags = this.allTags(firstPart);
+        let lastPartAllTags = this.allTags(lastPart);
 
-        if (arr.length === 2 && VERB_PREFIX.includes(arr[0])
-          //&& this.allTags(lastPart)
-          && this.allTags(lastPart).some(t => /^vb/.test(t))) {
+        if (words.length === 2 && VERB_PREFIX.includes(words[0])
+          && lastPartAllTags.some(t => /^vb/.test(t))) {
 
-          tag = this.allTags(lastPart).find(t => /^vb/.test(t));
+          tag = lastPartAllTags.find(t => /^vb/.test(t));
           if (dbug) console.log(word + ": " + tag + " ACC: prefix-vb");
         }
-        else if (arr.length === 2 && NOUN_PREFIX.includes(arr[0])
-          //&& this.allTags(lastPart)
-          && this.allTags(lastPart).some(t => /^nn/.test(t))) {
+        else if (words.length === 2 && NOUN_PREFIX.includes(words[0])
+          && lastPartAllTags.some(t => /^nn/.test(t))) {
 
-          tag = this.allTags(lastPart).find(t => /^nn/.test(t));
+          tag = lastPartAllTags.find(t => /^nn/.test(t));
           if (dbug) console.log(word + ": " + tag + " ACC: prefix-nn");
         }
-        else if //this.allTags(firstPart) && 
-          (this.allTags(firstPart).some(t => /^cd/.test(t))) {
+        else if (firstPartAllTags.some(t => /^cd/.test(t))) {
 
           // numbers
           let allCD = true;
-          for (let z = 1; z < arr.length; z++) {
-            let part = arr[z];
-            if (!(/*this.allTags(part) &&*/ this.allTags(part).some(t => /^cd/.test(t)))) {
+          for (let z = 1; z < words.length; z++) {
+            let part = words[z];
+            if (!(this.allTags(part).some(t => /^cd/.test(t)))) {
               allCD = false;
               break;
             }
@@ -555,33 +554,33 @@ class Tagger {
             if (dbug) console.log(word + ": " + tag + " ACC: cd(-jj/nn)+ ");
           }
         }
-        else if (this.allTags(firstPart).some(t => t.startsWith('jj'))
-          && arr.length === 2 && this.allTags(lastPart).some(t => t.startsWith('nn'))) {
+        else if (firstPartAllTags.some(t => t.startsWith('jj'))
+          && words.length === 2 && lastPartAllTags.some(t => t.startsWith('nn'))) {
 
           tag = 'jj'
           if (dbug) console.log(word + ": " + tag + " ACC: jj-nn");
         }
-        else if (this.allTags(firstPart).some(t => t === 'vb')
-          && !this.allTags(firstPart).some(t => t.startsWith('jj'))) {
+        else if (firstPartAllTags.some(t => t === 'vb')
+          && !firstPartAllTags.some(t => t.startsWith('jj'))) {
 
           // first part is vb
-          if (arr.length === 2
-            && this.allTags(lastPart).some(t => t === 'in')) {
+          if (words.length === 2
+            && lastPartAllTags.some(t => t === 'in')) {
 
             // verb phrase with in, e.g. blush-on tip-off get-together run-in
             tag = "nn"
             if (dbug) console.log(word + ": " + tag + " ACC: vb-in");
           }
-          else if (arr.length === 2 //&& this.allTags(lastPart)
-            && this.allTags(lastPart).some(t => /^(vb[gdp])/.test(t))
-            && !this.allTags(lastPart).some(t => /^vb$/.test(t))) {
+          else if (words.length === 2
+            && lastPartAllTags.some(t => /^(vb[gdp])/.test(t))
+            && !lastPartAllTags.some(t => /^vb$/.test(t))) {
 
             // man-eating
             tag = "jj"
             if (dbug) console.log(word + ": " + tag + " ACC: vb-vbg/vbd/vbp");
           }
-          else if (arr.length === 2 //&& this.allTags(lastPart)
-            && this.allTags(lastPart).some(t => t.startsWith('jj'))) {
+          else if (words.length === 2 //&& this.allTags(lastPart)
+            && lastPartAllTags.some(t => t.startsWith('jj'))) {
 
             tag = 'jj'
             if (dbug) console.log(word + ": " + tag + " ACC: vb-jj");
@@ -591,24 +590,24 @@ class Tagger {
             if (dbug) console.log(word + ": " + tag + " ACC: vb(-.)+ general");
           }
         }
-        else if (((this.allTags(lastPart).some(t => /^(jj[rs]?)/.test(t))
-            && !this.allTags(lastPart).some(t => t.startsWith('nn')))
-            || this.allTags(lastPart).some(t => /^vb[dg]/.test(t)))) {
+        else if (((lastPartAllTags.some(t => /^(jj[rs]?)/.test(t))
+            && !lastPartAllTags.some(t => t.startsWith('nn')))
+            || lastPartAllTags.some(t => /^vb[dg]/.test(t)))) {
           // last part is jj or vbd/vbg
           tag = "jj"
           if (dbug) console.log(word + ": " + tag + " ACC: last part jj or vbd/vbg");
         }
-        else if (this.allTags(lastPart).some(t => /^[n]/.test(t))) {
+        else if (lastPartAllTags.some(t => /^[n]/.test(t))) {
           //last part is a noun
-          if (this.allTags(firstPart).some(t => /^(in|rb)/.test(t))) {
+          if (firstPartAllTags.some(t => /^(in|rb)/.test(t))) {
             // over-the-counter; before-hand etc
             tag = "jj"
             if (dbug) console.log(word + ": " + tag + " ACC: in/rb(-.)*-nn");
           }
           else {
             let lastNounIsMajor = true;
-            for (let z = 0; z < arr.length - 1; z++) {
-              let part = arr[z];
+            for (let z = 0; z < words.length - 1; z++) {
+              let part = words[z];
               if (!(this.allTags(part).some(t => /^([jn]|dt|in)/.test(t)))) {
                 lastNounIsMajor = false;
                 break;
@@ -624,10 +623,10 @@ class Tagger {
             }
           }
         }
-        else if (this.allTags(firstPart).some(t => t.startsWith('n'))) {
+        else if (firstPartAllTags.some(t => t.startsWith('n'))) {
           // first part can be a noun: father-in-law etc.
           // numbers depend on this noun
-          tag = this.RiTa.inflector.isPlural(arr[0]) ? "nns" : "nn";
+          tag = this.RiTa.inflector.isPlural(words[0]) ? "nns" : "nn";
           if (dbug) console.log(word + ": " + tag + " ACC: nn(-.)+");
         }
         else {
@@ -641,7 +640,7 @@ class Tagger {
           tag = "jj";
         }
         else if (result[i + 1] && result[i + 1].startsWith("v")
-          && this.allTags(lastPart).some(t => /^[vrj]/.test(t))) {
+          && lastPartAllTags.some(t => /^[vrj]/.test(t))) {
           //next word is a verb, last part is rb/verb
           tag = "rb";
         }
