@@ -908,7 +908,7 @@ describe('RiTa.Tagger', () => {
       'His move was breath-taking.',
       'Snakes are cold-blooded.',
       'People liked to wear bell-bottoms in the 80s.',
-      'This shop mainly sells corn-fed meats.',
+      'This shop mainly sells corn-fed meat.',
       'I withdraw the application and re-apply for another position.',
       'Our co-manager believe in neo-liberalism.',
       'He did a u-turn.',
@@ -916,6 +916,39 @@ describe('RiTa.Tagger', () => {
       'The game require co-op with your teammates.',
       'He was a roly-poly little man.'
     ];
+
+    let answers = [
+      ["prp", "vbz", "prp$", "nn", "."],
+      ["prp", "vbp", "dt", "jj", "vbg", "nn", "."],
+      ["prp", "vbp", "dt", "jj", "nn", "in", "dt", "nn", "."],
+      ["dt", "jj", "nn"],
+      ["dt", "nns", "vbd", "dt", "nn", "to", "vb", "rbr", "."],
+      ["prp", "vbd", "cd", "nns", "nn", "."],
+      ["dt", "nn", "vbd", "in", "jj", "nn", "."],
+      ["nn", "vbg", "nn", "nn", "in", "dt", "jj", "vbg", "in", "nn", "."],
+      ["ex", "vbz", "dt", "jj", "nn", "in", "dt", "nn", "in", "dt", "nn", "."],
+      ["prp", "vbz", "dt", "jj", "nn", "in", "prp$", "nn", "."],
+      ["prp", "vbp", "vbg", "dt", "jj", "nn", "rb"],
+      ["dt", "nn", "in", "dt", "jj", "nn", "vbz", "cd", "nns", "."],
+      ["dt", "nn", "vbz", "cd", "nns", "in", "dt", "nn", "."],
+      ["prp", "vbp", "rb", "jj"],
+      ["prp", "vbz", "jj"],
+      ["prp", "vbp", "dt", "nn", "in", "dt", "jj", "nn", "in", "dt", "nn", "."],
+      ["prp$", "nn", "vbd", "jj", "."],
+      ["nns", "vbp", "jj", "."],
+      ["nn", "vbd", "to", "vb", "nn", "in", "dt", "nns", "."],
+      ["dt", "nn", "rb", "nns", "jj", "nn", "."],
+      ["prp", "vbp", "dt", "nn", "cc", "vb", "in", "dt", "nn", "."],
+      ["prp$", "nn", "vbp", "in", "nn", "."],
+      ["prp", "vbd", "dt", "nn", "."],
+      ["prp", "vbp", "rb", "vbg", "to", "vb", "rb", "to", "dt", "nn", "nn", "in", "nn", "in", "nn", "."],
+      ["dt", "nn", "vb", "nn", "in", "prp$", "nns", "."],
+      ["prp", "vbd", "dt", "jj", "jj", "nn", "."]
+    ];
+
+    answers.forEach((a, i) => { 
+      eql(RiTa.pos(pool[i]), a, "fail at: " + pool[i]);
+    });
   });
   // }
   // else it('WARN: no tests without lexicon', function () {
