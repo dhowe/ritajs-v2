@@ -111,7 +111,6 @@ describe('RiTa.Conjugator', function () {
 
       equal(RiTa.pastPart("grown"), "grown");
       equal(RiTa.pastPart("heard"), "heard");
-      equal(RiTa.pastPart("borne"), "borne");
     }
   });
 
