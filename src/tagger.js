@@ -509,7 +509,7 @@ class Tagger {
           if (dbug) console.log(word + ": " + HYPHENATEDS[word] + " ACC: special");
           continue;
         }
-        tag = this._tagCompoundWord(word, tag, result, i, dbug);
+        tag = this._tagCompoundWord(word, tag, result, words, i, dbug);
       }
 
       result[i] = tag;
@@ -519,7 +519,7 @@ class Tagger {
   }
 
   // determine tag for compound (hyphenated) word
-  _tagCompoundWord(word, tag, result, i, dbug) { // #HWF
+  _tagCompoundWord(word, tag, result, context, i, dbug) { // #HWF
 
     let words = word.split("-");
     let firstPart = words[0], lastPart = words[words.length - 1];
@@ -644,16 +644,15 @@ class Tagger {
       //next word is a noun
       tag = "jj";
     }
-    else if (result[i + 1] && result[i + 1].startsWith("v")
-      && lastPartAllTags.some(t => /^[vrj]/.test(t))) {
+    else if (tag === 'jj' && result[i + 1] && result[i + 1].startsWith("v")) {
       //next word is a verb, last part is rb/verb
       tag = "rb";
     }
     else if (result[i + 1] && result[i + 1].startsWith("v") && tag === 'jj') {
       tag = "rb"
     }
-    else if (result[i - 1] && tag === 'jj' && /^(the|a|an)$/i.test(words[i - 1])) {
-      if (!words[i + 1] || (result[i + 1] && /^(v|cc|in|md|w)/.test(result[i + 1]))) {
+    else if (tag === 'jj' && context[i - 1] && ARTICLES.includes(context[i - 1].toLowerCase().trim())) {
+      if (!context[i + 1] || (result[i + 1] && /^(v|cc|in|md|w)/.test(result[i + 1])) || this.RiTa.isPunct(context[i + 1])) {
         tag = 'nn';
       }
     }
@@ -696,5 +695,6 @@ const HYPHENATEDS = {
 const VERB_PREFIX = ["de", "over", "re", "dis", "un", "mis", "out", "pre", "post", "co", "fore", "inter", "sub", "trans", "under"];
 const NOUN_PREFIX = ["anti", "auto", "de", "dis", "un", "non", "co", "over", "under", "up", "down", "hyper", "mono", "bi", "uni", "di", "semi", "omni", "mega", "mini", "macro", "micro", "counter", "ex", "mal", "neo", "out", "poly", "pseudo", "super", "sub", "sur", "tele", "tri", "ultra", "vice"];
 //const ADJECTIVE_PREFIX = ["dis", "non", "semi", "un"]; // JC: not used?
+const ARTICLES = ['the', 'a', 'an', 'some'];
 
 export default Tagger;
