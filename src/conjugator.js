@@ -1087,7 +1087,7 @@ const PRESENT_RULESET = {
 
 const TO_BE = ["am", "are", "is", "was", "were"];
 
-const IRREG_PAST_PART = ["done", "gone", "abode", "been", "begotten", "begun", "bent", "bid", "bidden", "bled", "born", "borne", "bought", "brought", "built", "caught", "clad", "chlung", "could", "crept", "dove", "drunk", "dug", "dwelt", "fed", "felt", "fled", "flung", "fought", "found", "ground", "had", "held", "hung", "hurt", "kept", "knelt", "laid", "lain", "led", "left", "lent", "lit", "lost", "made", "met", "mown", "paid", "pled", "relaid", "rung", "said", "sat", "sent", "shod", "shot", "slain", "slept", "slid", "smelt", "sold", "sought", "spat", "sped", "spelt", "spent", "split", "spolit", "sprung", "spun", "stood", "stuck", "struck", "stung", "stunk", "sung", "sunk", "swept", "sworn", "swum", "swung", "taight", "thought", "told", "torn", "undergone", "understood", "wept", "woken", "won", "worn", "wound", "wrung"];
+const IRREG_PAST_PART = ["done", "gone", "been", "begun", "bent", "bid", "bidden", "bled", "born", "bought", "brought", "built", "caught", "clad", "could", "crept", "dove", "drunk", "dug", "dwelt", "fed", "felt", "fled", "flung", "fought", "found", "ground", "had", "held", "hung", "hurt", "kept", "knelt", "laid", "lain", "led", "left", "lent", "lit", "lost", "made", "met", "mown", "paid", "pled", "relaid", "rung", "said", "sat", "sent", "shot", "slain", "slept", "slid",  "sold", "sought", "spat", "sped", "spelt", "spent", "split", "sprung", "spun", "stood", "stuck", "struck", "stung", "stunk", "sung", "sunk", "swept", "sworn", "swum", "swung", "thought", "told", "torn", "undergone", "understood", "wept", "woken", "won", "worn", "wound", "wrung"];
 
 Conjugator.VERB_CONS_DOUBLING = VERB_CONS_DOUBLING; // for scripts
 
