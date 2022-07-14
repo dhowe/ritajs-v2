@@ -778,7 +778,7 @@ describe('RiTa.Tagger', () => {
     expect(RiTa.tagger.allTags("finished")).eql(['vbd','jj','vbn']);
     expect(RiTa.tagger.allTags("gained")).eql(['vbd','vbn']);
 
-    expect(RiTa.tagger.allTags("got")).eql(['vbd']);
+    expect(RiTa.tagger.allTags("got")).eql(['vbd', 'vbn']);
     expect(RiTa.tagger.allTags("increased")).eql(['vbn','jj','vbd']);
     expect(RiTa.tagger.allTags("involved")).eql(['vbn','vbd','jj']);
     expect(RiTa.tagger.allTags("launched")).eql(['vbn','vbd']);

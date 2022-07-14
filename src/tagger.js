@@ -595,9 +595,9 @@ class Tagger {
     }
     else if (((lastPartAllTags.some(t => /^(jj[rs]?)/.test(t))
       && !lastPartAllTags.some(t => t.startsWith('nn')))
-      || lastPartAllTags.some(t => /^vb[dg]/.test(t)))) {
+      || lastPartAllTags.some(t => /^vb[dgn]/.test(t)))) {
 
-      // last part is jj or vbd/vbg
+      // last part is jj or vbd/vbn/vbg
       tag = "jj"
       if (dbug) console.log(word + ": " + tag + " ACC: last part jj or vbd/vbg");
     }
