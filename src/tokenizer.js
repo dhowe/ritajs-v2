@@ -275,7 +275,7 @@ const GT_RE = /^ *> *$/;
 const TAGSTART_RE = /^ *[!\-\/] *$/;
 const TAGEND_RE = /^ *[\-\/] *$/
 const NOSP_AF_PUNCT_RE = /^[\^\*\$\/\u2044#\-@\u00b0\u2012\u2013\u2014]+$/;
-const TAG = "TAG", UNDER_RE = /([a-zA-z]|[\.\,])_([a-zA-Z])/g;
+const TAG = "TAG", UNDER_RE = /([0-9a-zA-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF]|[\.\,])_([0-9a-zA-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF])/g;
 const LB_RE = /^[\[\(\{\u27e8]+$/, RB_RE = /^[\)\]\}\u27e9]+$/;
 const QUOTE_RE = /^[""\u201c\u201d\u2019\u2018`''\u00ab\u00bb]+$/;
 const DOMAIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|ch|fr)$/;
