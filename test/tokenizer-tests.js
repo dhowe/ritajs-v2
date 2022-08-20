@@ -695,6 +695,21 @@ it('Should handle dashes', function() {
 
   });
 
+  it('should tokenize underscores to spaces', function () {
+    expect(RiTa.tokenize("a_là")).eql(["a là"]);
+    expect(RiTa.tokenize("a_la")).eql(["a la"]);
+    expect(RiTa.tokenize("à_la")).eql(["à la"]);
+    expect(RiTa.tokenize("lá_bas")).eql(["lá bas"]);
+    expect(RiTa.tokenize("la_bas")).eql(["la bas"]);
+    expect(RiTa.tokenize("la_bas")).eql(["la bas"]);
+    expect(RiTa.tokenize("comment_ça-va")).eql(["comment ça-va"]);
+    expect(RiTa.tokenize("el_águila")).eql(["el águila"]);
+    expect(RiTa.tokenize("9_inches")).eql(["9 inches"]);
+   
+    let output = RiTa.tokenize("an_email_address@gmail.com");
+    0 && expect(output).eql(["an_email_address","@","gmail",".","com"]);
+  });
+
   function eql(a, b, m) { expect(a).eql(b, m); }
 
   function eq(a, b, m) { expect(a).eq(b, m); }
