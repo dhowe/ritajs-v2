@@ -102,7 +102,7 @@ describe('RiTa.Tokenizer', () => {
       "it is 'hell'"
     ];
     let tokens = [
-      ["this", "is", "www", ".", "google", ".", "com"],
+      ["this", "is", "www.google.com"],
       ["it", "is", "'", "hell", "'"],
     ];
     for (let i = 0; i < sentences.length; i++) {
@@ -705,10 +705,41 @@ it('Should handle dashes', function() {
     expect(RiTa.tokenize("comment_ça-va")).eql(["comment ça-va"]);
     expect(RiTa.tokenize("el_águila")).eql(["el águila"]);
     expect(RiTa.tokenize("9_inches")).eql(["9 inches"]);
-   
-    let output = RiTa.tokenize("an_email_address@gmail.com");
-    0 && expect(output).eql(["an_email_address","@","gmail",".","com"]);
   });
+
+  it('should treat urls/emails as single tokens', function () {
+    let output = RiTa.tokenize("example.example@gmail.com");
+    expect(output).eql(["example.example@gmail.com"]);
+    
+    output = RiTa.tokenize("an.example-email_address@gmail.com");
+    expect(output).eql(["an.example-email_address@gmail.com"]);
+   
+    output = RiTa.tokenize("an.email.address@yahoo.com");
+    expect(output).eql(["an.email.address@yahoo.com"]);
+  
+    output = RiTa.tokenize("MY.EMAIL.ADDRESS@YAHOO.COM");
+    expect(output).eql(["MY.EMAIL.ADDRESS@YAHOO.COM"]);
+    expect(RiTa.untokenize(output)).eql("MY.EMAIL.ADDRESS@YAHOO.COM");
+
+    output = RiTa.tokenize("This is my email address: email-address@gmail.com.");
+    expect(output).eql(["This", "is", "my", "email", "address", ":", "email-address@gmail.com", "."]);
+    expect(RiTa.untokenize(output)).eql("This is my email address: email-address@gmail.com.");
+
+    //urls
+    //without http(s)
+    output = RiTa.tokenize("www.example.com/an_example_page");
+    expect(output).eql(["www.example.com/an_example_page"]);
+    //with underscores
+    output = RiTa.tokenize("https://example.com/an_example_page");
+    expect(output).eql(["https://example.com/an_example_page"]);
+    //with suffix
+    output = RiTa.tokenize("https://example.org/index.html");
+    expect(output).eql(["https://example.org/index.html"]);
+    //with capital letters
+    output = RiTa.tokenize("http://example.com/An_Example_Page");
+    expect(output).eql(["http://example.com/An_Example_Page"]);
+
+ });
 
   function eql(a, b, m) { expect(a).eql(b, m); }
 
