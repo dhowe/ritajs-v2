@@ -188,7 +188,7 @@ class Tokenizer {
       if (POPTAG_RE.test(result[i])) {
         result[i] = tags.shift();
       }
-      if (result[i].includes('_')) {
+      if (result[i].includes('_') && !EMAIL_RE.test(result[i]) && !URL_RE.test(result[i])) {
         result[i] = result[i].replace(UNDER_RE, "$1 $2");
       }
     }
@@ -282,7 +282,9 @@ const DOMAIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|ch|fr)$/;
 const SQUOTE_RE = /^[\u2019\u2018`']+$/, ALPHA_RE = /^[A-Za-z’']+$/, WS_RE = / +/;
 const APOS_RE = /^[\u2019']+$/, NL_RE = /(\r?\n)+/g, WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
 const NOSP_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""\u201c\u201d\u2019\u2018`'%\u2026\u2103\^\*\u00b0\/\u2044\u2012\u2013\u2014\-@]+$/;
-const LINEBREAK_RE = /[\n\r\036]/;
+const LINEBREAK_RE = /[\n\r\036]/; 
+const URL_RE=/((http[s]?):(\/\/))?([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b)([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/;
+const EMAIL_RE = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const TOKENIZE_RE = [
   // save  --------
@@ -308,11 +310,15 @@ const TOKENIZE_RE = [
   /([Cc])([Oo])[\.][\,]([Ll])([Tt])([Dd])[\.]/g, "_$1$2dc$3$4$5_", // co.,ltd.
   /([Cc])([Oo])([Rr]?)([Pp]?)[\.]/g, "_$1$2$3$4_", // Corp. and Co.
   /([Ll])([Tt])([Dd])[\.]/g, "_$1$2$3_", // ltd.
-  /(prof|Prof|PROF)[\.]/g, "_$1_", //Prof.
+  /(prof|Prof|PROF)[\.]/g, "_$1_", //Prof. 
+  /(\w+([\.-_]?\w+)*)@(\w+([\.-_]?\w+)*)\.(\w{2,3})/g, "$1AT$3.$5", //email addresses
+  /((http[s]?):(\/\/))([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b)([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/g, "$2COLON$3$4$5", //urls with http(s)
   //decimal #
   /([\-]?[0-9]+)\.([0-9]+)/g, "$1DECIMALDOT$2_", //(-)27.3
   /([\-]?[0-9]+)\.([0-9]+)e([\-]?[0-9]+)/g, "_$1DECIMALDOT$2POWERE$3_", //(-)1.2e10
   /([0-9]{1,3}),([0-9]{3})/g, "$1_DECIMALCOMMA_$2", // large numbers like 19,700 or 200,000,000.13
+  /([A-Za-z0-9])\.([A-Za-z0-9])/g,  "$1_DECIMALDOT_$2", //www.example.com
+
   //escape sequences of line breaks in ASCII
   /\r\n/g, " _CARRIAGERETURNLINEFEED_ ", // CR LF
   /\n\r/g, " _LINEFEEDCARRIAGERETURN_ ", // LF CR
@@ -369,6 +375,9 @@ const TOKENIZE_RE = [
   /([\-]?[0-9]+)DECIMALDOT([0-9]+)_/g, "$1.$2", //(-)27.3
   /_([\-]?[0-9]+)\DECIMALDOT([0-9]+)POWERE([\-]?[0-9]+)_/g, "$1.$2e$3", //(-)1.2e(-)9
   /_DECIMALCOMMA_/g, ",", // large numbers like 200,000,000.13
+  /_DECIMALDOT_/g, ".", 
+  /(\w+([\.-]?\w+)*)AT(\w+([\.-]?\w+)*)\.(\w{2,3})/g, "$1@$3.$5",
+  /((http[s]?)COLON(\/\/))([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b)([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/g, "$2:$3$4$5",
   /_LINEFEED_/g, "\n", // LF
   /_CARRIAGERETURN_/g, "\r", // CR
   /_CARRIAGERETURNLINEFEED_/g, "\r\n", // CR LF
