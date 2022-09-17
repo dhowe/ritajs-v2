@@ -41,7 +41,7 @@ class RiScript {
       trace && console.log('-'.repeat(20) + ' Pass#' + i + ' ' + '-'.repeat(20));
       expr = this.lexParseVisit(expr, ctx, opts);
       if (orig.syn1 !== ctx.syn1) {
-        console.log('HIT#'+i);
+        console.log('HIT#' + i);
       };
       if (trace) this.passInfo(ctx, last, expr, i);
       if (onepass || !this.isParseable(expr)) break;
@@ -215,7 +215,7 @@ class RiScript {
     return RiScript.transforms;
   }
 
-  static articlize(s) { 
+  static articlize(s) {
     if (!s || !s.length) return '';
     let first = s.split(/\s+/)[0];
     let phones = RiTa().phones(first, { silent: true });
@@ -227,6 +227,11 @@ class RiScript {
   // a no-op transform for sequences
   static identity(s) {
     return s;
+  }
+
+  // returns an empty string
+  static empty(s) {
+    return ''
   }
 }
 
@@ -270,13 +275,15 @@ RiScript.transforms = {
   capitalize,
   articlize: RiScript.articlize,
   uppercase,
-  pluralize, 
+  pluralize,
 
   // sequences
+  norepeat: RiScript.identity,
+  silent: RiScript.empty,
   //seq: RiScript.identity,
   //rseq: RiScript.identity,
   //norep: RiScript.identity,
-  norepeat: RiScript.identity,
+
 
   // aliases
   art: RiScript.articlize,
@@ -285,11 +292,12 @@ RiScript.transforms = {
   ucf: capitalize, // deprecated
   uc: uppercase,
   qq: quotify,
-  s: pluralize
+  s: pluralize,
+  _: RiScript.empty
 };
 
 const VOW_RE = /[aeiou]/;
-const ENT_RE = /[\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g; 
+const ENT_RE = /[\u00a0\u2000-\u200b\u2028-\u2029\u3000]+/g;
 const PRS_RE = /([(){}|]|(\${1,2}\w+))/;
 const SYM_RE = /\${1,2}\w+/;
 const CONT_RE = /\\\n/;
