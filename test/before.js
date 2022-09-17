@@ -19,7 +19,8 @@ async function loadTestingDeps() {
     let module = await import(file);
     RiTa = module.default;
     RiTa.HAS_LEXICON = !testWithoutLex;
-    //console.log('Loading RiTa from '+file+' RiTa.HAS_LEXICON='+RiTa.HAS_LEXICON);
+    console.log('Loading RiTa from ' + file + ' RiTa.HAS_LEXICON='
+      + RiTa.HAS_LEXICON + ' testTranspiled=' + testTranspiled);
     let chai = await import('../node_modules/chai/lib/chai.js');
     expect = chai.expect;
   }
