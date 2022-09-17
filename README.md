@@ -129,7 +129,7 @@ RiScript is a writer-focused scripting language integrated with RiTa. It enables
 <br>
 
 ## Developing
-To install/build the library and run tests (with npm/mocha):
+To install/build the library and run tests (with npm/mocha and node v14.x):
 ```sh
 
 $ git clone https://github.com/dhowe/ritajs.git
