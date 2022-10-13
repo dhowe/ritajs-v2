@@ -69,8 +69,7 @@ class Tokenizer {
     // https://github.com/dhowe/rita/issues/65
     // default behavior is to keep hyphen
     if (opts.splitHyphen) text = text
-      .split(/(?<=[a-zA-Z]+)-(?=[a-zA-Z]+)/)
-      .join(" - "); //look behind and ahead
+      .replace(/([a-zA-Z]+)-([a-zA-Z]+)/g, "$1 - $2");
 
     if (this.RiTa.SPLIT_CONTRACTIONS || opts.splitContractions) {
       for (let i = 0; i < CONTRACTS_RE.length; i += 2) {
