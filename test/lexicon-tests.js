@@ -2,7 +2,7 @@ import { loadTestingDeps } from './before';
 
 describe('RiTa.Lexicon', function () { // SYNC:
 
-  this.timeout(5000);
+  this.timeout(10000); // for ci
   this.slow(500);
 
   let RiTa, expect, hasLex;
