@@ -1,7 +1,7 @@
 import { loadTestingDeps } from './before';
 
 describe('RiTa.Analyzer', function () {
-  this.timeout(5000);
+  this.timeout(5000); // for ci
 
   let RiTa, expect, hasLex;
   before(async () => ({ RiTa, expect, hasLex } = await loadTestingDeps()));
