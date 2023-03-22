@@ -1040,7 +1040,6 @@ describe('RiTa.RiScript', function () {
 
     it('Should resolve weighted choices', function () {
 
-      // TODO: FAILING
       expect(RiTa.evaluate('( a [2] |a [3] )', {})).eq('a');
 
       let result = { b: 0, a: 0 };
